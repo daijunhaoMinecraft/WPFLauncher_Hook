@@ -1,6 +1,7 @@
 # WPFLauncher_Hook
 网易我的世界发烧平台绕过,但是Hook盒子方法<br />
-**目前只开源核心的HookEvent(Hook事件),只要你有dotnetdetour就可以尝试导入了**
+**目前只开源核心的HookEvent(Hook事件),只要你有dotnetdetour就可以尝试导入了**<br />
+**住:使用此软件需要先安装[.NET6.0的SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/sdk-6.0.425-windows-x86-installer)才能正常使用!**
 # 使用方法
 Step 1:前往[网易我的世界官网](https://mc.163.com/)上去下载32位包体
 ![PixPin_2024-08-05_11-01-03](https://github.com/user-attachments/assets/513eb0b8-e6b3-430e-bfd5-f04ea80789ee)<br />
