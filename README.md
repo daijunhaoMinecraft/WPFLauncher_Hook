@@ -17,6 +17,7 @@ Step 3:更新网易我的世界启动器盒子<br />
 ![PixPin_2024-08-05_11-14-00](https://github.com/user-attachments/assets/354164c4-ede6-4b0e-82b8-68a0be37c4a5)<br />
 ![PixPin_2024-08-05_11-14-35](https://github.com/user-attachments/assets/604b932e-5a40-49c1-8bc5-ce0f3c313a87)<br />
 ![PixPin_2024-08-05_11-15-13](https://github.com/user-attachments/assets/f868f512-4135-4c7f-86de-cb89dd363e4d)<br />
+然后在网易我的世界目录下替换mcl.common.dll文件(文件在github上release里有)<br />
 Step 4:Hook盒子
 ![PixPin_2024-09-21_11-15-48](https://github.com/user-attachments/assets/84324db8-2288-4db8-aec8-b30bd02309ad)<br />
 ![PixPin_2024-09-21_11-18-03](https://github.com/user-attachments/assets/24321f50-d3a2-4a51-b031-57d7833f253d)<br />
@@ -24,4 +25,4 @@ Step 4:Hook盒子
 ![PixPin_2024-09-21_11-18-46](https://github.com/user-attachments/assets/d2c9da80-64c7-47b1-9980-fb4cbc5a2eca)<br />
 ![PixPin_2024-09-21_11-19-11](https://github.com/user-attachments/assets/ffdb2f8d-e303-4a35-9ec4-09ef4e71cb4b)<br />
 ![PixPin_2024-09-21_11-19-29](https://github.com/user-attachments/assets/4aa77c4f-f1d6-4eaf-8569-81d258b941fe)<br />
-盒子可正常登录,不会修改盒子本身,同时也不会修改盒子其他文件,相当于[WPFLauncher_fever_Bypass](https://github.com/daijunhaoMinecraft/WPFLauncher_fever_Bypass)的升级版,只不过这是通过网络拦截的
+盒子可正常登录,不会修改盒子本身,~~同时也不会修改盒子其他文件~~,相当于[WPFLauncher_fever_Bypass](https://github.com/daijunhaoMinecraft/WPFLauncher_fever_Bypass)的升级版,只不过这是通过网络拦截的
