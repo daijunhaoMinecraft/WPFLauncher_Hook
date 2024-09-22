@@ -32,7 +32,7 @@ namespace DotNetTranstor.Hookevent
 		public static void f(bool nso)
 		{
 		}
-
+  		//去除首页"活动"广告
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
 		[HookMethod("WPFLauncher.Manager.NewsPop.asy", "e", "f")]
