@@ -35,6 +35,7 @@ namespace DotNetTranstor.Hookevent
 			MessageBoxResult messageBoxResult = uk.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
 			if (messageBoxResult == MessageBoxResult.OK)
 			{
+   				// 以下部分选自别人的cookie上号器
 				HttpClient client = new HttpClient();
 				WebClient client_beiyong = new WebClient();
 				string text = Interaction.InputBox("请输入Cookies卡登录或按否使用本地账号登陆!", "Cookie_Login", "", -1, -1);
