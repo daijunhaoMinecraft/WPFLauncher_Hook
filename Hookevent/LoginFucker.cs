@@ -23,19 +23,18 @@ namespace DotNetTranstor.Hookevent
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void f(string gmp, Action<EntityResponse<abu.Resposne>, Exception> gmq)
+		public static void f(string hud, Action<EntityResponse<acd.Resposne>, Exception> hue)
 		{
 		}
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.Launcher.abz", "g", "g")]
-		public static async void g(string gmp, Action<EntityResponse<abu.Resposne>, Exception> gmq)
+		[HookMethod("WPFLauncher.Network.Launcher.aci", "g", "g")]
+		public static void g(string hud, Action<EntityResponse<acd.Resposne>, Exception> hue)
 		{
-			MessageBoxResult messageBoxResult = uk.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
+			MessageBoxResult messageBoxResult = us.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
 			if (messageBoxResult == MessageBoxResult.OK)
 			{
-   				// 以下部分选自别人的cookie上号器
 				HttpClient client = new HttpClient();
 				WebClient client_beiyong = new WebClient();
 				string text = Interaction.InputBox("请输入Cookies卡登录或按否使用本地账号登陆!", "Cookie_Login", "", -1, -1);
@@ -58,7 +57,7 @@ namespace DotNetTranstor.Hookevent
 						"\",\"realname\":\"{\\\"realname_type\\\":\\\"0\\\"}\",\"timestamp\":\"",
 						LoginFucker.ExtractTextBetween(text2, "timestamp\":\"", "\""),
 						"\"}"
-					}), gmq);
+					}), hue);
 				}
 				else
 				{
@@ -67,23 +66,23 @@ namespace DotNetTranstor.Hookevent
 					{
 						string right2 = ",\\\"aim_info\\";
 						string str2 = ",\"aim_info\":\"{\\\"aim\\\":\\\"100.100.100.100\\\",\\\"country\\\":\\\"CN\\\",\\\"tz\\\":\\\" 0800\\\",\\\"tzid\\\":\\\"\\\"}\"}";
-						LoginFucker.f(LoginFucker.TextGainCenter("{\"sauth_json\":\"", right2, text) + str2, gmq);
+						LoginFucker.f(LoginFucker.TextGainCenter("{\"sauth_json\":\"", right2, text) + str2, hue);
 						right2 = null;
 						str2 = null;
 					}
 					else
 					{
-						LoginFucker.f(gmp, gmq);
+						LoginFucker.f(hud, hue);
 					}
 				}
 			}
 			else if (messageBoxResult == MessageBoxResult.None)
 			{
-				LoginFucker.f(gmp, gmq);
+				LoginFucker.f(hud, hue);
 			}
 			else
 			{
-				LoginFucker.f(gmp, gmq);
+				LoginFucker.f(hud, hue);
 			}
 		}
 		

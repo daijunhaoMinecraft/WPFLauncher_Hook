@@ -9,7 +9,6 @@ using System.Windows;
 using Mcl.Core.Network;
 using Mcl.Core.Network.Interface;
 using Mcl.Core.Utils;
-using Mcl.Core.Utils.Util;
 using Newtonsoft.Json;
 using WPFLauncher.Model;
 using WPFLauncher.Model.Game;
@@ -27,7 +26,7 @@ namespace DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Manager.aow", "ak", "X64_mc_ByPass")]
+        [HookMethod("WPFLauncher.Manager.apf", "ak", "X64_mc_ByPass")]
         public bool ak()
         {
             X64_mc_ByPass();

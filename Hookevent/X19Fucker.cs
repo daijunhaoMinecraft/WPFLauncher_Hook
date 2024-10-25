@@ -24,7 +24,7 @@ namespace DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Manager.PCChannel.ass", "b", "X19_Fever_bypass")]
+        [HookMethod("WPFLauncher.Manager.PCChannel.asq", "b", "X19_Fever_bypass")]
         public bool b()
         {
             return false;
