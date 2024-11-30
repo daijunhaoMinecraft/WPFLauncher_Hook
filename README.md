@@ -25,3 +25,5 @@ Step 4:Hook盒子
 ![PixPin_2024-09-21_11-19-11](https://github.com/user-attachments/assets/ffdb2f8d-e303-4a35-9ec4-09ef4e71cb4b)<br />
 ![PixPin_2024-09-21_11-19-29](https://github.com/user-attachments/assets/4aa77c4f-f1d6-4eaf-8569-81d258b941fe)<br />
 盒子可正常登录,不会修改盒子本身,同时也不会修改盒子其他文件,相当于[WPFLauncher_fever_Bypass](https://github.com/daijunhaoMinecraft/WPFLauncher_fever_Bypass)的升级版,只不过这是通过网络拦截的
+**(Hook盒子出现还是有提示发烧平台这时候就要多尝试几次了,若尝试几次无果后可以提交bug(这可能代表了新版本把命名空间给重命名了))**
+**若发现软件bug请到Issues处进行提交bug**
