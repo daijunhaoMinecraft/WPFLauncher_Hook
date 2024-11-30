@@ -12,6 +12,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
+using Newtonsoft.Json;
 using WPFLauncher.Manager.PCChannel;
 using WPFLauncher.Network.Message;
 using MessageBox = System.Windows.MessageBox;
@@ -26,7 +27,7 @@ namespace DotNetTranstor.Hookevent
 		public static void f(string hud, Action<EntityResponse<acd.Resposne>, Exception> hue)
 		{
 		}
-
+		
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
 		[HookMethod("WPFLauncher.Network.Launcher.aci", "g", "g")]
@@ -42,7 +43,7 @@ namespace DotNetTranstor.Hookevent
 				if (flag4)
 				{
 					string text2 = text.Replace("\\", "");
-					LoginFucker.f(string.Concat(new string[]
+					string GetSauth_Content = string.Concat(new string[]
 					{
 						"{\"gameid\":\"x19\",\"login_channel\":\"4399pc\",\"app_channel\":\"4399pc\",\"platform\":\"pc\",\"sdkuid\":\"",
 						LoginFucker.ExtractTextBetween(text2, "sdkuid\":\"", "\""),
@@ -57,7 +58,9 @@ namespace DotNetTranstor.Hookevent
 						"\",\"realname\":\"{\\\"realname_type\\\":\\\"0\\\"}\",\"timestamp\":\"",
 						LoginFucker.ExtractTextBetween(text2, "timestamp\":\"", "\""),
 						"\"}"
-					}), hue);
+					});
+					Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = GetSauth_Content })}");
+					LoginFucker.f(GetSauth_Content, hue);
 				}
 				else
 				{
@@ -66,22 +69,26 @@ namespace DotNetTranstor.Hookevent
 					{
 						string right2 = ",\\\"aim_info\\";
 						string str2 = ",\"aim_info\":\"{\\\"aim\\\":\\\"100.100.100.100\\\",\\\"country\\\":\\\"CN\\\",\\\"tz\\\":\\\" 0800\\\",\\\"tzid\\\":\\\"\\\"}\"}";
+						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
 						LoginFucker.f(LoginFucker.TextGainCenter("{\"sauth_json\":\"", right2, text) + str2, hue);
 						right2 = null;
 						str2 = null;
 					}
 					else
 					{
+						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
 						LoginFucker.f(hud, hue);
 					}
 				}
 			}
 			else if (messageBoxResult == MessageBoxResult.None)
 			{
+				Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
 				LoginFucker.f(hud, hue);
 			}
 			else
 			{
+				Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
 				LoginFucker.f(hud, hue);
 			}
 		}

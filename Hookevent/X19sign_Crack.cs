@@ -40,6 +40,7 @@ namespace DotNetTranstor.Hookevent
 		public static string a(string ggq)
 		{
 			File.AppendAllText(Path.Combine(Directory.GetCurrentDirectory(),"X19sign_Decrypt.txt"),$"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]X19sign_Decrypt:{ggq}\n");
+			Console.WriteLine("[X19sign] Decrypt:" + ggq);
 			return "!x19sign!"+ ggq.a("942894570397f6d1c9cca2535ad18a2b");
 		}
 	}

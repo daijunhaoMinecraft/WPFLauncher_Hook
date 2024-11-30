@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -22,24 +23,22 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace DotNetTranstor.Hookevent
 {
-	// Token: 0x02000017 RID: 23
-	internal class SalogFucker : IMethodHook
+	//去除网易敏感词检测(并不代表真正的去除,可能好友聊天会检测敏感词然后做判断)
+	internal class No_Sensitive_word_detection : IMethodHook
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void f(string aqq, string aqr)
+		public static void No_Sensitive_word()
 		{
 		}
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.cn", "k", "f")]
+		[HookMethod("WPFLauncher.cm", "a", "No_Sensitive_word")]
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
-		public static void k(string aqq, string aqr)
+		public static void a()
 		{
-			Console.WriteLine("[INFO]发现/salog-new的post请求(进程检测)已及时制止");
-			Console.WriteLine("[INFO]WPFLauncher.cn.k,aqq: " + aqq + ", aqr: " + aqr);
-			return;
+			Console.WriteLine("[INFO]发现网易正在初始化敏感词功能已被制止");
 		}
 	}
 }

@@ -39,7 +39,9 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static string b(string ggr)
 		{
-			return ggr.StartsWith("!x19sign!") ? ggr.Remove(0, "!x19sign!".Length).b("942894570397f6d1c9cca2535ad18a2b") : ggr;
+			string Get_String = ggr.StartsWith("!x19sign!") ? ggr.Remove(0, "!x19sign!".Length).b("942894570397f6d1c9cca2535ad18a2b") : ggr;
+			Console.WriteLine($"[X19sign]Called_Decrypt:{Get_String}");
+			return Get_String;
 		}
 	}
 }

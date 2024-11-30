@@ -10,6 +10,7 @@ using Mcl.Core.Network;
 using Mcl.Core.Network.Interface;
 using Mcl.Core.Utils;
 using Newtonsoft.Json;
+using WPFLauncher.Manager.GrayUpdate;
 using WPFLauncher.Model;
 using WPFLauncher.Model.Game;
 using WPFLauncher.Model.Game.GameClient;
@@ -18,19 +19,20 @@ using WPFLauncher.Update;
 
 namespace DotNetTranstor.Hookevent
 {
-    internal class BedrockFucker : IMethodHook
+    internal class UnlockAllMode : IMethodHook
     {
+        //解锁网易被暗藏的功能(也就是只能通过概率的方式获得)例如:x64_mc(64位mc)等
         [OriginalMethod]
-        public void X64_mc_ByPass()
+        public void UnlockAll(GrayUpdateType nzp)
         {
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Manager.apf", "ak", "X64_mc_ByPass")]
-        public bool ak()
+        [HookMethod("WPFLauncher.Manager.GrayUpdate.atw", "m", "UnlockAll")]
+        public bool ak(GrayUpdateType nzp)
         {
-            X64_mc_ByPass();
-            return Environment.Is64BitOperatingSystem;
+            Console.WriteLine("[GrayUpdate]成功调用需要概率的功能");
+            return true;
         }
     }
 }
