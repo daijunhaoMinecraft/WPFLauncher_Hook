@@ -1,0 +1,73 @@
+name: 软件bug
+description: 在使用过程中遇到了错误
+title: "[Bug]: "
+labels: ["bug"]
+#https://github.com/daijunhaoMinecraft/WPFLauncher_Hook
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 感谢你发现了软件bug
+        请在提交bug之前，请确保你已阅读以下注意事项：
+        - 确保你已经发现了软件bug并且已经仔细的查看了[Issues提交的问题](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)没有重复
+        - 确保你已经仔细阅读了[Readme](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/blob/main/README.md)中的教程
+        - 确保你已经安装了网易我的世界启动器
+        ---
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 请确保您已阅读以上注意事项，并勾选下方的确认框。
+      options:
+        - label: 我已经使用一个干净且无其它软件干扰的情况下打开此软件，问题依旧存在。
+          required: true
+        - label: 我已经在 [Issues](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues) 中找过我要提出的问题，没有找到相同问题的ISSUE。
+          required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## 环境信息
+
+  - type: input
+    id: WPFLauncher_Verison
+    attributes:
+      label: 网易我的世界启动器版本
+    validations:
+      required: true
+
+  - type: dropdown
+    id: env-vm-ver
+    attributes:
+      label: 运行环境
+      description: 选择系统版本
+      options:
+        - Windows
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce-steps
+    attributes:
+      label: 重现步骤
+      description: |
+        我们需要执行哪些操作才能让 Bug 出现？
+        简洁清晰的重现步骤能够帮助我们更迅速地定位问题所在。
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际的结果是什么？
+    validations:
+      required: true
+
+  - type: textarea
+    id: logging
+    attributes:
+      label: 日志记录
+
+  - type: textarea
+    id: extra-desc
+    attributes:
+      label: 补充说明（可选）
