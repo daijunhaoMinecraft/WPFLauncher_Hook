@@ -20,6 +20,7 @@ using WPFLauncher.Manager;
 using WPFLauncher.Manager.Login;
 using WPFLauncher.Manager.PCChannel;
 using WPFLauncher.Network.Message;
+using WPFLauncher.ViewModel.Launcher;
 using MessageBox = System.Windows.MessageBox;
 
 namespace DotNetTranstor.Hookevent
@@ -29,8 +30,9 @@ namespace DotNetTranstor.Hookevent
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void f(string aqo, string aqp)
+		public static string f(string ggq)
 		{
+			return string.Empty;
 		}
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
@@ -39,9 +41,16 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static string a(string ggq)
 		{
-			File.AppendAllText(Path.Combine(Directory.GetCurrentDirectory(),"X19sign_Decrypt.txt"),$"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]X19sign_Decrypt:{ggq}\n");
-			Console.WriteLine("[X19sign] Decrypt:" + ggq);
-			return "!x19sign!"+ ggq.a("942894570397f6d1c9cca2535ad18a2b");
+			if (Path_Bool.IsStartWebSocket)
+			{
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "x19sign", data = JsonConvert.DeserializeObject(ggq) }));
+			}
+			//File.AppendAllText(Path.Combine(Directory.GetCurrentDirectory(),"X19sign_Decrypt.txt"),$"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]X19sign_Decrypt:{ggq}\n");
+			if (Path_Bool.IsDebug)
+			{
+				Console.WriteLine("[X19sign] Decrypt:" + ggq);
+			}
+			return f(ggq);
 		}
 	}
 }

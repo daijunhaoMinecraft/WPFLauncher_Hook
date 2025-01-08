@@ -29,8 +29,9 @@ namespace DotNetTranstor.Hookevent
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void f(string aqo, string aqp)
+		public static string f(string ggr)
 		{
+			return string.Empty;
 		}
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
@@ -39,8 +40,16 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static string b(string ggr)
 		{
-			string Get_String = ggr.StartsWith("!x19sign!") ? ggr.Remove(0, "!x19sign!".Length).b("942894570397f6d1c9cca2535ad18a2b") : ggr;
-			Console.WriteLine($"[X19sign]Called_Decrypt:{Get_String}");
+			string Get_String = f(ggr);
+			if (Path_Bool.IsStartWebSocket)
+			{
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "x19sign", data = JsonConvert.DeserializeObject(Get_String) }));
+			}
+
+			if (Path_Bool.IsDebug)
+			{
+				Console.WriteLine($"[X19sign]Called_Decrypt:{Get_String}");
+			}
 			return Get_String;
 		}
 	}

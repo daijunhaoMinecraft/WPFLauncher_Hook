@@ -13,34 +13,40 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
+using InlineIL;
 using Newtonsoft.Json;
 using WPFLauncher;
 using WPFLauncher.Common;
 using WPFLauncher.Manager;
+using WPFLauncher.Manager.Game.Pipeline;
 using WPFLauncher.Manager.PCChannel;
+using WPFLauncher.Model;
 using WPFLauncher.Network.Message;
+using WPFLauncher.Network.Protocol.LobbyGame;
+using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
+using static InlineIL.IL.Emit;
 
 namespace DotNetTranstor.Hookevent
 {
-	internal class No_Sensitive_word_detection_2 : IMethodHook
+	internal class Online_ResID : IMethodHook
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void No_Sensitive_word()
+		public static void Get_Room(string jnh, int jni, int jnj, Action<EntityListResponse<LobbyGameRoomEntity>> jnk)
 		{
 		}
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.cm", "b", "No_Sensitive_word")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
-		public static void b()
+		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.afx", "d", "Get_Room")]
+		// Token: 0x060045FE RID: 17918 RVA: 0x000ED080 File Offset: 0x000EB280
+		public static void d(string jnh, int jni, int jnj, Action<EntityListResponse<LobbyGameRoomEntity>> jnk)
 		{
-			if (Path_Bool.IsDebug)
-			{
-				Console.WriteLine("[INFO]发现网易正在初始化敏感词功能已被制止");
-			}
+			Console.ForegroundColor = ConsoleColor.Green;
+			Console.WriteLine("[Online]成功将房间最大显示个数修改成128!");
+			Console.ForegroundColor = ConsoleColor.White;
+			Get_Room(jnh, jni, 128, jnk);
 		}
 	}
 }

@@ -39,7 +39,12 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		private void e(bool nso)
 		{
-			Console.WriteLine("[INFO]检测到网易正在初始化活动页面广告已被制止并拦截");
+			if (Path_Bool.IsDebug)
+			{
+				Console.ForegroundColor = ConsoleColor.Green;
+				Console.WriteLine("[INFO]检测到网易正在初始化活动页面广告已被制止并拦截");
+				Console.ForegroundColor = ConsoleColor.White;
+			}
 			return;
 		}
 	}

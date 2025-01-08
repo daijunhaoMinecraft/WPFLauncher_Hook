@@ -38,7 +38,10 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static void a()
 		{
-			Console.WriteLine("[INFO]发现网易正在初始化敏感词功能已被制止");
+			if (Path_Bool.IsDebug)
+			{
+				Console.WriteLine("[INFO]发现网易正在初始化敏感词功能已被制止");
+			}
 		}
 	}
 }

@@ -39,7 +39,10 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		private unsafe static string d(string aao)
 		{
-			Console.WriteLine($"[INFO]发现网易正在加密存档已被制止,加密文件路径:{aao}");
+			if (Path_Bool.IsDebug)
+			{
+				Console.WriteLine($"[INFO]发现网易正在加密存档已被制止,加密文件路径:{aao}");
+			}
 			return "";
 		}
 	}

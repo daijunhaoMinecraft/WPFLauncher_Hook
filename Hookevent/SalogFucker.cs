@@ -37,9 +37,13 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static void k(string aqq, string aqr)
 		{
-			Console.WriteLine("[INFO]发现/salog-new的post请求(进程检测)已及时制止");
-			Console.WriteLine("[INFO]WPFLauncher.cn.k,aqq: " + aqq + ", aqr: " + aqr);
-			return;
+			if (Path_Bool.IsStartWebSocket)
+			{
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "salog-new", SalogType = aqq,data = aqr}));
+			}
+			
+			Console.WriteLine("[INFO]发现/salog-new的post请求(进程检测/dll检测/注入检测等)已及时制止");
+			Console.WriteLine("[INFO]检测类型:" + aqq + "发送数据:" + aqr);
 		}
 	}
 }

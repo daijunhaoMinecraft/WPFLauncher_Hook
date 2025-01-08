@@ -57,9 +57,28 @@ namespace DotNetTranstor.Hookevent
             {
                 aen.Header["server"] = "home";
             }
-
             INetResponse Get_Content = aem.x(prefix, aen);
-            Console.WriteLine($"[Post_Core]请求url地址:{resource},内容:{parameter},返回结果:{Regex.Unescape(Get_Content.Content)}");
+            string needEncrypt_String = "";
+            if (needEncrypt == aej.a)
+            {
+                needEncrypt_String = "Normal";
+            }
+            else if (needEncrypt == aej.b)
+            {
+                needEncrypt_String = "CommonEncrypt";
+            }
+            else if (needEncrypt == aej.c)
+            {
+                needEncrypt_String = "Authentication";
+            }
+            if (Path_Bool.IsStartWebSocket)
+            {
+                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Post", url = resource, parameter = parameter, needEncrypt = needEncrypt_String, prefix = prefix, isHome = isHome, result = Regex.Unescape(Get_Content.Content) }));
+            }
+            if (Path_Bool.IsDebug)
+            {
+                Console.WriteLine($"[Post_Core]请求url地址:{resource},内容:{parameter},返回结果:{Regex.Unescape(Get_Content.Content)},发送参数:{needEncrypt_String}");
+            }
             return Get_Content;
         }
     }

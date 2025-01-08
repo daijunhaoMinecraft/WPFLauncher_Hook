@@ -38,7 +38,10 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static bool d(string arz)
 		{
-			Console.WriteLine($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{arz}");
+			if (Path_Bool.IsDebug)
+			{
+				Console.WriteLine($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{arz}");
+			}
 			return true;
 		}
 	}

@@ -31,7 +31,34 @@ namespace DotNetTranstor.Hookevent
         [HookMethod("WPFLauncher.Manager.GrayUpdate.atw", "m", "UnlockAll")]
         public bool ak(GrayUpdateType nzp)
         {
-            Console.WriteLine("[GrayUpdate]成功调用需要概率的功能");
+            // 获取 GrayUpdateType 的名称
+            string updateTypeName = Enum.GetName(typeof(GrayUpdateType), nzp);
+            if (nzp == GrayUpdateType.CppGameX64)
+            {
+                if (!Path_Bool.IsEnableX64mc)
+                {
+                    return false;
+                }
+            }
+            if (Path_Bool.IsStartWebSocket)
+            {
+                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "GrayUpdateEnable", data = updateTypeName}));
+            }
+            Console.ForegroundColor = ConsoleColor.Green;
+            if (updateTypeName == "A50Setup")
+            {
+                if (Path_Bool.IsDebug)
+                {
+                    Console.WriteLine($"[GrayUpdate]该功能为发烧平台,已返回为false以绕过发烧平台: {updateTypeName}");
+                }
+                return false;
+            }
+            // 输出包含枚举名称的消息
+            if (Path_Bool.IsDebug)
+            {
+                Console.WriteLine($"[GrayUpdate]成功调用需要概率的功能: {updateTypeName}");
+            }
+            Console.ForegroundColor = ConsoleColor.White;
             return true;
         }
     }
