@@ -4,7 +4,8 @@
 **目前暂时不支持开源，但是可以看之前的源代码**<br />
 **住:使用此软件需要先安装[.NET6.0的SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/sdk-6.0.425-windows-x86-installer)才能正常使用!**
 # 使用方法
-Step 1:前往[网易我的世界官网](https://mc.163.com/)上去下载32位包体
+Step 1:前往[网易我的世界官网](https://mc.163.com/)上去下载32位包体<br/>
+**2025/8/12:Latest:目前网易我的世界启动器官网只有一个发烧平台的包体，[32位包体下载链接](https://adl.netease.com/d/g/mc/c/pe?type=windows)**
 ![PixPin_2024-08-05_11-01-03](https://github.com/user-attachments/assets/513eb0b8-e6b3-430e-bfd5-f04ea80789ee)<br />
 ![PixPin_2024-08-05_11-02-00](https://github.com/user-attachments/assets/5ad49668-ae2a-4692-8fc7-471a8ff65f3f)<br />
 ![PixPin_2024-08-05_11-02-56](https://github.com/user-attachments/assets/4408f236-d421-4a01-b7a3-59ee060bbd7c)<br />
