@@ -1,7 +1,6 @@
 # WPFLauncher_Hook
 
 网易我的世界发烧平台绕过,但是Hook盒子方法<br />
-**目前暂时不支持开源，但是可以看之前的源代码**<br />
 **住:使用此软件需要先安装[.NET6.0的SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/sdk-6.0.425-windows-x86-installer)才能正常使用!**
 # 使用方法
 Step 1:前往[网易我的世界官网](https://mc.163.com/)上去下载32位包体<br/>
