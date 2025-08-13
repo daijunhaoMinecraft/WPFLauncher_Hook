@@ -33,6 +33,7 @@ Step 4:Hook盒子
 ![PixPin_2024-09-21_11-15-48](https://github.com/user-attachments/assets/84324db8-2288-4db8-aec8-b30bd02309ad)<br />
 ![PixPin_2024-09-21_11-18-03](https://github.com/user-attachments/assets/24321f50-d3a2-4a51-b031-57d7833f253d)<br />
 Tips:如果这里一直失败的话那证明了你的电脑配置非常的好,请到该软件目录下修改StartConfig.json的注入时间(单位毫秒)<br />
+也有可能是你没安装.NET 6.0运行时,请去到这个ReadME的开头，有提供下载链接<br />
 # 效果展示
 ![PixPin_2024-09-21_11-18-46](https://github.com/user-attachments/assets/d2c9da80-64c7-47b1-9980-fb4cbc5a2eca)<br />
 ![PixPin_2024-09-21_11-19-11](https://github.com/user-attachments/assets/ffdb2f8d-e303-4a35-9ec4-09ef4e71cb4b)<br />
