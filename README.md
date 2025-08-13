@@ -1,7 +1,18 @@
 # WPFLauncher_Hook
 
 网易我的世界发烧平台绕过,但是Hook盒子方法<br />
-**住:使用此软件需要先安装[.NET6.0的SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/sdk-6.0.425-windows-x86-installer)才能正常使用!**
+**住:使用此软件需要先安装[.NET6.0运行时](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=6.0.36)才能正常使用,否则会遇到如下报错:**
+<br />
+App: C:\Users\Administrator\Desktop\bin\Debug\net48\WPFLauncher_Injet.exe<br />
+Architecture: x64<br />
+App host version: 6.0.36<br />
+.NET location: Not found<br /><br />
+Learn about runtime installation:<br />
+https://aka.ms/dotnet/app-launch-failed<br /><br />
+
+Download the .NET runtime:<br />
+https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=6.0.36<br />
+
 # 使用方法
 Step 1:前往[网易我的世界官网](https://mc.163.com/)上去下载32位包体<br/>
 **2025/8/12:Latest:目前网易我的世界启动器官网只有一个发烧平台的包体，[32位包体下载链接](https://adl.netease.com/d/g/mc/c/pe?type=windows)**
