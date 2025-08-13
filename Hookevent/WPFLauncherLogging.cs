@@ -7,6 +7,7 @@ using WPFLauncher.Util;
 using NLog;
 using NLog.Layouts;
 using NLog.Targets;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -18,7 +19,7 @@ namespace DotNetTranstor.Hookevent
             return null;
         }
 
-        [HookMethod("WPFLauncher.Util.sw", "GetBytesToWrite", "No_MclLog_1")]
+        [HookMethod("WPFLauncher.Util.tc", "GetBytesToWrite", "No_MclLog_1")]
         protected byte[] GetBytesToWrite(LogEventInfo logEvent)
         {
             if (logEvent.Level == LogLevel.Trace)
@@ -49,7 +50,7 @@ namespace DotNetTranstor.Hookevent
             {
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
-            Console.WriteLine("Logger - " + logEvent.Level + " - " + logEvent.Message);
+            DebugPrint.LogDebug_NoColorSelect("Logger - " + logEvent.Level + " - " + logEvent.Message);
             Console.ForegroundColor = ConsoleColor.White;
             if (Path_Bool.IsStartWebSocket)
             {

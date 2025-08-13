@@ -25,6 +25,7 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {

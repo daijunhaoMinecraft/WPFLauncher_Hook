@@ -26,6 +26,7 @@ using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -39,14 +40,15 @@ namespace DotNetTranstor.Hookevent
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.afx", "d", "Get_Room")]
+		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.agd", "d", "Get_Room")]
 		// Token: 0x060045FE RID: 17918 RVA: 0x000ED080 File Offset: 0x000EB280
 		public static void d(string jnh, int jni, int jnj, Action<EntityListResponse<LobbyGameRoomEntity>> jnk)
 		{
 			Console.ForegroundColor = ConsoleColor.Green;
-			Console.WriteLine("[Online]成功将房间最大显示个数修改成128!");
+			Console.WriteLine($"[Online]成功将房间最大显示个数修改成{Path_Bool.MaxRoomCount.ToString()}!");
+			Console.WriteLine($"[Online]获取房间列表ResID:{jnh}");
 			Console.ForegroundColor = ConsoleColor.White;
-			Get_Room(jnh, jni, 128, jnk);
+			Get_Room(jnh, jni, Path_Bool.MaxRoomCount, jnk);
 		}
 	}
 }

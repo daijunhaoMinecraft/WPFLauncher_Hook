@@ -35,7 +35,7 @@ namespace DotNetTranstor.Hookevent
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Manager.AntiIndulgence.arh", "h", "No_Password_Number")]
+		[HookMethod("WPFLauncher.Manager.AntiIndulgence.arn", "h", "No_Password_Number")]
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static string h(string nfu, string nfv = "密码")
 		{

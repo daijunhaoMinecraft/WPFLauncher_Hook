@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using WPFLauncher.Util;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -11,11 +12,11 @@ namespace DotNetTranstor.Hookevent
         {
             
         }
-        [HookMethod("WPFLauncher.Manager.aoz", "r", "No_MclLog_1")]
+        [HookMethod("WPFLauncher.Manager.apf", "r", "No_MclLog_1")]
         public void r(string mav = "No Exception Description\r\n", int maw = 0)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("[ERROR]ErrorInfo:{0}", mav);
+            Console.WriteLine($"[ERROR]ErrorInfo:{mav}");
             Console.ForegroundColor = ConsoleColor.White;
         }
     }

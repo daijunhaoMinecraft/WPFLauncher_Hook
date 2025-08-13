@@ -28,6 +28,7 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.Network.Protocol;
 using WPFLauncher.Util.AES;
 using MessageBox = System.Windows.MessageBox;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -81,44 +82,48 @@ namespace DotNetTranstor.Hookevent
         //     return Get_Post_Return;
         // }
         [OriginalMethod]
-        public INetResponse UserTokenPost(aei ipd)
+        public INetResponse UserTokenPost(aeo ipd)
         {
             return null;
         }
         
-        [HookMethod("WPFLauncher.Network.Protocol.aeh", "d", "UserTokenPost")]
-        public INetResponse d(aei ipd)
+        [HookMethod("WPFLauncher.Network.Protocol.aen", "d", "UserTokenPost")]
+        public INetResponse d(aeo ipd)
         {
             INetResponse Get_Return = UserTokenPost(ipd);
             string needEncrypt_String = "";
-            if (ipd.NeedEncrypt == aej.a)
+            if (ipd.NeedEncrypt == aep.a)
             {
                 needEncrypt_String = "Normal";
             }
-            else if (ipd.NeedEncrypt == aej.b)
+            else if (ipd.NeedEncrypt == aep.b)
             {
                 needEncrypt_String = "CommonEncrypt";
             }
-            else if (ipd.NeedEncrypt == aej.c)
+            else if (ipd.NeedEncrypt == aep.c)
             {
                 needEncrypt_String = "Authentication";
             }
 
+            if (Path_Bool.IsStartWebSocket)
+            {
+                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Post", data = new {  url = ipd.Resource, data = ipd.Body, send = needEncrypt_String, return_data = Get_Return.Content} }));
+            }
             if (Path_Bool.IsDebug)
             {
                 Console.Write($"[Post]请求url地址:{ipd.Resource},内容:{ipd.Body},发送参数:{needEncrypt_String}");
-                if (IsValidJson_JArray(Get_Return.Content))
-                {
-                    Console.WriteLine();
-                    PrintJsonTree(JArray.Parse(Get_Return.Content));
-                }
-                else if (IsValidJson_JObject(Get_Return.Content))
-                {
-                    Console.WriteLine();
-                    PrintJsonTree(JObject.Parse(Get_Return.Content));
-                }
-                else
-                {
+                // if (IsValidJson_JArray(Get_Return.Content))
+                // {
+                //     Console.WriteLine();
+                //     PrintJsonTree(JArray.Parse(Get_Return.Content));
+                // }
+                // else if (IsValidJson_JObject(Get_Return.Content))
+                // {
+                //     Console.WriteLine();
+                //     PrintJsonTree(JObject.Parse(Get_Return.Content));
+                // }
+                // else
+                if (true) {
                     Console.Write(",返回内容:\n"+Regex.Unescape(Get_Return.Content));
                     Console.WriteLine();
                 }

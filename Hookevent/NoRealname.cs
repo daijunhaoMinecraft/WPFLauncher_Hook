@@ -26,6 +26,7 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -40,7 +41,7 @@ namespace DotNetTranstor.Hookevent
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Unisdk.ns", "onExtendFuncFinish", "No_RealName")]
+		[HookMethod("WPFLauncher.Unisdk.ny", "onExtendFuncFinish", "No_RealName")]
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		protected void onExtendFuncFinish(string json)
 		{

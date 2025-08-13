@@ -20,7 +20,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager.PCChannel;
 using WPFLauncher.Network.Message;
+using JS4399MC;
 using MessageBox = System.Windows.MessageBox;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -29,16 +31,16 @@ namespace DotNetTranstor.Hookevent
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void f(string hud, Action<EntityResponse<acd.Resposne>, Exception> hue)
+		public static void f(string hud, Action<EntityResponse<ack.Resposne>, Exception> hue)
 		{
 		}
 		
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.Launcher.aci", "g", "g")]
-		public static async Task g(string hud, Action<EntityResponse<acd.Resposne>, Exception> hue)
+		[HookMethod("WPFLauncher.Network.Launcher.aco", "g", "g")]
+		public static async Task g(string hud, Action<EntityResponse<ack.Resposne>, Exception> hue)
 		{
-			MessageBoxResult messageBoxResult = us.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
+			MessageBoxResult messageBoxResult = uy.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
 			if (messageBoxResult == MessageBoxResult.OK)
 			{
 				string text3 = "cookies.txt";
@@ -57,7 +59,7 @@ namespace DotNetTranstor.Hookevent
 				{
 					text2 = File.ReadAllText(filePath2);
 				}
-				if (us.r("请选择cookie登录或4399登录", string.Empty, "cookie", "4399", "") == MessageBoxResult.Yes)
+				if (uy.r("请选择cookie登录或4399登录", string.Empty, "cookie", "4399", "") == MessageBoxResult.Yes)
 				{
 					text = Interaction.InputBox("请输入Cookies \n如果原号登陆请输入off或者空"/*\n自动获取cookie请输入1"*/, "Cookies", text, -1, -1);
 					/*if (text == "1")
@@ -89,7 +91,7 @@ namespace DotNetTranstor.Hookevent
 					{
 						get = 2;
 					}*/
-					get = 1;
+					get = 2;
 				}
 				else
 				{
@@ -102,11 +104,7 @@ namespace DotNetTranstor.Hookevent
 							string[] array = text2.Split(new string[] { "----" }, StringSplitOptions.None);
 							string text6 = array[0];
 							string text7 = array[1];
-							string text8 = await _4399.Loginby4399Async(text6, text7);
-							if (text8 != "")
-							{
-								
-							}
+							string text8 = FeverToSauth.FeverAuth.SDK4399ToSauth(FeverToSauth.FeverAuth.Base64Encode(JsonConvert.SerializeObject(new FeverToSauth.FeverAuth.SDK4399Token() {username = text6,password = text7}))); // from null application
 							text = text8;
 							get = 3;
 						}
@@ -119,6 +117,7 @@ namespace DotNetTranstor.Hookevent
 							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
 						}
 						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
+						Path_Bool.IsLogin = true;
 						LoginFucker.f(hud, hue);
 					}
 				}
@@ -167,7 +166,7 @@ namespace DotNetTranstor.Hookevent
 							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
 						}
 						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
-
+						Path_Bool.IsLogin = true;
 						LoginFucker.f(text9, hue);
 					}
 					else
@@ -178,6 +177,7 @@ namespace DotNetTranstor.Hookevent
 							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
 						}
 						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
+						Path_Bool.IsLogin = true;
 						LoginFucker.f(hud, hue);
 					}
 				}
@@ -185,13 +185,14 @@ namespace DotNetTranstor.Hookevent
 				{
 					if (get == 1)
 					{
-						Tool.PrintYellow("由小白提供cookies:" + text);
+						Tool.PrintYellow("cookies:" + text);
 						File.WriteAllText(filePath, text);
 						if (Path_Bool.IsStartWebSocket)
 						{
 							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
 						}
 						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
+						Path_Bool.IsLogin = true;
 						LoginFucker.f(text9, hue);
 					}
 					else if (get == 2)
@@ -203,12 +204,14 @@ namespace DotNetTranstor.Hookevent
 							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
 						}
 						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
+						Path_Bool.IsLogin = true;
 						LoginFucker.f(text9, hue);
 					}
 				}
 				else
 				{
 					Tool.PrintYellow("选择原号登录(原因：玩家填入off或空或填入的cookie有误)");
+					Path_Bool.IsLogin = true;
 					LoginFucker.f(hud, hue);
 				}
 				
@@ -276,6 +279,7 @@ namespace DotNetTranstor.Hookevent
 					WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
 				}
 				Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
+				Path_Bool.IsLogin = true;
 				LoginFucker.f(hud, hue);
 			}
 			else
@@ -285,6 +289,7 @@ namespace DotNetTranstor.Hookevent
 					WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
 				}
 				Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
+				Path_Bool.IsLogin = true;
 				LoginFucker.f(hud, hue);
 			}
 		}

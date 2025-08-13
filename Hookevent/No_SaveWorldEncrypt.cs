@@ -20,6 +20,7 @@ using WPFLauncher.Manager;
 using WPFLauncher.Manager.PCChannel;
 using WPFLauncher.Network.Message;
 using MessageBox = System.Windows.MessageBox;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -35,7 +36,7 @@ namespace DotNetTranstor.Hookevent
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("MCStudio.Utils.cb", "b", "No_WorldEncrypt")]
+		[HookMethod("MCStudio.Utils.cd", "b", "No_WorldEncrypt")]
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static string b(string aam)
 		{
@@ -45,5 +46,26 @@ namespace DotNetTranstor.Hookevent
 			}
 			return "";
 		}
+		
+		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
+		[OriginalMethod]
+		private unsafe static string No_WorldEncrypt_1(string aao)
+		{
+			return "";
+		}
+
+		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
+		[CompilerGenerated]
+		[HookMethod("MCStudio.Utils.cd", "d", "No_WorldEncrypt_1")]
+		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		private unsafe static string d(string aao)
+		{
+			if (Path_Bool.IsDebug)
+			{
+				Console.WriteLine($"[INFO]发现网易正在加密存档已被制止,加密文件路径:{aao}");
+			}
+			return "";
+		}
+
 	}
 }

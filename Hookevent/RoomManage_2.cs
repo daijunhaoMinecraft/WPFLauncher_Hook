@@ -29,6 +29,8 @@ using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
+using Application = System.Windows.Application;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -44,16 +46,23 @@ namespace DotNetTranstor.Hookevent
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.afx", "c", "Get_Room")]
+		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.agd", "c", "Get_Room")]
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static EntityResponse<LobbyGameRoomEntity> c(string jng)
 		{
 			EntityResponse<LobbyGameRoomEntity> Get_Room_Info = Get_Room(jng);
 			if (Get_Room_Info.code == 0)
 			{
+				// 显示房间信息窗口
+				Application.Current.Dispatcher.Invoke(() =>
+				{
+					var window = new RoomInfoWindow(Get_Room_Info);
+					window.Show();
+				});
+
 				JObject Get_Owner_Info = X19Http.Get_Player_Info(Get_Room_Info.entity.owner_id);
 				Console.ForegroundColor = ConsoleColor.Cyan;
-				Console.WriteLine("[RoomInfo]成功获取到房间信息");
+				DebugPrint.LogDebug_NoColorSelect("[RoomInfo]成功获取到房间信息");
 				Console.WriteLine("-----------------------------------------------------------");
 
 				Console.ForegroundColor = ConsoleColor.Red;
@@ -64,6 +73,7 @@ namespace DotNetTranstor.Hookevent
 
 				Console.ForegroundColor = ConsoleColor.Yellow;
 				Console.WriteLine($"资源 ID: {Get_Room_Info.entity.res_id}");
+				Console.WriteLine($"房间 RoomID: {Get_Room_Info.entity.entity_id}");
 
 				Console.ForegroundColor = ConsoleColor.Blue;
 				Console.WriteLine($"最大人数: {Get_Room_Info.entity.max_count}");
@@ -95,7 +105,13 @@ namespace DotNetTranstor.Hookevent
 				Console.WriteLine("-----------------------------------------------------------");
 				Console.ForegroundColor = ConsoleColor.White;
 				Path_Bool.RoomInfo = Get_Room_Info;
-				Path_Bool.RoomInfo.entity.fids.Add(ayx<aqz>.Instance.User.Id);
+				Path_Bool.RoomInfo.entity.fids.Add(azd<arf>.Instance.User.Id);
+				Path_Bool.JoinOrCreateTime = X19Http.TimestampHelper.GetCurrentTimestampMilliseconds();
+				Console.WriteLine($"[RoomManage] 加入房间时间:{Path_Bool.JoinOrCreateTime}");
+				if (Path_Bool.IsStartWebSocket)
+				{
+					WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "RoomManage",status = "JoinRoom",data = Path_Bool.RoomInfo }));
+				}
 			}
 			else
 			{

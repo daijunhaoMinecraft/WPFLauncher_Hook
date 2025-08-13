@@ -31,6 +31,8 @@ using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
 using WPFLauncher.ViewModel.LobbyGame;
+using MicrosoftTranslator.DotNetTranstor.Tools;
+
 namespace DotNetTranstor.Hookevent
 {
 	//防止房主踢出房间(自动加入房间)
@@ -38,50 +40,46 @@ namespace DotNetTranstor.Hookevent
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		private new void Get_Room(abp jtn)
+		private new void Get_Room(abv jtn)
 		{
 		}
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.ChatService.ahe", "c", "Get_Room")]
-		private new void c(abp jtn)
+		[HookMethod("WPFLauncher.Network.ChatService.ahk", "c", "Get_Room")]
+		private new void c(abv jtn)
 		{
-			LobbyGameRoomManagerView lobbyGameRoomManagerView = ayx<apg>.Instance.k<LobbyGameRoomManagerView>();
-			if (((lobbyGameRoomManagerView != null) ? lobbyGameRoomManagerView.DataContext : null) != null)
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine("[RoomInfo]你已被房主踢出房间,正在重新加入房间");
+			while (true)
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("[RoomInfo]你已被房主踢出房间,正在重新加入房间");
-				while (true)
+				JObject Get_RoomEnter_Info = JObject.Parse(X19Http.RequestX19Api("/online-lobby-room-enter",
+					JsonConvert.SerializeObject(new
+					{
+						room_id = Path_Bool.RoomInfo.entity.entity_id, password = Path_Bool.Password,
+						check_visibilily = true
+					})));
+				if (Get_RoomEnter_Info["code"].ToObject<int>() == 0)
 				{
-					JObject Get_RoomEnter_Info = JObject.Parse(X19Http.RequestX19Api("/online-lobby-room-enter",
-						JsonConvert.SerializeObject(new
-						{
-							room_id = Path_Bool.RoomInfo.entity.entity_id, password = Path_Bool.Password,
-							check_visibilily = true
-						})));
-					if (Get_RoomEnter_Info["code"].ToObject<int>() == 0)
-					{
-						Console.ForegroundColor = ConsoleColor.Green;
-						Console.WriteLine("[RoomInfo]成功加入房间!");
-						break;
-					}
-					else if (Get_RoomEnter_Info["code"].ToObject<int>() == 12022)
-					{
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.WriteLine($"[RoomERROR]加入房间失败:{Get_RoomEnter_Info["message"]},等待0.8秒后再次加入房间");
-						Thread.Sleep(200);
-					}
-					else
-					{
-						Console.ForegroundColor = ConsoleColor.Red;
-						Console.WriteLine($"[RoomERROR]加入房间失败:{Get_RoomEnter_Info["message"]}");
-						Get_Room(jtn);
-						break;
-					}
+					Console.ForegroundColor = ConsoleColor.Green;
+					Console.WriteLine("[RoomInfo]成功加入房间!");
+					break;
 				}
-				Console.ForegroundColor = ConsoleColor.White;
+				else if (Get_RoomEnter_Info["code"].ToObject<int>() == 12022)
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine($"[RoomERROR]加入房间失败:{Get_RoomEnter_Info["message"]},等待0.8秒后再次加入房间");
+					Thread.Sleep(200);
+				}
+				else
+				{
+					Console.ForegroundColor = ConsoleColor.Red;
+					Console.WriteLine($"[RoomERROR]加入房间失败:{Get_RoomEnter_Info["message"]}");
+					Get_Room(jtn);
+					break;
+				}
 			}
+			Console.ForegroundColor = ConsoleColor.White;
 		}
 	}
 }

@@ -25,6 +25,7 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -40,9 +41,9 @@ namespace DotNetTranstor.Hookevent
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Model.Game.akx", "fm", "No_Update")]
+		[HookMethod("WPFLauncher.Model.Game.ald", "fn", "No_Update")]
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
-		public bool fm(bool pwk = true)
+		public bool CheckUpdate(bool pwk = true)
 		{
 			if (Path_Bool.IsStartWebSocket)
 			{
@@ -51,7 +52,7 @@ namespace DotNetTranstor.Hookevent
 
 			if (Path_Bool.IsDebug)
 			{
-				Console.WriteLine($"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{Path_Bool.IsBypassGameUpdate_Bedrock},pwk:{pwk}");
+				Console.WriteLine($"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{Path_Bool.IsBypassGameUpdate_Bedrock},pxk:{pwk}");
 			}
 			if (Path_Bool.IsBypassGameUpdate_Bedrock)
 			{

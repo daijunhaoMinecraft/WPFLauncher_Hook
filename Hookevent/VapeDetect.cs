@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices.ComTypes;
 using Newtonsoft.Json;
 using WPFLauncher.Util;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -9,7 +10,7 @@ namespace DotNetTranstor.Hookevent
     public class VapeDetect : IMethodHook
     {
         //去除VAPE检测
-        [HookMethod("WPFLauncher.Util.to", "a", "No_Vape")]
+        [HookMethod("WPFLauncher.Util.tu", "a", "No_Vape")]
         public static Tuple<string, string> a(string gbp)
         {
             if (Path_Bool.IsStartWebSocket)

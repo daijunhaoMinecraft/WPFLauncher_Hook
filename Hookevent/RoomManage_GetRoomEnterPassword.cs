@@ -29,6 +29,7 @@ using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -44,7 +45,7 @@ namespace DotNetTranstor.Hookevent
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.afx", "f", "Get_Room")]
+		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.agd", "f", "Get_Room")]
 		public static EntityResponse<EntityBase> f(string jns, string jnt, bool jnu)
 		{
 			EntityResponse<EntityBase> result = Get_Room(jns, jnt, jnu);

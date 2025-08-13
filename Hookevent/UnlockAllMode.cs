@@ -16,6 +16,7 @@ using WPFLauncher.Model.Game;
 using WPFLauncher.Model.Game.GameClient;
 using WPFLauncher.Util;
 using WPFLauncher.Update;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -28,7 +29,7 @@ namespace DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Manager.GrayUpdate.atw", "m", "UnlockAll")]
+        [HookMethod("WPFLauncher.Manager.GrayUpdate.auc", "m", "UnlockAll")]
         public bool ak(GrayUpdateType nzp)
         {
             // 获取 GrayUpdateType 的名称
@@ -39,6 +40,12 @@ namespace DotNetTranstor.Hookevent
                 {
                     return false;
                 }
+            }
+            else if (nzp == GrayUpdateType.ChangeMinecraftPath)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"[INFO]发现网易修改游戏路径功能已被制止");
+                return false;
             }
             if (Path_Bool.IsStartWebSocket)
             {

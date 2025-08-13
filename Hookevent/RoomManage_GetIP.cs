@@ -27,6 +27,7 @@ using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 using static InlineIL.IL.Emit;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -35,16 +36,16 @@ namespace DotNetTranstor.Hookevent
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public bool Get_Room(ako oab, BaseWindow oac)
+		public bool Get_Room(aku oab, BaseWindow oac)
 		{
 			return true;
 		}
 
 		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Manager.Game.auf", "d", "Get_Room")]
+		[HookMethod("WPFLauncher.Manager.Game.aul", "d", "Get_Room")]
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
-		public bool d(ako oab, BaseWindow oac)
+		public bool d(aku oab, BaseWindow oac)
 		{
 			bool Get_FlagBool = Get_Room(oab, oac);
 			if (Get_FlagBool)
@@ -56,6 +57,10 @@ namespace DotNetTranstor.Hookevent
 				Console.WriteLine($"Port: {oab.CppGameCfg.room_info.port}");
 				Console.WriteLine("-----------------------------------------------------------");
 				Console.ForegroundColor = ConsoleColor.White;
+				// if (Path_Bool.IsStartWebSocket)
+				// {
+				// 	WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "RoomManage",status = "GetRoomInfo",data = oab }));
+				// }
 				return true;
 			}
 			else

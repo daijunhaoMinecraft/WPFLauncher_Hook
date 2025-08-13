@@ -26,6 +26,7 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.Network.Protocol;
 using WPFLauncher.Util.AES;
 using MessageBox = System.Windows.MessageBox;
+using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -36,20 +37,20 @@ namespace DotNetTranstor.Hookevent
         // (get) Token: 0x06004157 RID: 16727 RVA: 0x0001E1A6 File Offset: 0x0001C3A6
         // Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
         [OriginalMethod]
-        public static void Get_X19_Post_Info(string resource, string parameter, aej needEncrypt = aej.a, string prefix = null, bool isHome = false)
+        public static void Get_X19_Post_Info(string resource, string parameter, aep needEncrypt = aep.a, string prefix = null, bool isHome = false)
         {
         }
 
         // Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Network.Protocol.aem", "Post", "Get_X19_Post_Info")]
+        [HookMethod("WPFLauncher.Network.Protocol.aes", "Post", "Get_X19_Post_Info")]
         // Token: 0x06004235 RID: 16949 RVA: 0x000E8F7C File Offset: 0x000E717C
-        public static INetResponse Post(string resource, string parameter, aej needEncrypt = aej.a, string prefix = null, bool isHome = false)
+        public static INetResponse Post(string resource, string parameter, aep needEncrypt = aep.a, string prefix = null, bool isHome = false)
         {
-            aen aen = new aen
+            aet aen = new aet
             {
                 Body = parameter,
-                Method = (Method)1,
+                Method = Method.POST,
                 Option = needEncrypt,
                 Resource = resource
             };
@@ -57,17 +58,17 @@ namespace DotNetTranstor.Hookevent
             {
                 aen.Header["server"] = "home";
             }
-            INetResponse Get_Content = aem.x(prefix, aen);
+            INetResponse Get_Content = aes.x(prefix, aen);
             string needEncrypt_String = "";
-            if (needEncrypt == aej.a)
+            if (needEncrypt == aep.a)
             {
                 needEncrypt_String = "Normal";
             }
-            else if (needEncrypt == aej.b)
+            else if (needEncrypt == aep.b)
             {
                 needEncrypt_String = "CommonEncrypt";
             }
-            else if (needEncrypt == aej.c)
+            else if (needEncrypt == aep.c)
             {
                 needEncrypt_String = "Authentication";
             }
@@ -77,7 +78,7 @@ namespace DotNetTranstor.Hookevent
             }
             if (Path_Bool.IsDebug)
             {
-                Console.WriteLine($"[Post_Core]请求url地址:{resource},内容:{parameter},返回结果:{Regex.Unescape(Get_Content.Content)},发送参数:{needEncrypt_String}");
+                DebugPrint.LogDebug_NoColorSelect($"[Post_Core]请求url地址:{resource},内容:{parameter},返回结果:{Regex.Unescape(Get_Content.Content)},发送参数:{needEncrypt_String}");
             }
             return Get_Content;
         }
