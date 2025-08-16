@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -156,50 +156,50 @@ namespace DotNetTranstor.Hookevent
                     var processingTasks = new List<Task>();
 
                     // 处理游戏状态变化
-                    if (Get_Json_Recv.ContainsKey("game_status"))
+                    if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("game_status"))
                     {
                         processingTasks.Add(Task.Run(() => HandleGameStatus(Get_Json_Recv)));
                     }
                     // 处理玩家进出
-                    else if (Get_Json_Recv.ContainsKey("op"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("op"))
                     {
                         processingTasks.Add(Task.Run(() => HandlePlayerOperation(Get_Json_Recv)));
                     }
                     // 处理房间信息变化
-                    else if (Get_Json_Recv.ContainsKey("entity_id") || Get_Json_Recv.ContainsKey("slogan"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("entity_id") || ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("slogan"))
                     {
                         processingTasks.Add(Task.Run(() => HandleRoomInfoChange(Get_Json_Recv)));
                     }
-                    else if (Get_Json_Recv.ContainsKey("friends"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("friends"))
                     {
                         processingTasks.Add(Task.Run(() => HandleFriendsList(Get_Json_Recv)));
                     }
-                    else if (Get_Json_Recv.ContainsKey("status") && Get_Json_Recv.ContainsKey("sn") && 
-                            Get_Json_Recv.ContainsKey("uid") && Get_Json_Recv.ContainsKey("hint"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("status") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("sn") && 
+                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("hint"))
                     {
                         processingTasks.Add(Task.Run(() => HandlePlayerStatus(Get_Json_Recv)));
                     }
-                    else if (Get_Json_Recv.ContainsKey("extra_data") && Get_Json_Recv.ContainsKey("red_dot_type"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("extra_data") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("red_dot_type"))
                     {
                         processingTasks.Add(Task.Run(() => HandleRedDot(Get_Json_Recv)));
                     }
-                    else if (Get_Json_Recv.ContainsKey("online_pcpe") && Get_Json_Recv.ContainsKey("status_json") && 
-                            Get_Json_Recv.ContainsKey("uid"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("online_pcpe") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("status_json") && 
+                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid"))
                     {
                         processingTasks.Add(Task.Run(() => HandleOnlinePcpe(Get_Json_Recv)));
                     }
-                    else if (Get_Json_Recv.ContainsKey("status_json") && Get_Json_Recv.ContainsKey("uid"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("status_json") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid"))
                     {
                         processingTasks.Add(Task.Run(() => HandleStatusJson(Get_Json_Recv)));
                     }
-                    else if (Get_Json_Recv.ContainsKey("comment") && Get_Json_Recv.ContainsKey("message") && 
-                            Get_Json_Recv.ContainsKey("fid"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("comment") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("message") && 
+                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("fid"))
                     {
                         processingTasks.Add(Task.Run(() => HandlePlayerComment(Get_Json_Recv)));
                     }
-                    else if (Get_Json_Recv.ContainsKey("tgt") && Get_Json_Recv.ContainsKey("msgtp") && 
-                            Get_Json_Recv.ContainsKey("uid") && Get_Json_Recv.ContainsKey("words") && 
-                            Get_Json_Recv.ContainsKey("time"))
+                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("tgt") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("msgtp") && 
+                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("words") && 
+                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("time"))
                     {
                         processingTasks.Add(Task.Run(() => HandlePlayerChat(Get_Json_Recv)));
                     }
@@ -227,7 +227,7 @@ namespace DotNetTranstor.Hookevent
                             Path_Bool.RecvList.Add(Get_Json_Recv);
                         }
                         
-                        if (Get_Json_Recv.ContainsKey("player_chatver_id") || Get_Json_Recv.ContainsKey("err"))
+                        if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("player_chatver_id") || ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("err"))
                         {
                             Path_Bool.Get_Recv_String_ChatResult = hqx.a;
                         }
@@ -467,13 +467,15 @@ namespace DotNetTranstor.Hookevent
                 else if (operation == "out")
                 {
                     JObject playerInfo = X19Http.Get_Player_Info(userId);
-                    foreach (var userProfileEntity in Path_Bool.RoomPlayerList)
+                    // 使用安全的方式查找并移除玩家
+                    var playerToRemove = Path_Bool.RoomPlayerList.FirstOrDefault(userProfileEntity => 
+                        userProfileEntity["entity_id"].ToString() == playerInfo["entity"]["entity_id"].ToString());
+                    
+                    if (playerToRemove != null)
                     {
-                        if (userProfileEntity["entity_id"].ToString() == playerInfo["entity"]["entity_id"].ToString())
-                        {
-                            Path_Bool.RoomPlayerList.Remove(userProfileEntity);
-                        }
+                        Path_Bool.RoomPlayerList.Remove(playerToRemove);
                     }
+                    
                     //Path_Bool.RoomPlayerList.Remove(JsonConvert.DeserializeObject<acl.UserProfileEntity>(playerInfo["entity"].ToString()));
                     HandlePlayerLeave(userId, playerInfo["entity"]["name"].ToString());
                 }
