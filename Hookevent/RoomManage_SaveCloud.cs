@@ -13,7 +13,6 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
-using InlineIL;
 using Newtonsoft.Json;
 using WPFLauncher;
 using WPFLauncher.Common;
@@ -25,7 +24,6 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
-using static InlineIL.IL.Emit;
 
 namespace DotNetTranstor.Hookevent
 {

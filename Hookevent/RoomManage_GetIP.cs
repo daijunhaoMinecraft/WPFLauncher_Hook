@@ -13,7 +13,6 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
-using InlineIL;
 using Newtonsoft.Json;
 using WPFLauncher;
 using WPFLauncher.Common;
@@ -26,7 +25,6 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
-using static InlineIL.IL.Emit;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
@@ -48,28 +46,28 @@ namespace DotNetTranstor.Hookevent
 		public bool d(aku oab, BaseWindow oac)
 		{
 			bool Get_FlagBool = Get_Room(oab, oac);
-			if (Get_FlagBool)
+			// if (Get_FlagBool)
+			// {
+			Console.ForegroundColor = ConsoleColor.Cyan;
+			Console.WriteLine("[RoomInfo][IPConfig]房间IP地址:");
+			Console.WriteLine("-----------------------------------------------------------");
+			Console.WriteLine($"IP: {oab.CppGameCfg.room_info.ip}");
+			Console.WriteLine($"Port: {oab.CppGameCfg.room_info.port}");
+			Console.WriteLine("-----------------------------------------------------------");
+			Console.ForegroundColor = ConsoleColor.White;
+			if (Path_Bool.IsStartWebSocket)
 			{
-				Console.ForegroundColor = ConsoleColor.Cyan;
-				Console.WriteLine("[RoomInfo][IPConfig]房间IP地址:");
-				Console.WriteLine("-----------------------------------------------------------");
-				Console.WriteLine($"IP: {oab.CppGameCfg.room_info.ip}");
-				Console.WriteLine($"Port: {oab.CppGameCfg.room_info.port}");
-				Console.WriteLine("-----------------------------------------------------------");
-				Console.ForegroundColor = ConsoleColor.White;
-				// if (Path_Bool.IsStartWebSocket)
-				// {
-				// 	WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "RoomManage",status = "GetRoomInfo",data = oab }));
-				// }
-				return true;
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "RoomManage",status = "GetRoomInfo",data = oab }));
 			}
-			else
-			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("[RoomInfo][IPConfig]获取房间IP地址失败!");
-				Console.ForegroundColor = ConsoleColor.White;
-				return false;
-			}
+			return Get_FlagBool;
+			// }
+			// else
+			// // {
+			// 	Console.ForegroundColor = ConsoleColor.Red;
+			// 	Console.WriteLine("[RoomInfo][IPConfig]获取房间IP地址失败!");
+			// 	Console.ForegroundColor = ConsoleColor.White;
+			// 	return false;
+			// }
 		}
 	}
 }
