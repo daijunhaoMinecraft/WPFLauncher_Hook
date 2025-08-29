@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+    <meta charset='UTF-8'>
+    <title>WebSocket API文档</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { color: #2980b9; margin-top: 30px; }
+        .message { background: #f8f9fa; border-left: 4px solid #8e44ad; padding: 15px; margin: 15px 0; border-radius: 0 4px 4px 0; }
+        .type { color: #8e44ad; font-family: monospace; font-size: 1.1em; font-weight: bold; }
+        .description { margin-top: 10px; color: #555; }
+        pre { background: #f1f1f1; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <h1>WebSocket API文档</h1>
+        
+        <h2>游戏更新相关</h2>
+        <div class='message'>
+            <div class='type'>IsBypassGameUpdate_Bedrock</div>
+            <div class='description'>基岩版游戏更新绕过状态</div>
+            <div class='params'>
+                消息格式:<br>
+<pre>{
+    'type': 'IsBypassGameUpdate_Bedrock',
+    'BypassGameUpdate_Bedrock': true/false,
+    'pwk': 'xxx'
+}</pre>
+            </div>
+        </div>
+
+        <h2>房间状态相关</h2>
+        <div class='message'>
+            <div class='type'>Recv_Pocket (游戏状态)</div>
+            <div class='description'>游戏服务器状态变更</div>
+            <div class='params'>
+                消息格式:<br>
+<pre>{
+    'type': 'Recv_Pocket',
+    'status': 'online/offline',  // online: 服务器在线, offline: 服务器离线
+    'data': {
+        'game_status': 1/0  // 1: 可启动游戏, 0: 不可启动游戏
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class='message'>
+            <div class='type'>Recv_Pocket (玩家加入)</div>
+            <div class='description'>玩家加入房间</div>
+            <div class='params'>
+                消息格式:<br>
+<pre>{
+    'type': 'Recv_Pocket',
+    'status': 'join',
+    'playerName': '玩家名称',
+    'data': {
+        'op': 'in',
+        'uid': '玩家ID'
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class='message'>
+            <div class='type'>Recv_Pocket (玩家离开)</div>
+            <div class='description'>玩家离开房间</div>
+            <div class='params'>
+                消息格式:<br>
+<pre>{
+    'type': 'Recv_Pocket',
+    'status': 'leave',
+    'playerName': '玩家名称',
+    'data': {
+        'op': 'out',
+        'uid': '玩家ID'
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class='message'>
+            <div class='type'>Recv_Pocket (玩家被踢)</div>
+            <div class='description'>玩家被踢出房间</div>
+            <div class='params'>
+                消息格式:<br>
+<pre>{
+    'type': 'Recv_Pocket',
+    'status': 'kick',
+    'playerName': '玩家名称',  // 如果是自己被踢,则没有此字段
+    'data': {
+        // 如果是自己被踢,data为'[]'
+        // 如果是其他玩家被踢,包含完整的踢出信息
+    }
+}</pre>
+            </div>
+        </div>
+
+        <div class='message'>
+            <div class='type'>Recv_Pocket (房间信息更新)</div>
+            <div class='description'>房间信息变更(房名/密码/权限等)</div>
+            <div class='params'>
+                消息格式:<br>
+<pre>{
+    'type': 'Recv_Pocket',
+    'data': {
+        'entity_id': '房间ID',
+        'owner_id': '房主ID',
+        'room_name': '房间名称',
+        'save_size': '存档大小',
+        'password': 0/1,  // 0: 无密码, 1: 有密码
+        'allow_save': 0/1,  // 0: 禁止保存, 1: 允许保存
+        'visibility': 0/1/2  // 房间可见性状态
+    }
+}</pre>
+            </div>
+        </div>
+        <h2>其他消息</h2>
+        <div class='message'>
+            <div class='type'>Recv_Pocket (其他消息)</div>
+            <div class='description'>其他未分类的网易聊天服务器消息</div>
+            <div class='params'>
+                消息格式:<br>
+<pre>{
+    'type': 'Recv_Pocket',
+    'data': {
+        // 原始消息内容
+    }
+}</pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
