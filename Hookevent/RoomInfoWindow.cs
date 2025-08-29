@@ -237,7 +237,7 @@ namespace DotNetTranstor.Hookevent
 
             try
             {
-                if (roomInfo.ContainsKey("game_status"))
+                if (((IDictionary<string, JToken>)roomInfo).ContainsKey("game_status"))
                 {
                     int gameStatus = roomInfo["game_status"].ToObject<int>();
                     _infoBlocks["GameStatus"].Text = gameStatus == 1 ? "在线" : "离线";
@@ -245,7 +245,7 @@ namespace DotNetTranstor.Hookevent
                         gameStatus == 1 ? ConsoleColor.Green : ConsoleColor.Red);
                 }
 
-                if (roomInfo.ContainsKey("owner_id"))
+                if (((IDictionary<string, JToken>)roomInfo).ContainsKey("owner_id"))
                 {
                     string ownerId = roomInfo["owner_id"].ToString();
                     JObject ownerInfo = X19Http.Get_Player_Info(ownerId);
@@ -253,27 +253,27 @@ namespace DotNetTranstor.Hookevent
                     AddLogEntry($"房主更改为: {ownerInfo["entity"]["name"]} ({ownerId})", ConsoleColor.Yellow);
                 }
 
-                if (roomInfo.ContainsKey("room_name"))
+                if (((IDictionary<string, JToken>)roomInfo).ContainsKey("room_name"))
                 {
                     _infoBlocks["RoomNumber"].Text = roomInfo["room_name"].ToString();
                     AddLogEntry($"房间名称更改为: {roomInfo["room_name"]}", ConsoleColor.Cyan);
                 }
 
-                if (roomInfo.ContainsKey("password"))
+                if (((IDictionary<string, JToken>)roomInfo).ContainsKey("password"))
                 {
                     bool hasPassword = roomInfo["password"].ToObject<int>() != 0;
                     _infoBlocks["Password"].Text = hasPassword ? "是" : "否";
                     AddLogEntry($"密码保护更改为: {(hasPassword ? "是" : "否")}", ConsoleColor.Magenta);
                 }
 
-                if (roomInfo.ContainsKey("allow_save"))
+                if (((IDictionary<string, JToken>)roomInfo).ContainsKey("allow_save"))
                 {
                     bool allowSave = roomInfo["allow_save"].ToObject<int>() != 0;
                     _infoBlocks["AllowSave"].Text = allowSave ? "是" : "否";
                     AddLogEntry($"允许保存更改为: {(allowSave ? "是" : "否")}", ConsoleColor.Blue);
                 }
 
-                if (roomInfo.ContainsKey("version"))
+                if (((IDictionary<string, JToken>)roomInfo).ContainsKey("version"))
                 {
                     _infoBlocks["Version"].Text = roomInfo["version"].ToString();
                     AddLogEntry($"版本号更改为: {roomInfo["version"]}", ConsoleColor.Gray);

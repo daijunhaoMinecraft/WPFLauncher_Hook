@@ -31,7 +31,7 @@ namespace DotNetTranstor.Hookevent
 	{
 		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void f(string hud, Action<EntityResponse<ack.Resposne>, Exception> hue)
+		public static void f(string hud, Action<EntityResponse<ack.Resposne>, Exception> hue = null)
 		{
 		}
 		

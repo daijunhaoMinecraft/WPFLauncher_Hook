@@ -14,7 +14,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
-using InlineIL;
+
 using MicrosoftTranslator.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -30,7 +30,7 @@ using WPFLauncher.Util.FileExplorer;
 using WPFLauncher.View.WebPage.Handlers;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
-using static InlineIL.IL.Emit;
+
 using Application = System.Windows.Application;
 
 namespace DotNetTranstor.Hookevent

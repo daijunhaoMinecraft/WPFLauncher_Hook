@@ -14,6 +14,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher;
@@ -28,6 +29,7 @@ using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.View.Launcher.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
+
 using WPFLauncher.ViewModel.LobbyGame;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 

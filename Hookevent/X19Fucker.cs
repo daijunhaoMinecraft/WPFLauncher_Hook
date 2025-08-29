@@ -48,13 +48,12 @@ namespace DotNetTranstor.Hookevent
             public bool IsDebug { get; set; }
             public bool EnableRoomBlacklist { get; set; }
             public int MaxRoomCount { get; set; }
-            public int WebSocketPort { get; set; }
             public int HttpPort { get; set; }
             public string NeteaseUpdateDomain { get; set; }
             public bool AlwaysSaveWorld { get; set; }
         }
 
-        private void SaveConfig()
+        public static void SaveConfig()
         {
             var config = new ConfigSettings
             {
@@ -64,7 +63,6 @@ namespace DotNetTranstor.Hookevent
                 IsDebug = Path_Bool.IsDebug,
                 EnableRoomBlacklist = Path_Bool.EnableRoomBlacklist,
                 MaxRoomCount = Path_Bool.MaxRoomCount,
-                WebSocketPort = Path_Bool.WebSocketPort,
                 HttpPort = Path_Bool.HttpPort,
                 NeteaseUpdateDomain = Path_Bool.NeteaseUpdateDomainhttp,
                 AlwaysSaveWorld = Path_Bool.AlwaysSaveWorld
@@ -92,9 +90,7 @@ namespace DotNetTranstor.Hookevent
                 Path_Bool.IsStartWebSocket = config.IsStartWebSocket;
                 Path_Bool.IsDebug = config.IsDebug;
                 Path_Bool.EnableRoomBlacklist = config.EnableRoomBlacklist;
-                Path_Bool.EnableRegexBlacklist = config.EnableRoomBlacklist;
                 Path_Bool.MaxRoomCount = config.MaxRoomCount;
-                Path_Bool.WebSocketPort = config.WebSocketPort > 0 ? config.WebSocketPort : 4600;
                 Path_Bool.HttpPort = config.HttpPort > 0 ? config.HttpPort : 4601;
                 Path_Bool.NeteaseUpdateDomainhttp = config.NeteaseUpdateDomain ?? "";
                 Path_Bool.AlwaysSaveWorld = config.AlwaysSaveWorld;
@@ -106,7 +102,6 @@ namespace DotNetTranstor.Hookevent
                 Console.WriteLine($"[配置] 详细日志: {config.IsDebug}");
                 Console.WriteLine($"[配置] 房间黑名单: {config.EnableRoomBlacklist}");
                 Console.WriteLine($"[配置] 最大房间数: {config.MaxRoomCount}");
-                Console.WriteLine($"[配置] WebSocket端口: {Path_Bool.WebSocketPort}");
                 Console.WriteLine($"[配置] HTTP端口: {Path_Bool.HttpPort}");
                 Console.WriteLine($"[配置] 网易更新域名: {Path_Bool.NeteaseUpdateDomainhttp}");
                 Console.WriteLine($"[配置] 保存房间提醒: {Path_Bool.AlwaysSaveWorld}:");
@@ -128,7 +123,7 @@ namespace DotNetTranstor.Hookevent
 
         [CompilerGenerated]
         [HookMethod("WPFLauncher.Manager.apl", "aj", "X19_Fever_bypass")]
-        public async Task<bool> Fever_False()
+        public bool Fever_False()
         {
             // 分配一个新的控制台
             AllocConsole();
@@ -140,18 +135,23 @@ namespace DotNetTranstor.Hookevent
             Console.CursorVisible = false;
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\u2588\u2588\u2557    \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2557  \u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557  \u2588\u2588\u2557\n\u2588\u2588\u2551    \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551 \u2588\u2588\u2554\u255d\n\u2588\u2588\u2551 \u2588\u2557 \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2554\u255d \n\u2588\u2588\u2551\u2588\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u255d \u2588\u2588\u2554\u2550\u2550\u255d  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2588\u2588\u2557 \n\u255a\u2588\u2588\u2588\u2554\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551     \u2588\u2588\u2551     \u2588\u2588\u2551  \u2588\u2588\u2551\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551  \u2588\u2588\u2557\n \u255a\u2550\u2550\u255d\u255a\u2550\u2550\u255d \u255a\u2550\u255d     \u255a\u2550\u255d     \u255a\u2550\u255d  \u255a\u2550\u255d \u255a\u2550\u2550\u2550\u2550\u2550\u255d  \u255a\u2550\u2550\u2550\u2550\u2550\u255d \u255a\u2550\u255d  \u255a\u2550\u255d\n                                                            ");
-            // 获取软件公告:https://gitee.com/dai-junhao-123/app-config/raw/master/HookConfig/AppInfo.json
-            HttpClient GetAppInfoClient = new HttpClient();
-            GetAppInfoClient.DefaultRequestHeaders.Clear();
-            HttpResponseMessage responseData = GetAppInfoClient.GetAsync("https://gitee.com/dai-junhao-123/app-config/raw/master/HookConfig/AppInfo.json").Result;
-            string get_result = responseData.Content.ReadAsStringAsync().Result;
-            JObject GetJsonResult = JObject.Parse(get_result);
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao\n严禁倒卖,这是重点!");
-            Console.WriteLine($"公告:\n{GetJsonResult["announcement"]}");
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("[INFO]控制台输出成功启动!");
-
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao");
+            try
+            {
+                HttpClient httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Clear();
+                HttpResponseMessage messageData = httpClient.GetAsync("https://gitee.com/dai-junhao-123/app-config/raw/master/HookConfig/AppInfo.json").Result;
+                JObject messageJson = JObject.Parse(messageData.Content.ReadAsStringAsync().Result);
+                Console.WriteLine($"公告:\n{messageJson["announcement"]}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[ERROR] 获取公告失败:{e} \n {e.StackTrace}");
+            }
+            Console.ForegroundColor = ConsoleColor.White;
             // 添加应用程序退出事件处理
             Application.Current.Exit += (sender, e) =>
             {
@@ -179,7 +179,7 @@ namespace DotNetTranstor.Hookevent
                         // 如果配置文件加载成功，并且启用了Web服务器，则启动它
                         if (Path_Bool.IsStartWebSocket)
                         {
-                            WebSocketHelper.StartWebSocketServer();
+                            //WebSocketHelper.StartWebSocketServer();
                             var server = new SimpleHttpServer();
                             Task server1Task = Task.Run(() => server.Start("http://127.0.0.1:4601/"));
                             Console.WriteLine("[INFO]Web服务器已启动!");
@@ -260,7 +260,7 @@ namespace DotNetTranstor.Hookevent
             blacklistCheckbox.Margin = new Thickness(0, 5, 0, 5);
             blacklistCheckbox.FontSize = 14;
             mainPanel.Children.Add(blacklistCheckbox);
-
+            
             var AlwaysSaveWorldTip = new CheckBox();
             AlwaysSaveWorldTip.Content = "保存房间提醒";
             AlwaysSaveWorldTip.IsChecked = Path_Bool.AlwaysSaveWorld;
@@ -329,25 +329,6 @@ namespace DotNetTranstor.Hookevent
             portsLabel.Margin = new Thickness(0, 0, 0, 5);
             portsPanel.Children.Add(portsLabel);
             
-            // WebSocket端口
-            var wsPortPanel = new StackPanel();
-            wsPortPanel.Orientation = Orientation.Horizontal;
-            wsPortPanel.Margin = new Thickness(0, 5, 0, 5);
-            
-            var wsPortLabel = new TextBlock();
-            wsPortLabel.Text = "WebSocket端口:";
-            wsPortLabel.Margin = new Thickness(0, 0, 10, 0);
-            wsPortLabel.VerticalAlignment = VerticalAlignment.Center;
-            
-            var wsPortInput = new TextBox();
-            wsPortInput.Width = 100;
-            wsPortInput.Text = Path_Bool.WebSocketPort.ToString();
-            wsPortInput.IsEnabled = webServerCheckbox.IsChecked ?? false;
-            
-            wsPortPanel.Children.Add(wsPortLabel);
-            wsPortPanel.Children.Add(wsPortInput);
-            portsPanel.Children.Add(wsPortPanel);
-            
             // HTTP端口
             var httpPortPanel = new StackPanel();
             httpPortPanel.Orientation = Orientation.Horizontal;
@@ -371,12 +352,10 @@ namespace DotNetTranstor.Hookevent
             
             // 当Web服务器选项发生变化时更新端口控件可用性
             webServerCheckbox.Checked += (s, e) => {
-                wsPortInput.IsEnabled = true;
                 httpPortInput.IsEnabled = true;
             };
             
             webServerCheckbox.Unchecked += (s, e) => {
-                wsPortInput.IsEnabled = false;
                 httpPortInput.IsEnabled = false;
             };
 
@@ -443,7 +422,6 @@ namespace DotNetTranstor.Hookevent
                     Path_Bool.IsStartWebSocket = false;
                     Path_Bool.IsDebug = false;
                     Path_Bool.EnableRoomBlacklist = false;
-                    Path_Bool.EnableRegexBlacklist = false;
                     Path_Bool.MaxRoomCount = 100;
                     Path_Bool.AlwaysSaveWorld = true;
                 }
@@ -457,9 +435,7 @@ namespace DotNetTranstor.Hookevent
                     Path_Bool.IsStartWebSocket = config.IsStartWebSocket;
                     Path_Bool.IsDebug = config.IsDebug;
                     Path_Bool.EnableRoomBlacklist = config.EnableRoomBlacklist;
-                    Path_Bool.EnableRegexBlacklist = config.EnableRoomBlacklist;
                     Path_Bool.MaxRoomCount = config.MaxRoomCount;
-                    Path_Bool.WebSocketPort = config.WebSocketPort > 0 ? config.WebSocketPort : 4600;
                     Path_Bool.HttpPort = config.HttpPort > 0 ? config.HttpPort : 4601;
                     Path_Bool.NeteaseUpdateDomainhttp = config.NeteaseUpdateDomain ?? "";
                     Path_Bool.AlwaysSaveWorld = config.AlwaysSaveWorld;
@@ -478,8 +454,6 @@ namespace DotNetTranstor.Hookevent
             saveButton.Click += (s, e) => {
                 if(int.TryParse(roomInput.Text, out int roomCount))
                 {
-                    // 尝试解析端口值
-                    int wsPort = Path_Bool.WebSocketPort;
                     int httpPort = Path_Bool.HttpPort;
                     
                     bool isPortValid = true;
@@ -488,20 +462,10 @@ namespace DotNetTranstor.Hookevent
                     // 只有当Web服务器启用时才验证和更新端口
                     if (webServerCheckbox.IsChecked ?? false)
                     {
-                        if (!int.TryParse(wsPortInput.Text, out wsPort) || wsPort <= 0 || wsPort > 65535)
-                        {
-                            isPortValid = false;
-                            errorMessage = "WebSocket端口必须是1-65535之间的有效数字";
-                        }
-                        else if (!int.TryParse(httpPortInput.Text, out httpPort) || httpPort <= 0 || httpPort > 65535)
+                        if (!int.TryParse(httpPortInput.Text, out httpPort) || httpPort <= 0 || httpPort > 65535)
                         {
                             isPortValid = false;
                             errorMessage = "HTTP端口必须是1-65535之间的有效数字";
-                        }
-                        else if (wsPort == httpPort)
-                        {
-                            isPortValid = false;
-                            errorMessage = "WebSocket端口和HTTP端口不能相同";
                         }
                     }
                     
@@ -512,7 +476,6 @@ namespace DotNetTranstor.Hookevent
                         Path_Bool.IsStartWebSocket = webServerCheckbox.IsChecked ?? false;
                         Path_Bool.IsDebug = debugCheckbox.IsChecked ?? false;
                         Path_Bool.EnableRoomBlacklist = blacklistCheckbox.IsChecked ?? false;
-                        Path_Bool.EnableRegexBlacklist = blacklistCheckbox.IsChecked ?? false;
                         Path_Bool.MaxRoomCount = roomCount;
                         Path_Bool.NeteaseUpdateDomainhttp = domainInput.Text.Trim();
                         Path_Bool.AlwaysSaveWorld = AlwaysSaveWorldTip.IsChecked ?? false;
@@ -520,18 +483,17 @@ namespace DotNetTranstor.Hookevent
                         // 更新端口值
                         if (Path_Bool.IsStartWebSocket)
                         {
-                            Path_Bool.WebSocketPort = wsPort;
                             Path_Bool.HttpPort = httpPort;
                             // 更新默认地址
                             Path_Bool.Default_HttpAddress = $"http://127.0.0.1:{Path_Bool.HttpPort}/";
-                            Path_Bool.Default_WebSocketAddress = $"ws://127.0.0.1:{Path_Bool.WebSocketPort}/";
+                            Path_Bool.Default_WebSocketAddress = $"ws://127.0.0.1:{Path_Bool.HttpPort}/websocket";
                         }
                         
                         SaveConfig();
                         
                         if(Path_Bool.IsStartWebSocket)
                         {
-                            WebSocketHelper.StartWebSocketServer();
+                            //WebSocketHelper.StartWebSocketServer();
                             var server = new SimpleHttpServer();
                             Task.Run(() => server.Start(Path_Bool.Default_HttpAddress));
                             Console.WriteLine("[INFO]Web服务器已启动!");
@@ -587,6 +549,31 @@ namespace DotNetTranstor.Hookevent
             Directory.CreateDirectory(JavaGamePath);
             ta.z = JavaGamePath;
             azd<axg>.Instance.App.JavaGamePath = JavaGamePath;
+            // 黑名单无效列表处理
+            if (Path_Bool.EnableRoomBlacklist)
+            {
+                if (!Directory.Exists($"{Path_Bool.wpflauncherRoot}/RoomConfig"))
+                {
+                    // Create Directory RoomConfig
+                    Directory.CreateDirectory($"{Path_Bool.wpflauncherRoot}/RoomConfig");
+                    Console.WriteLine("[Warn] 未创建RoomConfig文件夹,已自动创建");
+                }
+                if (!File.Exists($"{Path_Bool.wpflauncherRoot}/RoomConfig/BlackList.json"))
+                {
+                    // Init BlackList
+                    File.WriteAllText($"{Path_Bool.wpflauncherRoot}/RoomConfig/BlackList.json", "[]");
+                    Console.WriteLine("[Warn] 未创建RoomConfig/BlackList.json文件,已自动创建");
+                }
+
+                if (!File.Exists($"{Path_Bool.wpflauncherRoot}/RoomConfig/RegexBlackList.json"))
+                {
+                    // Init RegexBlackList
+                    File.WriteAllText($"{Path_Bool.wpflauncherRoot}/RoomConfig/RegexBlackList.json", "[]");
+                    Console.WriteLine("[Warn] 未创建RoomConfig/RegexBlackList.json文件,已自动创建");
+                }
+                // 读取文件
+                
+            }
             return false;
         }
         

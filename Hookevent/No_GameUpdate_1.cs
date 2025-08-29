@@ -13,6 +13,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
+
 using Newtonsoft.Json;
 using WPFLauncher;
 using WPFLauncher.Common;
@@ -23,6 +24,7 @@ using WPFLauncher.Model;
 using WPFLauncher.Network.Message;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
+
 using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent

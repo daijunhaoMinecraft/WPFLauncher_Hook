@@ -315,6 +315,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 DebugPrint.LogDebug_NoColorSelect($"[SelectBedrock]选择的基岩版:{FileName}");
                 Console.ForegroundColor = ConsoleColor.White;
+                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { Type = "StartBedrockGame", SelectBedrockExePath = FileName }));
             }
 
             aqp aqp = new aqp
