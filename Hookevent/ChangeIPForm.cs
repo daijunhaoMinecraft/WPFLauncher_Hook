@@ -26,7 +26,7 @@ namespace DotNetTranstor.Hookevent
         private void InitializeComponent()
         {
             this.Text = "更改房间IP地址";
-            this.Size = new Size(300, 200);
+            this.Size = new Size(350, 200); // 增加窗体宽度
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -36,13 +36,13 @@ namespace DotNetTranstor.Hookevent
             ipLabel = new Label();
             ipLabel.Text = "IP地址:";
             ipLabel.Location = new Point(20, 20);
-            ipLabel.Size = new Size(100, 20);
+            ipLabel.Size = new Size(80, 20);
             this.Controls.Add(ipLabel);
 
             // IP输入框
             ipTextBox = new TextBox();
             ipTextBox.Location = new Point(100, 20);
-            ipTextBox.Size = new Size(150, 20);
+            ipTextBox.Size = new Size(200, 20); // 增加宽度
             ipTextBox.Enabled = true;
             this.Controls.Add(ipTextBox);
 
@@ -50,13 +50,13 @@ namespace DotNetTranstor.Hookevent
             portLabel = new Label();
             portLabel.Text = "端口号:";
             portLabel.Location = new Point(20, 50);
-            portLabel.Size = new Size(100, 20);
+            portLabel.Size = new Size(80, 20);
             this.Controls.Add(portLabel);
 
             // 端口输入框
             portTextBox = new TextBox();
             portTextBox.Location = new Point(100, 50);
-            portTextBox.Size = new Size(150, 20);
+            portTextBox.Size = new Size(200, 20); // 增加宽度
             portTextBox.Enabled = true;
             this.Controls.Add(portTextBox);
 
@@ -77,9 +77,9 @@ namespace DotNetTranstor.Hookevent
             cancelButton.Click += CancelButton_Click;
             this.Controls.Add(cancelButton);
         }
-
         private void LoadRoomInfo()
         {
+            Console.WriteLine(_roomInfo.CppGameCfg.room_info.ip);
             if (_roomInfo != null && _roomInfo.CppGameCfg != null && _roomInfo.CppGameCfg.room_info != null)
             {
                 ipTextBox.Text = _roomInfo.CppGameCfg.room_info.ip;
@@ -109,9 +109,10 @@ namespace DotNetTranstor.Hookevent
                 _roomInfo.CppGameCfg.room_info.ip = ipTextBox.Text;
                 _roomInfo.CppGameCfg.room_info.port = port;
 
-                MessageBox.Show("IP地址和端口号已成功更新", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                //MessageBox.Show("IP地址和端口号已成功更新", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
                 this.Close();
+                Path_Bool.IsSelectedIP = true;
             }
             catch (Exception ex)
             {

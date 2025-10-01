@@ -295,6 +295,14 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
             // 检查是否是基岩版启动
             if (FileName.Contains("Minecraft.Windows.exe"))
             {
+                if (Path_Bool.IsCustomIP && Path_Bool.IsSelectedIP == false)
+                {
+                    Console.WriteLine("[Thread] 线程滞后: 等待用户选择好IP地址");
+                    while (!Path_Bool.IsSelectedIP)
+                    {
+                        
+                    }
+                }
                 // 显示基岩版路径选择窗口
                 Application.Current.Dispatcher.Invoke(() =>
                 {

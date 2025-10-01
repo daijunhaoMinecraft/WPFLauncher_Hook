@@ -40,6 +40,7 @@ namespace DotNetTranstor.Hookevent
         public static bool IsStartWebSocket = false;
         public static string Version = "3.0.5-Public";
         public static bool IsCustomIP = false;
+        public static bool IsSelectedIP = false;
         public class DecryptItemInfo
         {
             /// <summary>

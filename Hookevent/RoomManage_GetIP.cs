@@ -13,6 +13,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
+using System.Windows.Threading;
 using Newtonsoft.Json;
 using WPFLauncher;
 using WPFLauncher.Common;
@@ -45,6 +46,7 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public bool d(aku oab, BaseWindow oac)
 		{
+			Path_Bool.IsSelectedIP = false;
 			bool Get_FlagBool = Get_Room(oab, oac);
 			// if (Get_FlagBool)
 			// {
@@ -59,9 +61,8 @@ namespace DotNetTranstor.Hookevent
 			// 检查是否满足特定条件，如果满足则显示IP更改界面
 			if (Path_Bool.IsCustomIP)
 			{
-				// 在UI线程中显示更改IP的窗口
-				System.Threading.Tasks.Task.Run(() =>
-                {;
+				Dispatcher.CurrentDispatcher.BeginInvoke(() =>
+				{
 					using (var changeIPForm = new ChangeIPForm(oab))
 					{
 						changeIPForm.ShowDialog();
