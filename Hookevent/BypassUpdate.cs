@@ -17,6 +17,7 @@ public class BypassUpdate : IMethodHook
     [HookMethod("WPFLauncher.Update.xv", "h", "bypassWPFLauncherUpdate_original")]
     public bool bypassWPFLauncherUpdate()
     {
+        bool result = bypassWPFLauncherUpdate_original();
         xv updateInit = new xv();
         
         Version latestVersion = updateInit.g();
@@ -45,7 +46,7 @@ public class BypassUpdate : IMethodHook
             MessageBoxResult isUpdate = uy.q($"检测到网易我的世界启动器新版本, 是否更新(请先备份网易我的世界启动器完整目录后再去更新防止hook失效)?\n更新内容:见Windows Console控制台", "", "更新", "不更新", "");
             if (isUpdate == MessageBoxResult.OK)
             {
-                return bypassWPFLauncherUpdate_original();
+                return result;
             }
             else
             {

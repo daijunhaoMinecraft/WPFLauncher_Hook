@@ -171,6 +171,7 @@ namespace DotNetTranstor.Hookevent
                 Console.WriteLine("\n[程序] 程序正在退出，按Enter键继续...");
                 Console.ReadLine();
             };
+            bool isInitConfig = false;
 
             // 检查是否存在配置文件并询问是否加载
             if (File.Exists(CONFIG_FILE))
@@ -198,7 +199,8 @@ namespace DotNetTranstor.Hookevent
                                 azd<axg>.Instance.e();
                             }
                         }
-                        return false;
+                        isInitConfig = true;
+                        // return false;
                     }
                 }
             }
@@ -275,7 +277,7 @@ namespace DotNetTranstor.Hookevent
             
             var CustomIpCheckBox = new CheckBox();
             CustomIpCheckBox.Content = "联机大厅使用自定义IP加入到不同的服务器中";
-            CustomIpCheckBox.IsChecked = Path_Bool.AlwaysSaveWorld;
+            CustomIpCheckBox.IsChecked = Path_Bool.IsCustomIP;
             CustomIpCheckBox.Margin = new Thickness(0, 5, 0, 5);
             CustomIpCheckBox.FontSize = 14;
             mainPanel.Children.Add(CustomIpCheckBox);
@@ -493,8 +495,9 @@ namespace DotNetTranstor.Hookevent
                         Path_Bool.MaxRoomCount = roomCount;
                         Path_Bool.NeteaseUpdateDomainhttp = domainInput.Text.Trim();
                         Path_Bool.AlwaysSaveWorld = AlwaysSaveWorldTip.IsChecked ?? false;
+                        Console.WriteLine(1);
                         Path_Bool.IsCustomIP = CustomIpCheckBox.IsChecked ?? false;
-                        
+                        Console.WriteLine(2);
                         // 更新端口值
                         if (Path_Bool.IsStartWebSocket)
                         {
@@ -529,9 +532,11 @@ namespace DotNetTranstor.Hookevent
             };
 
             cancelButton.Click += (s, e) => configWindow.Close();
-
-            // 显示配置窗口
-            configWindow.ShowDialog();
+            if (!isInitConfig)
+            {
+                // 显示配置窗口
+                configWindow.ShowDialog();
+            }
             
             string Get_Mac_Addr = Get_MacAddr();
             string Get_Random_Mac_Addr = GenerateRandomMacAddress();
