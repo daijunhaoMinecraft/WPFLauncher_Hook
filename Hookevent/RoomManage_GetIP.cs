@@ -55,6 +55,20 @@ namespace DotNetTranstor.Hookevent
 			Console.WriteLine($"Port: {oab.CppGameCfg.room_info.port}");
 			Console.WriteLine("-----------------------------------------------------------");
 			Console.ForegroundColor = ConsoleColor.White;
+			
+			// 检查是否满足特定条件，如果满足则显示IP更改界面
+			if (Path_Bool.IsCustomIP)
+			{
+				// 在UI线程中显示更改IP的窗口
+				System.Threading.Tasks.Task.Run(() =>
+                {;
+					using (var changeIPForm = new ChangeIPForm(oab))
+					{
+						changeIPForm.ShowDialog();
+					}
+				});
+			}
+			
 			if (Path_Bool.IsStartWebSocket)
 			{
 				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "RoomManage",status = "GetRoomInfo",data = oab }));

@@ -51,6 +51,7 @@ namespace DotNetTranstor.Hookevent
             public int HttpPort { get; set; }
             public string NeteaseUpdateDomain { get; set; }
             public bool AlwaysSaveWorld { get; set; }
+            public bool IsCustomIP { get; set;}
         }
 
         public static void SaveConfig()
@@ -65,7 +66,8 @@ namespace DotNetTranstor.Hookevent
                 MaxRoomCount = Path_Bool.MaxRoomCount,
                 HttpPort = Path_Bool.HttpPort,
                 NeteaseUpdateDomain = Path_Bool.NeteaseUpdateDomainhttp,
-                AlwaysSaveWorld = Path_Bool.AlwaysSaveWorld
+                AlwaysSaveWorld = Path_Bool.AlwaysSaveWorld,
+                IsCustomIP = Path_Bool.IsCustomIP
             };
 
             string json = JsonConvert.SerializeObject(config, Formatting.Indented);
@@ -94,6 +96,7 @@ namespace DotNetTranstor.Hookevent
                 Path_Bool.HttpPort = config.HttpPort > 0 ? config.HttpPort : 4601;
                 Path_Bool.NeteaseUpdateDomainhttp = config.NeteaseUpdateDomain ?? "";
                 Path_Bool.AlwaysSaveWorld = config.AlwaysSaveWorld;
+                Path_Bool.IsCustomIP = config.IsCustomIP;
 
                 Console.WriteLine("[配置] 成功加载配置文件");
                 Console.WriteLine($"[配置] 绕过基岩版更新: {config.IsBypassGameUpdate_Bedrock}");
@@ -105,6 +108,7 @@ namespace DotNetTranstor.Hookevent
                 Console.WriteLine($"[配置] HTTP端口: {Path_Bool.HttpPort}");
                 Console.WriteLine($"[配置] 网易更新域名: {Path_Bool.NeteaseUpdateDomainhttp}");
                 Console.WriteLine($"[配置] 保存房间提醒: {Path_Bool.AlwaysSaveWorld}:");
+                Console.WriteLine($"[配置] 自定义IP(联机大厅-自定义IP进入服务器): {Path_Bool.IsCustomIP}");
 
                 return true;
             }
@@ -138,7 +142,7 @@ namespace DotNetTranstor.Hookevent
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("[INFO]控制台输出成功启动!");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao");
+            Console.WriteLine($"[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\n当前Hook版本:{Path_Bool.Version}\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao");
             try
             {
                 HttpClient httpClient = new HttpClient();
@@ -268,6 +272,13 @@ namespace DotNetTranstor.Hookevent
             AlwaysSaveWorldTip.FontSize = 14;
             //AlwaysSaveWorldTip.ToolTip = "启用后将自动解密加密的模组文件";
             mainPanel.Children.Add(AlwaysSaveWorldTip);
+            
+            var CustomIpCheckBox = new CheckBox();
+            CustomIpCheckBox.Content = "联机大厅使用自定义IP加入到不同的服务器中";
+            CustomIpCheckBox.IsChecked = Path_Bool.AlwaysSaveWorld;
+            CustomIpCheckBox.Margin = new Thickness(0, 5, 0, 5);
+            CustomIpCheckBox.FontSize = 14;
+            mainPanel.Children.Add(CustomIpCheckBox);
 
             // 房间数量设置
             var roomPanel = new StackPanel();
@@ -424,6 +435,7 @@ namespace DotNetTranstor.Hookevent
                     Path_Bool.EnableRoomBlacklist = false;
                     Path_Bool.MaxRoomCount = 100;
                     Path_Bool.AlwaysSaveWorld = true;
+                    Path_Bool.IsCustomIP = false;
                 }
                 else
                 {
@@ -439,6 +451,7 @@ namespace DotNetTranstor.Hookevent
                     Path_Bool.HttpPort = config.HttpPort > 0 ? config.HttpPort : 4601;
                     Path_Bool.NeteaseUpdateDomainhttp = config.NeteaseUpdateDomain ?? "";
                     Path_Bool.AlwaysSaveWorld = config.AlwaysSaveWorld;
+                    Path_Bool.IsCustomIP = config.IsCustomIP;
                 }
 
                 // 同步UI状态
@@ -450,6 +463,7 @@ namespace DotNetTranstor.Hookevent
                 roomInput.Text = Path_Bool.MaxRoomCount.ToString();
                 domainInput.Text = Path_Bool.NeteaseUpdateDomainhttp;
                 AlwaysSaveWorldTip.IsChecked = Path_Bool.AlwaysSaveWorld;
+                CustomIpCheckBox.IsChecked = Path_Bool.IsCustomIP;
             };
             saveButton.Click += (s, e) => {
                 if(int.TryParse(roomInput.Text, out int roomCount))
@@ -479,6 +493,7 @@ namespace DotNetTranstor.Hookevent
                         Path_Bool.MaxRoomCount = roomCount;
                         Path_Bool.NeteaseUpdateDomainhttp = domainInput.Text.Trim();
                         Path_Bool.AlwaysSaveWorld = AlwaysSaveWorldTip.IsChecked ?? false;
+                        Path_Bool.IsCustomIP = CustomIpCheckBox.IsChecked ?? false;
                         
                         // 更新端口值
                         if (Path_Bool.IsStartWebSocket)
