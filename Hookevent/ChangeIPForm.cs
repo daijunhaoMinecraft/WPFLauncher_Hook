@@ -1,6 +1,8 @@
 using System;
 using System.Drawing;
+using System.Net;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using WPFLauncher.Model.Game;
 using WPFLauncher.Network.Protocol.LobbyGame;
 
@@ -79,7 +81,6 @@ namespace DotNetTranstor.Hookevent
         }
         private void LoadRoomInfo()
         {
-            Console.WriteLine(_roomInfo.CppGameCfg.room_info.ip);
             if (_roomInfo != null && _roomInfo.CppGameCfg != null && _roomInfo.CppGameCfg.room_info != null)
             {
                 ipTextBox.Text = _roomInfo.CppGameCfg.room_info.ip;
@@ -108,6 +109,13 @@ namespace DotNetTranstor.Hookevent
                 // 更新房间信息
                 _roomInfo.CppGameCfg.room_info.ip = ipTextBox.Text;
                 _roomInfo.CppGameCfg.room_info.port = port;
+                string sCppGameConfigPath = _roomInfo.CppGameCfg.path;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine($"[CustomIP] CppGamePath: {sCppGameConfigPath}");
+                System.IO.File.WriteAllText(sCppGameConfigPath, JsonConvert.SerializeObject(_roomInfo.CppGameCfg));
+                Console.WriteLine("[CustomIP] Config Saved!");
+                Console.ForegroundColor = ConsoleColor.White;
+                // _roomInfo.CppGameCfg.Save();
 
                 //MessageBox.Show("IP地址和端口号已成功更新", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
@@ -124,6 +132,7 @@ namespace DotNetTranstor.Hookevent
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+            Path_Bool.IsSelectedIP = true;
         }
     }
 }

@@ -15,7 +15,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
-
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher;
@@ -28,7 +28,6 @@ using WPFLauncher.Network.Message;
 using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
-
 using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent
@@ -81,6 +80,25 @@ namespace DotNetTranstor.Hookevent
 				Console.WriteLine($"隐藏状态: {(jnu ? "是" : "否")}");
 				Console.WriteLine("-----------------------------------------------------------");
 				Console.ResetColor();
+				if (result.code == 12003)
+				{
+					Path_Bool.JoinFailRetry++;
+				}
+				if (Path_Bool.JoinFailRetry == 2)
+				{
+					MessageBoxResult loadConfigResult = uy.q("警告:已连续尝试加入房间2次均为无法重复进入房间,是否退出此前进入过的房间?", "", "是", "否", "");
+					if (loadConfigResult == MessageBoxResult.OK)
+					{
+						bool bGetExitRoomResult = ExitRoom.autoExitRoom();
+						string sMessage = bGetExitRoomResult ? "成功退出房间(请重新点击加入房间)" : "退出房间失败,详细请见控制台";
+						uy.n(sMessage, "");
+						Path_Bool.JoinFailRetry = 0;
+					}
+					else
+					{
+						Path_Bool.JoinFailRetry = 0;
+					}
+				}
 			}
 			return result;
 		}

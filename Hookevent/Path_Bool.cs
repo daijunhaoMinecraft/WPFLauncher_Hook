@@ -38,9 +38,10 @@ namespace DotNetTranstor.Hookevent
         public static long JoinOrCreateTime = 0;
         public static string wpflauncherRoot = Directory.GetCurrentDirectory();
         public static bool IsStartWebSocket = false;
-        public static string Version = "3.0.5-Public";
+        public static string Version = "3.0.6-Public";
         public static bool IsCustomIP = false;
-        public static bool IsSelectedIP = false;
+        public static bool IsSelectedIP = true;
+        public static int JoinFailRetry = 0;
         public class DecryptItemInfo
         {
             /// <summary>
