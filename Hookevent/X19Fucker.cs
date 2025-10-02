@@ -431,11 +431,11 @@ namespace DotNetTranstor.Hookevent
                 else if (selectedTemplate == "默认配置")
                 {
                     Path_Bool.IsBypassGameUpdate_Bedrock = false;
-                    Path_Bool.IsEnableX64mc = false;
+                    Path_Bool.IsEnableX64mc = true;
                     Path_Bool.IsStartWebSocket = false;
                     Path_Bool.IsDebug = false;
                     Path_Bool.EnableRoomBlacklist = false;
-                    Path_Bool.MaxRoomCount = 100;
+                    Path_Bool.MaxRoomCount = 32;
                     Path_Bool.AlwaysSaveWorld = true;
                     Path_Bool.IsCustomIP = false;
                 }

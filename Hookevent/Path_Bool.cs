@@ -23,7 +23,7 @@ namespace DotNetTranstor.Hookevent
         public static string Password = string.Empty;
         public static string Mac_Addr = string.Empty;
         public static string Random_Mac_Addr = string.Empty;
-        public static bool IsEnableX64mc = false;
+        public static bool IsEnableX64mc = true;
         public static JArray RecvList = new JArray();
         public static bool EnableRoomBlacklist = false;
         public static List<string> RoomBlacklist = new List<string>();
