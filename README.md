@@ -1,7 +1,38 @@
 # WPFLauncher_Hook
 
-网易我的世界发烧平台绕过,但是Hook盒子方法<br />
-**住:使用此软件需要先安装[.NET6.0运行时](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=6.0.36)才能正常使用,否则会遇到如下报错:**
+网易我的世界启动器修改版<br />
+# 特点
+ - DLL替换,简单操作即可安装
+ - 支持多开网易我的世界启动器
+ - 有Http/Websocket协议,开发者的喜爱(可用于开发插件/辅助功能)
+ - **可绕更新,可绕发烧平台**
+ - 联机大厅反锁服(黑名单系统)
+ - 强大的联机大厅房间管理神器
+ - 去除敏感词检测(部分在线类功能可能还是会有云端检测的)
+ - 调出控制台输出(可供开发者查看/普通玩家查看问题)
+ - 支持4399登录
+ - 支持Cookie登录
+ - 去除活动广告
+ - 支持外进IP(基岩版)
+ - 去除网易内置进程检测(salog-new包)
+ - 去除发包之日志类
+ - 随机化mac地址/硬盘机器码
+ - 去除网易我的世界基岩版更新
+ - x86/x64基岩版可任意切换(x86版本没用了,目前诸如联机大厅/本地联机/网络游戏等使用x86基岩版进入的时候会显示"服务器发送了破损的数据包")
+ - 防沉迷绕过(不过账号还是需要实名的,但是无需人脸识别,适用于如小白Cookie生成出来的Cookie为防沉迷阶段)
+ - 加入房间后防止被房主自动踢出房间(自动加入房间)
+ - 详细化房间信息输出
+ - 解锁所有灰度测试功能(除a50setup外)
+ - 联机大厅密码(加入房间/创建房间)支持任意字符(包括但不限于中文/字母等可以被识别的符号)而非单纯的数字
+ - 每次退出房间的时候会提醒用户保存房间(用户自主选择是否保存房间,当然不让保存的房间是不会提醒的)
+ - (and more)...<br />
+
+**屏幕截图可看Release发布历史**<br />
+# 赞助作者
+[爱发电地址](https://afdian.com/a/daijunhao)<br/>
+![PixPin_2025-10-02_20-49-55.png](https://x19.fp.ps.netease.com/file/68de74e6ff2cf8b94b493df2SAlevXfG06)
+ # 注意事项
+**使用此软件需要先安装[.NET6.0运行时](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=6.0.36)才能正常使用,否则会遇到如下报错:**
 <br />
 App: C:\Users\Administrator\Desktop\bin\Debug\net48\WPFLauncher_Injet.exe<br />
 Architecture: x64<br />
@@ -69,3 +100,7 @@ Tips:如果这里一直失败的话那证明了你的电脑配置非常的好,�
 4. **反馈与贡献**：我们欢迎社区的反馈和贡献。如果你对本软件有任何改进建议，欢迎提出！
 
 感谢你的理解与支持，确保开源软件的自由与透明！
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=daijunhaoMinecraft/WPFLauncher_Hook&type=Date)](https://www.star-history.com/#daijunhaoMinecraft/WPFLauncher_Hook&Date)
