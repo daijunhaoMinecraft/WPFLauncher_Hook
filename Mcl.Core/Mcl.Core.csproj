@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <ProjectGuid>{8E75B70D-7262-44F9-98CE-B4BDBE1A1826}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Mcl.Core</RootNamespace>
+    <AssemblyName>Mcl.Core</AssemblyName>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <FileAlignment>512</FileAlignment>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <EnableDefaultItems>False</EnableDefaultItems>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Prefer32bit>true</Prefer32bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DotNetTranstor\AssemblyUtil.cs" />
+    <Compile Include="DotNetTranstor\ClrMethodHook.cs" />
+    <Compile Include="DotNetTranstor\DestAndOri.cs" />
+    <Compile Include="DotNetTranstor\DetourFactory.cs" />
+    <Compile Include="DotNetTranstor\DetourWays\NativeDetourFor32Bit.cs" />
+    <Compile Include="DotNetTranstor\DetourWays\NativeDetourFor64Bit.cs" />
+    <Compile Include="DotNetTranstor\Extensions\TypeExtensions.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\BypassUpdate.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Get_Netease_Error.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\LoginFucker.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\MinecraftPath.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Mpay_Log.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\NeteaseUpdateurl.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\NoRealname.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\NoRealname_1.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\NoRealname_2.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\No_GameUpdate_1.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\No_MclLog.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\No_MuteBan.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\No_SaveWorldEncrypt.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\No_StartGameTestfor.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\No_StartGameTestfor_GameStart.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Online_ResID.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Password_String.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Password_String_1.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Path_Bool.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\popup_window.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Post_INFO.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Post_INFO_1.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\ProcessCreateWindow.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RandomMac.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Random_Disk.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\Recv_Pocket.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomInfoWindow.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage_2.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage_AutoJoin.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage_GetIP.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage_GetMember.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage_GetRoomEnterPassword.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage_Left.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManage_SaveCloud.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\SalogPocket.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\SelectBedrock.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\SensitiveWordDetection.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\UnlockAllMode.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\VapeDetect.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\WPFLauncherLogging.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\X19Fucker.cs" />
+    <Compile Include="DotNetTranstor\HookMethodAttribute.cs" />
+    <Compile Include="DotNetTranstor\IDetour.cs" />
+    <Compile Include="DotNetTranstor\IMethodHook.cs" />
+    <Compile Include="DotNetTranstor\IMethodHookWithSet.cs" />
+    <Compile Include="DotNetTranstor\IMethodMonitor.cs" />
+    <Compile Include="DotNetTranstor\LDasm.cs" />
+    <Compile Include="DotNetTranstor\Libraries\String.cs" />
+    <Compile Include="DotNetTranstor\MethodHook.cs" />
+    <Compile Include="DotNetTranstor\Monitor.cs" />
+    <Compile Include="DotNetTranstor\MonitorAttribute.cs" />
+    <Compile Include="DotNetTranstor\NativeAPI.cs" />
+    <Compile Include="DotNetTranstor\NonPublicParameterTypeAttribute.cs" />
+    <Compile Include="DotNetTranstor\OriginalAttribute.cs" />
+    <Compile Include="DotNetTranstor\OriginalMethodAttribute.cs" />
+    <Compile Include="DotNetTranstor\Protection.cs" />
+    <Compile Include="DotNetTranstor\RelocatedMethodAttribute.cs" />
+    <Compile Include="DotNetTranstor\RememberTypeAttribute.cs" />
+    <Compile Include="DotNetTranstor\ShadowMethodAttribute.cs" />
+    <Compile Include="DotNetTranstor\Tools\4399Login.cs" />
+    <Compile Include="DotNetTranstor\Tools\AESHelper.cs" />
+    <Compile Include="DotNetTranstor\Tools\ByteArrayExtensions.cs" />
+    <Compile Include="DotNetTranstor\Tools\DebugPrint.cs" />
+    <Compile Include="DotNetTranstor\Tools\ExitRoom.cs" />
+    <Compile Include="DotNetTranstor\Tools\FeverAuth.cs" />
+    <Compile Include="DotNetTranstor\Tools\Function.cs" />
+    <Compile Include="DotNetTranstor\Tools\HashExtensions.cs" />
+    <Compile Include="DotNetTranstor\Tools\HtmlResource.cs" />
+    <Compile Include="DotNetTranstor\Tools\HttpHelper.cs" />
+    <Compile Include="DotNetTranstor\Tools\JS4399.cs" />
+    <Compile Include="DotNetTranstor\Tools\JS4399HttpConfig.cs" />
+    <Compile Include="DotNetTranstor\Tools\JS4399Result.cs" />
+    <Compile Include="DotNetTranstor\Tools\Ocr.cs" />
+    <Compile Include="DotNetTranstor\Tools\RandomName.cs" />
+    <Compile Include="DotNetTranstor\Tools\StringExtensions.cs" />
+    <Compile Include="DotNetTranstor\Tools\Tool.cs" />
+    <Compile Include="DotNetTranstor\Tools\WebHelper.cs" />
+    <Compile Include="DotNetTranstor\Tools\X19Http.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\MiscExtensions.cs" />
+    <Compile Include="Extensions\ResponseStatusExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Network\DataFormat.cs" />
+    <Compile Include="Network\FileParameter.cs" />
+    <Compile Include="Network\Http.cs" />
+    <Compile Include="Network\HttpCookie.cs" />
+    <Compile Include="Network\HttpFile.cs" />
+    <Compile Include="Network\HttpHeader.cs" />
+    <Compile Include="Network\HttpMethod.cs" />
+    <Compile Include="Network\HttpParameter.cs" />
+    <Compile Include="Network\HttpResponse.cs" />
+    <Compile Include="Network\Interface\IHttp.cs" />
+    <Compile Include="Network\Interface\IHttpFactory.cs" />
+    <Compile Include="Network\Interface\IHttpResponse.cs" />
+    <Compile Include="Network\Interface\INetClient.cs" />
+    <Compile Include="Network\Interface\INetRequest.cs" />
+    <Compile Include="Network\Interface\INetResponse.2.cs" />
+    <Compile Include="Network\Interface\INetResponse.cs" />
+    <Compile Include="Network\Interface\SimpleFactory.cs" />
+    <Compile Include="Network\Method.cs" />
+    <Compile Include="Network\NetClient.cs" />
+    <Compile Include="Network\NetRequest.cs" />
+    <Compile Include="Network\NetRequestAsyncHandle.cs" />
+    <Compile Include="Network\NetResponse.2.cs" />
+    <Compile Include="Network\NetResponse.cs" />
+    <Compile Include="Network\NetResponseBase.cs" />
+    <Compile Include="Network\NetResponseCookie.cs" />
+    <Compile Include="Network\Parameter.cs" />
+    <Compile Include="Network\ParameterType.cs" />
+    <Compile Include="Network\ResponseStatus.cs" />
+    <Compile Include="Network\TimeOutState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\AppMutexHelper.cs" />
+    <Compile Include="Utils\RegistryHelper.cs" />
+    <Compile Include="Utils\RegKey.cs" />
+    <Compile Include="Utils\Util\FileVersionHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\..\C#\C#杂项\WPFTool\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\..\C#\C#杂项\WPFTool\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="websocket-sharp">
+      <HintPath>..\..\..\..\C#\C#杂项\WPFTool\websocket-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WPFControls">
+      <HintPath>..\..\..\..\C#\C#杂项\WPFTool\WPFControls.dll</HintPath>
+    </Reference>
+    <Reference Include="WPFLauncher">
+      <HintPath>..\..\..\..\C#\C#杂项\WPFTool\WPFLauncher.dump-cleaned.exe</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DotNetTranstor\HTML\RoomManage.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="10.0.0-preview.7.25380.108" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+</Project>

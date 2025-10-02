@@ -1,0 +1,31 @@
+﻿using System;
+
+namespace DotNetTranstor
+{
+	// Token: 0x02000010 RID: 16
+	public enum Protection
+	{
+		// Token: 0x04000021 RID: 33
+		PAGE_NOACCESS = 1,
+		// Token: 0x04000022 RID: 34
+		PAGE_READONLY,
+		// Token: 0x04000023 RID: 35
+		PAGE_READWRITE = 4,
+		// Token: 0x04000024 RID: 36
+		PAGE_WRITECOPY = 8,
+		// Token: 0x04000025 RID: 37
+		PAGE_EXECUTE = 16,
+		// Token: 0x04000026 RID: 38
+		PAGE_EXECUTE_READ = 32,
+		// Token: 0x04000027 RID: 39
+		PAGE_EXECUTE_READWRITE = 64,
+		// Token: 0x04000028 RID: 40
+		PAGE_EXECUTE_WRITECOPY = 128,
+		// Token: 0x04000029 RID: 41
+		PAGE_GUARD = 256,
+		// Token: 0x0400002A RID: 42
+		PAGE_NOCACHE = 512,
+		// Token: 0x0400002B RID: 43
+		PAGE_WRITECOMBINE = 1024
+	}
+}
