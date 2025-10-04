@@ -17,6 +17,13 @@ namespace Mcl.Core.Utils
 		[DllImport("kernel32.dll", SetLastError = true)]
 		[return: MarshalAs(UnmanagedType.Bool)]
 		private static extern bool AllocConsole();
+		        
+		[DllImport("kernel32.dll")]
+		private static extern bool SetConsoleOutputCP(uint wCodePageID);
+
+		[DllImport("kernel32.dll")]
+		private static extern uint GetConsoleOutputCP();
+
 		
 		// Token: 0x06000001 RID: 1 RVA: 0x00002050 File Offset: 0x00000250
 		public static bool CheckAppMutex()
@@ -34,11 +41,22 @@ namespace Mcl.Core.Utils
 			{
 				// 分配一个新的控制台
 				AllocConsole();
-				// 重定向输出流到控制台
-				var writer = new StreamWriter(Console.OpenStandardOutput());
+
+				const uint CP_GBK = 936;
+
+				// 1. 强制设置控制台输出代码页为 936 (GBK)
+				SetConsoleOutputCP(CP_GBK);
+
+				// 2. 设置 .NET 控制台输出编码为 GBK
+				Console.OutputEncoding = Encoding.GetEncoding(936);
+
+				// 3. 重定向输出流，并显式指定编码！
+				var writer = new StreamWriter(
+					Console.OpenStandardOutput(),
+					Console.OutputEncoding  // 👈 关键：使用一致的编码
+				);
 				writer.AutoFlush = true;
 				Console.SetOut(writer);
-				Console.OutputEncoding = Encoding.UTF8;
 				Console.CursorVisible = false;
 			}
 			try
