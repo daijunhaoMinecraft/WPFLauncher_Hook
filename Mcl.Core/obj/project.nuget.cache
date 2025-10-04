@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "pi/V2Q2KW3o=",
+  "dgSpecHash": "Pn4XIp0HRIw=",
   "success": true,
-  "projectFilePath": "F:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
+  "projectFilePath": "E:\\Documents\\GitHub\\WPFLauncher_Hook\\Mcl.Core\\Mcl.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Administrator\\.nuget\\packages\\system.codedom\\10.0.0-preview.7.25380.108\\system.codedom.10.0.0-preview.7.25380.108.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\system.io\\4.3.0\\system.io.4.3.0.nupkg.sha512",

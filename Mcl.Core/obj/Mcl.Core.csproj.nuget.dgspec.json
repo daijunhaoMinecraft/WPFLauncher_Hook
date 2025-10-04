@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj": {}
+    "E:\\Documents\\GitHub\\WPFLauncher_Hook\\Mcl.Core\\Mcl.Core.csproj": {}
   },
   "projects": {
-    "F:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj": {
+    "E:\\Documents\\GitHub\\WPFLauncher_Hook\\Mcl.Core\\Mcl.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
+        "projectUniqueName": "E:\\Documents\\GitHub\\WPFLauncher_Hook\\Mcl.Core\\Mcl.Core.csproj",
         "projectName": "Mcl.Core",
-        "projectPath": "F:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
+        "projectPath": "E:\\Documents\\GitHub\\WPFLauncher_Hook\\Mcl.Core\\Mcl.Core.csproj",
         "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-        "outputPath": "F:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\obj\\",
+        "outputPath": "E:\\Documents\\GitHub\\WPFLauncher_Hook\\Mcl.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config",
