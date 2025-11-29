@@ -20,7 +20,6 @@ F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\we
 F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\Newtonsoft.Json.dll
 F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\NLog.dll
 F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\WPFControls.dll
-F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\WPFLauncher.dump-cleaned.exe
 F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.csproj.AssemblyReference.cache
 F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.GeneratedMSBuildEditorConfig.editorconfig
 F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.csproj.CoreCompileInputs.cache
@@ -42,3 +41,5 @@ E:\Documents\GitHub\WPFLauncher_Hook\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.sourc
 E:\Documents\GitHub\WPFLauncher_Hook\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.csproj.Up2Date
 E:\Documents\GitHub\WPFLauncher_Hook\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.dll
 E:\Documents\GitHub\WPFLauncher_Hook\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.pdb
+F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\WPFLauncher.dump.exe
+F:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.sourcelink.json

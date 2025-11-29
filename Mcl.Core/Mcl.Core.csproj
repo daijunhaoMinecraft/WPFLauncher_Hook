@@ -64,7 +64,6 @@
     <Compile Include="DotNetTranstor\Hookevent\RoomManage_Left.cs" />
     <Compile Include="DotNetTranstor\Hookevent\RoomManage_SaveCloud.cs" />
     <Compile Include="DotNetTranstor\Hookevent\SalogPocket.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\SelectBedrock.cs" />
     <Compile Include="DotNetTranstor\Hookevent\SensitiveWordDetection.cs" />
     <Compile Include="DotNetTranstor\Hookevent\UnlockAllMode.cs" />
     <Compile Include="DotNetTranstor\Hookevent\VapeDetect.cs" />

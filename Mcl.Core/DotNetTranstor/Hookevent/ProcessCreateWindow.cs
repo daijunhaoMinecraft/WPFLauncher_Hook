@@ -300,7 +300,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                     Console.WriteLine("[Thread] 线程滞后: 等待用户选择好IP地址");
                     while (!Path_Bool.IsSelectedIP)
                     {
-                        
+                        Thread.Sleep(100);
                     }
                 }
                 // 显示基岩版路径选择窗口
