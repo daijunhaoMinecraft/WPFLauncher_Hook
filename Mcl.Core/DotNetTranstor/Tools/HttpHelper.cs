@@ -1374,58 +1374,65 @@ public class SimpleHttpServer
                             {
                                 bStartGame = true;
                             }
-                            // 👇 关键：通过 Dispatcher 调用到 UI 线程
-                            bool success = false;
-                            Exception dispatchException = null;
-
-                            // 确保 Application.Current 存在（即 WPF 应用已启动）
-                            if (Application.Current == null)
+                            if (String.IsNullOrEmpty(roomID))
                             {
-                                SendResponse = new { error = 1, message = "WPF 应用未初始化，无法加入房间" };
-                                return;
-                            }
-
-                            // 同步调用到 UI 线程
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                try
-                                {
-                                    // 获取 aul 单例（在 UI 线程中安全）
-                                    var aulInstance = Singleton<aul>.Instance;
-                                    if (aulInstance == null)
-                                    {
-                                        dispatchException = new InvalidOperationException("aul 单例未初始化");
-                                        return;
-                                    }
-
-                                    // 调用 g 方法（现在在 UI 线程，可以安全创建 cm 窗口）
-                                    var gMethod = typeof(aul).GetMethod("g", 
-                                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                                        null, new Type[] { typeof(string), typeof(bool) }, null);
-
-                                    if (gMethod == null)
-                                    {
-                                        dispatchException = new MissingMethodException("未找到 aul.g 方法");
-                                        return;
-                                    }
-
-                                    object result = gMethod.Invoke(aulInstance, new object[] { roomID, bStartGame });
-                                    success = result is not bool b || b; // 如果返回 bool 且为 true，或非 bool 视为成功
-                                }
-                                catch (Exception ex)
-                                {
-                                    dispatchException = ex;
-                                }
-                            });
-
-                            if (dispatchException != null)
-                            {
-                                Console.WriteLine($"UI 线程调用失败: {dispatchException}");
-                                SendResponse = new { error = 1, message = $"加入失败: {dispatchException.Message}" };
+                                SendResponse = new { error = 1, message = "查询字符串必须的参数: roomId" };
                             }
                             else
                             {
-                                SendResponse = new { error = 0, message = "加入房间请求已发送" };
+                                // 👇 关键：通过 Dispatcher 调用到 UI 线程
+                                bool success = false;
+                                Exception dispatchException = null;
+
+                                // 确保 Application.Current 存在（即 WPF 应用已启动）
+                                if (Application.Current == null)
+                                {
+                                    SendResponse = new { error = 1, message = "WPF 应用未初始化，无法加入房间" };
+                                    return;
+                                }
+
+                                // 同步调用到 UI 线程
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    try
+                                    {
+                                        // 获取 aul 单例（在 UI 线程中安全）
+                                        var aulInstance = Singleton<aul>.Instance;
+                                        if (aulInstance == null)
+                                        {
+                                            dispatchException = new InvalidOperationException("aul 单例未初始化");
+                                            return;
+                                        }
+
+                                        // 调用 g 方法（现在在 UI 线程，可以安全创建 cm 窗口）
+                                        var gMethod = typeof(aul).GetMethod("g", 
+                                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                            null, new Type[] { typeof(string), typeof(bool) }, null);
+
+                                        if (gMethod == null)
+                                        {
+                                            dispatchException = new MissingMethodException("未找到 aul.g 方法");
+                                            return;
+                                        }
+
+                                        object result = gMethod.Invoke(aulInstance, new object[] { roomID, bStartGame });
+                                        success = result is not bool b || b; // 如果返回 bool 且为 true，或非 bool 视为成功
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        dispatchException = ex;
+                                    }
+                                });
+
+                                if (dispatchException != null)
+                                {
+                                    Console.WriteLine($"UI 线程调用失败: {dispatchException}");
+                                    SendResponse = new { error = 1, message = $"加入失败: {dispatchException.Message}" };
+                                }
+                                else
+                                {
+                                    SendResponse = new { error = 0, message = "加入房间请求已发送" };
+                                }
                             }
                         }
                         catch (Exception e)
