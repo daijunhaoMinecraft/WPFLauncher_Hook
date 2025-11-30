@@ -50,6 +50,15 @@ namespace DotNetTranstor.Hookevent
 		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
 		public static EntityResponse<LobbyGameRoomEntity> c(string jng)
 		{
+			if (jng.Length < 8)
+			{
+				// 错误的房间号
+				return new EntityResponse<LobbyGameRoomEntity>
+				{
+					code = 1,
+					message = "找不到房间"
+				};
+			}
 			EntityResponse<LobbyGameRoomEntity> Get_Room_Info = Get_Room(jng);
 			if (Get_Room_Info.code == 0)
 			{
