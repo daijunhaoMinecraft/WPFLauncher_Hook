@@ -5,10 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HttpHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HttpHelper.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/X19Fucker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/X19Fucker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +105,7 @@
       <workItem from="1759579238891" duration="490000" />
       <workItem from="1764420836198" duration="759000" />
       <workItem from="1764468428669" duration="10000" />
-      <workItem from="1764472341597" duration="674000" />
+      <workItem from="1764472341597" duration="1191000" />
     </task>
     <task id="LOCAL-00001" summary="修复&quot;等待用户选择好IP地址&quot;部分可能会因为while无Sleep问题造成系统卡顿">
       <option name="closed" value="true" />
@@ -112,7 +115,31 @@
       <option name="project" value="LOCAL" />
       <updated>1764420993398</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="修复:JoinRoom无法加入房间问题">
+      <option name="closed" value="true" />
+      <created>1764473034920</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1764473034920</updated>
+    </task>
+    <task id="LOCAL-00003" summary="缩短启动时间">
+      <option name="closed" value="true" />
+      <created>1764473089334</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1764473089334</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Test">
+      <option name="closed" value="true" />
+      <created>1764473109138</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1764473109138</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -123,7 +150,10 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="修复&quot;等待用户选择好IP地址&quot;部分可能会因为while无Sleep问题造成系统卡顿" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复&quot;等待用户选择好IP地址&quot;部分可能会因为while无Sleep问题造成系统卡顿" />
+    <MESSAGE value="修复:JoinRoom无法加入房间问题" />
+    <MESSAGE value="缩短启动时间" />
+    <MESSAGE value="Test" />
+    <option name="LAST_COMMIT_MESSAGE" value="Test" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
