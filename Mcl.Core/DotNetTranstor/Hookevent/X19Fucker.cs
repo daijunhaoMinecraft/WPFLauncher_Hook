@@ -97,6 +97,10 @@ namespace DotNetTranstor.Hookevent
                 Path_Bool.NeteaseUpdateDomainhttp = config.NeteaseUpdateDomain ?? "";
                 Path_Bool.AlwaysSaveWorld = config.AlwaysSaveWorld;
                 Path_Bool.IsCustomIP = config.IsCustomIP;
+                if (Path_Bool.NeteaseUpdateDomainhttp == "https://x19.update.netease.com" || Path_Bool.NeteaseUpdateDomainhttp == "https://x19.update.netease.com/")
+                {
+                    Path_Bool.NeteaseUpdateDomainhttp = "https://x19.update.netease.com/serverlist/release.json";
+                }
 
                 Console.WriteLine("[配置] 成功加载配置文件");
                 Console.WriteLine($"[配置] 绕过基岩版更新: {config.IsBypassGameUpdate_Bedrock}");
@@ -178,10 +182,10 @@ namespace DotNetTranstor.Hookevent
                         {
                             //WebSocketHelper.StartWebSocketServer();
                             var server = new SimpleHttpServer();
-                            Task server1Task = Task.Run(() => server.Start("http://127.0.0.1:4601/"));
+                            Task server1Task = Task.Run(() => server.Start(Path_Bool.Default_HttpAddress));
                             Console.WriteLine("[INFO]Web服务器已启动!");
                             if (string.IsNullOrEmpty(Path_Bool.NeteaseUpdateDomainhttp) || 
-                                Path_Bool.NeteaseUpdateDomainhttp == "https://x19.update.netease.com")
+                                Path_Bool.NeteaseUpdateDomainhttp == "https://x19.update.netease.com/serverlist/release.json")
                             {
                                 Console.WriteLine("[INFO]NeteaseUpdateDomain为默认值,将使用默认的NeteaseUpdateDomain");
                             }

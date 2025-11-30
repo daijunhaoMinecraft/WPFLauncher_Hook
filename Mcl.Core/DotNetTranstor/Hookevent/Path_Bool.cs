@@ -32,7 +32,7 @@ namespace DotNetTranstor.Hookevent
         public static int MaxRoomCount = 16;
         public static bool IsLogin = false;
         public static bool AlwaysSaveWorld = true;
-        public static string NeteaseUpdateDomainhttp = "https://x19.update.netease.com";
+        public static string NeteaseUpdateDomainhttp = "https://x19.update.netease.com/serverlist/release.json";
         public static List<DecryptItemInfo> DecryptItems = new List<DecryptItemInfo>();
         public static JArray RoomPlayerList = new JArray();
         public static long JoinOrCreateTime = 0;
