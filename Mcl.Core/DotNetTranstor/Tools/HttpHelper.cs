@@ -47,6 +47,8 @@ using MicrosoftTranslator.DotNetTranstor.Tools;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using Mcl.Core.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Tools
 {
@@ -1220,10 +1222,14 @@ public class SimpleHttpServer
                             var rawQuery = context.Request.Url.Query;
                             var queryParams = ParseQueryString(rawQuery);
                             jo CreateRoomInfo = new jo();
-                            CreateRoomInfo.Password = queryParams["Password"].ToString();
-                            CreateRoomInfo.MaxPlayer = uint.Parse(queryParams["MaxPlayer"]);
-                            CreateRoomInfo.WorldName = queryParams["WorldName"].ToString();
+                            CreateRoomInfo.Password = queryParams["Password"]?.ToString() ?? string.Empty;
+                            CreateRoomInfo.MaxPlayer = uint.TryParse(queryParams["MaxPlayer"], out uint maxPlayer) ? maxPlayer : 10;
+                            CreateRoomInfo.WorldName = queryParams["WorldName"]?.ToString() ?? azd<arf>.Instance.User.Id;
                             string VisibilityStatus = queryParams["Visibility"];
+                            if (string.IsNullOrEmpty(VisibilityStatus))
+                            {
+                                VisibilityStatus = "OPEN";
+                            }
                             if (VisibilityStatus == "OPEN")
                             {
                                 CreateRoomInfo.VisibleScope = RoomVisibleStatus.OPEN;
@@ -1236,9 +1242,18 @@ public class SimpleHttpServer
                             {
                                 CreateRoomInfo.VisibleScope = RoomVisibleStatus.HIDDEN;
                             }
+                            else
+                            {
+                                CreateRoomInfo.VisibleScope = RoomVisibleStatus.OPEN;
+                            }
                             //CreateRoomInfo.VisibleScope = queryParams["VisibleScope"];
                             OnlineMapM MapInfo = new OnlineMapM();
-                            MapInfo.ID = queryParams["ResID"];
+                            MapInfo.ID = queryParams["ResId"] ?? "";
+                            if (MapInfo.ID == String.Empty)
+                            {
+                                SendResponse = new { error = 1, message = "查询字符串必须的参数: ResId" };
+                                break;
+                            }
                             CreateRoomInfo.SelectedOnlineMap = MapInfo;
                             
                             // 使用反射访问内部类 aqf 和 kc
@@ -1351,179 +1366,77 @@ public class SimpleHttpServer
                     {
                         try
                         {
-                            // GetParams
-                            var rawQuery = context.Request.Url.Query;
-                            var queryParams = ParseQueryString(rawQuery);
-                            
-                            // 使用反射访问 aul.g 方法
-                            try
+                            var queryParams = ParseQueryString(context.Request.Url.Query);
+                            string roomID = queryParams["roomId"];
+                            string startGame = queryParams["startGame"]?.ToString() ?? "false";
+                            bool bStartGame = false;
+                            if (startGame.ToLower() == "true")
                             {
-                                // 获取 aul 类型
-                                Type aulType = typeof(aul);
-                                
-                                // 尝试获取所有可能的方法
-                                var methods = aulType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | 
-                                    BindingFlags.Static | BindingFlags.Instance);
-                                
-                                bool methodFound = false;
-                                bool methodSucceeded = false;
-                                string errorMessage = "";
-                                
-                                // 查找参数类型匹配的方法
-                                foreach (var method in methods)
-                                {
-                                    if (method.Name == "g")
-                                    {
-                                        var parameters = method.GetParameters();
-                                        
-                                        // 检查是否有一个或两个参数，第一个为 string，第二个为 bool（可选）
-                                        if ((parameters.Length == 1 || parameters.Length == 2) && 
-                                            parameters[0].ParameterType == typeof(string))
-                                        {
-                                            // 如果有两个参数，确保第二个是 bool 类型
-                                            if (parameters.Length == 2 && parameters[1].ParameterType != typeof(bool))
-                                            {
-                                                continue;
-                                            }
-                                            
-                                            methodFound = true;
-                                            
-                                            try
-                                            {
-                                                // 准备参数
-                                                object[] methodParams;
-                                                if (parameters.Length == 1)
-                                                {
-                                                    methodParams = new object[] { queryParams["RoomID"] };
-                                                }
-                                                else
-                                                {
-                                                    // 第二个参数使用默认值 true
-                                                    methodParams = new object[] { queryParams["RoomID"], true };
-                                                }
-                                                
-                                                // 创建实例或使用静态方法
-                                                object result;
-                                                if (method.IsStatic)
-                                                {
-                                                    result = method.Invoke(null, methodParams);
-                                                }
-                                                else
-                                                {
-                                                    object aulInstance = Activator.CreateInstance(aulType, true);
-                                                    result = method.Invoke(aulInstance, methodParams);
-                                                }
-                                                
-                                                // 检查返回值，如果是布尔值且为 false，可能表示操作失败
-                                                if (result is bool && !(bool)result)
-                                                {
-                                                    Console.WriteLine("方法 aul.g 返回 false，可能表示操作失败");
-                                                }
-                                                else
-                                                {
-                                                    methodSucceeded = true;
-                                                }
-                                                
-                                                break;
-                                            }
-                                            catch (TargetInvocationException tie)
-                                            {
-                                                // 捕获目标方法内部抛出的异常
-                                                if (tie.InnerException != null)
-                                                {
-                                                    errorMessage = $"方法内部错误: {tie.InnerException.Message}";
-                                                    Console.WriteLine($"方法 aul.g 内部错误: {tie.InnerException.Message}");
-                                                    Console.WriteLine($"内部堆栈跟踪: {tie.InnerException.StackTrace}");
-                                                    
-                                                    // 尝试使用另一种方式加入房间
-                                                    try
-                                                    {
-                                                        Console.WriteLine("尝试使用替代方法加入房间...");
-                                                        
-                                                        // 尝试直接使用 EntityResponse 方式加入房间
-                                                        Type agdType = Assembly.GetAssembly(typeof(aul))?.GetType("WPFLauncher.Network.Protocol.LobbyGame.agd");
-                                                        if (agdType != null)
-                                                        {
-                                                            MethodInfo cMethod = agdType.GetMethod("c", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-                                                            if (cMethod != null)
-                                                            {
-                                                                var entityResponse = cMethod.Invoke(null, new object[] { queryParams["RoomID"] });
-                                                                if (entityResponse != null)
-                                                                {
-                                                                    // 成功获取到房间信息，尝试创建 aku 并调用 f 方法
-                                                                    Type entityResponseType = entityResponse.GetType();
-                                                                    PropertyInfo entityProperty = entityResponseType.GetProperty("entity");
-                                                                    PropertyInfo codeProperty = entityResponseType.GetProperty("code");
-                                                                    
-                                                                    if (entityProperty != null && codeProperty != null)
-                                                                    {
-                                                                        int code = (int)codeProperty.GetValue(entityResponse);
-                                                                        if (code == 0)
-                                                                        {
-                                                                            var entity = entityProperty.GetValue(entityResponse);
-                                                                            if (entity != null)
-                                                                            {
-                                                                                Type akuType = typeof(aku);
-                                                                                object akuInstance = Activator.CreateInstance(akuType, new[] { entity });
-                                                                                
-                                                                                // 查找 f 方法
-                                                                                MethodInfo fMethod = aulType.GetMethod("f", 
-                                                                                    BindingFlags.Public | BindingFlags.NonPublic | 
-                                                                                    BindingFlags.Instance);
-                                                                                
-                                                                                if (fMethod != null)
-                                                                                {
-                                                                                    object aulInstance = Activator.CreateInstance(aulType, true);
-                                                                                    fMethod.Invoke(aulInstance, new[] { akuInstance });
-                                                                                    methodSucceeded = true;
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                    catch (Exception fallbackEx)
-                                                    {
-                                                        Console.WriteLine($"替代方法失败: {fallbackEx.Message}");
-                                                    }
-                                                }
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                errorMessage = $"调用错误: {ex.Message}";
-                                                Console.WriteLine($"调用方法 aul.g 时出错: {ex.Message}");
-                                            }
-                                        }
-                                    }
-                                }
-                                
-                                if (methodSucceeded)
-                                {
-                                    SendResponse = new { error = 0, message = "加入房间请求已发送" };
-                                }
-                                else if (methodFound)
-                                {
-                                    SendResponse = new { error = 1, message = $"加入房间失败: {errorMessage}" };
-                                }
-                                else
-                                {
-                                    SendResponse = new { error = 1, message = "找不到合适的方法来加入房间" };
-                                }
+                                bStartGame = true;
                             }
-                            catch (Exception ex)
+                            // 👇 关键：通过 Dispatcher 调用到 UI 线程
+                            bool success = false;
+                            Exception dispatchException = null;
+
+                            // 确保 Application.Current 存在（即 WPF 应用已启动）
+                            if (Application.Current == null)
                             {
-                                Console.WriteLine($"反射访问 aul.g 方法时出错: {ex.Message}");
-                                Console.WriteLine($"堆栈跟踪: {ex.StackTrace}");
-                                SendResponse = new { error = 1, message = $"加入房间失败: {ex.Message}" };
+                                SendResponse = new { error = 1, message = "WPF 应用未初始化，无法加入房间" };
+                                return;
+                            }
+
+                            // 同步调用到 UI 线程
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                try
+                                {
+                                    // 获取 aul 单例（在 UI 线程中安全）
+                                    var aulInstance = Singleton<aul>.Instance;
+                                    if (aulInstance == null)
+                                    {
+                                        dispatchException = new InvalidOperationException("aul 单例未初始化");
+                                        return;
+                                    }
+
+                                    // 调用 g 方法（现在在 UI 线程，可以安全创建 cm 窗口）
+                                    var gMethod = typeof(aul).GetMethod("g", 
+                                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                                        null, new Type[] { typeof(string), typeof(bool) }, null);
+
+                                    if (gMethod == null)
+                                    {
+                                        dispatchException = new MissingMethodException("未找到 aul.g 方法");
+                                        return;
+                                    }
+
+                                    object result = gMethod.Invoke(aulInstance, new object[] { roomID, bStartGame });
+                                    success = result is not bool b || b; // 如果返回 bool 且为 true，或非 bool 视为成功
+                                }
+                                catch (Exception ex)
+                                {
+                                    dispatchException = ex;
+                                }
+                            });
+
+                            if (dispatchException != null)
+                            {
+                                Console.WriteLine($"UI 线程调用失败: {dispatchException}");
+                                SendResponse = new { error = 1, message = $"加入失败: {dispatchException.Message}" };
+                            }
+                            else
+                            {
+                                SendResponse = new { error = 0, message = "加入房间请求已发送" };
                             }
                         }
                         catch (Exception e)
                         {
                             Console.WriteLine(e);
-                            SendResponse = new { error = 1, message = $"加入房间失败: {e.Message}" };
+                            SendResponse = new { error = 1, message = $"加入房间异常: {e.Message}" };
                         }
+                    }
+                    else if (context.Request.Url.AbsolutePath.StartsWith("/LeftRoom"))
+                    {
+                        SendResponse = new { result = ExitRoom.autoExitRoom() };
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/settings"))
                     {
