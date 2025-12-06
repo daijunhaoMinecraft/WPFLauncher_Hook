@@ -38,11 +38,23 @@ public class BypassUpdate : IMethodHook
         if (NeedUpdate)
         {
             Console.WriteLine("发现网易我的世界启动器新版本");
-            HttpClient httpClient = new HttpClient();
-            byte[] updateContentBytes = httpClient.GetByteArrayAsync("https://x19.update.netease.com" + text).Result;
-            string updateContent = System.Text.Encoding.GetEncoding("GBK").GetString(updateContentBytes);
-            Console.WriteLine("获取更新内容...");
-            Console.WriteLine(updateContent);
+            try
+            {
+                HttpClient httpClient = new HttpClient();
+                byte[] updateContentBytes = httpClient.GetByteArrayAsync("https://x19.update.netease.com" + text).Result;
+                string updateContent = System.Text.Encoding.GetEncoding("GBK").GetString(updateContentBytes);
+                Console.WriteLine("获取更新内容...");
+                Console.WriteLine(updateContent);
+            }
+            catch (HttpRequestException ex) when (ex.Message.Contains("404"))
+            {
+                Console.WriteLine($"[警告] 更新日志文件未找到: {text}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[错误] 获取更新日志失败: {ex.Message}");
+            }
+
             MessageBoxResult isUpdate = uy.q($"检测到网易我的世界启动器新版本, 是否更新(请先备份网易我的世界启动器完整目录后再去更新防止hook失效)?\n更新内容:见Windows Console控制台", "", "更新", "不更新", "");
             if (isUpdate == MessageBoxResult.OK)
             {

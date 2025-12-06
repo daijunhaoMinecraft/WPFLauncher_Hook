@@ -5,3 +5,7 @@
 /Mcl.Core/bin/x86/Debug/net48/System.CodeDom.dll
 /Mcl.Core/bin/x86/Debug/net48/websocket-sharp.dll
 /Mcl.Core/bin/x86/Debug/net48/WPFControls.dll
+*.pdb
+*.json
+*.info
+*.xml
