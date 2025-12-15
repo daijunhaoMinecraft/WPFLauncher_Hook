@@ -70,9 +70,21 @@ namespace DotNetTranstor.Hookevent
 				// 显示房间信息窗口
 				Application.Current.Dispatcher.Invoke(() =>
 				{
+					// 检查是否已存在相同房间信息的窗口，如果存在则关闭
+					foreach (Window w in Application.Current.Windows)
+					{
+						if (w is RoomInfoWindow existingWindow && existingWindow.roomInfoResponse.entity.entity_id == dpv.entity.entity_id)
+						{
+							existingWindow.Close();
+							break;
+						}
+					}
+					
+					// 创建并显示新窗口
 					var window = new RoomInfoWindow(dpv);
 					window.Show();
 				});
+
 				Console.WriteLine("RoomInfo:");
 				Console.WriteLine("-----------------------------------------------------------");
 				Console.ForegroundColor = ConsoleColor.Red;

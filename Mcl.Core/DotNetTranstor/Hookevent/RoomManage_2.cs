@@ -65,10 +65,20 @@ namespace DotNetTranstor.Hookevent
 				// 显示房间信息窗口
 				Application.Current.Dispatcher.Invoke(() =>
 				{
+					// 检查是否已存在相同房间信息的窗口，如果存在则关闭
+					foreach (Window w in Application.Current.Windows)
+					{
+						if (w is RoomInfoWindow existingWindow && existingWindow.roomInfoResponse.entity.entity_id == Get_Room_Info.entity.entity_id)
+						{
+							existingWindow.Close();
+							break;
+						}
+					}
+					
+					// 创建并显示新窗口
 					var window = new RoomInfoWindow(Get_Room_Info);
 					window.Show();
 				});
-
 				JObject Get_Owner_Info = X19Http.Get_Player_Info(Get_Room_Info.entity.owner_id);
 				Console.ForegroundColor = ConsoleColor.Cyan;
 				DebugPrint.LogDebug_NoColorSelect("[RoomInfo]成功获取到房间信息");

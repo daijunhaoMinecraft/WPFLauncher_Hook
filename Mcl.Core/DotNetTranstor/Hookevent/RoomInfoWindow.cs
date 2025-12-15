@@ -24,11 +24,13 @@ namespace DotNetTranstor.Hookevent
         private WrapPanel _playersPanel;
         private ScrollViewer _playersScrollViewer;
         private TextBox _switchCookieInput;
+        public EntityResponse<LobbyGameRoomEntity> roomInfoResponse;
 
         public RoomInfoWindow(EntityResponse<LobbyGameRoomEntity> roomInfo)
         {
             InitializeWindow();
             RoomManage_Left.SetRoomInfoWindow(this);
+            roomInfoResponse = roomInfo;
             UpdateRoomInfo(roomInfo);
         }
         
