@@ -52,6 +52,7 @@ namespace DotNetTranstor.Hookevent
             public string NeteaseUpdateDomain { get; set; }
             public bool AlwaysSaveWorld { get; set; }
             public bool IsCustomIP { get; set;}
+            public bool NoTwoExitMessage { get; set; }
         }
 
         public static void SaveConfig()
@@ -67,7 +68,8 @@ namespace DotNetTranstor.Hookevent
                 HttpPort = Path_Bool.HttpPort,
                 NeteaseUpdateDomain = Path_Bool.NeteaseUpdateDomainhttp,
                 AlwaysSaveWorld = Path_Bool.AlwaysSaveWorld,
-                IsCustomIP = Path_Bool.IsCustomIP
+                IsCustomIP = Path_Bool.IsCustomIP,
+                NoTwoExitMessage = Path_Bool.NoTwoExitMessage
             };
 
             string json = JsonConvert.SerializeObject(config, Formatting.Indented);
@@ -97,6 +99,8 @@ namespace DotNetTranstor.Hookevent
                 Path_Bool.NeteaseUpdateDomainhttp = config.NeteaseUpdateDomain ?? "";
                 Path_Bool.AlwaysSaveWorld = config.AlwaysSaveWorld;
                 Path_Bool.IsCustomIP = config.IsCustomIP;
+                Path_Bool.NoTwoExitMessage = config.NoTwoExitMessage;
+
                 if (Path_Bool.NeteaseUpdateDomainhttp == "https://x19.update.netease.com" || Path_Bool.NeteaseUpdateDomainhttp == "https://x19.update.netease.com/")
                 {
                     Path_Bool.NeteaseUpdateDomainhttp = "https://x19.update.netease.com/serverlist/release.json";
@@ -113,6 +117,7 @@ namespace DotNetTranstor.Hookevent
                 Console.WriteLine($"[配置] 网易更新域名: {Path_Bool.NeteaseUpdateDomainhttp}");
                 Console.WriteLine($"[配置] 保存房间提醒: {Path_Bool.AlwaysSaveWorld}:");
                 Console.WriteLine($"[配置] 自定义IP(联机大厅-自定义IP进入服务器): {Path_Bool.IsCustomIP}");
+                Console.WriteLine($"[配置] 禁用二次退出房间提醒: {Path_Bool.NoTwoExitMessage}");
 
                 return true;
             }
@@ -277,6 +282,13 @@ namespace DotNetTranstor.Hookevent
             CustomIpCheckBox.Margin = new Thickness(0, 5, 0, 5);
             CustomIpCheckBox.FontSize = 14;
             mainPanel.Children.Add(CustomIpCheckBox);
+            
+            var noTwoExitMessage = new CheckBox();
+            noTwoExitMessage.Content = "禁用联机大厅退出房间二次确认";
+            noTwoExitMessage.IsChecked = Path_Bool.IsCustomIP;
+            noTwoExitMessage.Margin = new Thickness(0, 5, 0, 5);
+            noTwoExitMessage.FontSize = 14;
+            mainPanel.Children.Add(noTwoExitMessage);
 
             // 房间数量设置
             var roomPanel = new StackPanel();
@@ -434,6 +446,7 @@ namespace DotNetTranstor.Hookevent
                     Path_Bool.MaxRoomCount = 32;
                     Path_Bool.AlwaysSaveWorld = true;
                     Path_Bool.IsCustomIP = false;
+                    Path_Bool.NoTwoExitMessage = false;
                 }
                 else
                 {
@@ -450,6 +463,7 @@ namespace DotNetTranstor.Hookevent
                     Path_Bool.NeteaseUpdateDomainhttp = config.NeteaseUpdateDomain ?? "";
                     Path_Bool.AlwaysSaveWorld = config.AlwaysSaveWorld;
                     Path_Bool.IsCustomIP = config.IsCustomIP;
+                    Path_Bool.NoTwoExitMessage = config.NoTwoExitMessage;
                 }
 
                 // 同步UI状态
@@ -462,6 +476,7 @@ namespace DotNetTranstor.Hookevent
                 domainInput.Text = Path_Bool.NeteaseUpdateDomainhttp;
                 AlwaysSaveWorldTip.IsChecked = Path_Bool.AlwaysSaveWorld;
                 CustomIpCheckBox.IsChecked = Path_Bool.IsCustomIP;
+                noTwoExitMessage.IsChecked = Path_Bool.NoTwoExitMessage;
             };
             saveButton.Click += (s, e) => {
                 if(int.TryParse(roomInput.Text, out int roomCount))
@@ -491,9 +506,9 @@ namespace DotNetTranstor.Hookevent
                         Path_Bool.MaxRoomCount = roomCount;
                         Path_Bool.NeteaseUpdateDomainhttp = domainInput.Text.Trim();
                         Path_Bool.AlwaysSaveWorld = AlwaysSaveWorldTip.IsChecked ?? false;
-                        Console.WriteLine(1);
                         Path_Bool.IsCustomIP = CustomIpCheckBox.IsChecked ?? false;
-                        Console.WriteLine(2);
+                        Path_Bool.NoTwoExitMessage = noTwoExitMessage.IsChecked ?? false;
+
                         // 更新端口值
                         if (Path_Bool.IsStartWebSocket)
                         {

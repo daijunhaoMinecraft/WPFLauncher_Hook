@@ -41,6 +41,7 @@ namespace DotNetTranstor.Hookevent
         public static string Version = "3.0.7-Public";
         public static bool IsCustomIP = false;
         public static bool IsSelectedIP = true;
+        public static bool NoTwoExitMessage = true;
         public static int JoinFailRetry = 0;
         public class DecryptItemInfo
         {

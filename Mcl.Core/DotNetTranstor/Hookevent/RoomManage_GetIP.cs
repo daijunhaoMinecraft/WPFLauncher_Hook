@@ -80,7 +80,7 @@ namespace DotNetTranstor.Hookevent
                     };
                     
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
-                        { type = "RoomManage", status = "GetRoomInfo", data = oab }, settings));
+                        { type = "RoomManage", status = "GetRoomCppGame", data = oab.CppGameCfg }, settings));
                 }
             }
 

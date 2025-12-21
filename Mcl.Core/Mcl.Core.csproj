@@ -29,6 +29,7 @@
     <Compile Include="DotNetTranstor\Extensions\TypeExtensions.cs" />
     <Compile Include="DotNetTranstor\Hookevent\BypassUpdate.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\ExitPop.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Get_Netease_Error.cs" />
     <Compile Include="DotNetTranstor\Hookevent\LoginFucker.cs" />
     <Compile Include="DotNetTranstor\Hookevent\MinecraftPath.cs" />

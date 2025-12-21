@@ -1549,7 +1549,8 @@ public class SimpleHttpServer
                                 HttpPort = Path_Bool.HttpPort,
                                 NeteaseUpdateDomainhttp = Path_Bool.NeteaseUpdateDomainhttp,
                                 AlwaysSaveWorld = Path_Bool.AlwaysSaveWorld,
-                                IsCustomIP = Path_Bool.IsCustomIP
+                                IsCustomIP = Path_Bool.IsCustomIP,
+                                NoTwoExitMessage = Path_Bool.NoTwoExitMessage
                             }
                         };
                     }
@@ -1573,7 +1574,8 @@ public class SimpleHttpServer
                                 { "NeteaseUpdateDomainhttp", "网易更新域" },
                                 { "IsDecryptMod", "解密模组" },
                                 { "AlwaysSaveWorld", "总是保存世界" },
-                                { "IsCustomIP", "自定义IP" }
+                                { "IsCustomIP", "自定义IP" },
+                                { "NoTwoExitMessage", "禁用联机大厅退出房间二次确认" }
                             }
                         };
                         sendJsonResponse(context.Response, SendResponse);
@@ -1878,6 +1880,9 @@ public class SimpleHttpServer
                                 
                                 if (configData["IsCustomIP"] != null)
                                     Path_Bool.IsCustomIP = configData["IsCustomIP"].Value<bool>();
+                                
+                                if (configData["NoTwoExitMessage"] != null)
+                                    Path_Bool.NoTwoExitMessage = configData["NoTwoExitMessage"].Value<bool>();
                                 
                                 SendResponse = new
                                 {
