@@ -1,6 +1,7 @@
 # WPFLauncher_Hook
 
 网易我的世界启动器修改版<br />
+**有问题/建议记得去提[Issue](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)**<br />
 **代码全部开源,欢迎各位积极提交PR去改进代码**<br />
 **github src中bin里面的Mcl.Core.dll为测试版本(供想尝鲜的用户使用)**<br />
 # 特点
