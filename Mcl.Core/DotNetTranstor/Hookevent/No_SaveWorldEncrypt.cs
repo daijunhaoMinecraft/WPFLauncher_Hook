@@ -21,23 +21,15 @@ using WPFLauncher.Manager.PCChannel;
 using WPFLauncher.Network.Message;
 using MessageBox = System.Windows.MessageBox;
 using MicrosoftTranslator.DotNetTranstor.Tools;
+using WPFLauncher.SQLite;
 
 namespace DotNetTranstor.Hookevent
 {
 	//去除网易存档加密功能
 	internal class No_SaveWorldEncrypt : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
-		[OriginalMethod]
-		public static string No_WorldEncrypt(string aam)
-		{
-			return "";
-		}
-
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("MCStudio.Utils.cd", "b", "No_WorldEncrypt")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		[HookMethod("MCStudio.Utils.cd", "b", null)]
 		public static string b(string aam)
 		{
 			if (Path_Bool.IsDebug)
@@ -47,17 +39,8 @@ namespace DotNetTranstor.Hookevent
 			return "";
 		}
 		
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
-		[OriginalMethod]
-		private unsafe static string No_WorldEncrypt_1(string aao)
-		{
-			return "";
-		}
-
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("MCStudio.Utils.cd", "d", "No_WorldEncrypt_1")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		[HookMethod("MCStudio.Utils.cd", "d", null)]
 		private unsafe static string d(string aao)
 		{
 			if (Path_Bool.IsDebug)

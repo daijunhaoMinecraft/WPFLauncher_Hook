@@ -15,11 +15,11 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
             return "";
         }
 
-        [HookMethod("WPFLauncher.Util.ta", "c", "ChangeMinecraftPath")]
+        [HookMethod("WPFLauncher.Util.tb", "c", "ChangeMinecraftPath")]
         public static string c()
         {
             string MinecraftPath = ChangeMinecraftPath();
-            string NowMinecraftPath = Path.Combine(new string[] { ta.n, "Game", ".minecraft" });
+            string NowMinecraftPath = Path.Combine(new string[] { tb.n, "Game", ".minecraft" });
             if (Path_Bool.IsDebug)
             {
                 Console.ForegroundColor = ConsoleColor.Green;

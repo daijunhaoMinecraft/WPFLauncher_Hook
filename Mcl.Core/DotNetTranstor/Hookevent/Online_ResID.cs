@@ -32,15 +32,13 @@ namespace DotNetTranstor.Hookevent
 {
 	internal class Online_ResID : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
 		public static void Get_Room(string jnh, int jni, int jnj, Action<EntityListResponse<LobbyGameRoomEntity>> jnk)
 		{
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.agd", "d", "Get_Room")]
+		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "d", "Get_Room")]
 		// Token: 0x060045FE RID: 17918 RVA: 0x000ED080 File Offset: 0x000EB280
 		public static void d(string jnh, int jni, int jnj, Action<EntityListResponse<LobbyGameRoomEntity>> jnk)
 		{

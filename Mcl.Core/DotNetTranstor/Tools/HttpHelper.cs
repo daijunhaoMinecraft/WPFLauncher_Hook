@@ -48,6 +48,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
 using Mcl.Core.DotNetTranstor.Tools;
 using WPFLauncher.View.Launcher.LobbyGame;
 
@@ -243,23 +244,31 @@ public class SimpleHttpServer
                 }
 
                 dynamic SendResponse = new ExpandoObject();
-                SendResponse = new {
-                    error = 0,
-                    isEnabled = true,
-                    users = blacklistUsers,
-                    count = blacklistUsers.Count
-                };
+                SendResponse.error = 0;
+                SendResponse.isEnabled = true;
+                SendResponse.users = blacklistUsers.ToList<object>();
+                SendResponse.count = blacklistUsers.Count;
+                // SendResponse = new {
+                //     error = 0,
+                //     isEnabled = true,
+                //     users = blacklistUsers.ToList<object>(),
+                //     count = blacklistUsers.Count
+                // };
                 handleResponse(context, "获取用户黑名单成功", 0, SendResponse);
             }
             else
             {
                 dynamic SendResponse = new ExpandoObject();
-                SendResponse = new {
-                    error = 0,
-                    isEnabled = false,
-                    users = new List<object>(),
-                    count = 0
-                };
+                SendResponse.error = 0;
+                SendResponse.isEnabled = false;
+                SendResponse.users = new List<object>();
+                SendResponse.count = 0;
+                // SendResponse = new {
+                //     error = 0,
+                //     isEnabled = false,
+                //     users = new List<int>() {},
+                //     count = 0
+                // };
                 handleResponse(context, "用户黑名单功能未开启", 1, SendResponse);
             }
         }
@@ -284,12 +293,12 @@ public class SimpleHttpServer
                 byte[] gbkBytes = gbkEncoding.GetBytes(requestBody);
                 string decodedFromGBK = Encoding.UTF8.GetString(gbkBytes);
                 HttpClient http = new HttpClient();
-                string userToken = WPFLauncher.Util.sr.e((string)contentAfterApiPost, decodedFromGBK);
+                string userToken = WPFLauncher.Util.ss.e((string)contentAfterApiPost, decodedFromGBK);
                 http.DefaultRequestHeaders.Clear();
-                http.DefaultRequestHeaders.Add("user-id", azd<arf>.Instance.User.Id);
+                http.DefaultRequestHeaders.Add("user-id", aze<arg>.Instance.User.Id);
                 http.DefaultRequestHeaders.Add("user-token", userToken);
                 var content = new StringContent((string)decodedFromGBK, Encoding.UTF8, "application/json");
-                HttpResponseMessage responseData = http.PostAsync(azd<axg>.Instance.Url.ApiGatewayUrl + contentAfterApiPost, content).Result;
+                HttpResponseMessage responseData = http.PostAsync(aze<axh>.Instance.Url.ApiGatewayUrl + contentAfterApiPost, content).Result;
                 string get_result = responseData.Content.ReadAsStringAsync().Result;
                 try
                 {
@@ -337,12 +346,12 @@ public class SimpleHttpServer
 
                     
                     HttpClient httpClient = new HttpClient();
-                    string userTokenValue = WPFLauncher.Util.sr.e((string)contentAfterApiPost, requestBody);
+                    string userTokenValue = WPFLauncher.Util.ss.e((string)contentAfterApiPost, requestBody);
                     httpClient.DefaultRequestHeaders.Clear();
-                    httpClient.DefaultRequestHeaders.Add("user-id", azd<arf>.Instance.User.Id);
+                    httpClient.DefaultRequestHeaders.Add("user-id", aze<arg>.Instance.User.Id);
                     httpClient.DefaultRequestHeaders.Add("user-token", userTokenValue);
                     var stringContent = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                    HttpResponseMessage httpResponseData = httpClient.PostAsync(azd<axg>.Instance.Url.ApiGatewayUrl + contentAfterApiPost, stringContent).Result;
+                    HttpResponseMessage httpResponseData = httpClient.PostAsync(aze<axh>.Instance.Url.ApiGatewayUrl + contentAfterApiPost, stringContent).Result;
                     string resultContent = httpResponseData.Content.ReadAsStringAsync().Result;
                     try
                     {
@@ -363,11 +372,11 @@ public class SimpleHttpServer
                 if (!IsPostFlag)
                 {
                     HttpClient http = new HttpClient();
-                    string userToken = WPFLauncher.Util.sr.e((string)contentAfterApiPost, "");
+                    string userToken = WPFLauncher.Util.ss.e((string)contentAfterApiPost, "");
                     http.DefaultRequestHeaders.Clear();
-                    http.DefaultRequestHeaders.Add("user-id", azd<arf>.Instance.User.Id);
+                    http.DefaultRequestHeaders.Add("user-id", aze<arg>.Instance.User.Id);
                     http.DefaultRequestHeaders.Add("user-token", userToken);
-                    HttpResponseMessage responseData = http.GetAsync(azd<axg>.Instance.Url.ApiGatewayUrl + (string)contentAfterApiPost).Result;
+                    HttpResponseMessage responseData = http.GetAsync(aze<axh>.Instance.Url.ApiGatewayUrl + (string)contentAfterApiPost).Result;
                     string get_result = responseData.Content.ReadAsStringAsync().Result;
                     try
                     {
@@ -404,7 +413,7 @@ public class SimpleHttpServer
             {
 
                 HttpClient http = new HttpClient();
-                string userToken = WPFLauncher.Util.sr.e((string)contentAfterApiPost, requestBody);
+                string userToken = WPFLauncher.Util.ss.e((string)contentAfterApiPost, requestBody);
                 SendResponse.UserToken = userToken;
             }
             else if (context.Request.HttpMethod == "GET")
@@ -423,7 +432,7 @@ public class SimpleHttpServer
                         requestBody = queryParams["data"];
                     }
                     HttpClient httpClient = new HttpClient();
-                    string userTokenValue = WPFLauncher.Util.sr.e((string)contentAfterApiPost, requestBody);
+                    string userTokenValue = WPFLauncher.Util.ss.e((string)contentAfterApiPost, requestBody);
                     SendResponse.UserToken = userTokenValue;
                     IsPostFlag = true;
                 }
@@ -431,7 +440,7 @@ public class SimpleHttpServer
                 if (!IsPostFlag)
                 {
                     HttpClient http = new HttpClient();
-                    string userToken = WPFLauncher.Util.sr.e((string)contentAfterApiPost, "");
+                    string userToken = WPFLauncher.Util.ss.e((string)contentAfterApiPost, "");
                     SendResponse.UserToken = userToken;
                 }
             }
@@ -452,25 +461,25 @@ public class SimpleHttpServer
                 context.Response.Close(); // 确保响应被正确关闭
                 break;
             case "/get_login_info":
-                SendResponse.a = (string)typeof(arf).GetField("a").GetValue(azd<arf>.Instance);
+                SendResponse.a = (string)typeof(arf).GetField("a").GetValue(aze<arg>.Instance);
                 ;
-                SendResponse.b = (string)typeof(arf).GetField("b").GetValue(azd<arf>.Instance);
+                SendResponse.b = (string)typeof(arf).GetField("b").GetValue(aze<arg>.Instance);
                 ;
                 SendResponse.UserInfo =
                     JsonConvert.DeserializeObject<JObject>(
-                        JsonConvert.SerializeObject(azd<arf>.Instance.User));
-                SendResponse.NotifyMessageList = azd<arf>.Instance.NotifyMessageList;
-                SendResponse.RepairList = azd<arf>.Instance.RepairList;
-                SendResponse.ClusterList = azd<arf>.Instance.ClusterList;
-                SendResponse.JavaFixM = azd<arf>.Instance.JavaFixM;
+                        JsonConvert.SerializeObject(aze<arg>.Instance.User));
+                SendResponse.NotifyMessageList = aze<arg>.Instance.NotifyMessageList;
+                SendResponse.RepairList = aze<arg>.Instance.RepairList;
+                SendResponse.ClusterList = aze<arg>.Instance.ClusterList;
+                SendResponse.JavaFixM = aze<arg>.Instance.JavaFixM;
                 SendResponse.UserM =
                     JsonConvert.DeserializeObject<JObject>(
-                        JsonConvert.SerializeObject(azd<UserM>.Instance));
+                        JsonConvert.SerializeObject(aze<UserM>.Instance));
                 break;
             case "/get_x19info":
                 SendResponse =
                     JsonConvert.DeserializeObject<JObject>(
-                        JsonConvert.SerializeObject(azd<axg>.Instance));
+                        JsonConvert.SerializeObject(aze<axh>.Instance));
                 break;
             case "/get_roominfo":
                 if (Path_Bool.RoomInfo != null)
@@ -499,10 +508,10 @@ public class SimpleHttpServer
                     response.UserInputPassword = Path_Bool.Password;
                     
                     // 设置当前用户ID
-                    response.currentUserId = azd<arf>.Instance.User.Id;
+                    response.currentUserId = aze<arg>.Instance.User.Id;
                     
                     // 判断是否是房主
-                    response.isOwner = entity.owner_id == azd<arf>.Instance.User.Id;
+                    response.isOwner = entity.owner_id == aze<arg>.Instance.User.Id;
                     
                     // 房间黑名单配置信息
                     response.isRoomBlacklistEnabled = Path_Bool.EnableRoomBlacklist;
@@ -619,10 +628,10 @@ public class SimpleHttpServer
                 SendResponse.UserJoinTime = Path_Bool.JoinOrCreateTime;
                 SendResponse.PlayerList = Path_Bool.RoomPlayerList;
                 // 设置当前用户ID
-                SendResponse.currentUserId = azd<arf>.Instance.User.Id;
+                SendResponse.currentUserId = aze<arg>.Instance.User.Id;
                 
                 // 判断是否是房主
-                SendResponse.isOwner = Path_Bool.RoomInfo.entity.owner_id == azd<arf>.Instance.User.Id;
+                SendResponse.isOwner = Path_Bool.RoomInfo.entity.owner_id == aze<arg>.Instance.User.Id;
                 
                 // 房间黑名单配置信息
                 SendResponse.isRoomBlacklistEnabled = Path_Bool.EnableRoomBlacklist;
@@ -643,13 +652,13 @@ public class SimpleHttpServer
                         JsonConvert.SerializeObject(SendResponse));
                 break;
             case "/get_userCppToken":
-                string text = sr.f();
-                byte[] array = tj.c(text);
+                string text = WPFLauncher.Util.ss.f();
+                byte[] array = WPFLauncher.Util.tk.c(text);
                 SendResponse.UserCppToken = text;
                 SendResponse.Base64Token = Convert.ToBase64String(array);
                 break;
             case "/get_RecvInfo":
-                SendResponse = new {SendKey = add.SendKey, RecvKey = add.RecvKey, DataList = Path_Bool.RecvList};
+                SendResponse = new {SendKey = WPFLauncher.Network.Service.ade.SendKey, RecvKey = WPFLauncher.Network.Service.ade.RecvKey, DataList = Path_Bool.RecvList};
                 break;
             case "/get_RoomBlacklist":
                 if (Path_Bool.EnableRoomBlacklist) // 判断房间黑名单功能是否开启
@@ -760,7 +769,7 @@ public class SimpleHttpServer
                             message = Encoding.UTF8.GetString(Encoding.Default.GetBytes(message));
                         }
                         
-                        new acp().e(ChatUserID, message);
+                        new WPFLauncher.Network.Service.acq().e(ChatUserID, message);
                         var startTime = DateTime.Now;
                         while (true)
                         {
@@ -818,7 +827,7 @@ public class SimpleHttpServer
                             message = Encoding.UTF8.GetString(Encoding.Default.GetBytes(message));
                         }
                         
-                        new acp().a(GroupID, message);
+                        new WPFLauncher.Network.Service.acq().a(GroupID, message);
                         var startTime = DateTime.Now;
                         while (true)
                         {
@@ -996,7 +1005,7 @@ public class SimpleHttpServer
                             File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(Path_Bool.RoomBlacklist));
 
                             // 如果当前用户是房主，尝试踢出黑名单用户
-                            string currentUserId = azd<arf>.Instance.User.Id;
+                            string currentUserId = aze<arg>.Instance.User.Id;
                             if (Path_Bool.RoomInfo.entity.owner_id == currentUserId && Path_Bool.RoomInfo.entity.fids.Contains(userId))
                             {
                                 try
@@ -1066,7 +1075,7 @@ public class SimpleHttpServer
                         else
                         {
                             // 检查当前用户是否是房主
-                            string currentUserId = azd<arf>.Instance.User.Id;
+                            string currentUserId = aze<arg>.Instance.User.Id;
                             if (Path_Bool.RoomInfo.entity.owner_id != currentUserId)
                             {
                                 SendResponse = JToken.FromObject(new { error = 1, message = "只有房主才能踢出玩家" });
@@ -1225,7 +1234,7 @@ public class SimpleHttpServer
                             jo CreateRoomInfo = new jo();
                             CreateRoomInfo.Password = queryParams["Password"]?.ToString() ?? string.Empty;
                             CreateRoomInfo.MaxPlayer = uint.TryParse(queryParams["MaxPlayer"], out uint maxPlayer) ? maxPlayer : 10;
-                            CreateRoomInfo.WorldName = queryParams["WorldName"]?.ToString() ?? azd<arf>.Instance.User.Id;
+                            CreateRoomInfo.WorldName = queryParams["WorldName"]?.ToString() ?? aze<arg>.Instance.User.Id;
                             string VisibilityStatus = queryParams["Visibility"];
                             if (string.IsNullOrEmpty(VisibilityStatus))
                             {
@@ -1398,21 +1407,21 @@ public class SimpleHttpServer
                                     try
                                     {
                                         // 获取 aul 单例（在 UI 线程中安全）
-                                        var aulInstance = Singleton<aul>.Instance;
+                                        var aulInstance = Singleton<aum>.Instance;
                                         if (aulInstance == null)
                                         {
-                                            dispatchException = new InvalidOperationException("aul 单例未初始化");
+                                            dispatchException = new InvalidOperationException("WPFLauncher.Manager.Game.aum 单例未初始化");
                                             return;
                                         }
 
                                         // 调用 g 方法（现在在 UI 线程，可以安全创建 cm 窗口）
-                                        var gMethod = typeof(aul).GetMethod("g", 
+                                        var gMethod = typeof(WPFLauncher.Manager.Game.aum).GetMethod("g", 
                                             BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
                                             null, new Type[] { typeof(string), typeof(bool) }, null);
 
                                         if (gMethod == null)
                                         {
-                                            dispatchException = new MissingMethodException("未找到 aul.g 方法");
+                                            dispatchException = new MissingMethodException("未找到 WPFLauncher.Manager.Game.aum.g 方法");
                                             return;
                                         }
 
@@ -1450,7 +1459,7 @@ public class SimpleHttpServer
                             Path_Bool.AlwaysSaveWorld = false;
                             enableAlwaysSaveWorld = true;
                         }
-                        LobbyGameRoomManagerView lobbyGameRoomManagerView = azd<apm>.Instance.k<LobbyGameRoomManagerView>();
+                        LobbyGameRoomManagerView lobbyGameRoomManagerView = aze<apn>.Instance.k<LobbyGameRoomManagerView>();
                         if (lobbyGameRoomManagerView != null)
                         {
                             // 使用Dispatcher确保在UI线程上访问DataContext
@@ -1659,28 +1668,28 @@ public class SimpleHttpServer
                     {
                         // case "/post":
                         //     HttpClient http = new HttpClient();
-                        //     string userToken = WPFLauncher.Util.sr.e((string)requestObject.url, (string)requestObject.body);
+                        //     string userToken = WPFLauncher.Util.ss.e((string)requestObject.url, (string)requestObject.body);
                         //     http.DefaultRequestHeaders.Clear();
-                        //     http.DefaultRequestHeaders.Add("user-id", azd<arf>.Instance.User.Id);
+                        //     http.DefaultRequestHeaders.Add("user-id", aze<arg>.Instance.User.Id);
                         //     http.DefaultRequestHeaders.Add("user-token", userToken);
                         //     var content = new StringContent((string)requestObject.body, Encoding.UTF8, "application/json");
-                        //     HttpResponseMessage responseData = http.PostAsync(azd<axg>.Instance.Url.ApiGatewayUrl + (string)requestObject.url, content).Result;
+                        //     HttpResponseMessage responseData = http.PostAsync(aze<axh>.Instance.Url.ApiGatewayUrl + (string)requestObject.url, content).Result;
                         //     string get_result = responseData.Content.ReadAsStringAsync().Result;
-                        //     SendResponse.user_id = azd<arf>.Instance.User.Id;
+                        //     SendResponse.user_id = aze<arg>.Instance.User.Id;
                         //     SendResponse.user_token = userToken;
                         //     SendResponse.response = get_result;
                         //     Console.WriteLine("[HTTP][POST]请求返回内容:" + get_result);
                         //     break;
                         // case "/get":
                         //     HttpClient http_Get = new HttpClient();
-                        //     string userToken_Get = WPFLauncher.Util.sr.e((string)requestObject.url, (string)requestObject.body);
+                        //     string userToken_Get = WPFLauncher.Util.ss.e((string)requestObject.url, (string)requestObject.body);
                         //     http_Get.DefaultRequestHeaders.Clear();
-                        //     http_Get.DefaultRequestHeaders.Add("user-id", azd<arf>.Instance.User.Id);
+                        //     http_Get.DefaultRequestHeaders.Add("user-id", aze<arg>.Instance.User.Id);
                         //     http_Get.DefaultRequestHeaders.Add("user-token", userToken_Get);
                         //     var content_Get = new StringContent(requestObject.body, Encoding.UTF8, "application/json");
-                        //     HttpResponseMessage responseData_Get = http_Get.PostAsync(azd<axg>.Instance.Url.ApiGatewayUrl + (string)requestObject.url, content_Get).Result;
+                        //     HttpResponseMessage responseData_Get = http_Get.PostAsync(aze<axh>.Instance.Url.ApiGatewayUrl + (string)requestObject.url, content_Get).Result;
                         //     string get_result_Get = responseData_Get.Content.ReadAsStringAsync().Result;
-                        //     SendResponse.user_id = azd<arf>.Instance.User.Id;
+                        //     SendResponse.user_id = aze<arg>.Instance.User.Id;
                         //     SendResponse.user_token = userToken_Get;
                         //     SendResponse.response = get_result_Get;
                         //     Console.WriteLine("[HTTP][POST]请求返回内容:" + get_result_Get);
@@ -1696,7 +1705,7 @@ public class SimpleHttpServer
                                 }
                                 else
                                 {
-                                    new acp().e(ChatUserID, message);
+                                    new WPFLauncher.Network.Service.acq().e(ChatUserID, message);
                                     var startTime = DateTime.Now;
                                     while (true)
                                     {
@@ -1740,10 +1749,10 @@ public class SimpleHttpServer
                             SendResponse = X19Http.Get_Players_Info(requestObject["entity_ids"].ToObject<List<string>>());
                             break;
                         case "/DecryptX19sign":
-                            SendResponse.ToDecryptX19sign = WPFLauncher.Util.ud.b(requestBody);
+                            SendResponse.ToDecryptX19sign = WPFLauncher.Util.ue.b(requestBody);
                             break;
                         case "/EncryptX19sign":
-                            SendResponse.ToEncryptX19sign = WPFLauncher.Util.ud.a(requestBody);
+                            SendResponse.ToEncryptX19sign = WPFLauncher.Util.ue.a(requestBody);
                             break;
                         case "/Room/AddRegexBlacklist":
                             if (Path_Bool.EnableRoomBlacklist)

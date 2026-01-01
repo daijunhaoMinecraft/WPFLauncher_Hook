@@ -29,18 +29,16 @@ namespace DotNetTranstor.Hookevent
 	// Token: 0x02000017 RID: 23
 	internal class LoginFucker : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public static void f(string hud, Action<EntityResponse<ack.Resposne>, Exception> hue = null)
+		public static void f(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue = null)
 		{
 		}
 		
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Network.Launcher.aco", "g", "g")]
-		public static async Task g(string hud, Action<EntityResponse<ack.Resposne>, Exception> hue)
+		[HookMethod("WPFLauncher.Network.Launcher.acp", "g", "g")]
+		public static async Task g(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
 		{
-			MessageBoxResult messageBoxResult = uy.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
+			MessageBoxResult messageBoxResult = uz.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
 			if (messageBoxResult == MessageBoxResult.OK)
 			{
 				string text3 = "cookies.txt";
@@ -59,7 +57,7 @@ namespace DotNetTranstor.Hookevent
 				{
 					text2 = File.ReadAllText(filePath2);
 				}
-				if (uy.r("请选择cookie登录或4399登录", string.Empty, "cookie", "4399", "") == MessageBoxResult.Yes)
+				if (uz.r("请选择cookie登录或4399登录", string.Empty, "cookie", "4399", "") == MessageBoxResult.Yes)
 				{
 					text = Interaction.InputBox("请输入Cookies \n如果原号登陆请输入off或者空"/*\n自动获取cookie请输入1"*/, "Cookies", text, -1, -1);
 					/*if (text == "1")

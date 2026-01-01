@@ -10,7 +10,7 @@ namespace DotNetTranstor.Hookevent
     public class VapeDetect : IMethodHook
     {
         //去除VAPE检测
-        [HookMethod("WPFLauncher.Util.tu", "a", "No_Vape")]
+        [HookMethod("WPFLauncher.Util.tv", "a", "No_Vape")]
         public static Tuple<string, string> a(string gbp)
         {
             if (Path_Bool.IsStartWebSocket)

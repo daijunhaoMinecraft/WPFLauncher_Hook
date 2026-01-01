@@ -6,14 +6,14 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
     public class Random_Disk : IMethodHook
     {
         // Token: 0x060003F2 RID: 1010 RVA: 0x00003EEC File Offset: 0x000020EC
-        [HookMethod("WPFLauncher.Manager.aql", null, null)]
+        [HookMethod("WPFLauncher.Manager.aqm", null, null)]
         public static string a(object nbv)
         {
             return "{}";
         }
         
         // Token: 0x060003F3 RID: 1011 RVA: 0x0000F0F8 File Offset: 0x0000D2F8
-        [HookMethod("WPFLauncher.Manager.aql", null, null)]
+        [HookMethod("WPFLauncher.Manager.aqm", null, null)]
         public static string g()
         {
             string text = "";
@@ -34,7 +34,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
             return text2;
         }
         // Token: 0x060003F5 RID: 1013 RVA: 0x0000F148 File Offset: 0x0000D348
-        [HookMethod("WPFLauncher.Manager.aql", null, null)]
+        [HookMethod("WPFLauncher.Manager.aqm", null, null)]
         public static string e(string kxr)
         {
             string text = "";

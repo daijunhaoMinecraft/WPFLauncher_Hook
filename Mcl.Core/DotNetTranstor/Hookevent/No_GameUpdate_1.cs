@@ -32,27 +32,24 @@ namespace DotNetTranstor.Hookevent
 	//去除网易存档加密功能
 	internal class No_GameUqdate_1 : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
-		public bool No_Update(bool pwk = true)
+		public bool No_Update(bool skipValidation = true)
 		{
 			return false;
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Model.Game.ald", "fn", "No_Update")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
-		public bool CheckUpdate(bool pwk = true)
+		[HookMethod("WPFLauncher.Model.Game.ale", "fn", "No_Update")]
+		public bool CheckUpdate(bool skipValidation = true)
 		{
 			if (Path_Bool.IsStartWebSocket)
 			{
-				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "IsBypassGameUpdate_Bedrock",BypassGameUpdate_Bedrock = Path_Bool.IsBypassGameUpdate_Bedrock, pwk = pwk}));
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "IsBypassGameUpdate_Bedrock",BypassGameUpdate_Bedrock = Path_Bool.IsBypassGameUpdate_Bedrock, skipValidation = skipValidation}));
 			}
 
 			if (Path_Bool.IsDebug)
 			{
-				Console.WriteLine($"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{Path_Bool.IsBypassGameUpdate_Bedrock},pxk:{pwk}");
+				Console.WriteLine($"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{Path_Bool.IsBypassGameUpdate_Bedrock},skipValidation:{skipValidation}");
 			}
 			if (Path_Bool.IsBypassGameUpdate_Bedrock)
 			{
@@ -60,7 +57,7 @@ namespace DotNetTranstor.Hookevent
 			}
 			else
 			{
-				return No_Update(pwk);
+				return No_Update(skipValidation);
 			}
 			return true;
 		}

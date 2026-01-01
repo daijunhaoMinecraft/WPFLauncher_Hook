@@ -18,7 +18,7 @@ namespace DotNetTranstor.Hookevent
         {
         }
 
-        [HookMethod("WPFLauncher.Network.Protocol.aeh", "f", "GameTest")]
+        [HookMethod("WPFLauncher.Network.Protocol.aei", "f", "GameTest")]
         public static void f(string ilr, int ils, List<string> ilt, Action<EntityDetailResponse<GameStartEntityV2>> ilu)
         {
             Action<EntityDetailResponse<GameStartEntityV2>> Get_Action = ilu;

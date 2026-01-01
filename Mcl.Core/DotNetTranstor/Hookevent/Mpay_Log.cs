@@ -33,16 +33,13 @@ namespace DotNetTranstor.Hookevent
 	//去除网易实名认证
 	internal class Mpay_Log : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
 		protected void Mpay_Log_Show(string log)
 		{
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Unisdk.ny", "onLog", "Mpay_Log_Show")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		[HookMethod("WPFLauncher.Unisdk.nz", "onLog", "Mpay_Log_Show")]
 		protected void onLog(string log)
 		{
 			if (Path_Bool.IsDebug)

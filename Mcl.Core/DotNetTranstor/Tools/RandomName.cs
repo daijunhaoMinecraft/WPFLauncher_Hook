@@ -32,7 +32,7 @@ namespace WPFLauncher.Util
 				try
 				{
 					string text = RandomNameGenerator.ResourcePath + dictName + ".json";
-					string value = wd.i(text).value;
+					string value = we.i(text).value;
 					dictionary = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(value);
 					RandomNameGenerator.dictCache.Add(dictName, dictionary);
 				}
@@ -88,7 +88,7 @@ namespace WPFLauncher.Util
 				string text = generator();
 				if (!string.IsNullOrEmpty(text))
 				{
-					if ((!checkDuplicate || !azd<uk>.Instance.g(text)) && !(text == exclude))
+					if ((!checkDuplicate || !aze<ul>.Instance.g(text)) && !(text == exclude))
 					{
 						if (validator == null)
 						{
@@ -229,7 +229,7 @@ namespace WPFLauncher.Util
 
 		public static bool IsCanGenerateName(string word)
 		{
-			float num = uq.a(word);
+			float num = ur.a(word);
 			return num >= 3f && num <= 12f;
 		}
 	}

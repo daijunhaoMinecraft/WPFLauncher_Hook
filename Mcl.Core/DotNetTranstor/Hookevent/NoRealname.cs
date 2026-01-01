@@ -32,16 +32,13 @@ namespace DotNetTranstor.Hookevent
 	//去除网易实名认证
 	internal class NoRealname : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
 		protected void No_RealName(string json)
 		{
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Unisdk.ny", "onExtendFuncFinish", "No_RealName")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		[HookMethod("WPFLauncher.Unisdk.nz", "onExtendFuncFinish", "No_RealName")]
 		protected void onExtendFuncFinish(string json)
 		{
 			if (Path_Bool.IsDebug)

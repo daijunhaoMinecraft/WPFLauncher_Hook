@@ -19,7 +19,7 @@ namespace DotNetTranstor.Hookevent
             return null;
         }
 
-        [HookMethod("WPFLauncher.Util.tc", "GetBytesToWrite", "No_MclLog_1")]
+        [HookMethod("WPFLauncher.Util.td", "GetBytesToWrite", "No_MclLog_1")]
         protected byte[] GetBytesToWrite(LogEventInfo logEvent)
         {
             if (logEvent.Level == LogLevel.Trace)
@@ -51,6 +51,10 @@ namespace DotNetTranstor.Hookevent
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
             DebugPrint.LogDebug_NoColorSelect("Logger - " + logEvent.Level + " - " + logEvent.Message);
+            if (logEvent.Level == LogLevel.Error || logEvent.Level == LogLevel.Fatal)
+            {
+                DebugPrint.LogDebug_NoColorSelect($"StackTrace :\n{logEvent.StackTrace}");
+            }
             Console.ForegroundColor = ConsoleColor.White;
             if (Path_Bool.IsStartWebSocket)
             {

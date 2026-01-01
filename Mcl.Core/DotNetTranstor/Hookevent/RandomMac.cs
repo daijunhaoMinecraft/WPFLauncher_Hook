@@ -33,17 +33,14 @@ namespace DotNetTranstor.Hookevent
 	//随机Mac地址,可用于解决连锁Ban问题
 	internal class RandomMac : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
 		public static string RandomMacAddr()
 		{
 			return "";
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Manager.Log.Util.ash", "b", "RandomMacAddr")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		[HookMethod("WPFLauncher.Manager.Log.Util.asi", "b", "RandomMacAddr")]
 		public static string b()
 		{
 			Console.ForegroundColor = ConsoleColor.Green;

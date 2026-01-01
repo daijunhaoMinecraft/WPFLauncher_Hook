@@ -13,6 +13,7 @@ namespace DotNetTranstor.Hookevent
 {
     public class Path_Bool
     {
+        public static string Version = "3.0.7-Fix2-Public";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
@@ -38,7 +39,6 @@ namespace DotNetTranstor.Hookevent
         public static long JoinOrCreateTime = 0;
         public static string wpflauncherRoot = Directory.GetCurrentDirectory();
         public static bool IsStartWebSocket = false;
-        public static string Version = "3.0.7-Fix1-Public";
         public static bool IsCustomIP = false;
         public static bool IsSelectedIP = true;
         public static bool NoTwoExitMessage = true;

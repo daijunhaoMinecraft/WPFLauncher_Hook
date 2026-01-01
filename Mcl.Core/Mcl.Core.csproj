@@ -56,14 +56,7 @@
     <Compile Include="DotNetTranstor\Hookevent\Random_Disk.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Recv_Pocket.cs" />
     <Compile Include="DotNetTranstor\Hookevent\RoomInfoWindow.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage_2.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage_AutoJoin.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage_GetIP.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage_GetMember.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage_GetRoomEnterPassword.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage_Left.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\RoomManage_SaveCloud.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\RoomManager.cs" />
     <Compile Include="DotNetTranstor\Hookevent\SalogPocket.cs" />
     <Compile Include="DotNetTranstor\Hookevent\SensitiveWordDetection.cs" />
     <Compile Include="DotNetTranstor\Hookevent\SolveHyt.cs" />

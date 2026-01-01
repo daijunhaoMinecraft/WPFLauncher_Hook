@@ -16,7 +16,7 @@ public class ExitRoom // 退出此前进入过的房间 By Daijunhao
     public static bool autoExitRoom()
     {
         // 获取所有房间
-        var instance = azd<aul>.Instance;
+        var instance = aze<aum>.Instance;
         var versionField = instance.GetType().GetField("a", BindingFlags.Public | BindingFlags.Instance);
         var version = versionField?.GetValue(instance) as string;
         string sGetAllRooms = X19Http.RequestX19Api("/online-lobby-room/query/list-room-by-res-id",
@@ -25,7 +25,7 @@ public class ExitRoom // 退出此前进入过的房间 By Daijunhao
         Console.WriteLine($"[AutoExit] 成功获取到房间数:{jGetAllRooms["total"].ToString()}");
         foreach (var jGetRooms in jGetAllRooms["entities"])
         {
-            if (jGetRooms["member_uids"].ToObject<List<string>>().Contains(azd<arf>.Instance.User.Id))
+            if (jGetRooms["member_uids"].ToObject<List<string>>().Contains(aze<arg>.Instance.User.Id))
             {
                 Console.WriteLine($"[AutoExit] 成功获取到玩家加入的房间,房间号: {jGetRooms["room_name"]}, entity_id: {jGetRooms["entity_id"]}");
                 Console.WriteLine($"[AutoExit] 正在退出房间...");

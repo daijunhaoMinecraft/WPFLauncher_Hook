@@ -120,7 +120,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         [HookMethod("WPFLauncher.Network.Protocol.DC.agy", "a", "f")]
         public static void SalogHandler7(string logType, string phase, int code = 0, string message = "", string tag1 = "", string tag2 = "", string tag3 = "", bool flag = false)
         {
-            td.Default.Info(string.Format("DoDiagnosticLog;type:{0}, phase:{1}, code:{2}, message:{3}, tag1:{4}, tag2:{5}, tag3:{6} ", 
+            te.Default.Info(string.Format("DoDiagnosticLog;type:{0}, phase:{1}, code:{2}, message:{3}, tag1:{4}, tag2:{5}, tag3:{6} ", 
                 new object[] { logType, phase, code, message, tag1, tag2, tag3 }), new object[0]);
             return;
         }

@@ -37,17 +37,17 @@ namespace DotNetTranstor.Hookevent
         // (get) Token: 0x06004157 RID: 16727 RVA: 0x0001E1A6 File Offset: 0x0001C3A6
         // Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
         [OriginalMethod]
-        public static void Get_X19_Post_Info(string resource, string parameter, aep needEncrypt = aep.a, string prefix = null, bool isHome = false)
+        public static void Get_X19_Post_Info(string resource, string parameter, aeq needEncrypt = aeq.a, string prefix = null, bool isHome = false)
         {
         }
 
         // Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Network.Protocol.aes", "Post", "Get_X19_Post_Info")]
+        [HookMethod("WPFLauncher.Network.Protocol.aet", "Post", "Get_X19_Post_Info")]
         // Token: 0x06004235 RID: 16949 RVA: 0x000E8F7C File Offset: 0x000E717C
-        public static INetResponse Post(string resource, string parameter, aep needEncrypt = aep.a, string prefix = null, bool isHome = false)
+        public static INetResponse Post(string resource, string parameter, aeq needEncrypt = aeq.a, string prefix = null, bool isHome = false)
         {
-            aet aen = new aet
+            aeu aen = new aeu
             {
                 Body = parameter,
                 Method = Method.POST,
@@ -58,17 +58,17 @@ namespace DotNetTranstor.Hookevent
             {
                 aen.Header["server"] = "home";
             }
-            INetResponse Get_Content = aes.x(prefix, aen);
+            INetResponse Get_Content = aet.x(prefix, aen);
             string needEncrypt_String = "";
-            if (needEncrypt == aep.a)
+            if (needEncrypt == aeq.a)
             {
                 needEncrypt_String = "Normal";
             }
-            else if (needEncrypt == aep.b)
+            else if (needEncrypt == aeq.b)
             {
                 needEncrypt_String = "CommonEncrypt";
             }
-            else if (needEncrypt == aep.c)
+            else if (needEncrypt == aeq.c)
             {
                 needEncrypt_String = "Authentication";
             }

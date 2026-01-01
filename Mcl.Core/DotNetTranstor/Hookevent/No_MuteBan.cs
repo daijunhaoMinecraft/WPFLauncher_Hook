@@ -29,14 +29,12 @@ namespace DotNetTranstor.Hookevent
 	//去除禁言
 	internal class No_MuteBan : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
 		public new bool No_MuteBan_1()
 		{
 			return false;
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
 		[HookMethod("WPFLauncher.Model.UserM", "a", "No_MuteBan_1")]
 		// Token: 0x06004CA7 RID: 19623 RVA: 0x000FE53C File Offset: 0x000FC73C
@@ -74,7 +72,7 @@ namespace DotNetTranstor.Hookevent
 			Console.WriteLine($"[INFO] mChatBan: {isMuted}");
 			if (isMuted)
 			{
-				long banChatExpiredAt = azd<arf>.Instance.User.BanChatExpiredAt;
+				long banChatExpiredAt = aze<arg>.Instance.User.BanChatExpiredAt;
 				Console.ForegroundColor = ConsoleColor.Red;
 				Console.WriteLine("[IsMuteX] 您被系统暂时禁言, 时间至 " + X19Http.unix_timestamp_to(banChatExpiredAt));
 				Console.WriteLine("[IsMuteX] You have been temporarily muted by the system until " + X19Http.unix_timestamp_to(banChatExpiredAt));

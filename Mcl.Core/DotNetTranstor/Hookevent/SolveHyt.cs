@@ -31,13 +31,7 @@ public class SolveHyt : IMethodHook
     //     b_Original(kcn);
     // }
     
-    [OriginalMethod]
-    public static void l_Original(string hwu, Action<EntityResponse<ItemAddressEntity>> hwv)
-    {
-        
-    }
-    
-    [HookMethod("WPFLauncher.Network.Launcher.aco", "l", "l_Original")]
+    [HookMethod("WPFLauncher.Network.Launcher.acp", "l", null)]
     public static void l(string hwu, Action<EntityResponse<ItemAddressEntity>> action)
     {
         // if (kcn.entity.game_status != 0)

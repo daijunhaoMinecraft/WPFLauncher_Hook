@@ -16,9 +16,9 @@ namespace DotNetTranstor.Hookevent
         private Button cancelButton;
         private Label ipLabel;
         private Label portLabel;
-        private aku _roomInfo;
+        private akv _roomInfo;
 
-        public ChangeIPForm(aku roomInfo)
+        public ChangeIPForm(akv roomInfo)
         {
             _roomInfo = roomInfo;
             InitializeComponent();

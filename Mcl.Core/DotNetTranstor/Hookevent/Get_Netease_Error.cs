@@ -32,16 +32,13 @@ namespace DotNetTranstor.Hookevent
 	//获取网易日志
 	internal class Get_Netease_Error : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
 		public static void No_Update(string asz, string ata)
 		{
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.cn", "l", "No_Update")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		[HookMethod("WPFLauncher.co", "l", "No_Update")]
 		public static void l(string asz, string ata)
 		{
 			Console.ForegroundColor = ConsoleColor.Red;

@@ -82,25 +82,25 @@ namespace DotNetTranstor.Hookevent
         //     return Get_Post_Return;
         // }
         [OriginalMethod]
-        public INetResponse UserTokenPost(aeo ipd)
+        public INetResponse UserTokenPost(aep ipd)
         {
             return null;
         }
         
-        [HookMethod("WPFLauncher.Network.Protocol.aen", "d", "UserTokenPost")]
-        public INetResponse d(aeo ipd)
+        [HookMethod("WPFLauncher.Network.Protocol.aeo", "d", "UserTokenPost")]
+        public INetResponse d(aep ipd)
         {
             INetResponse Get_Return = UserTokenPost(ipd);
             string needEncrypt_String = "";
-            if (ipd.NeedEncrypt == aep.a)
+            if (ipd.NeedEncrypt == aeq.a)
             {
                 needEncrypt_String = "Normal";
             }
-            else if (ipd.NeedEncrypt == aep.b)
+            else if (ipd.NeedEncrypt == aeq.b)
             {
                 needEncrypt_String = "CommonEncrypt";
             }
-            else if (ipd.NeedEncrypt == aep.c)
+            else if (ipd.NeedEncrypt == aeq.c)
             {
                 needEncrypt_String = "Authentication";
             }

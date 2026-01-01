@@ -29,7 +29,7 @@ namespace DotNetTranstor.Hookevent
         public RoomInfoWindow(EntityResponse<LobbyGameRoomEntity> roomInfo)
         {
             InitializeWindow();
-            RoomManage_Left.SetRoomInfoWindow(this);
+            // RoomManage_Left.SetRoomInfoWindow(this);
             roomInfoResponse = roomInfo;
             UpdateRoomInfo(roomInfo);
         }

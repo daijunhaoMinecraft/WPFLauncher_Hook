@@ -75,13 +75,13 @@ namespace DotNetTranstor.Hookevent
         }
 
         [OriginalMethod]
-        public static void Pocket_Info(abw hqx)
+        public static void Pocket_Info(abx hqx)
         {
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Network.abt", "b", "Pocket_Info")]
-        public static void b(abw hqx)
+        [HookMethod("WPFLauncher.Network.abu", "b", "Pocket_Info")]
+        public static void b(abx hqx)
         {
             //Console.WriteLine($"[Recv_Pocket]:a:{hqx.a},b:{hqx.b},c:{hqx.c},d:{hqx.d}");
             if (hqx == null)
@@ -510,7 +510,7 @@ namespace DotNetTranstor.Hookevent
                     }
                 });
 
-                if (Path_Bool.EnableRoomBlacklist && Path_Bool.RoomInfo.entity.owner_id == azd<arf>.Instance.User.Id)
+                if (Path_Bool.EnableRoomBlacklist && Path_Bool.RoomInfo.entity.owner_id == aze<arg>.Instance.User.Id)
                 {
                     HandleBlacklistCheck(userId);
                 }
@@ -752,7 +752,7 @@ namespace DotNetTranstor.Hookevent
 
         private static bool IsCurrentUserRoomOwner()
         {
-            return Path_Bool.RoomInfo?.entity?.owner_id == azd<arf>.Instance.User.Id;
+            return Path_Bool.RoomInfo?.entity?.owner_id == aze<arg>.Instance.User.Id;
         }
 
         private static void KickPlayer(string userId, string playerName, string reason)

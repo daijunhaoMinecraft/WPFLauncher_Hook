@@ -135,7 +135,7 @@ namespace DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Manager.apl", "aj", "X19_Fever_bypass")]
+        [HookMethod("WPFLauncher.Manager.apm", "aj", "X19_Fever_bypass")]
         public bool Fever_False()
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -177,7 +177,7 @@ namespace DotNetTranstor.Hookevent
             // 检查是否存在配置文件并询问是否加载
             if (File.Exists(CONFIG_FILE))
             {
-                MessageBoxResult loadConfigResult = uy.q("检测到上次的配置文件，是否加载?", "", "加载", "不加载", "");
+                MessageBoxResult loadConfigResult = uz.q("检测到上次的配置文件，是否加载?", "", "加载", "不加载", "");
                 if (loadConfigResult == MessageBoxResult.OK)
                 {
                     if (LoadConfig())
@@ -197,7 +197,7 @@ namespace DotNetTranstor.Hookevent
                             else
                             {
                                 Console.WriteLine($"[INFO]NeteaseUpdateDomain已修改为:{Path_Bool.NeteaseUpdateDomainhttp}");
-                                azd<axg>.Instance.e();
+                                aze<axh>.Instance.e();
                             }
                         }
                         isInitConfig = true;
@@ -568,18 +568,18 @@ namespace DotNetTranstor.Hookevent
             else
             {
                 Console.WriteLine($"[INFO]NeteaseUpdateDomain已修改为:{Path_Bool.NeteaseUpdateDomainhttp}");
-                azd<axg>.Instance.e();
+                aze<axh>.Instance.e();
             }
             Path_Bool.Mac_Addr = Get_Mac_Addr;
             Path_Bool.Random_Mac_Addr = Get_Random_Mac_Addr_Original;
-            azd<axg>.Instance.App.EnableCppGameDebug = true;
-            azd<axg>.Instance.App.NetGameFilter = true;
-            azd<axg>.Instance.App.EnableNetGameFilterSetting = true;
-            azd<axg>.Instance.App.CppGameDebugPath = ta.s + "\\CppGameDebug\\";
-            string JavaGamePath = Path.Combine(ta.n, "Game",".minecraft");
+            aze<axh>.Instance.App.EnableCppGameDebug = true;
+            aze<axh>.Instance.App.NetGameFilter = true;
+            aze<axh>.Instance.App.EnableNetGameFilterSetting = true;
+            aze<axh>.Instance.App.CppGameDebugPath = tb.s + "\\CppGameDebug\\";
+            string JavaGamePath = Path.Combine(tb.n, "Game",".minecraft");
             Directory.CreateDirectory(JavaGamePath);
-            ta.z = JavaGamePath;
-            azd<axg>.Instance.App.JavaGamePath = JavaGamePath;
+            tb.z = JavaGamePath;
+            aze<axh>.Instance.App.JavaGamePath = JavaGamePath;
             // 黑名单无效列表处理
             if (Path_Bool.EnableRoomBlacklist)
             {
@@ -642,7 +642,7 @@ namespace DotNetTranstor.Hookevent
             }
             catch (Exception ex)
             {
-                td.Default.l(ex, "GetMACAddress");
+                te.Default.l(ex, "GetMACAddress");
             }
             return text;
         }

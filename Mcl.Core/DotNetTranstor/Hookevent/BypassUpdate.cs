@@ -7,6 +7,8 @@ using WPFLauncher.Util;
 
 namespace Mcl.Core.DotNetTranstor.Hookevent;
 // 绕过更新 by daijunhao
+// update by 2026/01/01
+
 public class BypassUpdate : IMethodHook
 {
     [OriginalMethod]
@@ -14,11 +16,11 @@ public class BypassUpdate : IMethodHook
     {
         return true;
     }
-    [HookMethod("WPFLauncher.Update.xv", "h", "bypassWPFLauncherUpdate_original")]
+    [HookMethod("WPFLauncher.Update.xw", "h", "bypassWPFLauncherUpdate_original")]
     public bool bypassWPFLauncherUpdate()
     {
         bool result = bypassWPFLauncherUpdate_original();
-        xv updateInit = new xv();
+        xw updateInit = new xw();
         
         Version latestVersion = updateInit.g();
         Version currectVersion = updateInit.f();
@@ -55,7 +57,7 @@ public class BypassUpdate : IMethodHook
                 Console.WriteLine($"[错误] 获取更新日志失败: {ex.Message}");
             }
 
-            MessageBoxResult isUpdate = uy.q($"检测到网易我的世界启动器新版本, 是否更新(请先备份网易我的世界启动器完整目录后再去更新防止hook失效)?\n更新内容:见Windows Console控制台", "", "更新", "不更新", "");
+            MessageBoxResult isUpdate = uz.q($"检测到网易我的世界启动器新版本, 是否更新(请先备份网易我的世界启动器完整目录后再去更新防止hook失效)?\n更新内容:见Windows Console控制台", "", "更新", "不更新", "");
             if (isUpdate == MessageBoxResult.OK)
             {
                 return result;

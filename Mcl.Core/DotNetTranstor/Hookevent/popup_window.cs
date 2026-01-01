@@ -28,16 +28,13 @@ namespace DotNetTranstor.Hookevent
 	// Token: 0x02000017 RID: 23
 	internal class popup_window : IMethodHook
 	{
-		// Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
 		[OriginalMethod]
 		public static void f(bool nso)
 		{
 		}
 
-		// Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Manager.NewsPop.atc", "e", "f")]
-		// Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
+		[HookMethod("WPFLauncher.Manager.NewsPop.atd", "e", "f")]
 		private void e(bool nso)
 		{
 			if (Path_Bool.IsDebug)

@@ -29,7 +29,7 @@ namespace DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Manager.GrayUpdate.auc", "m", "UnlockAll")]
+        [HookMethod("WPFLauncher.Manager.GrayUpdate.aud", "m", "UnlockAll")]
         public bool ak(GrayUpdateType nzp)
         {
             // 获取 GrayUpdateType 的名称

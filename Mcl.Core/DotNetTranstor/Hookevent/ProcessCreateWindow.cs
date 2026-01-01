@@ -145,13 +145,13 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
 
         private void LoadSavedPath()
         {
-            string path = ta.s;
+            string path = tb.s;
             if (Directory.Exists(path))
             {
                 _pathTextBox.Text = path;
                 _selectedPath = path;
                 ScanVersions();
-                return;
+                // return;
             }
 
             // 如果sm.w不存在或无效，则尝试从BedrockConfig.txt读取
@@ -284,13 +284,13 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         
         //创建进程窗口
         [OriginalMethod]
-        public aqp ProcssStartOriginal(string FileName, string Args, aqn StartType, string WorkDirectory = null)
+        public aqq ProcssStartOriginal(string FileName, string Args, aqo StartType, string WorkDirectory = null)
         {
-            return new aqp();
+            return new aqq();
         }
 
-        [HookMethod("WPFLauncher.Manager.aqq", "t", "ProcssStartOriginal")]
-        public aqp ProcssStart(string FileName, string Args, aqn StartType, string WorkDirectory = null)
+        [HookMethod("WPFLauncher.Manager.aqr", "t", "ProcssStartOriginal")]
+        public aqq ProcssStart(string FileName, string Args, aqo StartType, string WorkDirectory = null)
         {
             // 检查是否是基岩版启动
             if (FileName.Contains("Minecraft.Windows.exe"))
@@ -326,7 +326,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { Type = "StartBedrockGame", SelectBedrockExePath = FileName }));
             }
 
-            aqp aqp = new aqp
+            aqq aqq = new aqq
             {
                 StartInfo = 
                 {
@@ -341,12 +341,12 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
             };
             if (!string.IsNullOrEmpty(WorkDirectory))
             {
-                aqp.StartInfo.WorkingDirectory = WorkDirectory;
+                aqq.StartInfo.WorkingDirectory = WorkDirectory;
             }
 
             // 添加进程退出事件处理，防止突然关闭CMD窗口
-            // aqp.EnableRaisingEvents = true;
-            // aqp.Exited += (sender, e) =>
+            // aqq.EnableRaisingEvents = true;
+            // aqq.Exited += (sender, e) =>
             // {
             //     Console.ForegroundColor = ConsoleColor.Yellow;
             //     DebugPrint.LogDebug_NoColorSelect($"\n[进程] 进程 {FileName} 已退出");
@@ -362,7 +362,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                     Console.ForegroundColor = ConsoleColor.White;
                     
                     // 在后台线程中启动游戏
-                    aqq.Instance.c(aqp);
+                    WPFLauncher.Manager.aqr.Instance.c(aqq);
                 }
                 catch (Exception ex)
                 {
@@ -379,7 +379,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                 }
             });
 
-            return aqp;
+            return aqq;
         }
 
         // private void StartReceiving()
@@ -490,16 +490,16 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         // }
         
         [OriginalMethod]
-        public static aqp a_original(string gwa, string gwb, EventHandler gwc, aqk gwd, string gwe = null, bool gwf = false, Action<string> gwg = null)
+        public static aqq a_original(string gwa, string gwb, EventHandler gwc, aqk gwd, string gwe = null, bool gwf = false, Action<string> gwg = null)
         {
-            return new aqp();
+            return new aqq();
         }
         
-        [HookMethod("WPFLauncher.Util.vx", "a", "a_original")]
-        public static aqp a(string gwa, string gwb, EventHandler gwc, aqk gwd, string gwe = null, bool gwf = false, Action<string> gwg = null)
+        [HookMethod("WPFLauncher.Util.vy", "a", "a_original")]
+        public static aqq a(string gwa, string gwb, EventHandler gwc, aqk gwd, string gwe = null, bool gwf = false, Action<string> gwg = null)
         {
             Console.WriteLine("[StartGame]启动信息创建中...");
-            aqp result = a_original(gwa, gwb, gwc, gwd, gwe, true, gwg);
+            aqq result = a_original(gwa, gwb, gwc, gwd, gwe, true, gwg);
             
             // 添加进程退出事件处理，防止CMD窗口关闭
             if (result != null)
