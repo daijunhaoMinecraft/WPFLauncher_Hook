@@ -38,7 +38,15 @@ namespace DotNetTranstor.Hookevent
 		[HookMethod("WPFLauncher.Network.Launcher.acp", "g", "g")]
 		public static async Task g(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
 		{
-			MessageBoxResult messageBoxResult = uz.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
+			MessageBoxResult messageBoxResult;
+			if (Path_Bool.CookieLoginWithoutMpay)
+			{
+				messageBoxResult = MessageBoxResult.Cancel;
+			}
+			else
+			{
+				messageBoxResult = uz.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
+			}
 			if (messageBoxResult == MessageBoxResult.OK)
 			{
 				string text3 = "cookies.txt";

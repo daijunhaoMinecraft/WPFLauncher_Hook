@@ -32,19 +32,39 @@ using WPFLauncher.ViewModel.Share;
 using MessageBox = System.Windows.MessageBox;
 
 using MicrosoftTranslator.DotNetTranstor.Tools;
+using WPFLauncher.Manager.Configuration;
+using WPFLauncher.Sdk.MPay;
 
 namespace DotNetTranstor.Hookevent
 {
 	//去除网易实名认证
 	internal class NoRealname_1 : IMethodHook
 	{
+		private static readonly Random random = new Random();
+		private static readonly char[] chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
+
+		/// <summary>
+		/// 生成指定长度的随机数字+大写字母字符串
+		/// </summary>
+		/// <param name="length">字符串长度，默认32</param>
+		/// <returns>随机字符串</returns>
+		public static string GenerateRandomString(int length = 32)
+		{
+			StringBuilder result = new StringBuilder(length);
+			for (int i = 0; i < length; i++)
+			{
+				result.Append(chars[random.Next(chars.Length)]);
+			}
+			return result.ToString();
+		}
+		
 		[OriginalMethod]
 		protected void No_RealName(int code)
 		{
 		}
 
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.Unisdk.nz", "onLoginFinish", "No_RealName")]
+		[HookMethod("WPFLauncher.Unisdk.nx", "onLoginFinish", "No_RealName")]
 		protected async void onLoginFinish(int code)
 		{
 			if (Path_Bool.IsDebug)
@@ -242,6 +262,57 @@ namespace DotNetTranstor.Hookevent
 				// }
 				//
 				// No_RealName(0);
+				
+				MessageBoxResult messageBoxResult = uz.q("是否使用Cookie登录?", "", "确定", "退出", "");
+				if (messageBoxResult == MessageBoxResult.OK)
+				{
+					string text3 = "cookies.txt";
+					string filePath = Path.Combine(Environment.CurrentDirectory, text3);
+					string readCookie = "";
+					if (File.Exists(filePath))
+					{
+						readCookie = File.ReadAllText(filePath);
+					}
+					string cookie = Interaction.InputBox("请输入Cookies"/*\n自动获取cookie请输入1"*/, "Cookies", readCookie, -1, -1);
+					Tool.PrintYellow("cookies:" + cookie);
+					File.WriteAllText(filePath, cookie);
+
+					// Bypass
+					aze<apm>.Instance.CanChannelLogin = true;
+					// 反
+					object arfInstance = aze<arf>.Instance; // 假设 Instance 返回的是 arf 单例
+
+					// 安全地通过反射修改字段 d
+					Type arfType = typeof(arf);
+					FieldInfo fieldI = arfType.GetField("i", BindingFlags.Public | BindingFlags.Instance);
+					if (fieldI != null)
+					{
+						fieldI.SetValue(arfInstance, true);
+						Console.WriteLine("设置bool成功");
+					}
+					// 解析Cookie
+					JObject cookieJson = JObject.Parse(cookie);
+					SauthJsonEntity sauthJsonEntity = JsonConvert.DeserializeObject<SauthJsonEntity>(cookieJson["sauth_json"].ToString());
+					string randomUDID = GenerateRandomString();
+					string randomDeviceId = GenerateRandomString();
+					aze<axh>.Instance.App.UDID = randomUDID;
+					aze<axh>.Instance.App.DeviceId = randomDeviceId;
+					// sauthJsonEntity.udid = randomUDID;
+					// sauthJsonEntity.deviceid = randomDeviceId;
+					FieldInfo fieldD = arfType.GetField("d", BindingFlags.Public | BindingFlags.Instance);
+					if (fieldD != null)
+					{
+						fieldD.SetValue(arfInstance, JsonConvert.SerializeObject(sauthJsonEntity));
+						Console.WriteLine("设置Cookie成功");
+					}
+					Path_Bool.CookieLoginWithoutMpay = true;
+					aze<apm>.Instance.h();
+				}
+				else
+				{
+					No_RealName(1);
+				}
+				
 				if (Path_Bool.IsLogin)
 				{
 					No_RealName(0);
