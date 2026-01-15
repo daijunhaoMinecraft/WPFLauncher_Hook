@@ -1934,6 +1934,22 @@ public class SimpleHttpServer
             sendJsonResponse(context.Response, errorResponse);
         }
     }
+    
+    private void HandleOptionsRequest(HttpListenerContext context)
+    {
+        // 处理CORS
+        // var request = context.Request;
+        var response = context.Response;
+
+        // // 设置通用 CORS 头（允许所有来源、方法、头部）
+        // response.Headers["Access-Control-Allow-Origin"] = "*";
+        // response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
+        // response.Headers["Access-Control-Allow-Headers"] = "*"; // 或指定具体头，如 "Content-Type, Authorization"
+
+        // // 处理预检请求（OPTIONS）
+        response.StatusCode = (int)HttpStatusCode.OK;
+        response.Close();
+    }
     #endregion
 
     #region ProcessWebSocketRequest
@@ -2074,9 +2090,19 @@ public class SimpleHttpServer
             {
                 // 等待并获取客户端请求
                 var context = _httpListener.GetContext();
+                
+                // 设置通用 CORS 头（允许所有来源、方法、头部）
+                context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+                context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS";
+                context.Response.Headers["Access-Control-Allow-Headers"] = "*"; // 或指定具体头，如 "Content-Type, Authorization"
+                
                 try
                 {
-                    if (apiRequestList.Contains(context.Request.Url.AbsolutePath))
+                    if (context.Request.HttpMethod == "OPTIONS")
+                    {
+                        HandleOptionsRequest(context);
+                    }
+                    else if (apiRequestList.Contains(context.Request.Url.AbsolutePath))
                     {
                         handleWebApiRequest(context);
                     }
