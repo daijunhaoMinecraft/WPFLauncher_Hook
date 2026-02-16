@@ -461,10 +461,10 @@ public class SimpleHttpServer
                 context.Response.Close(); // 确保响应被正确关闭
                 break;
             case "/get_login_info":
-                SendResponse.a = (string)typeof(arf).GetField("a").GetValue(aze<arg>.Instance);
-                ;
-                SendResponse.b = (string)typeof(arf).GetField("b").GetValue(aze<arg>.Instance);
-                ;
+                // SendResponse.a = (string)typeof(arf).GetField("a").GetValue(aze<arg>.Instance);
+                // ;
+                // SendResponse.b = (string)typeof(arf).GetField("b").GetValue(aze<arg>.Instance);
+                // ;
                 SendResponse.UserInfo =
                     JsonConvert.DeserializeObject<JObject>(
                         JsonConvert.SerializeObject(aze<arg>.Instance.User));
