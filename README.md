@@ -1,5 +1,5 @@
 # WPFLauncher_Hook
-
+[API 文档](https://wpflauncherhook.apifox.cn/)<br/>
 手机号登录教程 [PhoneLogin.md](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/blob/main/PhoneLogin.md)<br/>
 网易我的世界启动器修改版<br />
 **有问题/建议记得去提[Issue](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)**<br />
