@@ -5,6 +5,10 @@
 **有问题/建议记得去提[Issue](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)**<br />
 **代码全部开源,欢迎各位积极提交PR去改进代码**<br />
 **github src中bin里面的Mcl.Core.dll为测试版本(供想尝鲜的用户使用)**<br />
+
+## 使用须知
+**项目仅供学习交流使用，严禁用于非法用途等多类用途使用(不止这点，还有需遵守[使用条款](#使用条款))，否则后果自负**
+
 # 特点
  - DLL替换,简单操作即可安装
  - 支持多开网易我的世界启动器
