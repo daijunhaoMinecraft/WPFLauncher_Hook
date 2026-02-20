@@ -51,7 +51,7 @@
 - 支持添加配置模板(配置模板位置:MCLauncher/ConfigTemplate, 文件名称:Name.json, json内容格式为MCLauncher/config.json)
 - 支持导入上次调试的配置
 
-### 4.登录
+#### 4.登录
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220175726329.png" width="700" alt="image-20260220175726329"/></div>
 
