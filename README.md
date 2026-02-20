@@ -28,7 +28,7 @@
 - 减少磁盘占用(可能你压根没有玩发烧平台的游戏, 因此会占用你俩份磁盘空间(一份是网易我的世界启动器本体, 另一份是发烧平台))
 - 支持32位电脑启动网易我的世界启动器(可能仅此启动,估计Java等可能是x64位,并且基岩版网易放弃了x86,也就是熟知的windowsmc)
 
-#### 1. 控制台显示
+#### 2. 控制台显示
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220174956351.png" width="700" alt="image-20260220174956351"/></div>
 
@@ -38,7 +38,7 @@
 - 支持显示相关的事件信息(比如拦截反作弊发包、联机大厅进入房间的详细信息等)
 - 支持显示Sauth(Cookie)内容等(因此提出Issue的时候需抹除掉重要信息如Sauth)...
 
-#### 2.配置文件
+#### 3.配置文件
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220175414226.png" width="700" alt="image-20260220175414226"/></div>
 
@@ -51,7 +51,7 @@
 - 支持添加配置模板(配置模板位置:MCLauncher/ConfigTemplate, 文件名称:Name.json, json内容格式为MCLauncher/config.json)
 - 支持导入上次调试的配置
 
-### 3.登录
+### 4.登录
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220175726329.png" width="700" alt="image-20260220175726329"/></div>
 
@@ -64,7 +64,7 @@
 - 支持4399账号登录/[网易手机号登录](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/blob/main/PhoneLogin.md)/Sauth(Cookie)登录
 - 自动导入上次使用的Sauth/4399账号信息
 
-#### 4.联机大厅
+#### 5.联机大厅
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220181140851.png" width="700" alt="image-20260220181140851"/></div>
 
@@ -96,7 +96,7 @@
   - 支持UserID拉黑玩家/玩家名称正则表达式拉黑玩家
 - and so on...
 
-#### 5.基岩版
+#### 6.基岩版
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220183145651.png" width="700" alt="image-20260220183145651"/></div>
 
@@ -105,7 +105,7 @@
 - 支持基岩版游戏选择(可选择启动不同类型的基岩版,比如不同材质/不同版本的基岩版)
 - 支持屏蔽基岩版文件校验(校验Minecraft.Windows.exe/.checkInfo文件等)
 
-#### 6.(重点)反作弊的屏蔽
+#### 7.(重点)反作弊的屏蔽
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220183607156.png" width="700" alt="image-20260220183607156"/></div>
 
@@ -120,7 +120,7 @@
 - 防止在任何世界(如单人世界/多人游戏)因开如鼠大侠/按键精灵等第三方软件导致封号问题(说实话单人世界也检测我是真没绷住)
 - 随机化mac地址/硬盘机器码
 
-#### 7.(NEW!) 本地联机引流支持
+#### 8.(NEW!) 本地联机引流支持
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f3639393264363763613763613836356131643334343632324343454b496a51693037.png" width="700" alt="'68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f3639393264363763613763613836356131643334343632324343454b496a51693037'"/></div>
 
@@ -128,7 +128,7 @@
 
 - 此功能的添加来源于Issue #7 没错,相比[Koud-Wind/Netease-minecraft-LAN-connects-to-Server](https://github.com/Koud-Wind/Netease-minecraft-LAN-connects-to-Server)项目有一点不同的是本程序将该步骤简化了,玩家只需要启动服务器,然后再输入服务器的内网IP端口就可以了
 
-#### 8.(重点) HTTP服务端/WebSocket服务端(开发者的喜爱,可用于开发插件等功能)
+#### 9.(重点) HTTP服务端/WebSocket服务端(开发者的喜爱,可用于开发插件等功能)
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220184537461.png" width="700" alt="image-20260220184537461"/></div>
 
@@ -148,7 +148,7 @@
 
 - 具体功能请见[NeteaseMinecraftHook API文档](https://wpfhook.theconsole.top/
 
-#### 9. (重点) 多开网易我的世界启动器
+#### 10. (重点) 多开网易我的世界启动器
 
 <div align="center"><img src="https://camo.githubusercontent.com/3ad8cd6596243c70237849cf6591f48d91e45b486d255f89696b7762c7dba4ef/68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f36386131623861393865303564623237313231323538393457674f65695550693036" width="700" alt="d13f74318acfd6eb47e66aad5b21b675.png"/></div>
 
@@ -156,7 +156,7 @@
 
 - 去除网易我的世界启动器禁用多开的问题
 
-#### 10. 禁用活动广告
+#### 11. 禁用活动广告
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220190722427.png" width="700" alt="image-20260220190722427"/></div>
 
@@ -164,7 +164,7 @@
 
 - 禁用此类型的广告
 
-#### 11. 其他
+#### 12. 其他
 
 - DLL替换,简单操作即可安装
 - 去除敏感词检测(部分在线类功能可能还是会有云端检测的)
