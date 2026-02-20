@@ -82,7 +82,7 @@
 
 <p align="center" style="color: #808080">来自3.0.5-DLL-Public的截图(支持启动时更改IP端口)</p>
 
-<div align="center"><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260220185947702.png" width="700" alt="image-20260220185947702"/></div>
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220185947702.png" width="700" alt="image-20260220185947702"/></div>
 
 <p align="center" style="color: #808080">不限数字的设置密码(支持进入房间时房间密码也可输入不限数字的密码)</p>
 
