@@ -57,7 +57,7 @@
 
 <p align="center" style="color: #808080">输入网易账号登录后的弹窗</p>
 
-<div align="center"><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260220181855955.png" width="700" alt="image-20260220181855955"/></div>
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220181855955.png" width="700" alt="image-20260220181855955"/></div>
 
 <p align="center" style="color: #808080">关闭网易登录界面的弹窗(网易登录界面点击右上角"X"), 适用于没有网易邮箱账号的玩家</p>
 
