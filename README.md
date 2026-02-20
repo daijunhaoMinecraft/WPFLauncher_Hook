@@ -4,7 +4,7 @@
 
 <p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
-### 免责声明
+# 免责声明
 
 **本项目仅供学习交流使用, 严禁用于非法用途/商业/倒卖等多类用途使用**
 
@@ -12,7 +12,7 @@
 
 如遇到软件功能类bug/提交一些建议等建议你提交[Issues](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)同时提交功能的时候请确保这个功能可以被实现(推荐提交的是PR,作者实现不了功能的会直接关闭Issue)
 
-### 功能
+# 功能
 
 #### 1.(重点)发烧平台绕过
 
