@@ -4,7 +4,34 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/DisableClearProcess.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Model/TransferStruct.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/PacketDeserializer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/RoomManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/RoomManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SalogPocket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SalogPocket.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebRTCEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebRTCEx.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebSocket_WebRtc.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebSocket_WebRtc.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/MethodHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/MethodHook.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HttpHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HttpHelper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Var/WebRtcVar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Var/WebRtcVar.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/ClientSelectPort.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/ClientSelectPort.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/ForwarderControlPanel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/ForwarderControlPanel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.7z" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.7z" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.assets.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -27,8 +54,13 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/42d26cc1c43d41479e23d48844ac4f98700200/5f/dcce7782/abx.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/55d349a038b2464ba45aba3c8b5c0782700200/7d/5731d442/ait.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/55d349a038b2464ba45aba3c8b5c0782700200/ea/df71d1bf/UserBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fcd34e621d73473aacfa0467c0fef5548fc00/af/f23757b5/LogEventInfo.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/DisableClearProcess.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveHyt.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Model/TransferStruct.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/PacketDeserializer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/WPFLauncherLib/Main.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -129,7 +161,10 @@
       <workItem from="1767425569993" duration="3139000" />
       <workItem from="1768480881253" duration="338000" />
       <workItem from="1770867406039" duration="3000" />
-      <workItem from="1771230054176" duration="317000" />
+      <workItem from="1771230054176" duration="488000" />
+      <workItem from="1771424870646" duration="1208000" />
+      <workItem from="1771438994759" duration="9872000" />
+      <workItem from="1771518155435" duration="20616000" />
     </task>
     <task id="LOCAL-00001" summary="修复&quot;等待用户选择好IP地址&quot;部分可能会因为while无Sleep问题造成系统卡顿">
       <option name="closed" value="true" />
@@ -299,7 +334,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771230328616</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="修复get_login_info的api接口无法获取的问题">
+      <option name="closed" value="true" />
+      <created>1771230518487</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1771230518487</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -341,7 +384,8 @@
     <MESSAGE value="update PhoneLogin.md" />
     <MESSAGE value="Update README.md" />
     <MESSAGE value="更新版本: 3.0.9" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新版本: 3.0.9" />
+    <MESSAGE value="修复get_login_info的api接口无法获取的问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复get_login_info的api接口无法获取的问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -433,7 +433,7 @@ namespace DotNetTranstor.Hookevent
 		}
 
 		[CompilerGenerated]
-		[HookMethod("WPFLauncher.ViewModel.LobbyGame.jo", "v", "GetMemberInfoOriginal")]
+		[HookMethod("WPFLauncher.ViewModel.LobbyGame.jp", "v", "GetMemberInfoOriginal")]
 		private void v(EntityListResponse<LobbyRoomMemberInfoEntity> result)
 		{
 			if (Path_Bool.RoomInfo?.entity == null) return;

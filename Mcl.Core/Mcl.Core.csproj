@@ -29,6 +29,7 @@
     <Compile Include="DotNetTranstor\Extensions\TypeExtensions.cs" />
     <Compile Include="DotNetTranstor\Hookevent\BypassUpdate.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\DisableClearProcess.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ExitPop.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Get_Netease_Error.cs" />
     <Compile Include="DotNetTranstor\Hookevent\LoginFucker.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="DotNetTranstor\LDasm.cs" />
     <Compile Include="DotNetTranstor\Libraries\String.cs" />
     <Compile Include="DotNetTranstor\MethodHook.cs" />
+    <Compile Include="DotNetTranstor\Model\TransferStruct.cs" />
     <Compile Include="DotNetTranstor\Monitor.cs" />
     <Compile Include="DotNetTranstor\MonitorAttribute.cs" />
     <Compile Include="DotNetTranstor\NativeAPI.cs" />
@@ -99,6 +101,7 @@
     <Compile Include="DotNetTranstor\Tools\JS4399Result.cs" />
     <Compile Include="DotNetTranstor\Tools\LocalProxyListener.cs" />
     <Compile Include="DotNetTranstor\Tools\Ocr.cs" />
+    <Compile Include="DotNetTranstor\Tools\PacketDeserializer.cs" />
     <Compile Include="DotNetTranstor\Tools\RandomName.cs" />
     <Compile Include="DotNetTranstor\Tools\StringExtensions.cs" />
     <Compile Include="DotNetTranstor\Tools\Tool.cs" />

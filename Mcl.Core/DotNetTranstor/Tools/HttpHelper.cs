@@ -50,6 +50,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using Mcl.Core.DotNetTranstor.Tools;
+using Mcl.Core.DotNetTranstor.Var;
 using WPFLauncher.View.Launcher.LobbyGame;
 
 namespace DotNetTranstor.Tools
@@ -459,6 +460,15 @@ public class SimpleHttpServer
                 context.Response.Redirect("https://wpflauncherhook.apifox.cn/");
                 IsSendResponseFlag = false;
                 context.Response.Close(); // 确保响应被正确关闭
+                break;
+            case "/LanGame/PlayerList":
+                SendResponse.code = 0;
+                SendResponse.message = "正常返回";
+                SendResponse.data = new
+                {
+                    playerlist = WebRtcVar.PlayerList,
+                    InLanGame = WebRtcVar.AitFunction != null
+                };
                 break;
             case "/get_login_info":
                 // SendResponse.a = (string)typeof(arf).GetField("a").GetValue(aze<arg>.Instance);

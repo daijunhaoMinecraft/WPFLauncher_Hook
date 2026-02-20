@@ -165,6 +165,7 @@ namespace DotNetDetour
                 var originalMethod = detour.OriginalMethod;
                 var engine = DetourFactory.CreateDetourEngine();
                 engine.Patch(rawMethod, hookMethod, originalMethod);
+                // Console.WriteLine($"[Detour] Hook成功! Target:{rawMethod.DeclaringType.Name}.{rawMethod.Name} -> Hook:{hookMethod.Name}");
                 Debug.WriteLine("已将目标方法 \"{0}, {1}\" 的调用指向 \"{2}, {3}\" Ori: \"{4}\".", rawMethod.ReflectedType.FullName, rawMethod
                     , hookMethod.ReflectedType.FullName, hookMethod
                     , originalMethod == null ? " (无)" : originalMethod.ToString());
@@ -202,60 +203,121 @@ namespace DotNetDetour
         }
 
         // 查找匹配函数
+        // private static MethodBase FindMethod(MethodBase[] methods, string name, MethodBase like, Assembly[] assemblies)
+        // {
+        //     var likeParams = like.GetParameters();
+        //     foreach (var item in methods)
+        //     {
+        //         if (item.Name != name)
+        //         {
+        //             continue;
+        //         }
+        //
+        //         var paramArr = item.GetParameters();
+        //         var len = paramArr.Count();
+        //         if (len != likeParams.Count())
+        //         {
+        //             continue;
+        //         }
+        //
+        //         for (var i = 0; i < len; i++)
+        //         {
+        //             var t1 = likeParams[i];
+        //             var t2 = paramArr[i];
+        //             //类型相同 或者 fullname都为null的泛型参数
+        //             if (t1.ParameterType.FullName == t2.ParameterType.FullName)
+        //             {
+        //                 continue;
+        //             }
+        //
+        //             //手动保持的类型
+        //             var rmtype = t1.GetCustomAttribute<RememberTypeAttribute>();
+        //             if (rmtype != null)
+        //             {
+        //                 //泛型参数
+        //                 if (rmtype.IsGeneric && t2.ParameterType.FullName == null)
+        //                 {
+        //                     continue;
+        //                 }
+        //                 //查找实际类型
+        //                 if (rmtype.TypeFullNameOrNull != null)
+        //                 {
+        //                     if (rmtype.TypeFullNameOrNull == t2.ParameterType.FullName)
+        //                     {
+        //                         continue;
+        //                     }
+        //
+        //                     var type = TypeResolver(rmtype.TypeFullNameOrNull, assemblies);
+        //                     if (type == t2.ParameterType)
+        //                     {
+        //                         continue;
+        //                     }
+        //                 }
+        //             }
+        //             goto next;
+        //         }
+        //         return item;
+        //     next:
+        //         continue;
+        //     }
+        //     return null;
+        // }
+        
+        // Fix By Gemini AI
         private static MethodBase FindMethod(MethodBase[] methods, string name, MethodBase like, Assembly[] assemblies)
         {
-            var likeParams = like.GetParameters();
+            var likeParams = like.GetParameters(); 
             foreach (var item in methods)
             {
-                if (item.Name != name)
-                {
-                    continue;
-                }
+                if (item.Name != name) continue;
 
-                var paramArr = item.GetParameters();
-                var len = paramArr.Count();
-                if (len != likeParams.Count())
-                {
-                    continue;
-                }
+                var paramArr = item.GetParameters(); 
+                int targetLen = paramArr.Length;
+                int hookLen = likeParams.Length;
 
-                for (var i = 0; i < len; i++)
+                // 情况1：完全匹配
+                // 情况2：Hook方法多一个参数（用于接收 target/this）
+                bool isInstanceMatch = !item.IsStatic && hookLen == targetLen + 1;
+                bool isNormalMatch = hookLen == targetLen;
+
+                if (!isInstanceMatch && !isNormalMatch) continue;
+
+                int offset = isInstanceMatch ? 1 : 0; 
+
+                for (var i = 0; i < targetLen; i++)
                 {
-                    var t1 = likeParams[i];
-                    var t2 = paramArr[i];
-                    //类型相同 或者 fullname都为null的泛型参数
-                    if (t1.ParameterType.FullName == t2.ParameterType.FullName)
+                    var t1 = likeParams[i + offset]; // Hook方法的参数
+                    var t2 = paramArr[i];           // 目标方法的参数
+
+                    // 基础类型全名比对
+                    if (t1.ParameterType.FullName != null && t2.ParameterType.FullName != null)
                     {
-                        continue;
+                        if (t1.ParameterType.FullName == t2.ParameterType.FullName)
+                            continue; // 匹配成功，检查下一个
+                    }
+                    else if (t1.ParameterType.FullName == null && t2.ParameterType.FullName == null)
+                    {
+                        // 泛型参数通常 FullName 为空
+                        continue; 
                     }
 
-                    //手动保持的类型
+                    // --- 重要：恢复被你省略的 RememberTypeAttribute 逻辑 ---
                     var rmtype = t1.GetCustomAttribute<RememberTypeAttribute>();
                     if (rmtype != null)
                     {
-                        //泛型参数
-                        if (rmtype.IsGeneric && t2.ParameterType.FullName == null)
-                        {
-                            continue;
-                        }
-                        //查找实际类型
+                        if (rmtype.IsGeneric && t2.ParameterType.FullName == null) continue;
                         if (rmtype.TypeFullNameOrNull != null)
                         {
-                            if (rmtype.TypeFullNameOrNull == t2.ParameterType.FullName)
-                            {
-                                continue;
-                            }
-
+                            if (rmtype.TypeFullNameOrNull == t2.ParameterType.FullName) continue;
                             var type = TypeResolver(rmtype.TypeFullNameOrNull, assemblies);
-                            if (type == t2.ParameterType)
-                            {
-                                continue;
-                            }
+                            if (type == t2.ParameterType) continue;
                         }
                     }
-                    goto next;
+                    // -------------------------------------------------------
+
+                    goto next; // 类型不匹配，跳到下一个 MethodBase
                 }
-                return item;
+                return item; // 所有参数匹配成功
             next:
                 continue;
             }

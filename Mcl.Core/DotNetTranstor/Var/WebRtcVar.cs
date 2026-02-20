@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Mcl.Core.DotNetTranstor.Window;
+using WPFLauncher.Common;
+using WPFLauncher.Manager;
 using WPFLauncher.Manager.LanGame;
 using WPFLauncher.Model;
 using WPFLauncher.SQLite;
@@ -27,9 +30,25 @@ namespace Mcl.Core.DotNetTranstor.Var
         public static ForwardMode Mode = ForwardMode.None;
         
         public static ait AitFunction = null;
+        public static WPFLauncher.Manager.aqb AqbFunction = null;
         public static object CmInstance = null;
         // public static ProcessTcpServer TcpServer = null;
         public static ForwarderControlPanel ControlPanel = new ForwarderControlPanel();
+        public static List<uint> PlayerList = new List<uint>();
+
+        public static void ExitRoomFunction()
+        {
+            Console.WriteLine("[WebRtc] 退出房间");
+            WebRtcVar.StopForwarder();
+            WebRtcVar.ControlPanel.Close();
+            WebRtcVar.PlayerList.Clear();
+            WebRtcVar.Mode = ForwardMode.None;
+            AitFunction = null;
+            AqbFunction = null;
+            CmInstance = null;
+
+            Console.WriteLine("[WebRtc] 清理完毕");
+        }
 
 
         private static string _targetPeerId = "Any";

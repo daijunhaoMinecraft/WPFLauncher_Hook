@@ -51,7 +51,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         {
         }
 
-        [HookMethod("WPFLauncher.co", "j", "f")]
+        [HookMethod("WPFLauncher.co", "j", null)]
         public static void SalogHandler3(string logType, string logData)
         {
             Console.ForegroundColor = ConsoleColor.Green;
@@ -66,7 +66,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.co", "i", "f")]
+        [HookMethod("WPFLauncher.co", "i", null)]
         public static int SalogHandler4(string logType, Dictionary<string, object> logValues)
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -81,7 +81,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.co", "h", "f")]
+        [HookMethod("WPFLauncher.co", "h", null)]
         public static int SalogHandler5(string logType, Dictionary<string, object> logData)
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -96,7 +96,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.co", "g", "f")]
+        [HookMethod("WPFLauncher.co", "g", null)]
         public static int SalogHandler6(string logType, Dictionary<string, string> logEntries)
         {
             Console.BackgroundColor = ConsoleColor.DarkGray;
@@ -110,28 +110,18 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
             Console.BackgroundColor = ConsoleColor.Black;
             return 0;
         }
-        
-        [OriginalMethod]
-        public static void Original_SalogHandler_7(string logType, string phase, int code = 0, string message = "", string tag1 = "", string tag2 = "", string tag3 = "", bool flag = false)
-        {
-        }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Network.Protocol.DC.agy", "a", "f")]
+        [HookMethod("WPFLauncher.Network.Protocol.DC.agz", "a", null)]
         public static void SalogHandler7(string logType, string phase, int code = 0, string message = "", string tag1 = "", string tag2 = "", string tag3 = "", bool flag = false)
         {
             te.Default.Info(string.Format("DoDiagnosticLog;type:{0}, phase:{1}, code:{2}, message:{3}, tag1:{4}, tag2:{5}, tag3:{6} ", 
                 new object[] { logType, phase, code, message, tag1, tag2, tag3 }), new object[0]);
             return;
         }
-        
-        [OriginalMethod]
-        public static void Original_SalogHandler_8(string projectType, Dictionary<string, string> tags, Dictionary<string, int> fields)
-        {
-        }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Network.Protocol.DC.agv", "b", "f")]
+        [HookMethod("WPFLauncher.Network.Protocol.DC.agz", "b", null)]
         public static void SalogHandler8(string projectType, Dictionary<string, string> tags, Dictionary<string, int> fields)
         {
             // project = "x19",

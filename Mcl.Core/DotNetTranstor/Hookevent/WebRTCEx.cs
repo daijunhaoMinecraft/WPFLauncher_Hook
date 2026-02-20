@@ -12,7 +12,9 @@ using Mcl.Core.DotNetTranstor.Tools;
 using Mcl.Core.DotNetTranstor.Var;
 using Mcl.Core.DotNetTranstor.Window;
 using WPFLauncher.Common;
+using WPFLauncher.Manager;
 using WPFLauncher.Manager.Configuration;
+using WPFLauncher.Manager.Game.Pipeline;
 using WPFLauncher.Manager.LanGame;
 using WPFLauncher.Model;
 using WPFLauncher.Model.Game.GameClient;
@@ -30,52 +32,65 @@ public class WebRtcEx : IMethodHook
     {
         return 0;
     }
-
+    
     // 拦截Java启动
     [HookMethod("WPFLauncher.Manager.Game.Launcher.auv", "m", "RunGameOriginal")]
     private int RunGame()
     {
-        if (WebRtcVar.Mode == ForwardMode.Client)
+        try
         {
-            MessageBoxResult res = uz.q("是否将数据转发到一个端口上(WebRtc->端口->玩家)", "", "是", "否", "");
-            if (res == MessageBoxResult.OK)
+            if (WebRtcVar.Mode == ForwardMode.Client)
             {
-                using (var f = new ClientSelectPort()) f.ShowDialog();
-                WebRtcVar.InitForwarder();
-                // 显式指定 System.Windows.Forms 避免和 WPF 冲突
-                Task.Run(() => { System.Windows.Forms.Application.Run(new ForwarderControlPanel()); });
-                return 0;
+                MessageBoxResult res = uz.q("是否将数据转发到一个端口上(WebRtc->端口->玩家)", "", "是", "否", "");
+                if (res == MessageBoxResult.OK)
+                {
+                    using (var f = new ClientSelectPort()) f.ShowDialog();
+                    WebRtcVar.InitForwarder();
+                    // 显式指定 System.Windows.Forms 避免和 WPF 冲突
+                    Task.Run(() => { System.Windows.Forms.Application.Run(new ForwarderControlPanel()); });
+                    return 0;
+                }
             }
+            else if (WebRtcVar.Mode == ForwardMode.Server)
+            {
+                MessageBoxResult res = uz.q("是否启用端口转发功能(端口->WebRtc->玩家)", "", "是", "否", "");
+                if (res == MessageBoxResult.OK)
+                {
+                    WebRtcVar.Mode = ForwardMode.Server;
+                    using (var f = new ServerSelectPort()) f.ShowDialog();
+                    if (WebRtcVar.AitFunction == null)
+                    {
+                        Console.WriteLine("ait 为 null");
+                    }
+                    else if (WebRtcVar.AitFunction.axy == null)
+                    {
+                        Console.WriteLine("发包函数为Null");
+                    }
+                    CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
+                    // WebRtcVar.gameM.axy.@as(new object[]
+                    // {
+                    //     528,
+                    //     (byte)RoomVisibleStatus.OPEN
+                    // });
+                    CallShowRoomManageReflection();
+            
+                    WebRtcVar.InitForwarder();
+                    return 0;
+                }
+            }
+            return RunGameOriginal();
         }
-        else if (WebRtcVar.Mode == ForwardMode.Server)
+        catch (AccessViolationException ave)
         {
-            MessageBoxResult res = uz.q("是否启用端口转发功能(端口->WebRtc->玩家)", "", "是", "否", "");
-            if (res == MessageBoxResult.OK)
-            {
-                WebRtcVar.Mode = ForwardMode.Server;
-                using (var f = new ServerSelectPort()) f.ShowDialog();
-                if (WebRtcVar.AitFunction == null)
-                {
-                    Console.WriteLine("ait 为 null");
-                }
-                else if (WebRtcVar.AitFunction.axy == null)
-                {
-                    Console.WriteLine("发包函数为Null");
-                }
-                CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
-                // WebRtcVar.gameM.axy.@as(new object[]
-                // {
-                //     528,
-                //     (byte)RoomVisibleStatus.OPEN
-                // });
-                CallShowRoomManageReflection();
-
-                WebRtcVar.InitForwarder();
-                return 0;
-            }
+            Console.WriteLine($"内存违规: {ave.Message}");
+            Console.WriteLine($"StackTrace: {ave.StackTrace}");
+            return 0;
         }
-
-        return RunGameOriginal();
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        return 0;
     }
 
     /// <summary>
@@ -191,24 +206,67 @@ public class WebRtcEx : IMethodHook
         }
     }
 
+    // [OriginalMethod]
+    // public static GameM GetGameMOriginal(axc content)
+    // {
+    //     return null;
+    // }
+    //
+    // [HookMethod("WPFLauncher.Model.Game.Factory.all", "a", "GetGameMOriginal")]
+    // public static GameM GetGameM(axc content)
+    // {
+    //     GameM gameM = GetGameMOriginal(content);
+    //     if (content.GameType == GType.LAN_GAME && !sa.a(content.GameVersion))
+    //     {
+    //         ait originalAit = WebRtcVar.AitFunction;
+    //         WebRtcVar.AitFunction = (ait)gameM;
+    //         Console.WriteLine("[WebRtc] 获取游戏实例成功");
+    //     }
+    //
+    //     return gameM;
+    // }
+
     [OriginalMethod]
-    public static GameM GetGameMOriginal(axc content)
+    public void SetGameMOriginal(ait gameM) {}
+    
+    [HookMethod("WPFLauncher.Manager.LanGame.atm", "e", "SetGameMOriginal")]
+    public void SetGameM(ait gameM)
     {
-        return null;
+        WebRtcVar.AitFunction = gameM;
+        Console.WriteLine("获取gameM实例成功!");
+        SetGameMOriginal(gameM);
     }
+    
+    // [HookMethod("WPFLauncher.Manager.Game.Crash.ava", "b", null)]
+    // public static string b(int ogm)
+    // {
+    //     // 输出当前函数调用的堆栈信息
+    //     StackTrace stackTrace = new StackTrace(true);
+    //     Console.WriteLine("[WebRtcEx.b] 调用堆栈:");
+    //     for (int i = 0; i < stackTrace.FrameCount; i++)
+    //     {
+    //         StackFrame frame = stackTrace.GetFrame(i);
+    //         MethodBase method = frame.GetMethod();
+    //         Console.WriteLine($"  [{i}] {method.DeclaringType?.FullName}.{method.Name} (行: {frame.GetFileLineNumber()})");
+    //     }
+    //     return "恭喜: 你的Crash被我截到了";
+    // }
 
-    [HookMethod("WPFLauncher.Model.Game.Factory.all", "a", "GetGameMOriginal")]
-    public static GameM GetGameM(axc content)
+    [OriginalMethod]
+    private void ProcessErrOriginal(avo min)
     {
-        GameM gameM = GetGameMOriginal(content);
-        if (content.GameType == GType.LAN_GAME && !sa.a(content.GameVersion))
+    }
+    
+    [HookMethod("WPFLauncher.Manager.aqb", "c", "ProcessErrOriginal")]
+    private void ProcessErr(avo min)
+    {
+        if (min.a > LTaskOpcode.NEXT)
         {
-            WebRtcVar.AitFunction = (ait)gameM;
-            // Console.WriteLine("[WebRtc] 获取游戏实例成功");
+            min.a = LTaskOpcode.CANCEL;
         }
-
-        return gameM;
+        ProcessErrOriginal(min);
     }
+
 
     #region 判断玩家当前状态(进入房间/创建房间)
 
@@ -255,12 +313,52 @@ public class WebRtcEx : IMethodHook
     [HookMethod("WPFLauncher.Manager.LanGame.atm", "t", "ExitRoomOriginal")]
     public void ExitRoom()
     {
-        Console.WriteLine("[WebRtc] 退出房间");
-        WebRtcVar.StopForwarder();
-        WebRtcVar.ControlPanel.Close();
-        WebRtcVar.Mode = ForwardMode.None;
-
-        Console.WriteLine("[WebRtc] 清理完毕");
+        // Console.WriteLine("[WebRtc] 退出房间");
+        // WebRtcVar.StopForwarder();
+        // WebRtcVar.ControlPanel.Close();
+        // WebRtcVar.Mode = ForwardMode.None;
+        // // 1. 获取当前实例的 Type
+        // Type type = aze<arc>.Instance.GetType();
+        //
+        // // 2. 获取私有实例字段 "b"
+        // // BindingFlags 说明：
+        // // - NonPublic: 包含私有/保护成员
+        // // - Instance: 包含实例成员（非静态）
+        // // - DeclaredOnly: 仅在当前类声明中查找（可选，避免继承链干扰）
+        // FieldInfo field = type.GetField("b", 
+        //     BindingFlags.NonPublic | BindingFlags.Instance);
+        //
+        // // 3. 如果当前类没找到，尝试在基类中递归查找
+        // if (field == null)
+        // {
+        //     Type baseType = type.BaseType;
+        //     while (baseType != null && field == null)
+        //     {
+        //         field = baseType.GetField("b", 
+        //             BindingFlags.NonPublic | BindingFlags.Instance);
+        //         baseType = baseType.BaseType;
+        //     }
+        // }
+        //
+        // // 4. 设置新值
+        // if (field != null)
+        // {
+        //     GameM newValue = null; // 或你想要赋值的新 GameM 实例
+        //     field.SetValue(this, newValue);
+        //
+        //     // 可选：验证是否设置成功
+        //     var currentValue = field.GetValue(this);
+        //     Console.WriteLine($"字段 b 当前值: {currentValue}");
+        // }
+        // else
+        // {
+        //     Console.WriteLine("未找到字段 'b'，请检查：");
+        //     Console.WriteLine($"- 当前类型: {type.FullName}");
+        //     Console.WriteLine($"- 字段名是否正确（混淆后可能变化）");
+        // }
+        //
+        // Console.WriteLine("[WebRtc] 清理完毕");
+        WebRtcVar.ExitRoomFunction();
         ExitRoomOriginal();
     }
     
