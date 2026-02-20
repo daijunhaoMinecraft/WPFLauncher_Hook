@@ -1,113 +1,243 @@
-# WPFLauncher_Hook
-[API 文档](https://wpflauncherhook.apifox.cn/)<br/>
-手机号登录教程 [PhoneLogin.md](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/blob/main/PhoneLogin.md)<br/>
-网易我的世界启动器修改版<br />
-**有问题/建议记得去提[Issue](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)**<br />
-**代码全部开源,欢迎各位积极提交PR去改进代码**<br />
-**github src中bin里面的Mcl.Core.dll为测试版本(供想尝鲜的用户使用)**<br />
+# WPFLauncher Hook
 
-## 使用须知
-**项目仅供学习交流使用，严禁用于非法用途等多类用途使用(不止这点，还有需遵守[使用条款](#使用条款))，否则后果自负**
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/未标题-5.png" width="700" alt="未标题-5.png (1791×815)"/></div>
 
-# 特点
- - DLL替换,简单操作即可安装
- - 支持多开网易我的世界启动器
- - 有Http/Websocket协议,开发者的喜爱(可用于开发插件/辅助功能)
- - **可绕更新,可绕发烧平台**
- - 联机大厅反锁服(黑名单系统)
- - 强大的联机大厅房间管理神器
- - 去除敏感词检测(部分在线类功能可能还是会有云端检测的)
- - 调出控制台输出(可供开发者查看/普通玩家查看问题)
- - 支持4399登录
- - 支持Cookie登录
- - 去除活动广告
- - 支持外进IP(基岩版)
- - 去除网易内置进程检测(salog-new包)
- - 去除发包之日志类
- - 随机化mac地址/硬盘机器码
- - 去除网易我的世界基岩版更新
- - x86/x64基岩版可任意切换(x86版本没用了,目前诸如联机大厅/本地联机/网络游戏等使用x86基岩版进入的时候会显示"服务器发送了破损的数据包")
- - 防沉迷绕过(不过账号还是需要实名的,但是无需人脸识别,适用于如小白Cookie生成出来的Cookie为防沉迷阶段)
- - 加入房间后防止被房主自动踢出房间(自动加入房间)
- - 详细化房间信息输出
- - 解锁所有灰度测试功能(除a50setup外)
- - 联机大厅密码(加入房间/创建房间)支持任意字符(包括但不限于中文/字母等可以被识别的符号)而非单纯的数字
- - 每次退出房间的时候会提醒用户保存房间(用户自主选择是否保存房间,当然不让保存的房间是不会提醒的)
- - (and more)...<br />
+<p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
-**屏幕截图可看Release发布历史**<br />
-# 赞助作者
-[爱发电地址](https://afdian.com/a/daijunhao)<br/>
-![PixPin_2025-10-02_20-49-55.png](https://x19.fp.ps.netease.com/file/68de74e6ff2cf8b94b493df2SAlevXfG06)
- # 注意事项
-**使用此软件需要先安装[.NET6.0运行时](https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=6.0.36)才能正常使用,否则会遇到如下报错:**
-<br />
-App: C:\Users\Administrator\Desktop\bin\Debug\net48\WPFLauncher_Injet.exe<br />
-Architecture: x64<br />
-App host version: 6.0.36<br />
-.NET location: Not found<br /><br />
-Learn about runtime installation:<br />
-https://aka.ms/dotnet/app-launch-failed<br /><br />
+### 免责声明
 
-Download the .NET runtime:<br />
-https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=win10-x64&apphost_version=6.0.36<br />
+**本项目仅供学习交流使用, 严禁用于非法用途/商业/倒卖等多类用途使用**
 
-# 使用方法
-Step 1:前往[网易我的世界官网](https://mc.163.com/)上去下载32位包体<br/>
-**2025/8/12:Latest:目前网易我的世界启动器官网只有一个发烧平台的包体，[32位包体下载链接](https://adl.netease.com/d/g/mc/c/pe?type=windows)**<br/>
+本项目使用 GPL 3 开源, 也就是说你可以发布你修改本项目后的文件, 需要开源(**不得以任何方式阻止玩家获取源代码,包括但不限于倒卖等行为**), 当然可以在你的项目贴上你的赞助地址, 只不过需要贴上项目引用的是[这个项目的开源地址]([daijunhaoMinecraft/WPFLauncher_Hook: WPFLauncher Hook](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook))与作者名称
 
-![PixPin_2024-08-05_11-01-03](https://github.com/user-attachments/assets/513eb0b8-e6b3-430e-bfd5-f04ea80789ee)<br />
-![PixPin_2024-08-05_11-02-00](https://github.com/user-attachments/assets/5ad49668-ae2a-4692-8fc7-471a8ff65f3f)<br />
-![PixPin_2024-08-05_11-02-56](https://github.com/user-attachments/assets/4408f236-d421-4a01-b7a3-59ee060bbd7c)<br />
+如遇到软件功能类bug/提交一些建议等建议你提交[Issues](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)同时提交功能的时候请确保这个功能可以被实现(推荐提交的是PR,作者实现不了功能的会直接关闭Issue)
 
-Step 2:安装网易我的世界启动器(32位包体)<br />
+### 功能
 
-![PixPin_2024-08-05_11-03-49](https://github.com/user-attachments/assets/10fdb62b-c310-44ec-a697-2638df66c5de)<br />
-![PixPin_2024-08-05_11-05-37](https://github.com/user-attachments/assets/0f14ca32-98a3-4809-85f9-2e2ec539520f)<br />
-Step 3:更新网易我的世界启动器盒子<br />
+#### 1.(重点)发烧平台绕过
 
-![PixPin_2024-08-05_11-06-59](https://github.com/user-attachments/assets/873b22b3-d471-4153-b52d-c6b99329d364)<br />
-![PixPin_2024-08-05_11-12-27](https://github.com/user-attachments/assets/acdef99d-9dd5-43da-82c1-23d213f99bc7)<br />
-![PixPin_2024-08-05_11-13-36](https://github.com/user-attachments/assets/9364af33-729c-4b37-9873-b34e037f02ed)<br />
-![PixPin_2024-08-05_11-14-00](https://github.com/user-attachments/assets/354164c4-ede6-4b0e-82b8-68a0be37c4a5)<br />
-![PixPin_2024-08-05_11-14-35](https://github.com/user-attachments/assets/604b932e-5a40-49c1-8bc5-ce0f3c313a87)<br />
-![PixPin_2024-08-05_11-15-13](https://github.com/user-attachments/assets/f868f512-4135-4c7f-86de-cb89dd363e4d)<br />
-~~Step 4:Hook盒子~~(目前已废弃,接下来的方法均为替换文件)<br/>
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220180154495.png" width="700" alt="image-20260220180154495"/></div>
 
-![PixPin_2024-09-21_11-15-48](https://github.com/user-attachments/assets/84324db8-2288-4db8-aec8-b30bd02309ad)<br />
-![PixPin_2024-09-21_11-18-03](https://github.com/user-attachments/assets/24321f50-d3a2-4a51-b031-57d7833f253d)<br />
+<p align="center" style="color: #808080">以前的我的世界启动器会显示的登录界面</p>
 
-Tips:如果这里一直失败的话那证明了你的电脑配置非常的好,请到该软件目录下修改StartConfig.json的注入时间(单位毫秒)<br />
-也有可能是你没安装.NET 6.0运行时,请去到这个ReadME的开头，有提供下载链接<br />
+发烧平台绕过的好处
 
-[Latest]Step 4 替换文件(实际上是[WPFLauncher_fever_Bypass_1](https://github.com/daijunhaoMinecraft/WPFLauncher_fever_Bypass_1)的步骤,不发布在此处的原因是这是属于Hook的部分)<br />
-![354961211-5ce983b1-23c4-4bc8-bcab-32118194d862.png](https://x19.fp.ps.netease.com/file/689dbf0c585717a8691687a4F0kw1w3l06)
+- 解决启动器启动启动器的问题
 
-# 效果展示
-![PixPin_2024-09-21_11-18-46](https://github.com/user-attachments/assets/d2c9da80-64c7-47b1-9980-fb4cbc5a2eca)<br />
-![PixPin_2024-09-21_11-19-11](https://github.com/user-attachments/assets/ffdb2f8d-e303-4a35-9ec4-09ef4e71cb4b)<br />
-![PixPin_2024-09-21_11-19-29](https://github.com/user-attachments/assets/4aa77c4f-f1d6-4eaf-8569-81d258b941fe)<br />
-盒子可正常登录,不会修改盒子本身,同时也不会修改盒子其他文件,相当于[WPFLauncher_fever_Bypass](https://github.com/daijunhaoMinecraft/WPFLauncher_fever_Bypass)的升级版,只不过这是通过网络拦截的
-**(Hook盒子出现还是有提示发烧平台这时候就要多尝试几次了,若尝试几次无果后可以提交bug(这可能代表了新版本把命名空间给重命名了))**
-**若发现软件bug请到Issues处进行提交bug**
+- 减少发烧平台在后台的损耗(比如内存占用大)
+- 减少磁盘占用(可能你压根没有玩发烧平台的游戏, 因此会占用你俩份磁盘空间(一份是网易我的世界启动器本体, 另一份是发烧平台))
+- 支持32位电脑启动网易我的世界启动器(可能仅此启动,估计Java等可能是x64位,并且基岩版网易放弃了x86,也就是熟知的windowsmc)
 
-## 许可证
+#### 1. 控制台显示
 
-本项目使用 [GNU General Public License v3.0 (GPL-3.0)](https://www.gnu.org/licenses/gpl-3.0.html) 许可证。
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220174956351.png" width="700" alt="image-20260220174956351"/></div>
 
-## 使用条款
+<p align="center" style="color: #808080">控制台界面(可在WPFLauncher启动器根目录创建"DisableConsole"文件来禁用控制台)</p>
 
-我们希望用户能够自由使用、修改和分发本软件，但请注意以下几点：
+- 支持网易相关的日志显示
+- 支持显示相关的事件信息(比如拦截反作弊发包、联机大厅进入房间的详细信息等)
+- 支持显示Sauth(Cookie)内容等(因此提出Issue的时候需抹除掉重要信息如Sauth)...
 
-1. **源代码公开**：根据 GPL-3.0 许可证，任何人分发本软件的修改版本时，必须公开源代码。这意味着你不能将本软件或其修改版本作为封闭源代码的商业产品出售。
+#### 2.配置文件
 
-2. **禁止倒卖**：我们强烈反对任何形式的倒卖行为。任何试图将本软件打包并以付费形式分发的人，必须遵循 GPL-3.0 许可证的要求，公开源代码并遵循相同的开源条款。
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220175414226.png" width="700" alt="image-20260220175414226"/></div>
 
-3. **商业使用**：虽然本软件允许商业使用，但任何商业用途都必须遵循 GPL-3.0 的条款。你可以提供增值服务或支持，但不能限制他人获取源代码或使用软件。
+<p align="center" style="color: #808080">配置面板界面</p>
 
-4. **反馈与贡献**：我们欢迎社区的反馈和贡献。如果你对本软件有任何改进建议，欢迎提出！
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220182247700.png" width="700" alt="image-20260220182247700"/></div>
 
-感谢你的理解与支持，确保开源软件的自由与透明！
+<p align="center" style="color: #808080">保存过配置后每次启动的弹窗</p>
+
+- 支持添加配置模板(配置模板位置:MCLauncher/ConfigTemplate, 文件名称:Name.json, json内容格式为MCLauncher/config.json)
+- 支持导入上次调试的配置
+
+### 3.登录
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220175726329.png" width="700" alt="image-20260220175726329"/></div>
+
+<p align="center" style="color: #808080">输入网易账号登录后的弹窗</p>
+
+<div align="center"><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260220181855955.png" width="700" alt="image-20260220181855955"/></div>
+
+<p align="center" style="color: #808080">关闭网易登录界面的弹窗(网易登录界面点击右上角"X"), 适用于没有网易邮箱账号的玩家</p>
+
+- 支持4399账号登录/[网易手机号登录](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/blob/main/PhoneLogin.md)/Sauth(Cookie)登录
+- 自动导入上次使用的Sauth/4399账号信息
+
+#### 4.联机大厅
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220181140851.png" width="700" alt="image-20260220181140851"/></div>
+
+<p align="center" style="color: #808080">创建房间截图</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220181624097.png" width="700" alt="image-20260220181624097"/></div>
+
+<p align="center" style="color: #808080">web房间管理器(需前往配置开启Web服务器)</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220182611828.png" width="700" alt="image-20260220182611828"/></div>
+
+<p align="center" style="color: #808080">当玩家有权限保存存档时候每次退出的截图</p> 
+
+<div align="center"><img src="https://camo.githubusercontent.com/2cce676634a2207873a5a48b86394c88f387671d9333d01f162984d3287746a1/68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f3638646433333530333462333036326236313138333937644a7a69675a4d72343036" width="700" alt="Screen"/></div>
+
+<p align="center" style="color: #808080">来自3.0.5-DLL-Public的截图(支持启动时更改IP端口)</p>
+
+<div align="center"><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20260220185947702.png" width="700" alt="image-20260220185947702"/></div>
+
+<p align="center" style="color: #808080">不限数字的设置密码(支持进入房间时房间密码也可输入不限数字的密码)</p>
+
+- 没开启Web端时拥有的功能
+- - 支持查看房间信息(控制台输出)
+  - 退出房间前提醒存档保存(可在配置文件中设置禁用)
+  - 支持更改启动时的IP端口(需前往配置文件中设置)
+  - 联机大厅密码(加入房间/创建房间)支持任意字符(包括但不限于中文/字母等可以被识别的符号)而非单纯的数字
+- 开启Web端时候
+- - Web端房间管理界面
+  - 支持UserID拉黑玩家/玩家名称正则表达式拉黑玩家
+- and so on...
+
+#### 5.基岩版
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220183145651.png" width="700" alt="image-20260220183145651"/></div>
+
+<p align="center" style="color: #808080">每次启动基岩版游戏最后一步支持路径选择</p>
+
+- 支持基岩版游戏选择(可选择启动不同类型的基岩版,比如不同材质/不同版本的基岩版)
+- 支持屏蔽基岩版文件校验(校验Minecraft.Windows.exe/.checkInfo文件等)
+
+#### 6.(重点)反作弊的屏蔽
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220183607156.png" width="700" alt="image-20260220183607156"/></div>
+
+<p align="center" style="color: #808080">网易我的世界启动器特有的窗口名称反作弊检测(当然不止这一个,还有DLL注入检测等)</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220184617688.png" width="700" alt="image-20260220184617688"/></div>
+
+<p align="center" style="color: #808080">MAC地址随机化</p>
+
+
+
+- 防止在任何世界(如单人世界/多人游戏)因开如鼠大侠/按键精灵等第三方软件导致封号问题(说实话单人世界也检测我是真没绷住)
+- 随机化mac地址/硬盘机器码
+
+#### 7.(NEW!) 本地联机引流支持
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f3639393264363763613763613836356131643334343632324343454b496a51693037.png" width="700" alt="'68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f3639393264363763613763613836356131643334343632324343454b496a51693037'"/></div>
+
+<p align="center" style="color: #808080">此截图来源于3.0.9-DLL-Public截图</p>
+
+- 此功能的添加来源于Issue #7 没错,相比[Koud-Wind/Netease-minecraft-LAN-connects-to-Server](https://github.com/Koud-Wind/Netease-minecraft-LAN-connects-to-Server)项目有一点不同的是本程序将该步骤简化了,玩家只需要启动服务器,然后再输入服务器的内网IP端口就可以了
+
+#### 8.(重点) HTTP服务端/WebSocket服务端(开发者的喜爱,可用于开发插件等功能)
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220184537461.png" width="700" alt="image-20260220184537461"/></div>
+
+<p align="center" style="color: #808080">HTTP 服务器的监听地址等信息</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220184744452.png" width="700" alt="image-20260220184744452"/></div>
+
+<p align="center" style="color: #808080">API 文档</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220184935472.png" width="700" alt="image-20260220184935472"/></div>
+
+<p align="center" style="color: #808080">API Endpoints 和 API Root GET请求后的返回内容</p>
+
+<div align="center"><img src="https://camo.githubusercontent.com/3402666cc154f8fde63e68352f333e58b8e34dd3d6014f9e65f066611ac2457d/68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f36386231623133356534623162623936393538653237303075794968575065753036" width="700" alt="Screen"/></div>
+
+<p align="center" style="color: #808080">来自3.0.4-DLL的截图(支持WebSocket协议)</p>
+
+- 具体功能请见[NeteaseMinecraftHook API文档](https://wpfhook.theconsole.top/
+
+#### 9. (重点) 多开网易我的世界启动器
+
+<div align="center"><img src="https://camo.githubusercontent.com/3ad8cd6596243c70237849cf6591f48d91e45b486d255f89696b7762c7dba4ef/68747470733a2f2f7831392e66702e70732e6e6574656173652e636f6d2f66696c652f36386131623861393865303564623237313231323538393457674f65695550693036" width="700" alt="d13f74318acfd6eb47e66aad5b21b675.png"/></div>
+
+<p align="center" style="color: #808080">来自3.0.3-MultiOpen的截图,使用双显示器截图</p>
+
+- 去除网易我的世界启动器禁用多开的问题
+
+#### 10. 禁用活动广告
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260220190722427.png" width="700" alt="image-20260220190722427"/></div>
+
+<p align="center" style="color: #808080">禁用此广告</p>
+
+- 禁用此类型的广告
+
+#### 11. 其他
+
+- DLL替换,简单操作即可安装
+- 去除敏感词检测(部分在线类功能可能还是会有云端检测的)
+- 去除发包之日志类
+- x86/x64基岩版可任意切换(x86版本没用了,目前诸如联机大厅/本地联机/网络游戏等使用x86基岩版进入的时候会显示"服务器发送了破损的数据包")
+- 防沉迷绕过(不过账号还是需要实名的,但是无需人脸识别,适用于如小白Cookie生成出来的Cookie为防沉迷阶段)
+- 加入房间后防止被房主自动踢出房间(自动加入房间)
+- 解锁所有灰度测试功能(除a50setup外)
+- (and more)...
+
+## 安装
+
+### 1. 前置条件
+在开始之前，请确保您的系统是支持.NET Framework 4.8.1支持库
+### 2. 快速开始 (Quick Start)
+
+第一步: [下载网易我的世界启动器](https://adl.netease.com/d/g/mc/c/pe?type=windows)
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/1.png" width="700" alt="1"/></div>
+
+<p align="center" style="color: #808080">这一步已废弃,原因是无法找到下载入口,请打开第一步的链接直接下载</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/2.png" width="700" alt="2"/></div>
+
+<p align="center" style="color: #808080">点击"开始下载"</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/3.png" width="700" alt="3"/></div>
+
+<p align="center" style="color: #808080">下载完成后打开文件</p>
+
+第二步: 安装网易我的世界启动器
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/4.png" width="700" alt="4"/></div>
+
+<p align="center" style="color: #808080">先点击同意协议,之后点击快速安装(可自定义安装路径,只需要点击"自定义安装"然后选择文件路径即可)</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/5.png" width="700" alt="5"/></div>
+
+<p align="center" style="color: #808080">点击立即体验</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/6.png" width="700" alt="6"/></div>
+
+<p align="center" style="color: #808080">关闭网易我的世界启动器</p>
+
+第三步: 更新网易我的世界启动器
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/7.png" width="700" alt="7"/></div>
+
+<p align="center" style="color: #808080">打开网易我的世界启动器安装路径</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/8.png" width="700" alt="8"/></div>
+
+<p align="center" style="color: #808080">找到Updater文件夹</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/9.png" width="700" alt="9"/></div>
+
+<p align="center" style="color: #808080">双击打开MCLauncherUpdater.exe可执行文件</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/10.png" width="700" alt="10"/></div>
+
+<p align="center" style="color: #808080">点击立即更新(如果出现启动了网易我的世界启动器(弹窗前往发烧平台)则代表你当前的我的世界版本是最新的)这个时候你就应该跳转到第四步了</p>
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/11.png" width="700" alt="11"/></div>
+
+<p align="center" style="color: #808080">更新完成后点击确定</p>
+
+第四步: 替换
+
+<div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/12.png" width="700" alt="12"/></div>
+
+<p align="center" style="color: #808080">到Release下载最新版本的DLL后拖拽到网易我的世界启动器安装路径进行替换Mcl.Core.dll文件</p>
+
+至此, 你成功安装了这个更好的网易我的世界启动器
 
 ## Star History
 
