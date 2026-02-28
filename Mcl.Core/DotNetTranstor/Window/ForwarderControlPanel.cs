@@ -245,7 +245,9 @@ namespace Mcl.Core.DotNetTranstor.Window
             if (isClosing) return;
             isClosing = true;
             // 执行停止
-            WebRtcVar.AitFunction.axy.t();
+            WebRtcVar.AitFunction.axy.@as(new object[] { 516, WebRtcVar.AitFunction.HostID });
+            WebRtcVar.AitFunction.axy.d(atl.f);
+            Console.WriteLine("停止转发");
 
             // updateTimer?.Stop();
             // updateTimer?.Dispose();

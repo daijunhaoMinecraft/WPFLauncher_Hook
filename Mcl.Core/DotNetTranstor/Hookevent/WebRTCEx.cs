@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
@@ -237,35 +238,42 @@ public class WebRtcEx : IMethodHook
         SetGameMOriginal(gameM);
     }
     
-    // [HookMethod("WPFLauncher.Manager.Game.Crash.ava", "b", null)]
-    // public static string b(int ogm)
-    // {
-    //     // 输出当前函数调用的堆栈信息
-    //     StackTrace stackTrace = new StackTrace(true);
-    //     Console.WriteLine("[WebRtcEx.b] 调用堆栈:");
-    //     for (int i = 0; i < stackTrace.FrameCount; i++)
-    //     {
-    //         StackFrame frame = stackTrace.GetFrame(i);
-    //         MethodBase method = frame.GetMethod();
-    //         Console.WriteLine($"  [{i}] {method.DeclaringType?.FullName}.{method.Name} (行: {frame.GetFileLineNumber()})");
-    //     }
-    //     return "恭喜: 你的Crash被我截到了";
-    // }
-
-    [OriginalMethod]
-    private void ProcessErrOriginal(avo min)
+    [HookMethod("WPFLauncher.Manager.Game.Crash.ava", "b", null)]
+    public static string b(int ogm)
     {
+        // 输出当前函数调用的堆栈信息
+        StackTrace stackTrace = new StackTrace(true);
+        Console.WriteLine("[WebRtcEx.b] 调用堆栈:");
+        for (int i = 0; i < stackTrace.FrameCount; i++)
+        {
+            StackFrame frame = stackTrace.GetFrame(i);
+            MethodBase method = frame.GetMethod();
+            Console.WriteLine($"  [{i}] {method.DeclaringType?.FullName}.{method.Name} (行: {frame.GetFileLineNumber()})");
+        }
+        return "恭喜: 你的Crash被我截到了";
     }
     
-    [HookMethod("WPFLauncher.Manager.aqb", "c", "ProcessErrOriginal")]
-    private void ProcessErr(avo min)
-    {
-        if (min.a > LTaskOpcode.NEXT)
-        {
-            min.a = LTaskOpcode.CANCEL;
-        }
-        ProcessErrOriginal(min);
-    }
+    // [OriginalMethod]
+    // private void ProcessErrOriginal(avo min)
+    // {
+    // }
+    //
+    // [HookMethod("WPFLauncher.Manager.aqb", "c", "ProcessErrOriginal")]
+    // private void ProcessErr(avo min)
+    // {
+    //     // if (min.a > LTaskOpcode.NEXT)
+    //     // {
+    //     //     min.a = LTaskOpcode.CANCEL;
+    //     //     Console.WriteLine("[WebRtc] 触发取消任务");
+    //     // }
+    //     // else
+    //     // {
+    //     //     Console.WriteLine($"[WebRtc] 当前min.a的值为: {min.a}");
+    //     //     min.a = LTaskOpcode.NEXT;
+    //     // }
+    //     min.a = LTaskOpcode.NEXT;
+    //     ProcessErrOriginal(min);
+    // }
 
 
     #region 判断玩家当前状态(进入房间/创建房间)
@@ -313,54 +321,80 @@ public class WebRtcEx : IMethodHook
     [HookMethod("WPFLauncher.Manager.LanGame.atm", "t", "ExitRoomOriginal")]
     public void ExitRoom()
     {
-        // Console.WriteLine("[WebRtc] 退出房间");
-        // WebRtcVar.StopForwarder();
+        Console.WriteLine("[WebRtc] 退出房间");
+        WebRtcVar.StopForwarder();
         // WebRtcVar.ControlPanel.Close();
-        // WebRtcVar.Mode = ForwardMode.None;
-        // // 1. 获取当前实例的 Type
-        // Type type = aze<arc>.Instance.GetType();
-        //
-        // // 2. 获取私有实例字段 "b"
-        // // BindingFlags 说明：
-        // // - NonPublic: 包含私有/保护成员
-        // // - Instance: 包含实例成员（非静态）
-        // // - DeclaredOnly: 仅在当前类声明中查找（可选，避免继承链干扰）
-        // FieldInfo field = type.GetField("b", 
-        //     BindingFlags.NonPublic | BindingFlags.Instance);
-        //
-        // // 3. 如果当前类没找到，尝试在基类中递归查找
-        // if (field == null)
-        // {
-        //     Type baseType = type.BaseType;
-        //     while (baseType != null && field == null)
-        //     {
-        //         field = baseType.GetField("b", 
-        //             BindingFlags.NonPublic | BindingFlags.Instance);
-        //         baseType = baseType.BaseType;
-        //     }
-        // }
-        //
-        // // 4. 设置新值
-        // if (field != null)
-        // {
-        //     GameM newValue = null; // 或你想要赋值的新 GameM 实例
-        //     field.SetValue(this, newValue);
-        //
-        //     // 可选：验证是否设置成功
-        //     var currentValue = field.GetValue(this);
-        //     Console.WriteLine($"字段 b 当前值: {currentValue}");
-        // }
-        // else
-        // {
-        //     Console.WriteLine("未找到字段 'b'，请检查：");
-        //     Console.WriteLine($"- 当前类型: {type.FullName}");
-        //     Console.WriteLine($"- 字段名是否正确（混淆后可能变化）");
-        // }
-        //
-        // Console.WriteLine("[WebRtc] 清理完毕");
-        WebRtcVar.ExitRoomFunction();
+        WebRtcVar.Mode = ForwardMode.None;
         ExitRoomOriginal();
     }
     
     #endregion
+
+    [HookMethod("WPFLauncher.Manager.aqr", "b", null)]
+    public void ClearProcess()
+    {
+        try
+        {
+            // 1. 获取 aqr 的单例实例
+            // 假设 aze<T> 是一个泛型单例类，Instance 是静态属性
+            var instanceProperty = typeof(aze<aqr>).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            
+            if (instanceProperty == null)
+            {
+                Console.WriteLine("错误: 未找到 aze<aqr>.Instance 属性");
+                return;
+            }
+
+            object aqrInstance = instanceProperty.GetValue(null);
+
+            if (aqrInstance == null)
+            {
+                Console.WriteLine("错误: aqr 实例为 null");
+                return;
+            }
+
+            // 2. 获取 aqr 的类型
+            Type aqrType = aqrInstance.GetType();
+
+            // 3. 获取私有字段 "a" 
+            // BindingFlags.NonPublic: 包含私有成员
+            // BindingFlags.Instance: 包含实例成员
+            FieldInfo fieldInfo = aqrType.GetField("a", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (fieldInfo == null)
+            {
+                Console.WriteLine("错误: 未找到字段 'a' (可能名称已被混淆改变，当前反编译显示为 'a')");
+                return;
+            }
+
+            // 4. 获取字段的值 (即 List<aqq> 对象)
+            object listObj = fieldInfo.GetValue(aqrInstance);
+
+            if (listObj == null)
+            {
+                Console.WriteLine("警告: 字段 'a' 当前为 null，无需清空");
+                return;
+            }
+
+            // 5. 调用 Clear 方法
+            // 确保它是一个 IList 或者具体的 List<>
+            if (listObj is IList list)
+            {
+                // 原代码中有 lock(this.a)，但在外部反射调用 Clear() 通常是线程安全的原子操作
+                // 如果极度担心竞态条件，理论上需要 lock(listObj)，但这需要获取 monitor 锁，比较复杂
+                // 对于大多数清理场景，直接 Clear 即可
+                list.Clear();
+                Console.WriteLine("成功: 已清空 private List<aqq> a");
+            }
+            else
+            {
+                Console.WriteLine("错误: 字段 'a' 不是 IList 类型");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"发生异常: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
+        }
+    }
 }

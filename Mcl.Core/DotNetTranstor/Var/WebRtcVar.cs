@@ -1,89 +1,115 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Mcl.Core.DotNetTranstor.Window;
-using WPFLauncher.Common;
-using WPFLauncher.Manager;
-using WPFLauncher.Manager.LanGame;
+using DotNetTranstor.Hookevent;
+using Mcl.Core.DotNetTranstor.Hookevent;
 using WPFLauncher.Model;
 using WPFLauncher.SQLite;
 
 namespace Mcl.Core.DotNetTranstor.Var
 {
-    // 定义转发模式枚举
     public enum ForwardMode { None, Server, Client }
 
-    // // 定义每个 Peer 的持久化上下文（用于维持 Zlib 字典）
-    // public class PeerContext
-    // {
-    //     public av Compressor { get; } = new av();
-    //     public string Id { get; set; }
-    // }
+    public static class MultiplexProto
+    {
+        // 魔数握手：[0xFA, 0xFB, 0xFC, 0xFD, 0x01]
+        // 客户端在 DataChannel Open 后第一时间发送此包
+        public static readonly byte[] MagicHandshake = { 0xFA, 0xFB, 0xFC, 0xFD, 0x01 };
+    }
 
     public class WebRtcVar
     {
+        public static class ConnIdManager
+        {
+            private static HashSet<byte> _activeIds = new HashSet<byte>();
+            private static object _lock = new object();
+
+            public static byte Allocate()
+            {
+                lock (_lock)
+                {
+                    for (byte i = 0; i < 255; i++)
+                    {
+                        if (!_activeIds.Contains(i))
+                        {
+                            _activeIds.Add(i);
+                            return i;
+                        }
+                    }
+                    return 255; // 满了
+                }
+            }
+
+            public static void Release(byte id)
+            {
+                lock (_lock)
+                {
+                    _activeIds.Remove(id);
+                    if (Path_Bool.IsDebug)
+                    {
+                        Console.WriteLine($"[ConnManager] 已释放 ID: {id}, 当前活跃数: {_activeIds.Count}");
+                    }
+                }
+            }
+        }
+        
         public static string Ip = "127.0.0.1";
         public static int Port = 25565;
         public static bool Enable = false;
         public static ForwardMode Mode = ForwardMode.None;
         
-        public static ait AitFunction = null;
-        public static WPFLauncher.Manager.aqb AqbFunction = null;
         public static object CmInstance = null;
-        // public static ProcessTcpServer TcpServer = null;
-        public static ForwarderControlPanel ControlPanel = new ForwarderControlPanel();
+        public static ait AitFunction = null;
+        
         public static List<uint> PlayerList = new List<uint>();
 
-        public static void ExitRoomFunction()
-        {
-            Console.WriteLine("[WebRtc] 退出房间");
-            WebRtcVar.StopForwarder();
-            WebRtcVar.ControlPanel.Close();
-            WebRtcVar.PlayerList.Clear();
-            WebRtcVar.Mode = ForwardMode.None;
-            AitFunction = null;
-            AqbFunction = null;
-            CmInstance = null;
-
-            Console.WriteLine("[WebRtc] 清理完毕");
-        }
-
-
-        private static string _targetPeerId = "Any";
-
-        public static string TargetPeerId
-        {
-            get => _targetPeerId;
-            set => _targetPeerId = value;
-        }
+        // Key: "PeerId_ConnId" (例如: "636067..._0", "636067..._1")
         public static ConcurrentDictionary<string, UnifiedSession> Sessions = new ConcurrentDictionary<string, UnifiedSession>();
+        
+        // 记录哪些 Peer 启用了多路复用模式
+        public static ConcurrentDictionary<string, bool> PeerSupportMultiplex = new ConcurrentDictionary<string, bool>();
+
+        public static string TargetPeerId = "Any";
 
         public static void InitForwarder()
         {
             Enable = true;
             if (Mode == ForwardMode.Client) Mcl.Core.LocalProxyListener.Start(Port);
-            // if (Mode == ForwardMode.Server)
-            // {
-            //     TcpServer = new ProcessTcpServer(WebRtcVar.Ip, WebRtcVar.Port);
-            // }
+            
+            // 启动定时清理过期 Session 的任务
+            StartCleanupTask();
         }
 
         public static void StopForwarder()
         {
             Enable = false;
             Mcl.Core.LocalProxyListener.Stop();
-            // TcpServer.Stop();
             foreach (var s in Sessions.Values) s.Close();
             Sessions.Clear();
-            _targetPeerId = "Any";
-            CmInstance = null;
+            PeerSupportMultiplex.Clear();
+            ClearActiveRoomsViaReflection();
+            AitFunction.axy.e(null);
         }
 
-        // 反射读取原生压缩开关
-        public static bool IsNativeCompressionEnabled()
+        private static void StartCleanupTask()
         {
+            new System.Threading.Thread(() => {
+                while (Enable) {
+                    System.Threading.Thread.Sleep(10000); // 每10秒检查一次
+                    DateTime now = DateTime.Now;
+                    foreach (var session in Sessions.Values) {
+                        if ((now - session.LastActive).TotalSeconds > 60) {
+                            Console.WriteLine($"[WebRtc] Session {session.PeerId}_{session.ConnId} 超时关闭");
+                            session.Close();
+                        }
+                    }
+                }
+            }) { IsBackground = true }.Start();
+        }
+
+        // --- 以下保留你原有的反射辅助函数 ---
+        public static bool IsNativeCompressionEnabled() {
             if (CmInstance == null) return false;
             try {
                 var f = CmInstance.GetType().GetField("p", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -91,158 +117,138 @@ namespace Mcl.Core.DotNetTranstor.Var
             } catch { return false; }
         }
 
-        public static Dictionary<string, IntPtr> getIntPtrList()
-        {
-            // 1. 直接获取 cm 实例（无需反射 WebRtcVar）
-            object cmInstance = WebRtcVar.CmInstance;
-            if (cmInstance == null)
-            {
-                Console.WriteLine("WebRtcVar.CmInstance is null");
-                return new Dictionary<string, IntPtr>();
-                // throw new InvalidOperationException("WebRtcVar.CmInstance is null");
-            }
-
-            // 2. 获取字段 'd' —— 注意：cm 是 internal 类，不能直接 cast，所以用反射
-            Type cmType = cmInstance.GetType(); // 运行时类型就是 WebRtc.NET.cm
-
-            FieldInfo fieldD = cmType.GetField("d", BindingFlags.Public | BindingFlags.Instance);
-            if (fieldD == null)
-            {
-                Console.WriteLine("Field d 未找到");
-                return new Dictionary<string, IntPtr>();
-                // throw new MissingFieldException("Field 'd' not found in cm instance");
-            }
-
-            // 3. 读取字段值
-            var dict = (Dictionary<string, IntPtr>)fieldD.GetValue(cmInstance);
-            // Console.WriteLine($"字典长度：{dict.Count}");
-            // // 4. 现在你可以使用这个字典了
-            // foreach (var kvp in dict)
-            // {
-            //     Console.WriteLine($"Key: {kvp.Key}, IntPtr: {kvp.Value}");
-            // }
-            return dict;
+        public static IntPtr? getIntPtrFromPeerId(string peerId) {
+            var list = getIntPtrList();
+            if (list.TryGetValue(peerId, out IntPtr ptr)) return ptr;
+            return null;
         }
 
-        public static Dictionary<IntPtr, av> GetCompressListFunction()
-        {
-            // 1. 获取 cm 实例（你已拥有）
-            object cmInstance = WebRtcVar.CmInstance;
-            if (cmInstance == null)
-            {
-                Console.WriteLine("WebRtcVar.CmInstance is null");
-                return new Dictionary<IntPtr, av>();
-            }
-
-            // 2. 获取 cm 类型
-            Type cmType = cmInstance.GetType(); // 应为 WebRtc.NET.cm
-
-            // 3. 获取私有字段 's'
-            FieldInfo fieldS = cmType.GetField("s", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (fieldS == null)
-            {
-                Console.WriteLine("未能找到 cm 的私有字段 's'");
-                return new Dictionary<IntPtr, av>();
-            }
-
-            // 4. 读取字段值
-            var dictS = (Dictionary<IntPtr, av>)fieldS.GetValue(cmInstance);
-            // 注意：av 是 internal 类，无法直接 cast，所以用 object 代替 value 类型
-            
-            return dictS;
+        public static Dictionary<string, IntPtr> getIntPtrList() {
+            if (CmInstance == null) return new Dictionary<string, IntPtr>();
+            var fieldD = CmInstance.GetType().GetField("d", BindingFlags.Public | BindingFlags.Instance);
+            return (Dictionary<string, IntPtr>)fieldD.GetValue(CmInstance);
         }
 
-        public static IntPtr? getIntPtrFromPeerId(string peerId)
-        {
-            Dictionary<string, IntPtr> intPtrList = WebRtcVar.getIntPtrList();
-            IntPtr intPtr = new IntPtr();
-            intPtrList.TryGetValue(peerId, out intPtr);
-            if (intPtr == new IntPtr(0))
-            {
-                Console.WriteLine("无法找到IntPtr");
-                return null;
-            }
-            else
-            {
-                // Console.WriteLine($"成功找到IntPtr: {intPtr}");
-                return intPtr;
-            }
+        public static av GetCompressor(IntPtr ptr) {
+            var dictS = GetCompressListFunction();
+            if (dictS.TryGetValue(ptr, out av compressor)) return compressor;
+            return null;
         }
-        public static av GetCompressor(IntPtr ptr)
-        {
-            Dictionary<IntPtr, av> compressList = GetCompressListFunction();
-            av compressor = null;
-            compressList.TryGetValue(ptr, out compressor);
-            if (compressor == null)
-            {
-                Console.WriteLine("无法获取到压缩函数");
-            }
-            // else
-            // {
-            //     Console.WriteLine("成功获取到压缩函数");
-            // }
 
-            return compressor;
+        public static Dictionary<IntPtr, av> GetCompressListFunction() {
+            if (CmInstance == null) return new Dictionary<IntPtr, av>();
+            var fieldS = CmInstance.GetType().GetField("s", BindingFlags.NonPublic | BindingFlags.Instance);
+            return (Dictionary<IntPtr, av>)fieldS.GetValue(CmInstance);
         }
         
-        public static bool ResetCompressor(IntPtr ptr)
+        public static void ClearActiveRoomsViaReflection()
         {
-            object cmInstance = WebRtcVar.CmInstance;
-            if (cmInstance == null)
+            try
             {
-                Console.WriteLine("[ResetCompressor] CmInstance is null");
-                return false;
-            }
+                // 1. 获取 internal 类 'atn' 的 Type
+                // 命名空间: WPFLauncher.Manager.LanGame
+                // 类名: atn
+                Type atnType = null;
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    // 尝试查找，ignoreCase=true 防止大小写问题
+                    atnType = asm.GetType("WPFLauncher.Manager.LanGame.atn", false, true);
+                    if (atnType != null) break;
+                }
 
-            var cmType = cmInstance.GetType();
-            var fieldS = cmType.GetField("s", BindingFlags.NonPublic | BindingFlags.Instance);
-            if (fieldS == null)
+                if (atnType == null)
+                {
+                    Console.WriteLine("[Error] 未找到类型: WPFLauncher.Manager.LanGame.atn");
+                    return;
+                }
+
+                // 2. 获取泛型单例类 'aze<>' 的定义
+                // 命名空间: WPFLauncher.Common
+                // 类名: aze`1 (注意反编译中泛型类通常显示为 name`1)
+                Type azeOpenType = typeof(WPFLauncher.Common.aze<>); 
+                // 如果 WPFLauncher.Common.aze<> 在当前程序集不可见（也是 internal），则同样需要用反射获取：
+                // Type azeOpenType = Type.GetType("WPFLauncher.Common.aze`1, WPFLauncher"); 
+                // 或者遍历程序集查找 "WPFLauncher.Common.aze`1"
+
+                if (azeOpenType == null)
+                {
+                    Console.WriteLine("[Error] 未找到泛型类型: WPFLauncher.Common.aze`1");
+                    return;
+                }
+
+                // 3. 动态构造泛型类型: aze<atn>
+                Type azeClosedType = azeOpenType.MakeGenericType(atnType);
+
+                // 4. 获取 'Instance' 静态属性
+                // 根据提供的代码，Instance 是 public static 的
+                PropertyInfo instanceProp = azeClosedType.GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+
+                if (instanceProp == null)
+                {
+                    Console.WriteLine("[Error] 未找到 Instance 属性");
+                    return;
+                }
+
+                // 5. 获取单例实例 (相当于 aze<atn>.Instance)
+                object singleInstance = instanceProp.GetValue(null);
+
+                if (singleInstance == null)
+                {
+                    Console.WriteLine("[Error] Instance 为 null");
+                    return;
+                }
+
+                // 6. 获取 'ActiveRooms' 字段
+                // 根据之前的片段: public alj ActiveRooms = new alj();
+                // 它是实例字段 (Instance Field)
+                FieldInfo activeRoomsField = azeClosedType.GetField("ActiveRooms", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                
+                // 注意：这里有一个陷阱。
+                // 泛型类 aze<cq> 的定义中可能并没有直接定义 ActiveRooms 字段。
+                // 回顾你之前的片段：
+                // "WPFLauncher.Manager.LanGame.atn ... public alj ActiveRooms = new alj();"
+                // 这意味着 ActiveRooms 是定义在 'atn' 类里的，而不是 'aze' 类里的！
+                // 逻辑链条是：aze<atn>.Instance 返回的是一个 'atn' 类型的对象。
+                // 所以我们需要从 'atnType' 中获取 ActiveRooms 字段，而不是从 'azeClosedType' 获取。
+
+                // 修正：从 atnType (即 cq 类型) 获取 ActiveRooms 字段
+                FieldInfo roomsField = atnType.GetField("ActiveRooms", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if (roomsField == null)
+                {
+                    Console.WriteLine("[Error] 在 atn 类中未找到 ActiveRooms 字段");
+                    // 调试用：打印 atn 的所有字段
+                    // Console.WriteLine("atn Fields: " + string.Join(", ", atnType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Select(f => f.Name)));
+                    return;
+                }
+
+                // 7. 从单例实例 (它是 atn 类型) 中获取 ActiveRooms 的值
+                object activeRoomsObj = roomsField.GetValue(singleInstance);
+
+                if (activeRoomsObj == null)
+                {
+                    Console.WriteLine("[Warning] ActiveRooms 集合对象为 null");
+                    return;
+                }
+
+                // 8. 调用 Clear() 方法
+                MethodInfo clearMethod = activeRoomsObj.GetType().GetMethod("Clear");
+                if (clearMethod != null)
+                {
+                    clearMethod.Invoke(activeRoomsObj, null);
+                    Console.WriteLine("[Success] 成功清空 ActiveRooms!");
+                }
+                else
+                {
+                    Console.WriteLine("[Error] ActiveRooms 对象没有 Clear 方法");
+                }
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine("[ResetCompressor] Field 's' not found");
-                return false;
+                Console.WriteLine($"[Exception] {ex.GetType().Name}: {ex.Message}");
+                if (ex.InnerException != null)
+                    Console.WriteLine($"[Inner] {ex.InnerException.Message}");
             }
-
-            object dictObj = fieldS.GetValue(cmInstance);
-            if (dictObj == null)
-            {
-                Console.WriteLine("[ResetCompressor] s dictionary is null");
-                return false;
-            }
-
-            // 反射调用 TryGetValue
-            var tryGetValue = dictObj.GetType().GetMethod("TryGetValue");
-            var args = new object[] { ptr, null };
-            bool exists = (bool)tryGetValue.Invoke(dictObj, args);
-            object oldAv = args[1];
-
-            if (!exists || oldAv == null)
-            {
-                Console.WriteLine($"[ResetCompressor] No compressor for {ptr}");
-                return false;
-            }
-
-            // 调用 oldAv.c()
-            var cleanup = oldAv.GetType().GetMethod("c", BindingFlags.Public | BindingFlags.Instance);
-            if (cleanup != null)
-            {
-                try { cleanup.Invoke(oldAv, null); }
-                catch (Exception ex) { Console.WriteLine($"Cleanup error: {ex}"); }
-            }
-
-            // 创建新实例
-            object newAv = Activator.CreateInstance(oldAv.GetType());
-            if (newAv == null)
-            {
-                Console.WriteLine("[ResetCompressor] Failed to create new av");
-                return false;
-            }
-
-            // 设置 dict[ptr] = newAv
-            var indexer = dictObj.GetType().GetProperty("Item");
-            indexer.SetValue(dictObj, newAv, new object[] { ptr });
-
-            Console.WriteLine($"[ResetCompressor] Reset success for {ptr}");
-            return true;
         }
     }
 }
