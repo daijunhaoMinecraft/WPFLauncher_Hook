@@ -29,7 +29,7 @@ namespace Mcl.Core.DotNetTranstor.Var
             {
                 lock (_lock)
                 {
-                    for (byte i = 0; i < 255; i++)
+                    for (byte i = 1; i < 255; i++)
                     {
                         if (!_activeIds.Contains(i))
                         {

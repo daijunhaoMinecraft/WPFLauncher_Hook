@@ -262,6 +262,7 @@ namespace Mcl.Core
     
             // 【可选】通知对端连接断开（如需可取消注释）
             // WebSocket_WebRtc.SendBack(new byte[0], this.PeerId, this.ConnId);
+            WebSocket_WebRtc.SendClosePacket(this.PeerId, this.ConnId);
             
             Log($"会话关闭完成: {PeerId}_{ConnId}");
         }

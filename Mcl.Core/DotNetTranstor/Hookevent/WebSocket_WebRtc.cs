@@ -54,6 +54,23 @@ namespace Mcl.Core
                 }
                 return;
             }
+
+            if (rawData[0] == 0x00 && rawData.Length == 2)
+            {
+                int connIdInt = rawData[1];
+                if (Path_Bool.IsDebug)
+                {
+                    Console.WriteLine($"[Protocol] 关闭连接: {connIdInt}");
+                }
+                
+                string sessionKey_1 = (WebRtcVar.Mode == ForwardMode.Server) ? $"{peerId}_{connIdInt}" : $"LOCAL_CLIENT_{connIdInt}";
+                if (WebRtcVar.Sessions.TryGetValue(sessionKey_1, out var session_1))
+                {
+                    session_1.Close();
+                    WebRtcVar.Sessions.TryRemove(sessionKey_1, out _);
+                }
+                return;
+            }
         
             byte connId = 0;
             byte[] mcData;
@@ -153,13 +170,53 @@ namespace Mcl.Core
                 {
                     Console.WriteLine($"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
                 }
-                sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
+                object result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
+                bool success = (bool)result;
+
+                if (!success)
+                {
+                    Console.WriteLine("[WebRtc] 一个包发送失败!");
+                }
+                // Console.WriteLine($"发送调用结果: {success}");
+                
             } catch (Exception ex) {
                 Console.WriteLine($"[WebRtc] SendBack 发送失败: {ex.Message}");
             }
         }
         
-                [OriginalMethod]
+        public static void SendClosePacket(string peerId, byte connId)
+        {
+            if (WebRtcVar.CmInstance == null) return;
+        
+            IntPtr? peerPtr = WebRtcVar.getIntPtrFromPeerId(peerId);
+            if (peerPtr == null) return;
+            // 2. 包装多路复用头
+            byte[] payload = new byte[]{ 0x00, connId };
+        
+            // 3. 反射调用原生发送
+            try {
+                Assembly asm = WebRtcVar.CmInstance.GetType().Assembly;
+                Type ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
+                MethodInfo sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
+                if (Path_Bool.IsDebug)
+                {
+                    Console.WriteLine($"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
+                }
+                object result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
+                bool success = (bool)result;
+
+                if (!success)
+                {
+                    Console.WriteLine("[WebRtc] 一个包发送失败!");
+                }
+                // Console.WriteLine($"发送调用结果: {success}");
+                
+            } catch (Exception ex) {
+                Console.WriteLine($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            }
+        }
+        
+        [OriginalMethod]
         private bool processReceiveTransferMessage(ushort messageId, byte[] messageData)
         {
             return true;
