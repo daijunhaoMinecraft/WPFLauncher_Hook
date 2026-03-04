@@ -1241,502 +1241,121 @@ namespace DotNetTranstor.Tools
         }
         public static string GetHotUpdateHtml()
         {
-            return """
-                   <!DOCTYPE html>
-                   <html lang="zh-CN">
-                   <head>
-                       <meta charset="UTF-8">
-                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                       <title>热更新配置管理</title>
-                       <style>
-                           :root {
-                               --primary-color: #3498db;
-                               --secondary-color: #2ecc71;
-                               --danger-color: #e74c3c;
-                               --dark-color: #34495e;
-                               --light-color: #ecf0f1;
-                               --text-color: #2c3e50;
-                               --border-radius: 8px;
-                               --box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-                               --transition: all 0.3s ease;
-                           }
-                           
-                           * {
-                               margin: 0;
-                               padding: 0;
-                               box-sizing: border-box;
-                           }
-                           
-                           body {
-                               font-family: "Helvetica Neue", Arial, sans-serif;
-                               line-height: 1.6;
-                               color: var(--text-color);
-                               background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                               min-height: 100vh;
-                               padding: 20px;
-                           }
-                           
-                           .container {
-                               max-width: 1200px;
-                               margin: 0 auto;
-                               background-color: white;
-                               border-radius: var(--border-radius);
-                               box-shadow: var(--box-shadow);
-                               overflow: hidden;
-                           }
-                           
-                           .header {
-                               background-color: var(--primary-color);
-                               color: white;
-                               padding: 20px;
-                               text-align: center;
-                           }
-                           
-                           .header h1 {
-                               margin: 0;
-                               font-size: 28px;
-                           }
-                           
-                           .config-grid {
-                               display: grid;
-                               grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                               gap: 20px;
-                               padding: 20px;
-                           }
-                           
-                           .config-card {
-                               background: white;
-                               padding: 20px;
-                               border-radius: var(--border-radius);
-                               box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-                               border: 1px solid #eee;
-                           }
-                           
-                           .config-card h3 {
-                               margin-bottom: 15px;
-                               color: var(--primary-color);
-                               font-size: 18px;
-                               border-bottom: 1px solid #eee;
-                               padding-bottom: 10px;
-                           }
-                           
-                           .form-group {
-                               margin-bottom: 15px;
-                           }
-                           
-                           .form-group label {
-                               display: block;
-                               margin-bottom: 5px;
-                               font-weight: bold;
-                           }
-                           
-                           .form-group input, .form-group select {
-                               width: 100%;
-                               padding: 10px;
-                               border: 1px solid #ddd;
-                               border-radius: 4px;
-                               font-size: 14px;
-                           }
-                           
-                           .form-group input[type="checkbox"] {
-                               width: auto;
-                               margin-right: 10px;
-                           }
-                           
-                           .btn {
-                               display: inline-block;
-                               padding: 12px 24px;
-                               background-color: var(--primary-color);
-                               color: white;
-                               border: none;
-                               border-radius: var(--border-radius);
-                               cursor: pointer;
-                               font-size: 16px;
-                               transition: var(--transition);
-                               text-align: center;
-                           }
-                           
-                           .btn:hover {
-                               background-color: #2980b9;
-                               transform: translateY(-2px);
-                           }
-                           
-                           .btn-success {
-                               background-color: var(--secondary-color);
-                           }
-                           
-                           .btn-success:hover {
-                               background-color: #27ae60;
-                           }
-                           
-                           .btn-danger {
-                               background-color: var(--danger-color);
-                           }
-                           
-                           .btn-danger:hover {
-                               background-color: #c0392b;
-                           }
-                           
-                           .actions {
-                               padding: 20px;
-                               text-align: center;
-                               border-top: 1px solid #eee;
-                           }
-                           
-                           .notification {
-                               position: fixed;
-                               top: 20px;
-                               right: 20px;
-                               padding: 15px 20px;
-                               border-radius: 4px;
-                               color: white;
-                               font-weight: bold;
-                               box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-                               z-index: 1000;
-                               display: none;
-                           }
-                           
-                           .notification.success {
-                               background-color: var(--secondary-color);
-                           }
-                           
-                           .notification.error {
-                               background-color: var(--danger-color);
-                           }
-                           
-                           .api-doc {
-                               padding: 20px;
-                               background-color: var(--light-color);
-                               border-top: 1px solid #ddd;
-                           }
-                           
-                           .api-doc h2 {
-                               color: var(--dark-color);
-                               margin-bottom: 15px;
-                           }
-                           
-                           .endpoint {
-                               background: white;
-                               border-left: 4px solid var(--primary-color);
-                               padding: 15px;
-                               margin: 15px 0;
-                               border-radius: 0 4px 4px 0;
-                           }
-                           
-                           .method {
-                               display: inline-block;
-                               padding: 4px 8px;
-                               border-radius: 4px;
-                               color: white;
-                               font-weight: bold;
-                               margin-right: 10px;
-                           }
-                           
-                           .get { background-color: #27ae60; }
-                           .post { background-color: #e67e22; }
-                           .put { background-color: #3498db; }
-                           .delete { background-color: #e74c3c; }
-                           
-                           .url {
-                               color: #34495e;
-                               font-family: monospace;
-                               font-size: 1.1em;
-                           }
-                           
-                           .description {
-                               margin-top: 10px;
-                               color: #555;
-                           }
-                       </style>
-                   </head>
-                   <body>
-                       <div class="container">
-                           <div class="header">
-                               <h1>热更新配置管理</h1>
-                           </div>
-                           
-                           <div class="config-grid">
-                               <div class="config-card">
-                                   <h3>基础配置</h3>
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="IsBypassGameUpdate_Bedrock"> 
-                                           跳过基岩版游戏更新 (IsBypassGameUpdate_Bedrock)
-                                       </label>
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="IsEnableX64mc"> 
-                                           启用64位MC (IsEnableX64mc)
-                                       </label>
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="IsStartWebSocket"> 
-                                           启动WebSocket (IsStartWebSocket)
-                                       </label>
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="IsDebug"> 
-                                           调试模式 (IsDebug)
-                                       </label>
-                                   </div>
-                               </div>
-                               
-                               <div class="config-card">
-                                   <h3>模组配置</h3>
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="EnableModsInject"> 
-                                           启用模组注入 (EnableModsInject)
-                                       </label>
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="IsDecryptMod"> 
-                                           解密模组 (IsDecryptMod)
-                                       </label>
-                                   </div>
-                               </div>
-                               
-                               <div class="config-card">
-                                   <h3>房间配置</h3>
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="EnableRoomBlacklist"> 
-                                           启用房间黑名单 (EnableRoomBlacklist)
-                                       </label>
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="EnableRegexBlacklist"> 
-                                           启用正则表达式黑名单 (EnableRegexBlacklist)
-                                       </label>
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label for="MaxRoomCount">最大房间数 (MaxRoomCount)</label>
-                                       <input type="number" id="MaxRoomCount" min="0">
-                                   </div>
-                               </div>
-                               
-                               <div class="config-card">
-                                   <h3>网络配置</h3>
-                                   <div class="form-group">
-                                       <label for="WebSocketPort">WebSocket端口 (WebSocketPort)</label>
-                                       <input type="number" id="WebSocketPort" min="1" max="65535">
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label for="HttpPort">HTTP端口 (HttpPort)</label>
-                                       <input type="number" id="HttpPort" min="1" max="65535">
-                                   </div>
-                                   
-                                   <div class="form-group">
-                                       <label for="NeteaseUpdateDomainhttp">网易更新域 (NeteaseUpdateDomainhttp)</label>
-                                       <input type="text" id="NeteaseUpdateDomainhttp">
-                                   </div>
-                               </div>
-                               
-                               <div class="config-card">
-                                   <h3>世界配置</h3>
-                                   <div class="form-group">
-                                       <label>
-                                           <input type="checkbox" id="AlwaysSaveWorld"> 
-                                           总是保存世界 (AlwaysSaveWorld)
-                                       </label>
-                                   </div>
-                               </div>
-                           </div>
-                           
-                           <div class="actions">
-                               <button class="btn" onclick="loadConfig()">加载当前配置</button>
-                               <button class="btn btn-success" onclick="saveConfig()">保存配置</button>
-                               <button class="btn btn-danger" onclick="resetConfig()">重置为默认配置</button>
-                           </div>
-                           
-                           <div class="api-doc">
-                               <h2>API接口文档</h2>
-                               
-                               <div class="endpoint">
-                                   <div class="description">获取当前配置</div>
-                                   <div>
-                                       <span class="method get">GET</span>
-                                       <span class="url">/config/get</span>
-                                   </div>
-                               </div>
-                               
-                               <div class="endpoint">
-                                   <div class="description">更新配置</div>
-                                   <div>
-                                       <span class="method post">POST</span>
-                                       <span class="url">/config/apply</span>
-                                   </div>
-                                   <div class="description">
-                                       请求体格式: JSON对象，包含需要更新的配置项
-                                   </div>
-                               </div>
-                               
-                               <div class="endpoint">
-                                   <div class="description">获取设置列表</div>
-                                   <div>
-                                       <span class="method get">GET</span>
-                                       <span class="url">/config/settingslist</span>
-                                   </div>
-                               </div>
-                               
-                               <div class="endpoint">
-                                   <div class="description">设置主界面</div>
-                                   <div>
-                                       <span class="method get">GET</span>
-                                       <span class="url">/settings</span>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                       
-                       <div id="notification" class="notification"></div>
-                       
-                       <script>
-                           // 显示通知
-                           function showNotification(message, type) {
-                               const notification = document.getElementById('notification');
-                               notification.textContent = message;
-                               notification.className = 'notification ' + type;
-                               notification.style.display = 'block';
-                               
-                               setTimeout(() => {
-                                   notification.style.display = 'none';
-                               }, 3000);
-                           }
-                           
-                           // 加载配置
-                           function loadConfig() {
-                               fetch('/config/get')
-                                   .then(response => response.json())
-                                   .then(data => {
-                                       if (data.error === 0) {
-                                           const config = data.data;
-                                           document.getElementById('IsBypassGameUpdate_Bedrock').checked = config.IsBypassGameUpdate_Bedrock || false;
-                                           document.getElementById('IsEnableX64mc').checked = config.IsEnableX64mc || false;
-                                           document.getElementById('IsStartWebSocket').checked = config.IsStartWebSocket || false;
-                                           document.getElementById('IsDebug').checked = config.IsDebug || false;
-                                           document.getElementById('EnableModsInject').checked = config.EnableModsInject || false;
-                                           document.getElementById('EnableRoomBlacklist').checked = config.EnableRoomBlacklist || false;
-                                           document.getElementById('EnableRegexBlacklist').checked = config.EnableRegexBlacklist || false;
-                                           document.getElementById('MaxRoomCount').value = config.MaxRoomCount || 0;
-                                           document.getElementById('WebSocketPort').value = config.WebSocketPort || 4600;
-                                           document.getElementById('HttpPort').value = config.HttpPort || 4601;
-                                           document.getElementById('NeteaseUpdateDomainhttp').value = config.NeteaseUpdateDomainhttp || '';
-                                           document.getElementById('IsDecryptMod').checked = config.IsDecryptMod !== false; // 默认为true
-                                           document.getElementById('AlwaysSaveWorld').checked = config.AlwaysSaveWorld !== false; // 默认为true
-                                           
-                                           showNotification('配置加载成功', 'success');
-                                       } else {
-                                           showNotification('配置加载失败: ' + data.message, 'error');
-                                       }
-                                   })
-                                   .catch(error => {
-                                       console.error('Error:', error);
-                                       showNotification('配置加载失败: ' + error.message, 'error');
-                                   });
-                           }
-                           
-                           // 保存配置
-                           function saveConfig() {
-                               const config = {
-                                   IsBypassGameUpdate_Bedrock: document.getElementById('IsBypassGameUpdate_Bedrock').checked,
-                                   IsEnableX64mc: document.getElementById('IsEnableX64mc').checked,
-                                   IsStartWebSocket: document.getElementById('IsStartWebSocket').checked,
-                                   IsDebug: document.getElementById('IsDebug').checked,
-                                   EnableModsInject: document.getElementById('EnableModsInject').checked,
-                                   EnableRoomBlacklist: document.getElementById('EnableRoomBlacklist').checked,
-                                   EnableRegexBlacklist: document.getElementById('EnableRegexBlacklist').checked,
-                                   MaxRoomCount: parseInt(document.getElementById('MaxRoomCount').value) || 0,
-                                   WebSocketPort: parseInt(document.getElementById('WebSocketPort').value) || 4600,
-                                   HttpPort: parseInt(document.getElementById('HttpPort').value) || 4601,
-                                   NeteaseUpdateDomainhttp: document.getElementById('NeteaseUpdateDomainhttp').value,
-                                   IsDecryptMod: document.getElementById('IsDecryptMod').checked,
-                                   AlwaysSaveWorld: document.getElementById('AlwaysSaveWorld').checked
-                               };
-                               
-                               fetch('/config/apply', {
-                                   method: 'POST',
-                                   headers: {
-                                       'Content-Type': 'application/json',
-                                   },
-                                   body: JSON.stringify(config)
-                               })
-                               .then(response => response.json())
-                               .then(data => {
-                                   if (data.error === 0) {
-                                       showNotification('配置保存成功', 'success');
-                                   } else {
-                                       showNotification('配置保存失败: ' + data.message, 'error');
-                                   }
-                               })
-                               .catch(error => {
-                                   console.error('Error:', error);
-                                   showNotification('配置保存失败: ' + error.message, 'error');
-                               });
-                           }
-                           
-                           // 重置配置(通过发送默认配置实现)
-                           function resetConfig() {
-                               if (confirm('确定要重置为默认配置吗？此操作不可恢复。')) {
-                                   const defaultConfig = {
-                                       IsBypassGameUpdate_Bedrock: false,
-                                       IsEnableX64mc: false,
-                                       IsStartWebSocket: false,
-                                       IsDebug: false,
-                                       EnableModsInject: false,
-                                       EnableRoomBlacklist: false,
-                                       EnableRegexBlacklist: false,
-                                       MaxRoomCount: 0,
-                                       WebSocketPort: 4600,
-                                       HttpPort: 4601,
-                                       NeteaseUpdateDomainhttp: "https://x19.update.netease.com",
-                                       IsDecryptMod: true,
-                                       AlwaysSaveWorld: true
-                                   };
-                                   
-                                   fetch('/config/apply', {
-                                       method: 'POST',
-                                       headers: {
-                                           'Content-Type': 'application/json',
-                                       },
-                                       body: JSON.stringify(defaultConfig)
-                                   })
-                                   .then(response => response.json())
-                                   .then(data => {
-                                       if (data.error === 0) {
-                                           loadConfig(); // 重新加载配置
-                                           showNotification('配置已重置为默认值', 'success');
-                                       } else {
-                                           showNotification('配置重置失败: ' + data.message, 'error');
-                                       }
-                                   })
-                                   .catch(error => {
-                                       console.error('Error:', error);
-                                       showNotification('配置重置失败: ' + error.message, 'error');
-                                   });
-                               }
-                           }
-                           
-                           // 页面加载完成后自动加载配置
-                           document.addEventListener('DOMContentLoaded', function() {
-                               loadConfig();
-                           });
-                       </script>
-                   </body>
-                   </html>
-                   """;
+            return @"
+<!DOCTYPE html>
+<html lang='zh-CN'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>X19Fucker 控制台</title>
+    <script src='https://cdn.tailwindcss.com'></script>
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', system-ui, sans-serif; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ''; height: 18px; width: 18px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2563eb; }
+        input:checked + .slider:before { transform: translateX(22px); }
+    </style>
+</head>
+<body class='p-4 md:p-8'>
+    <div class='max-w-2xl mx-auto'>
+        <div class='flex items-center justify-between mb-8'>
+            <h1 class='text-2xl font-bold text-gray-800'>X19Fucker 配置中心</h1>
+        </div>
+
+        <div id='config-container' class='space-y-4'>
+            <!-- 动态加载配置项 -->
+            <div class='text-center py-10 text-gray-500'>正在获取配置列表...</div>
+        </div>
+
+        <div class='mt-8 flex gap-4'>
+            <button onclick='saveConfig()' class='flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition'>
+                保存并生效
+            </button>
+            <button onclick='loadConfig()' class='px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition'>
+                刷新
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let metadata = {};
+
+        async function loadConfig() {
+            // 1. 获取元数据（有哪些配置）
+            const metaRes = await fetch('/config/settingslist');
+            const metaJson = await metaRes.json();
+            metadata = metaJson.data;
+
+            // 2. 获取当前值
+            const valRes = await fetch('/config/get');
+            const valJson = await valRes.json();
+            const values = valJson.data;
+
+            renderUI(values);
+        }
+
+        function renderUI(values) {
+            const container = document.getElementById('config-container');
+            container.innerHTML = '';
+
+            for (const key in metadata) {
+                const item = metadata[key];
+                const val = values[key];
+                
+                const div = document.createElement('div');
+                div.className = 'card p-5 flex items-center justify-between';
+                
+                let inputHtml = '';
+                if (item.type === 'Boolean') {
+                    inputHtml = `
+                        <label class='switch'>
+                            <input type='checkbox' id='input-${key}' ${val ? 'checked' : ''}>
+                            <span class='slider'></span>
+                        </label>`;
+                } else {
+                    inputHtml = `<input type='text' id='input-${key}' value='${val}' class='border rounded-lg px-3 py-1 text-right focus:ring-2 focus:ring-blue-500 outline-none w-48'>`;
+                }
+
+                div.innerHTML = `
+                    <div>
+                        <div class='font-semibold text-gray-700'>${item.desc}</div>
+                        <div class='text-xs text-gray-400'>${key}</div>
+                    </div>
+                    ${inputHtml}
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        async function saveConfig() {
+            const updates = {};
+            for (const key in metadata) {
+                const input = document.getElementById('input-' + key);
+                if (metadata[key].type === 'Boolean') {
+                    updates[key] = input.checked;
+                } else if (metadata[key].type === 'Int32') {
+                    updates[key] = parseInt(input.value);
+                } else {
+                    updates[key] = input.value;
+                }
+            }
+
+            const res = await fetch('/config/save', {
+                method: 'POST',
+                body: JSON.stringify(updates)
+            });
+            
+            if (res.ok) alert('配置已成功保存并同步！');
+        }
+
+        loadConfig();
+    </script>
+</body>
+</html>";
         }
     }
 }

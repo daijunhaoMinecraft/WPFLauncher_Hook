@@ -4,6 +4,13 @@
 
 <p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
+# 下载方式
+| 下载方式 | 描述 |
+| --- |-----------------------------------|
+[Release](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/releases) | 下载最新版本(一般是有点稳定的)                  |
+[Build](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/blob/main/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll) | 下载最新构建好的测试版本(可能很不稳定,点击右上方的下载图标下载) |              |
+
+[安装教程](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/tree/main?tab=readme-ov-file#%E5%AE%89%E8%A3%85)
 # 免责声明
 
 **本项目仅供学习交流使用, 严禁用于非法用途/商业/倒卖等多类用途使用**

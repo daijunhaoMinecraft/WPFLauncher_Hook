@@ -1528,77 +1528,40 @@ public class SimpleHttpServer
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/settings"))
                     {
-                        try
-                        {
-                            // 返回设置管理页面
-                            string htmlContent = HtmlResource.GetHotUpdateHtml(); //File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DotNetTranstor", "HTML", "HotUpdateConfig.html"));
-                            
-                            context.Response.ContentType = "text/html";
-                            byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
-                            context.Response.ContentLength64 = buffer.Length;
-                            context.Response.OutputStream.Write(buffer, 0, buffer.Length);
-                            context.Response.OutputStream.Close();
-                            IsSendResponseFlag = false;
-                        }
-                        catch (Exception ex)
-                        {
-                            // 处理读取或发送HTML文件时可能出现的错误
-                            SendResponse = new
-                            {
-                                error = 1,
-                                message = "无法加载设置页面: " + ex.Message
-                            };
-                        }
+                        string htmlContent = HtmlResource.GetHotUpdateHtml();
+                        context.Response.ContentType = "text/html; charset=utf-8";
+                        byte[] buffer = Encoding.UTF8.GetBytes(htmlContent);
+                        context.Response.ContentLength64 = buffer.Length;
+                        context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+                        context.Response.OutputStream.Close();
+                        IsSendResponseFlag = false;
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/config/get"))
                     {
-                        // 获取当前配置
                         SendResponse = new
                         {
                             error = 0,
-                            message = "获取配置成功",
-                            data = new
-                            {
-                                IsBypassGameUpdate_Bedrock = Path_Bool.IsBypassGameUpdate_Bedrock,
-                                IsEnableX64mc = Path_Bool.IsEnableX64mc,
-                                IsDebug = Path_Bool.IsDebug,
-                                EnableRoomBlacklist = Path_Bool.EnableRoomBlacklist,
-                                EnableRegexBlacklist = Path_Bool.EnableRoomBlacklist,
-                                MaxRoomCount = Path_Bool.MaxRoomCount,
-                                HttpPort = Path_Bool.HttpPort,
-                                NeteaseUpdateDomainhttp = Path_Bool.NeteaseUpdateDomainhttp,
-                                AlwaysSaveWorld = Path_Bool.AlwaysSaveWorld,
-                                IsCustomIP = Path_Bool.IsCustomIP,
-                                NoTwoExitMessage = Path_Bool.NoTwoExitMessage
-                            }
+                            message = "获取成功",
+                            data = ConfigManager.GetCurrentConfigValues() // 自动获取所有 Path_Bool 里的值
                         };
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/config/settingslist"))
                     {
-                        // 获取设置列表
                         SendResponse = new
                         {
                             error = 0,
-                            message = "获取设置列表成功",
-                            data = new Dictionary<string, string>
-                            {
-                                { "IsBypassGameUpdate_Bedrock", "跳过基岩版游戏更新" },
-                                { "IsEnableX64mc", "启用64位MC" },
-                                { "IsDebug", "调试模式" },
-                                { "EnableModsInject", "启用模组注入" },
-                                { "EnableRoomBlacklist", "启用房间黑名单" },
-                                { "EnableRegexBlacklist", "启用正则表达式黑名单" },
-                                { "MaxRoomCount", "最大房间数" },
-                                { "HttpPort", "HTTP端口" },
-                                { "NeteaseUpdateDomainhttp", "网易更新域" },
-                                { "IsDecryptMod", "解密模组" },
-                                { "AlwaysSaveWorld", "总是保存世界" },
-                                { "IsCustomIP", "自定义IP" },
-                                { "NoTwoExitMessage", "禁用联机大厅退出房间二次确认" }
-                            }
+                            message = "获取元数据成功",
+                            data = ConfigManager.GetMetadata() // 自动获取 key, 中文名和类型
                         };
-                        sendJsonResponse(context.Response, SendResponse);
-                        IsSendResponseFlag = false;
+                    }
+                    else if (context.Request.Url.AbsolutePath.StartsWith("/config/save")) // 新增保存接口
+                    {
+                        using (var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
+                        {
+                            string json = reader.ReadToEnd();
+                            ConfigManager.UpdateFromJson(json); // 自动更新 Path_Bool 并保存文件
+                        }
+                        SendResponse = new { error = 0, message = "配置已更新" };
                     }
                     else if (context.Request.Url.AbsolutePath == "/")
                     {

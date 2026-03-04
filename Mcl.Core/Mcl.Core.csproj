@@ -61,6 +61,7 @@
     <Compile Include="DotNetTranstor\Hookevent\SalogPocket.cs" />
     <Compile Include="DotNetTranstor\Hookevent\SensitiveWordDetection.cs" />
     <Compile Include="DotNetTranstor\Hookevent\SolveHyt.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\SolveJavaMemoryLimit.cs" />
     <Compile Include="DotNetTranstor\Hookevent\UnlockAllMode.cs" />
     <Compile Include="DotNetTranstor\Hookevent\VapeDetect.cs" />
     <Compile Include="DotNetTranstor\Hookevent\WebRTCEx.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="DotNetTranstor\Protection.cs" />
     <Compile Include="DotNetTranstor\RelocatedMethodAttribute.cs" />
     <Compile Include="DotNetTranstor\RememberTypeAttribute.cs" />
+    <Compile Include="DotNetTranstor\Settings\ConfigManager.cs" />
     <Compile Include="DotNetTranstor\ShadowMethodAttribute.cs" />
     <Compile Include="DotNetTranstor\Tools\4399Login.cs" />
     <Compile Include="DotNetTranstor\Tools\AESHelper.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="DotNetTranstor\Tools\JS4399HttpConfig.cs" />
     <Compile Include="DotNetTranstor\Tools\JS4399Result.cs" />
     <Compile Include="DotNetTranstor\Tools\LocalProxyListener.cs" />
+    <Compile Include="DotNetTranstor\Tools\MemoryUtils.cs" />
     <Compile Include="DotNetTranstor\Tools\Ocr.cs" />
     <Compile Include="DotNetTranstor\Tools\PacketDeserializer.cs" />
     <Compile Include="DotNetTranstor\Tools\RandomName.cs" />
