@@ -31,6 +31,7 @@
     <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
     <Compile Include="DotNetTranstor\Hookevent\DisableClearProcess.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ExitPop.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\FixFriendShow.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Get_Netease_Error.cs" />
     <Compile Include="DotNetTranstor\Hookevent\LoginFucker.cs" />
     <Compile Include="DotNetTranstor\Hookevent\MinecraftPath.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="DotNetTranstor\LDasm.cs" />
     <Compile Include="DotNetTranstor\Libraries\String.cs" />
     <Compile Include="DotNetTranstor\MethodHook.cs" />
+    <Compile Include="DotNetTranstor\Model\FriendStatus.cs" />
     <Compile Include="DotNetTranstor\Model\TransferStruct.cs" />
     <Compile Include="DotNetTranstor\Monitor.cs" />
     <Compile Include="DotNetTranstor\MonitorAttribute.cs" />

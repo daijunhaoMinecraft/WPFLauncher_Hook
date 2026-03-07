@@ -34,6 +34,7 @@ using MessageBox = System.Windows.MessageBox;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
+using Mcl.Core.DotNetTranstor.Model;
 using Application = System.Windows.Application;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 
@@ -81,10 +82,11 @@ namespace DotNetTranstor.Hookevent
 
         [CompilerGenerated]
         [HookMethod("WPFLauncher.Network.abu", "b", "Pocket_Info")]
-        public static void b(abx hqx)
+        public static void b(abx message)
         {
+            if (Path_Bool.IsDebug) LogDebug($"[Recv_Pocket]:MessagePackId: {message.b}, Json: {message.a}");
             //Console.WriteLine($"[Recv_Pocket]:a:{hqx.a},b:{hqx.b},c:{hqx.c},d:{hqx.d}");
-            if (hqx == null)
+            if (message == null)
             {
                 return;
             }
@@ -94,12 +96,12 @@ namespace DotNetTranstor.Hookevent
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(hqx.a))
+                    if (string.IsNullOrEmpty(message.a))
                     {
                         return;
                     }
 
-                    if (hqx.a == "[]")
+                    if (message.a == "[]")
                     {
                         if (Path_Bool.RoomInfo != null)
                         {
@@ -145,7 +147,7 @@ namespace DotNetTranstor.Hookevent
                     JObject Get_Json_Recv;
                     try
                     {
-                        Get_Json_Recv = JObject.Parse(hqx.a);
+                        Get_Json_Recv = JObject.Parse(message.a);
                     }
                     catch (JsonReaderException)
                     {
@@ -207,7 +209,7 @@ namespace DotNetTranstor.Hookevent
                     {
                         processingTasks.Add(Task.Run(() => 
                         {
-                            LogDebug($"接收到未分类的数据包: {hqx.a}", ConsoleColor.Magenta);
+                            LogDebug($"接收到未分类的数据包: {message.a}", ConsoleColor.Magenta);
                             if (Path_Bool.IsStartWebSocket)
                             {
                                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Recv_Pocket", data = Get_Json_Recv }));
@@ -229,7 +231,7 @@ namespace DotNetTranstor.Hookevent
                         
                         if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("player_chatver_id") || ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("err"))
                         {
-                            Path_Bool.Get_Recv_String_ChatResult = hqx.a;
+                            Path_Bool.Get_Recv_String_ChatResult = message.a;
                         }
                     }
                     catch (Exception ex)
@@ -237,7 +239,7 @@ namespace DotNetTranstor.Hookevent
                         await Task.Run(() => LogDebug($"更新接收列表失败: {ex.Message}", ConsoleColor.Red));
                     }
 
-                    await Task.Run(() => Pocket_Info(hqx));
+                    await Task.Run(() => Pocket_Info(message));
                 }
                 catch (Exception e)
                 {
@@ -384,6 +386,21 @@ namespace DotNetTranstor.Hookevent
             JObject playerInfo = X19Http.Get_Player_Info(uid);
             string playerName = playerInfo["entity"]["name"].ToObject<string>();
             LogDebug($"玩家状态: {statusString} UID:{uid} 玩家名: {playerName} 提示: {hint}", status == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+            FriendStatus friendStatus = Path_Bool.ListFriendStatus.FirstOrDefault(x => x.UserId.ToString() == uid);
+            if (friendStatus == null)
+            {
+                Path_Bool.ListFriendStatus.Add(new FriendStatus()
+                {
+                    Status = status,
+                    UserId = uid
+                });
+            }
+            else
+            {
+                friendStatus.Status = status;
+                friendStatus.UserId = uid;
+            }
+            aze<arg>.Instance.ClusterList.h();
         }
 
         private static void HandleFriendsList(JObject jsonData)

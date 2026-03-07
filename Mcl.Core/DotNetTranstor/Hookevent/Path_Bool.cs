@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Mcl.Core.DotNetTranstor.Model;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Code;
@@ -13,7 +14,7 @@ namespace DotNetTranstor.Hookevent
 {
     public class Path_Bool
     {
-        public static string Version = "4.0.3-Beta_2";
+        public static string Version = "4.0.3-Beta_3";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
@@ -46,6 +47,8 @@ namespace DotNetTranstor.Hookevent
         public static int JoinFailRetry = 0;
         public static string JavaGamePath = string.Empty;
         public static bool UseNetworkMode = false;
+        
+        public static List<FriendStatus> ListFriendStatus = new List<FriendStatus>();
 
         public class DecryptItemInfo
         {
