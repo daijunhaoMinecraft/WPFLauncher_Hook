@@ -36,6 +36,8 @@ namespace DotNetTranstor.Hookevent
             new ConfigEntry { Key = "NoTwoExitMessage", Description = "禁用退出二次确认", FieldType = typeof(bool), Category = "联机大厅设置" },
             new ConfigEntry { Key = "EnableRoomBlacklist", Description = "启用房间黑名单", FieldType = typeof(bool), Category = "联机大厅设置" },
             new ConfigEntry { Key = "AlwaysSaveWorld", Description = "保存房间提醒", FieldType = typeof(bool), Category = "联机大厅设置" },
+            
+            new ConfigEntry { Key = "UseNetworkMode", Description = "使用组网模式", FieldType = typeof(bool), Category = "本地联机" },
 
             // 模组与高级
             // new ConfigEntry { Key = "EnableModsInject", Description = "启用模组注入", FieldType = typeof(bool), Category = "高级功能" },

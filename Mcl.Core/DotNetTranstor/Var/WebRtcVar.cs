@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Hookevent;
+using Mcl.Core.DotNetTranstor.Tools.Network;
 using WPFLauncher.Model;
 using WPFLauncher.SQLite;
 
@@ -61,6 +62,8 @@ namespace Mcl.Core.DotNetTranstor.Var
         
         public static object CmInstance = null;
         public static ait AitFunction = null;
+
+        public static WintunRouterService WintunNetworkService = new WintunRouterService();
         
         public static List<uint> PlayerList = new List<uint>();
 

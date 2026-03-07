@@ -6,6 +6,7 @@ using Mcl.Core.DotNetTranstor.Var;
 using System.Reflection;
 using DotNetTranstor;
 using Mcl.Core.DotNetTranstor.Model;
+using Mcl.Core.DotNetTranstor.Tools.Network;
 using Newtonsoft.Json;
 using WPFLauncher.Common;
 using WPFLauncher.Manager;
@@ -40,11 +41,18 @@ namespace Mcl.Core
         
             byte[] rawData = new byte[dataSize];
             Marshal.Copy(dataPtr, rawData, 0, dataSize);
-            // Console.WriteLine($"[RECV] Peer:{peerId} Len:{dataSize}, Data: {BitConverter.ToString(rawData).Replace('-', ' ')}");
+            if (Path_Bool.IsDebug) Console.WriteLine($"[RECV] Peer:{peerId} Len:{dataSize}, Data: {BitConverter.ToString(rawData).Replace('-', ' ')}");
         
             // 调试日志：查看原始数据前几个字节
             // Console.WriteLine($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
-        
+            
+            if (Path_Bool.UseNetworkMode)
+            {
+                // 收到数据，交给路由器模块处理 (包含路由转发和注入功能)
+                WintunRouterService.Instance.OnDataReceived(peerId, rawData);
+                return; // 跳过原有的端口转发解析
+            }
+            
             // 握手识别
             if (IsMagicHandshake(rawData)) {
                 WebRtcVar.PeerSupportMultiplex[peerId] = true;
@@ -122,7 +130,20 @@ namespace Mcl.Core
                     // 递归调用一次处理当前包
                     newSession.SendToSocket(final);
                 } else {
-                    // Console.WriteLine($"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
+                    if (WebRtcVar.IsNativeCompressionEnabled() && !WebRtcVar.PeerSupportMultiplex.ContainsKey(peerId))
+                    {
+                        // 创建新连接
+                        if (Path_Bool.IsDebug)
+                        {
+                            Console.WriteLine($"[Mux] 创建新客户端 Session: {peerId}_{connId}");
+                        }
+                        WebRtcVar.Sessions[sessionKey] = new UnifiedSession(peerId, true);
+                        WebRtcVar.Sessions[sessionKey].SendToSocket(final);
+                    }
+                    else
+                    {
+                        if (Path_Bool.IsDebug) Console.WriteLine($"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
+                    }
                 }
             }
         }
@@ -215,6 +236,37 @@ namespace Mcl.Core
                 Console.WriteLine($"[WebRtc] SendBack 发送失败: {ex.Message}");
             }
         }
+        
+        public static void SendData(string peerId, byte[] data)
+        {
+            if (WebRtcVar.CmInstance == null) return;
+        
+            IntPtr? peerPtr = WebRtcVar.getIntPtrFromPeerId(peerId);
+            if (peerPtr == null) return;
+        
+            // 3. 反射调用原生发送
+            try {
+                Assembly asm = WebRtcVar.CmInstance.GetType().Assembly;
+                Type ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
+                MethodInfo sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
+                if (Path_Bool.IsDebug)
+                {
+                    Console.WriteLine($"[SEND] Peer:{peerId} Len:{data.Length}, Data: {BitConverter.ToString(data).Replace('-', ' ')}");
+                }
+                object result = sMethod.Invoke(null, new object[] { peerPtr.Value, data, data.Length });
+                bool success = (bool)result;
+
+                if (!success)
+                {
+                    Console.WriteLine("[WebRtc] 一个包发送失败!");
+                }
+                // Console.WriteLine($"发送调用结果: {success}");
+                
+            } catch (Exception ex) {
+                Console.WriteLine($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            }
+        }
+
         
         [OriginalMethod]
         private bool processReceiveTransferMessage(ushort messageId, byte[] messageData)

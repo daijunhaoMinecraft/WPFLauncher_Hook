@@ -10,6 +10,7 @@ using System.Windows;
 using DotNetTranstor;
 using DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Tools;
+using Mcl.Core.DotNetTranstor.Tools.Network;
 using Mcl.Core.DotNetTranstor.Var;
 using Mcl.Core.DotNetTranstor.Window;
 using WPFLauncher.Common;
@@ -40,43 +41,88 @@ public class WebRtcEx : IMethodHook
     {
         try
         {
-            if (WebRtcVar.Mode == ForwardMode.Client)
+            if (Path_Bool.UseNetworkMode)
             {
-                MessageBoxResult res = uz.q("是否将数据转发到一个端口上(WebRtc->端口->玩家)", "", "是", "否", "");
-                if (res == MessageBoxResult.OK)
+                if (WebRtcVar.Mode == ForwardMode.Client)
                 {
-                    using (var f = new ClientSelectPort()) f.ShowDialog();
-                    WebRtcVar.InitForwarder();
-                    // 显式指定 System.Windows.Forms 避免和 WPF 冲突
-                    Task.Run(() => { System.Windows.Forms.Application.Run(new ForwarderControlPanel()); });
-                    return 0;
+                    MessageBoxResult res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否", "");
+                    if (res == MessageBoxResult.OK)
+                    {
+                        Task.Run(() => { WintunRouterService.Instance.Start("10.0.0.5"); });
+                        WebRtcVar.Enable = true;
+                        Console.WriteLine("服务端IP地址默认为:10.0.0.4");
+                        return 0;
+                    }
+                }
+                else if (WebRtcVar.Mode == ForwardMode.Server)
+                {
+                    MessageBoxResult res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否", "");
+                    if (res == MessageBoxResult.OK)
+                    {
+                        WebRtcVar.Mode = ForwardMode.Server;
+                        // using (var f = new ServerSelectPort()) f.ShowDialog();
+                        if (WebRtcVar.AitFunction == null)
+                        {
+                            Console.WriteLine("ait 为 null");
+                        }
+                        else if (WebRtcVar.AitFunction.axy == null)
+                        {
+                            Console.WriteLine("发包函数为Null");
+                        }
+                        CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
+                        // WebRtcVar.gameM.axy.@as(new object[]
+                        // {
+                        //     528,
+                        //     (byte)RoomVisibleStatus.OPEN
+                        // });
+                        CallShowRoomManageReflection();
+                        WintunRouterService.Instance.Start("10.0.0.4");
+                        WebRtcVar.Enable = true;
+                        // WebRtcVar.InitForwarder();
+                        return 0;
+                    }
                 }
             }
-            else if (WebRtcVar.Mode == ForwardMode.Server)
-            {
-                MessageBoxResult res = uz.q("是否启用端口转发功能(端口->WebRtc->玩家)", "", "是", "否", "");
-                if (res == MessageBoxResult.OK)
+            else
+            { 
+                if (WebRtcVar.Mode == ForwardMode.Client)
                 {
-                    WebRtcVar.Mode = ForwardMode.Server;
-                    using (var f = new ServerSelectPort()) f.ShowDialog();
-                    if (WebRtcVar.AitFunction == null)
+                    MessageBoxResult res = uz.q("是否将数据转发到一个端口上(WebRtc->端口->玩家)", "", "是", "否", "");
+                    if (res == MessageBoxResult.OK)
                     {
-                        Console.WriteLine("ait 为 null");
+                        using (var f = new ClientSelectPort()) f.ShowDialog();
+                        WebRtcVar.InitForwarder();
+                        // 显式指定 System.Windows.Forms 避免和 WPF 冲突
+                        Task.Run(() => { System.Windows.Forms.Application.Run(new ForwarderControlPanel()); });
+                        return 0;
                     }
-                    else if (WebRtcVar.AitFunction.axy == null)
+                }
+                else if (WebRtcVar.Mode == ForwardMode.Server)
+                {
+                    MessageBoxResult res = uz.q("是否启用端口转发功能(端口->WebRtc->玩家)", "", "是", "否", "");
+                    if (res == MessageBoxResult.OK)
                     {
-                        Console.WriteLine("发包函数为Null");
-                    }
-                    CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
-                    // WebRtcVar.gameM.axy.@as(new object[]
-                    // {
-                    //     528,
-                    //     (byte)RoomVisibleStatus.OPEN
-                    // });
-                    CallShowRoomManageReflection();
+                        WebRtcVar.Mode = ForwardMode.Server;
+                        using (var f = new ServerSelectPort()) f.ShowDialog();
+                        if (WebRtcVar.AitFunction == null)
+                        {
+                            Console.WriteLine("ait 为 null");
+                        }
+                        else if (WebRtcVar.AitFunction.axy == null)
+                        {
+                            Console.WriteLine("发包函数为Null");
+                        }
+                        CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
+                        // WebRtcVar.gameM.axy.@as(new object[]
+                        // {
+                        //     528,
+                        //     (byte)RoomVisibleStatus.OPEN
+                        // });
+                        CallShowRoomManageReflection();
             
-                    WebRtcVar.InitForwarder();
-                    return 0;
+                        WebRtcVar.InitForwarder();
+                        return 0;
+                    }
                 }
             }
             return RunGameOriginal();

@@ -17,6 +17,7 @@ namespace Mcl.Core
         private NetworkStream _stream;
         private volatile bool _isClosing = false;
         private volatile bool _isConnected = false;
+        private volatile bool _isNeteasePlayer = false;
         private readonly object _connectLock = new object();
         private readonly ConcurrentQueue<byte[]> _sendQueue = new ConcurrentQueue<byte[]>();
         private readonly string _logPrefix;
@@ -41,6 +42,18 @@ namespace Mcl.Core
         {
             this.PeerId = peerId;
             this.ConnId = connId;
+            this.LastActive = DateTime.Now;
+            _logPrefix = $"[Session:{PeerId}_{ConnId}]";
+            Log("=== 构造函数 === 将异步连接本地MC服务器");
+
+            new Thread(ConnectToLocalMc) { IsBackground = true, Name = $"Connect-{PeerId}_{ConnId}" }.Start();
+        }
+        
+        // ========== 网易我的世界启动器玩家部分特殊处理 ==========
+        public UnifiedSession(string peerId, bool isNeteasePlayer)
+        {
+            this.PeerId = peerId;
+            this._isNeteasePlayer = isNeteasePlayer;
             this.LastActive = DateTime.Now;
             _logPrefix = $"[Session:{PeerId}_{ConnId}]";
             Log("=== 构造函数 === 将异步连接本地MC服务器");
@@ -155,9 +168,24 @@ namespace Mcl.Core
                         Buffer.BlockCopy(buf, 0, data, 0, bytesRead);
                         
                         Log($"[接收] 从MC收到 {bytesRead} bytes, 回传给WebRTC");
-                        
-                        // 回传给 WebRTC，带上 ConnId
-                        WebSocket_WebRtc.SendBack(data, this.PeerId, this.ConnId);
+
+                        if (_isNeteasePlayer)
+                        {
+                            // 回传给 WebRTC，带上 ConnId
+                            WebSocket_WebRtc.SendBack(data, this.PeerId, this.ConnId);
+                        }
+                        else
+                        {
+                            byte[] finalData = data;
+                            // Compress
+                            if (WebRtcVar.IsNativeCompressionEnabled()) {
+                                IntPtr? peerPtr = WebRtcVar.getIntPtrFromPeerId(this.PeerId);
+                                if (peerPtr == null) continue;
+                                av compress = WebRtcVar.GetCompressor(peerPtr.Value);
+                                if (compress != null) finalData = compress.a(data);
+                            }
+                            WebSocket_WebRtc.SendData(this.PeerId, finalData);
+                        }
                     } 
                     else 
                     {

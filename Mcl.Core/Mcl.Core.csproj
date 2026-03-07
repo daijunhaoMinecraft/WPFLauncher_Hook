@@ -103,6 +103,7 @@
     <Compile Include="DotNetTranstor\Tools\JS4399Result.cs" />
     <Compile Include="DotNetTranstor\Tools\LocalProxyListener.cs" />
     <Compile Include="DotNetTranstor\Tools\MemoryUtils.cs" />
+    <Compile Include="DotNetTranstor\Tools\Network\WintunNetworkModule.cs" />
     <Compile Include="DotNetTranstor\Tools\Ocr.cs" />
     <Compile Include="DotNetTranstor\Tools\PacketDeserializer.cs" />
     <Compile Include="DotNetTranstor\Tools\RandomName.cs" />
