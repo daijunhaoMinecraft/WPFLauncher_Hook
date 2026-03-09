@@ -1,10 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DotNetTranstor.Hookevent;
+using Mcl.Core.DotNetTranstor.Model;
 using Mcl.Core.DotNetTranstor.Var;
+using WebSocketSharp;
+using WPFLauncher.Common;
+using WPFLauncher.Manager;
 
 namespace Mcl.Core.DotNetTranstor.Tools.Network
 {
@@ -15,6 +24,7 @@ namespace Mcl.Core.DotNetTranstor.Tools.Network
         private IntPtr _adapter = IntPtr.Zero;
         private IntPtr _session = IntPtr.Zero;
         private bool _isRunning = false;
+       
         
         // 核心路由表：Key = 虚拟IP (如 10.8.0.2), Value = PeerId
         private ConcurrentDictionary<string, string> _routingTable = new ConcurrentDictionary<string, string>();
@@ -56,10 +66,98 @@ namespace Mcl.Core.DotNetTranstor.Tools.Network
             ConfigureIp("MclVirtualNic", virtualIp, "255.255.255.0");
             _session = WintunStartSession(_adapter, 0x400000);
             _isRunning = true;
+            if (WebRtcVar.Mode == ForwardMode.Server)
+            {
+                // 1. 【修改点】使用 for 循环手动查找索引，替代 FindIndex
+                // 因为 ObservableCollection<T> 没有 FindIndex 方法
+                int index = -1;
+                string targetUserId = aze<arg>.Instance.User.UserID.ToString();
+
+                for (int i = 0; i < WebRtcVar.PlayerList.Count; i++)
+                {
+                    if (WebRtcVar.PlayerList[i].UserID == targetUserId)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                // 2. 如果找到了有效索引 (-1 表示未找到)
+                if (index != -1)
+                {
+                    // 3. 【关键】直接通过索引访问并修改列表中的元素
+                    var item = WebRtcVar.PlayerList[index]; // 如果是 struct，这里取出的是副本
+
+                    // 修改副本的属性
+                    item.Status = "已连接";
+                    item.PeerId = WebRtcVar.MyPeerId;
+                    item.VirtualIp = virtualIp;
+
+                    WebRtcVar.PlayerList[index] = item;
+                    if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
+    
+                    // 可选：添加日志确认
+                    // Console.WriteLine($"[成功] 用户 {targetUserId} 状态已更新为已连接");
+                }
+                else
+                {
+                    // 可选：调试用
+                    // Console.WriteLine($"[警告] 未找到 UserID 为 {targetUserId} 的玩家");
+                }
+            }
+            else
+            {
+                if (IPAddress.TryParse(virtualIp, out IPAddress ipAddr))
+                {
+                    byte[] ipBytes = ipAddr.GetAddressBytes();
+    
+                    // 定义头部
+                    byte[] header = VirualIpProto.MagicHandshake.ToArray();
+    
+                    // 合并头部和 IP 字节数组
+                    // 结果格式: [0x01, 0x02, 0x03, IP_Byte1, IP_Byte2, IP_Byte3, IP_Byte4]
+                    byte[] sendData = header.Concat(ipBytes).ToArray();
+
+                    SendData(WebRtcVar.TargetPeerId, sendData);
+                    Console.WriteLine($"[Router] 发送虚拟IP: {virtualIp}");
+                }
+            }
 
             // 启动网卡监听线程
             Task.Run(() => CaptureLoop());
             Console.WriteLine($"[Router] 虚拟网卡已启动，本机虚拟IP: {virtualIp}");
+        }
+
+        public void SetRouting(string ip, string peerId)
+        {
+            try
+            {
+                _routingTable[ip] = peerId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        public void RemoveRouting(string peerId)
+        {
+            try
+            {
+                // 查找并移除与该 peerId 关联的路由条目
+                var entry = _routingTable.FirstOrDefault(kvp => kvp.Value == peerId);
+                if (!string.IsNullOrEmpty(entry.Key))
+                {
+                    _routingTable.TryRemove(entry.Key, out _);
+                    if (Path_Bool.IsDebug)
+                    {
+                        Console.WriteLine($"[Router] 已移除路由: {entry.Key} -> {peerId}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"[Router] 移除路由时出错: {e.Message}");
+            }
         }
 
         /// <summary>
@@ -166,11 +264,41 @@ namespace Mcl.Core.DotNetTranstor.Tools.Network
             try {
                 Assembly asm = WebRtcVar.CmInstance.GetType().Assembly;
                 Type ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
+                if (Path_Bool.IsDebug) Console.WriteLine($"[WebRtc]发送数据: {BitConverter.ToString(data)}");
                 MethodInfo sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
                 sMethod.Invoke(null, new object[] { peerPtr.Value, data, data.Length });
             } catch { }
         }
 
+        public void SendBoardCastData(byte[] data)
+        {
+            foreach (var route in this._routingTable)
+            {
+                SendData(route.Value, data);
+            }
+        }
+
+        public void SendServerPlayerInfo(string peerId = "")
+        {
+            // 假设 PlayerList 已经填充了数据
+            ObservableCollection<LanGamePlayerInfo> currentPlayers = WebRtcVar.PlayerList;
+
+            // 调用工具生成字节包
+            byte[] packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
+            if (peerId.IsNullOrEmpty())
+            {
+                // 发送给特定 peer 或 广播
+                SendBoardCastData(packetToSend); 
+                Console.WriteLine("[Router] 玩家列表已广播。");
+            }
+            else
+            {
+                // 发送给特定 peer 或 广播
+                SendData(peerId, packetToSend);
+                Console.WriteLine($"[Router] 玩家列表已发送给 {peerId}。");
+            }
+        }
+ 
         private void ConfigureIp(string name, string ip, string mask)
         {
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
@@ -180,6 +308,76 @@ namespace Mcl.Core.DotNetTranstor.Tools.Network
                 CreateNoWindow = true,
                 UseShellExecute = false
             })?.WaitForExit();
+        }
+        
+        public void Stop()
+        {
+            if (!_isRunning && _adapter == IntPtr.Zero)
+            {
+                Console.WriteLine("[Router] 服务未运行，无需停止。");
+                return;
+            }
+
+            Console.WriteLine("[Router] 正在停止虚拟网卡服务...");
+
+            // 1. 标记停止状态，终止 CaptureLoop 循环
+            _isRunning = false;
+
+            // 2. 清理 Wintun 会话 (Session)
+            // 必须先结束会话，否则 CloseAdapter 可能会失败或挂起
+            if (_session != IntPtr.Zero)
+            {
+                try
+                {
+                    WintunEndSession(_session);
+                    Console.WriteLine("[Router] Wintun 会话已关闭。");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Router] 关闭会话时出错: {ex.Message}");
+                }
+                _session = IntPtr.Zero;
+            }
+
+            // 3. 清理 Wintun 适配器 (Adapter)
+            if (_adapter != IntPtr.Zero)
+            {
+                try
+                {
+                    WintunCloseAdapter(_adapter);
+                    Console.WriteLine("[Router] 虚拟网卡适配器已移除。");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Router] 关闭适配器时出错: {ex.Message}");
+                    // 如果正常关闭失败，可能需要强制清理，但 WintunCloseAdapter 通常很可靠
+                }
+                _adapter = IntPtr.Zero;
+            }
+
+            // 4. 清理路由表
+            _routingTable.Clear();
+
+            // 5. 可选：清理 IP 配置 (将网卡设为 DHCP 或删除，防止残留静态 IP)
+            // 注意：WintunCloseAdapter 通常会自动移除网卡，IP 配置随之消失。
+            // 但如果网卡因异常未完全移除，可以尝试重置。
+            try 
+            {
+                // 尝试将接口设为 DHCP (如果网卡还存在于系统中)
+                // 这步是防御性的，通常不需要，因为网卡已经被 CloseAdapter 删除了
+                // Process.Start("netsh", $"interface ip set address name=\"MclVirtualNic\" dhcp"); 
+                Console.WriteLine("[Router] 网络配置清理完成。");
+            }
+            catch { }
+
+            // 6. 重置本地状态
+            LocalVirtualIp = string.Empty;
+            WebRtcVar.Enable = false;
+            
+            // 7. 通知监控窗口或其他监听者 (如果需要)
+            // 例如: OnServiceStopped?.Invoke();
+
+            Console.WriteLine("[Router] 组网服务已完全停止。");
         }
     }
 

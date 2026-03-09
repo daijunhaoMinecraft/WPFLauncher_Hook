@@ -5,8 +5,10 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using DotNetTranstor;
 using DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Tools;
@@ -23,6 +25,7 @@ using WPFLauncher.Model.Game.GameClient;
 using WPFLauncher.Network.TransService;
 using WPFLauncher.SQLite;
 using WPFLauncher.Util;
+using Application = System.Windows.Application;
 
 namespace Mcl.Core.DotNetTranstor.Hookevent;
 
@@ -43,14 +46,107 @@ public class WebRtcEx : IMethodHook
         {
             if (Path_Bool.UseNetworkMode)
             {
+                // 辅助函数：获取用户 IP
+                string GetUserVirtualIp()
+                {
+                    using (var ipForm = new SelectIp())
+                    {
+                        if (ipForm.ShowDialog() == DialogResult.OK)
+                        {
+                            return ipForm.SelectedIp;
+                        }
+                        return null;
+                    }
+                }
+
+                // // 辅助函数：启动监控界面
+                // void ShowMonitor()
+                // {
+                //     // 使用 ShowDialog 阻塞主线程，直到用户关闭监控窗口
+                //     // 这样用户必须通过监控窗口的"停止"按钮来退出组网
+                //     using (var monitor = new NetworkMonitorForm())
+                //     {
+                //         monitor.ShowDialog(); 
+                //     }
+                //     // 窗口关闭后，意味着服务已停止 (BtnStop_Click 里调用了 StopForwarder)
+                //     Console.WriteLine("组网监控窗口已关闭，服务已停止。");
+                // }
+                
+                void ShowMonitorAsync()
+                {
+                    Thread monitorThread = new Thread(() =>
+                    {
+                        try
+                        {
+                            // 1. 先创建局部变量，确保实例创建成功
+                            var tempForm = new NetworkMonitorForm(); 
+            
+                            if (tempForm == null) {
+                                Console.WriteLine("窗体实例化失败！");
+                                return;
+                            }
+
+                            // 2. 赋值给全局静态变量
+                            WebRtcVar.NetworkMonitor = tempForm;
+
+                            // 3. 运行这个局部实例
+                            System.Windows.Forms.Application.Run(tempForm); 
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"[监控窗体错误] {ex.Message}\n堆栈: {ex.StackTrace}");
+                        }
+                    });
+
+                    monitorThread.SetApartmentState(ApartmentState.STA);
+                    monitorThread.IsBackground = true;
+                    monitorThread.Start();
+                }
+
                 if (WebRtcVar.Mode == ForwardMode.Client)
                 {
                     MessageBoxResult res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否", "");
                     if (res == MessageBoxResult.OK)
                     {
-                        Task.Run(() => { WintunRouterService.Instance.Start("10.0.0.5"); });
                         WebRtcVar.Enable = true;
-                        Console.WriteLine("服务端IP地址默认为:10.0.0.4");
+                        WebRtcVar.PlayerList.Clear();
+                        WebSocket_WebRtc.SendData(WebRtcVar.TargetPeerId, GetPlayerListProto.MagicHandshake.ToArray());
+                        while (WebRtcVar.PlayerList.Count == 0)
+                        {
+                            Thread.Sleep(1000);
+                            Console.WriteLine($"[等待] 等待玩家列表获取成功...");
+                        }
+                        Console.WriteLine($"[成功] 获取到 {WebRtcVar.PlayerList.Count} 个玩家。");
+                        string clientIp = GetUserVirtualIp();
+                        
+                        if (string.IsNullOrEmpty(clientIp))
+                        {
+                            Console.WriteLine("[取消] 用户未配置 IP，启动中止。");
+                            return -1;
+                        }
+
+                        Console.WriteLine($"[客户端] 正在启动虚拟网卡 ({clientIp})...");
+                        
+                        // 启动 Wintun (后台运行)
+                        Task.Run(() => { 
+                            try 
+                            {
+                                WintunRouterService.Instance.Start(clientIp); 
+                            }
+                            catch (Exception ex) 
+                            {
+                                Console.WriteLine($"[错误] 启动失败: {ex.Message}");
+                                // 这里可能需要通知 UI 层报错
+                            }
+                        });
+
+                        WebRtcVar.Enable = true;
+                        Console.WriteLine($"[成功] 客户端已启动。IP: {clientIp}");
+                        
+                        // [关键修改] 启动后立即打开监控窗口
+                        // Task.Run((() => ShowMonitor()));
+                        ShowMonitorAsync();
+                        
                         return 0;
                     }
                 }
@@ -60,25 +156,38 @@ public class WebRtcEx : IMethodHook
                     if (res == MessageBoxResult.OK)
                     {
                         WebRtcVar.Mode = ForwardMode.Server;
-                        // using (var f = new ServerSelectPort()) f.ShowDialog();
+
+                        string serverIp = GetUserVirtualIp();
+                        if (string.IsNullOrEmpty(serverIp))
+                        {
+                            Console.WriteLine("[取消] 用户未配置 IP，启动中止。");
+                            return -1;
+                        }
+
                         if (WebRtcVar.AitFunction == null)
                         {
-                            Console.WriteLine("ait 为 null");
+                            Console.WriteLine("[警告] ait 为 null");
                         }
                         else if (WebRtcVar.AitFunction.axy == null)
                         {
-                            Console.WriteLine("发包函数为Null");
+                            Console.WriteLine("[警告] 发包函数为Null");
                         }
+
+                        // 执行游戏逻辑
                         CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
-                        // WebRtcVar.gameM.axy.@as(new object[]
-                        // {
-                        //     528,
-                        //     (byte)RoomVisibleStatus.OPEN
-                        // });
                         CallShowRoomManageReflection();
-                        WintunRouterService.Instance.Start("10.0.0.4");
+
+                        Console.WriteLine($"[服务端] 正在启动虚拟网卡 ({serverIp})...");
+                        
+                        // 启动 Wintun
+                        WintunRouterService.Instance.Start(serverIp);
+                        
                         WebRtcVar.Enable = true;
-                        // WebRtcVar.InitForwarder();
+                        Console.WriteLine($"[成功] 服务端已启动。IP: {serverIp}");
+
+                        // [关键修改] 启动后立即打开监控窗口
+                        ShowMonitorAsync();
+
                         return 0;
                     }
                 }

@@ -78,6 +78,7 @@
     <Compile Include="DotNetTranstor\Libraries\String.cs" />
     <Compile Include="DotNetTranstor\MethodHook.cs" />
     <Compile Include="DotNetTranstor\Model\FriendStatus.cs" />
+    <Compile Include="DotNetTranstor\Model\LanGamePlayerInfo.cs" />
     <Compile Include="DotNetTranstor\Model\TransferStruct.cs" />
     <Compile Include="DotNetTranstor\Monitor.cs" />
     <Compile Include="DotNetTranstor\MonitorAttribute.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="DotNetTranstor\Tools\HashExtensions.cs" />
     <Compile Include="DotNetTranstor\Tools\HtmlResource.cs" />
     <Compile Include="DotNetTranstor\Tools\HttpHelper.cs" />
+    <Compile Include="DotNetTranstor\Tools\IpConfigManager.cs" />
     <Compile Include="DotNetTranstor\Tools\JS4399.cs" />
     <Compile Include="DotNetTranstor\Tools\JS4399HttpConfig.cs" />
     <Compile Include="DotNetTranstor\Tools\JS4399Result.cs" />
@@ -117,6 +119,8 @@
     <Compile Include="DotNetTranstor\Var\WebRtcVar.cs" />
     <Compile Include="DotNetTranstor\Window\ClientSelectPort.cs" />
     <Compile Include="DotNetTranstor\Window\ForwarderControlPanel.cs" />
+    <Compile Include="DotNetTranstor\Window\NetworkMonitorForm.cs" />
+    <Compile Include="DotNetTranstor\Window\SelectIp.cs" />
     <Compile Include="DotNetTranstor\Window\ServerPanel.cs" />
     <Compile Include="DotNetTranstor\Window\ServerSelectPort.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />

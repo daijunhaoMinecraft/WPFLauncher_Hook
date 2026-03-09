@@ -16,4 +16,15 @@ public class TransferStruct
     {
         public byte Result;
     }
+    
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    // Token: 0x02000BD9 RID: 3033
+    public struct PlayerCreateWebRtcConnectEvent
+    {
+        // Token: 0x04002630 RID: 9776
+        public uint UserID;
+
+        // Token: 0x04002631 RID: 9777
+        public long PeerId;
+    }
 }

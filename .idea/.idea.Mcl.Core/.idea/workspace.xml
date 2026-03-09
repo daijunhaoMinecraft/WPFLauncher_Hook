@@ -5,8 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Model/LanGamePlayerInfo.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/IpConfigManager.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/NetworkMonitorForm.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/SelectIp.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebRTCEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebRTCEx.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebSocket_WebRtc.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebSocket_WebRtc.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Model/TransferStruct.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Model/TransferStruct.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/Network/WintunNetworkModule.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/PacketDeserializer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/PacketDeserializer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Var/WebRtcVar.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +50,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/42d26cc1c43d41479e23d48844ac4f98700200/5f/dcce7782/abx.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/55d349a038b2464ba45aba3c8b5c0782700200/7d/5731d442/ait.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/55d349a038b2464ba45aba3c8b5c0782700200/ea/df71d1bf/UserBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/89520504235a41e7a424f4e66c487d9b522790/03/072776ee/UInt32.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fcd34e621d73473aacfa0467c0fef5548fc00/af/f23757b5/LogEventInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/DisableClearProcess.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveHyt.cs" root0="FORCE_HIGHLIGHTING" />
@@ -40,12 +58,13 @@
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Model/TransferStruct.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/MemoryUtils.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/PacketDeserializer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/NetworkMonitorForm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/WPFLauncherLib/Main.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="SWEA" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -149,6 +168,8 @@
       <workItem from="1772710185419" duration="2659000" />
       <workItem from="1772807944941" duration="10274000" />
       <workItem from="1772875077607" duration="74000" />
+      <workItem from="1772882242386" duration="3985000" />
+      <workItem from="1773060193019" duration="470000" />
     </task>
     <task id="LOCAL-00001" summary="修复&quot;等待用户选择好IP地址&quot;部分可能会因为while无Sleep问题造成系统卡顿">
       <option name="closed" value="true" />
@@ -358,7 +379,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772863202265</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="修复网易我的世界启动器自身问题: 好友后在线启动器仍然显示离线问题&#10;没错网易写的就是这么离谱&#10;主要出现在: 当自己上线了,而好友之后上线,然后出现自己这边显示好友没有在线的问题">
+      <option name="closed" value="true" />
+      <created>1772882591990</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1772882591990</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -379,7 +408,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复:JoinRoom无法加入房间问题" />
     <MESSAGE value="缩短启动时间" />
     <MESSAGE value="Test" />
     <MESSAGE value="修复获取网易服务器列表问题" />
@@ -404,7 +432,8 @@
     <MESSAGE value="更新版本: 4.0.2-Public" />
     <MESSAGE value="主要更新:&#10; - 配置部分大改动(之前写的太夸张了写一个新功能配置需要修改10多个地方才能同步)&#10; - 修改了网易Java内存分配问题(不限制最大内存/最优内存优化)" />
     <MESSAGE value="修复 Issue # 17 的问题&#10;新增异地组网功能(需服务端和客户端都前往设置开启&quot;使用组网模式&quot;功能)&#10;请注意:&#10; - 组网模式目前处于测试阶段,因此功能不稳定(目前仅支持一个服务端和一个客户端, 因为服务端和客户端的ip分配我还没写好)&#10; - 组网模式需要wintun.dll的支持(将wintun.dll放入MCLauncher根目录下, 此文件可在github中Mcl.Core.dll所在的文件夹找到(实在找不到的GitHub上面或许有个搜索工具,试着搜索wintun.dll(当前项目搜索)))" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复 Issue # 17 的问题&#10;新增异地组网功能(需服务端和客户端都前往设置开启&quot;使用组网模式&quot;功能)&#10;请注意:&#10; - 组网模式目前处于测试阶段,因此功能不稳定(目前仅支持一个服务端和一个客户端, 因为服务端和客户端的ip分配我还没写好)&#10; - 组网模式需要wintun.dll的支持(将wintun.dll放入MCLauncher根目录下, 此文件可在github中Mcl.Core.dll所在的文件夹找到(实在找不到的GitHub上面或许有个搜索工具,试着搜索wintun.dll(当前项目搜索)))" />
+    <MESSAGE value="修复网易我的世界启动器自身问题: 好友后在线启动器仍然显示离线问题&#10;没错网易写的就是这么离谱&#10;主要出现在: 当自己上线了,而好友之后上线,然后出现自己这边显示好友没有在线的问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复网易我的世界启动器自身问题: 好友后在线启动器仍然显示离线问题&#10;没错网易写的就是这么离谱&#10;主要出现在: 当自己上线了,而好友之后上线,然后出现自己这边显示好友没有在线的问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
