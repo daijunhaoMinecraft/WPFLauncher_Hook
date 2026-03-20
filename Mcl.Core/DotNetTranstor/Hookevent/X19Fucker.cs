@@ -31,7 +31,7 @@ namespace DotNetTranstor.Hookevent
         [HookMethod("WPFLauncher.Manager.apm", "aj", "X19_Fever_bypass")]
         public bool Fever_False()
         {
-            AllocConsole();
+            // AllocConsole();
             PrintStatus();
 
             // 1. 初始化加载

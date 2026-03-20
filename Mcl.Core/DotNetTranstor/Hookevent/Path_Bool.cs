@@ -14,7 +14,7 @@ namespace DotNetTranstor.Hookevent
 {
     public class Path_Bool
     {
-        public static string Version = "4.0.3-Public";
+        public static string Version = "4.0.4-Public_Beta_1";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
