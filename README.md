@@ -246,46 +246,6 @@
 
 至此, 你成功安装了这个更好的网易我的世界启动器
 
-
-
-## 构建方式
-
-### 1. 前置条件
-在开始之前，请确保您的系统已安装以下软件:
-- **[Rider](https://www.jetbrains.com/zh-cn/rider/)** (ps: 当然你用其他C# IDE也是可以的)
-- **[Git](https://git-scm.com/)**
-- **[.NET Framework 4.8 开发人员工具包](https://dotnet.microsoft.com/zh-cn/download/dotnet-framework/net48)**
-- **已经脱好壳的WPFLauncher.exe文件** (ps: 这里不说方法, 然后这个文件在MCLauncher根目录下)
-
-### 2 快速开始
-第一步: git clone此项目<br/>
-```
-git clone https://github.com/daijunhaoMinecraft/WPFLauncher_Hook.git
-```
-第二步: 使用 Rider 打开sln解决方案<br/>
-
-![image-20260320192704888](https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260320192704888.png)
-
-第三步: 定位到此依赖项 => .NETFramework 4.8 => 程序集
-
-![image-20260320192741186](https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260320192741186.png)
-
-如果这里面有出现不存在的库, 那么你需要右键删除, 然后右键"程序集", 点击"引用"
-
-![image-20260320192913935](https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260320192913935.png)
-
-点击"添加自"
-
-![image-20260320193518887](https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260320193518887.png)
-
-之后定位到MCLauncher文件夹, 自行按需选择缺失的DLL文件即可(最后还要引用一个WPFLauncher.exe, 但是这个exe是未脱壳的, 因此你就需要一个脱好壳的exe文件)
-
-![image-20260320193540552](https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/image-20260320193540552.png)
-
-最后测试能否编译即可
-
-
-
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=daijunhaoMinecraft/WPFLauncher_Hook&type=Date)](https://www.star-history.com/#daijunhaoMinecraft/WPFLauncher_Hook&Date)
