@@ -30,6 +30,7 @@
     <Compile Include="DotNetTranstor\Hookevent\BypassUpdate.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
     <Compile Include="DotNetTranstor\Hookevent\DisableClearProcess.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\DownloadEvent.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ExitPop.cs" />
     <Compile Include="DotNetTranstor\Hookevent\FixFriendShow.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Get_Netease_Error.cs" />

@@ -42,6 +42,10 @@ namespace DotNetTranstor.Hookevent
             // 模组与高级
             // new ConfigEntry { Key = "EnableModsInject", Description = "启用模组注入", FieldType = typeof(bool), Category = "高级功能" },
             new ConfigEntry { Key = "NeteaseUpdateDomainhttp", Description = "网易更新域名", FieldType = typeof(string), Category = "高级功能" },
+            
+            // Experiment
+            new ConfigEntry { Key = "IsDownloadMultiConfig", Description = "启用多线程下载", FieldType = typeof(bool), Category = "实验功能" },
+            new ConfigEntry { Key = "MaxThread", Description = "下载多线程数", FieldType = typeof(int), Category = "实验功能" },
         };
 
         // 自动保存 Path_Bool 里的值到 JSON

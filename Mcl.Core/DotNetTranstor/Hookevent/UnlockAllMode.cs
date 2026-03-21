@@ -60,6 +60,14 @@ namespace DotNetTranstor.Hookevent
                 }
                 return false;
             }
+            if (updateTypeName == "ChangeMinecraftPath")
+            {
+                if (Path_Bool.IsDebug)
+                {
+                    Console.WriteLine($"[GrayUpdate]该功能为更改.minecraft路径功能已被制止, 功能: {updateTypeName}");
+                }
+                return false;
+            }
             // 输出包含枚举名称的消息
             if (Path_Bool.IsDebug)
             {

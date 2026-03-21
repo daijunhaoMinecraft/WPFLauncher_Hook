@@ -14,7 +14,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         {
             return "";
         }
-
+        
         [HookMethod("WPFLauncher.Util.tb", "c", "ChangeMinecraftPath")]
         public static string c()
         {
