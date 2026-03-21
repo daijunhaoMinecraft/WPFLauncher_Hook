@@ -14,7 +14,7 @@ namespace DotNetTranstor.Hookevent
 {
     public class Path_Bool
     {
-        public static string Version = "4.0.4-Public";
+        public static string Version = "4.0.5-Public_Beta_1";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
@@ -50,6 +50,7 @@ namespace DotNetTranstor.Hookevent
         // threading Download Config
         public static int MaxThread = 8;
         public static bool IsDownloadMultiConfig = false;
+        public static int LimitDownload = 30;
 
         public static List<FriendStatus> ListFriendStatus = new List<FriendStatus>();
 

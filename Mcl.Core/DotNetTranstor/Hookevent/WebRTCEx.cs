@@ -429,6 +429,11 @@ public class WebRtcEx : IMethodHook
     //     min.a = LTaskOpcode.NEXT;
     //     ProcessErrOriginal(min);
     // }
+    
+    [OriginalMethod]
+    private void ClearProcessOriginal(avo min)
+    {
+    }
 
 
     #region 判断玩家当前状态(进入房间/创建房间)
@@ -485,66 +490,67 @@ public class WebRtcEx : IMethodHook
     
     #endregion
 
-    [HookMethod("WPFLauncher.Manager.aqr", "b", null)]
-    public void ClearProcess()
+    [HookMethod("WPFLauncher.Manager.aqr", "b", "ClearProcessOriginal")]
+    public void ClearProcess(avo min)
     {
         try
         {
-            // 1. 获取 aqr 的单例实例
-            // 假设 aze<T> 是一个泛型单例类，Instance 是静态属性
-            var instanceProperty = typeof(aze<aqr>).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
-            
-            if (instanceProperty == null)
-            {
-                Console.WriteLine("错误: 未找到 aze<aqr>.Instance 属性");
-                return;
-            }
-
-            object aqrInstance = instanceProperty.GetValue(null);
-
-            if (aqrInstance == null)
-            {
-                Console.WriteLine("错误: aqr 实例为 null");
-                return;
-            }
-
-            // 2. 获取 aqr 的类型
-            Type aqrType = aqrInstance.GetType();
-
-            // 3. 获取私有字段 "a" 
-            // BindingFlags.NonPublic: 包含私有成员
-            // BindingFlags.Instance: 包含实例成员
-            FieldInfo fieldInfo = aqrType.GetField("a", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (fieldInfo == null)
-            {
-                Console.WriteLine("错误: 未找到字段 'a' (可能名称已被混淆改变，当前反编译显示为 'a')");
-                return;
-            }
-
-            // 4. 获取字段的值 (即 List<aqq> 对象)
-            object listObj = fieldInfo.GetValue(aqrInstance);
-
-            if (listObj == null)
-            {
-                Console.WriteLine("警告: 字段 'a' 当前为 null，无需清空");
-                return;
-            }
-
-            // 5. 调用 Clear 方法
-            // 确保它是一个 IList 或者具体的 List<>
-            if (listObj is IList list)
-            {
-                // 原代码中有 lock(this.a)，但在外部反射调用 Clear() 通常是线程安全的原子操作
-                // 如果极度担心竞态条件，理论上需要 lock(listObj)，但这需要获取 monitor 锁，比较复杂
-                // 对于大多数清理场景，直接 Clear 即可
-                list.Clear();
-                Console.WriteLine("成功: 已清空 private List<aqq> a");
-            }
-            else
-            {
-                Console.WriteLine("错误: 字段 'a' 不是 IList 类型");
-            }
+            ClearProcessOriginal(min);
+            // // 1. 获取 aqr 的单例实例
+            // // 假设 aze<T> 是一个泛型单例类，Instance 是静态属性
+            // var instanceProperty = typeof(aze<aqr>).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            //
+            // if (instanceProperty == null)
+            // {
+            //     Console.WriteLine("错误: 未找到 aze<aqr>.Instance 属性");
+            //     return;
+            // }
+            //
+            // object aqrInstance = instanceProperty.GetValue(null);
+            //
+            // if (aqrInstance == null)
+            // {
+            //     Console.WriteLine("错误: aqr 实例为 null");
+            //     return;
+            // }
+            //
+            // // 2. 获取 aqr 的类型
+            // Type aqrType = aqrInstance.GetType();
+            //
+            // // 3. 获取私有字段 "a" 
+            // // BindingFlags.NonPublic: 包含私有成员
+            // // BindingFlags.Instance: 包含实例成员
+            // FieldInfo fieldInfo = aqrType.GetField("a", BindingFlags.NonPublic | BindingFlags.Instance);
+            //
+            // if (fieldInfo == null)
+            // {
+            //     Console.WriteLine("错误: 未找到字段 'a' (可能名称已被混淆改变，当前反编译显示为 'a')");
+            //     return;
+            // }
+            //
+            // // 4. 获取字段的值 (即 List<aqq> 对象)
+            // object listObj = fieldInfo.GetValue(aqrInstance);
+            //
+            // if (listObj == null)
+            // {
+            //     Console.WriteLine("警告: 字段 'a' 当前为 null，无需清空");
+            //     return;
+            // }
+            //
+            // // 5. 调用 Clear 方法
+            // // 确保它是一个 IList 或者具体的 List<>
+            // if (listObj is IList list)
+            // {
+            //     // 原代码中有 lock(this.a)，但在外部反射调用 Clear() 通常是线程安全的原子操作
+            //     // 如果极度担心竞态条件，理论上需要 lock(listObj)，但这需要获取 monitor 锁，比较复杂
+            //     // 对于大多数清理场景，直接 Clear 即可
+            //     list.Clear();
+            //     Console.WriteLine("成功: 已清空 private List<aqq> a");
+            // }
+            // else
+            // {
+            //     Console.WriteLine("错误: 字段 'a' 不是 IList 类型");
+            // }
         }
         catch (Exception ex)
         {

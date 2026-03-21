@@ -148,7 +148,7 @@ public class DownloadEvent : IMethodHook
             return;
         }
 
-        if (contentLength < 1024 * 1024)
+        if (contentLength < Path_Bool.LimitDownload * 1024 * 1024)
         {
             Console.WriteLine("[MultiDown] Small file. Fallback.");
             Original_c();

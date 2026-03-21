@@ -46,6 +46,7 @@ namespace DotNetTranstor.Hookevent
             // Experiment
             new ConfigEntry { Key = "IsDownloadMultiConfig", Description = "启用多线程下载", FieldType = typeof(bool), Category = "实验功能" },
             new ConfigEntry { Key = "MaxThread", Description = "下载多线程数", FieldType = typeof(int), Category = "实验功能" },
+            new ConfigEntry { Key = "LimitDownload", Description = "大小限制(小于此大小即为小文件, 只使用单线程下载, 单位MB)", FieldType = typeof(int), Category = "实验功能" },
         };
 
         // 自动保存 Path_Bool 里的值到 JSON
