@@ -71,7 +71,7 @@ namespace Mcl.Core.DotNetTranstor.Tools.Network
                 // 1. 【修改点】使用 for 循环手动查找索引，替代 FindIndex
                 // 因为 ObservableCollection<T> 没有 FindIndex 方法
                 int index = -1;
-                string targetUserId = aze<arg>.Instance.User.UserID.ToString();
+                string targetUserId = WPFLauncher.Common.azf<arg>.Instance.User.UserID.ToString();
 
                 for (int i = 0; i < WebRtcVar.PlayerList.Count; i++)
                 {

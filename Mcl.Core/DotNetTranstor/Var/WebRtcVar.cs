@@ -223,7 +223,7 @@ namespace Mcl.Core.DotNetTranstor.Var
                     return;
                 }
 
-                Type azeOpenType = typeof(WPFLauncher.Common.aze<>); 
+                Type azeOpenType = typeof(WPFLauncher.Common.azf<>); 
                 if (azeOpenType == null)
                 {
                     Console.WriteLine("[Error] 未找到泛型类型：WPFLauncher.Common.aze`1");

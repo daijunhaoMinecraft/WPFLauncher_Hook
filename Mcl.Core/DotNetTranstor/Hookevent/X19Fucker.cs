@@ -67,7 +67,7 @@ namespace DotNetTranstor.Hookevent
             string javaPath = Path.Combine(tb.n, "Game", ".minecraft");
             Directory.CreateDirectory(javaPath);
             Path_Bool.JavaGamePath = javaPath;
-            aze<axh>.Instance.App.JavaGamePath = javaPath;
+            WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.App.JavaGamePath = javaPath;
         }
 
         // --- 工具函数 (保持不变) ---

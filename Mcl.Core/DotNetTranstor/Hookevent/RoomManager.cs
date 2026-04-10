@@ -177,7 +177,7 @@ namespace DotNetTranstor.Hookevent
 						{
 							entity = Path_Bool.RoomInfo.entity,
 							isOwner = true,
-							currentUserId = aze<arg>.Instance.User.Id,
+							currentUserId = WPFLauncher.Common.azf<arg>.Instance.User.Id,
 							ownerId = Path_Bool.RoomInfo.entity.owner_id
 						}
 					}));
@@ -293,7 +293,7 @@ namespace DotNetTranstor.Hookevent
 				Console.WriteLine("-----------------------------------------------------------");
 				Console.ForegroundColor = ConsoleColor.White;
 				Path_Bool.RoomInfo = Get_Room_Info;
-				Path_Bool.RoomInfo.entity.fids.Add(aze<arg>.Instance.User.Id);
+				Path_Bool.RoomInfo.entity.fids.Add(WPFLauncher.Common.azf<arg>.Instance.User.Id);
 				Path_Bool.JoinOrCreateTime = X19Http.TimestampHelper.GetCurrentTimestampMilliseconds();
 				Console.WriteLine($"[RoomManage] 加入房间时间:{Path_Bool.JoinOrCreateTime}");
 				if (Path_Bool.IsStartWebSocket)
@@ -459,7 +459,7 @@ namespace DotNetTranstor.Hookevent
 			bool HaveOwner = false;
 			foreach (var AllMemberInfo in result.entities)
 			{
-				if (AllMemberInfo.member_id == aze<arg>.Instance.User.UserID)
+				if (AllMemberInfo.member_id == WPFLauncher.Common.azf<arg>.Instance.User.UserID)
 				{
 					UserInList = true;
 				}
@@ -472,7 +472,7 @@ namespace DotNetTranstor.Hookevent
 
 			if (!UserInList)
 			{
-				result.entities.Add(new WPFLauncher.Network.Protocol.LobbyGame.LobbyRoomMemberInfoEntity(){member_id = aze<arg>.Instance.User.UserID,ident = HaveOwner ? 0 : 1});
+				result.entities.Add(new WPFLauncher.Network.Protocol.LobbyGame.LobbyRoomMemberInfoEntity(){member_id = WPFLauncher.Common.azf<arg>.Instance.User.UserID,ident = HaveOwner ? 0 : 1});
 			}
 			// 获取玩家信息
 			JObject Get_Player_Info = X19Http.Get_Players_Info(newPlayerList);
@@ -650,7 +650,7 @@ namespace DotNetTranstor.Hookevent
 		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "Left", "LeftOriginal")]
 		public static void Left(string roomId)
 		{
-			if (Path_Bool.AlwaysSaveWorld && (Path_Bool.RoomInfo.entity.allow_save || Path_Bool.RoomInfo.entity.owner_id == aze<arg>.Instance.User.Id.ToString()))
+			if (Path_Bool.AlwaysSaveWorld && (Path_Bool.RoomInfo.entity.allow_save || Path_Bool.RoomInfo.entity.owner_id == WPFLauncher.Common.azf<arg>.Instance.User.Id.ToString()))
 			{
 				MessageBoxResult messageBoxResult = uz.q("是否保存存档至云服务端?", "", "确定", "不保存", "");
 				if (messageBoxResult == MessageBoxResult.OK)

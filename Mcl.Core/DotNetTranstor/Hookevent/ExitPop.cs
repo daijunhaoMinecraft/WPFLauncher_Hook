@@ -25,7 +25,7 @@ public class ExitPop : IMethodHook
             return;
         }
         // 使用反射方法直接关闭
-        LobbyGameRoomManagerView lobbyGameRoomManagerView = aze<apn>.Instance.k<LobbyGameRoomManagerView>();
+        LobbyGameRoomManagerView lobbyGameRoomManagerView = WPFLauncher.Common.azf<apn>.Instance.k<LobbyGameRoomManagerView>();
         if (lobbyGameRoomManagerView != null)
         {
             // 使用Dispatcher确保在UI线程上访问DataContext

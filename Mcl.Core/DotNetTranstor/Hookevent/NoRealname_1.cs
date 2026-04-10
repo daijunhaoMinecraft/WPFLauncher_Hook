@@ -278,9 +278,9 @@ namespace DotNetTranstor.Hookevent
 					File.WriteAllText(filePath, cookie);
 
 					// Bypass
-					aze<apm>.Instance.CanChannelLogin = true;
+					WPFLauncher.Common.azf<apm>.Instance.CanChannelLogin = true;
 					// 反
-					object arfInstance = aze<arf>.Instance; // 假设 Instance 返回的是 arf 单例
+					object arfInstance = WPFLauncher.Common.azf<arf>.Instance; // 假设 Instance 返回的是 arf 单例
 
 					// 安全地通过反射修改字段 d
 					Type arfType = typeof(arf);
@@ -295,8 +295,8 @@ namespace DotNetTranstor.Hookevent
 					SauthJsonEntity sauthJsonEntity = JsonConvert.DeserializeObject<SauthJsonEntity>(cookieJson["sauth_json"].ToString());
 					string randomUDID = GenerateRandomString();
 					string randomDeviceId = GenerateRandomString();
-					aze<axh>.Instance.App.UDID = randomUDID;
-					aze<axh>.Instance.App.DeviceId = randomDeviceId;
+					WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.App.UDID = randomUDID;
+					WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.App.DeviceId = randomDeviceId;
 					// sauthJsonEntity.udid = randomUDID;
 					// sauthJsonEntity.deviceid = randomDeviceId;
 					FieldInfo fieldD = arfType.GetField("d", BindingFlags.Public | BindingFlags.Instance);
@@ -306,7 +306,7 @@ namespace DotNetTranstor.Hookevent
 						Console.WriteLine("设置Cookie成功");
 					}
 					Path_Bool.CookieLoginWithoutMpay = true;
-					aze<apm>.Instance.h();
+					WPFLauncher.Common.azf<apm>.Instance.h();
 				}
 				else
 				{

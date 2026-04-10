@@ -400,7 +400,7 @@ namespace DotNetTranstor.Hookevent
                 friendStatus.Status = status;
                 friendStatus.UserId = uid;
             }
-            aze<arg>.Instance.ClusterList.h();
+            WPFLauncher.Common.azf<arg>.Instance.ClusterList.h();
         }
 
         private static void HandleFriendsList(JObject jsonData)
@@ -527,7 +527,7 @@ namespace DotNetTranstor.Hookevent
                     }
                 });
 
-                if (Path_Bool.EnableRoomBlacklist && Path_Bool.RoomInfo.entity.owner_id == aze<arg>.Instance.User.Id)
+                if (Path_Bool.EnableRoomBlacklist && Path_Bool.RoomInfo.entity.owner_id == WPFLauncher.Common.azf<arg>.Instance.User.Id)
                 {
                     HandleBlacklistCheck(userId);
                 }
@@ -769,7 +769,7 @@ namespace DotNetTranstor.Hookevent
 
         private static bool IsCurrentUserRoomOwner()
         {
-            return Path_Bool.RoomInfo?.entity?.owner_id == aze<arg>.Instance.User.Id;
+            return Path_Bool.RoomInfo?.entity?.owner_id == WPFLauncher.Common.azf<arg>.Instance.User.Id;
         }
 
         private static void KickPlayer(string userId, string playerName, string reason)

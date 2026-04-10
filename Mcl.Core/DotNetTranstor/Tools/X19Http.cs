@@ -33,11 +33,11 @@ public class X19Http
         HttpClient http = new HttpClient();
         string userToken = WPFLauncher.Util.ss.e(url, data);
         http.DefaultRequestHeaders.Clear();
-        http.DefaultRequestHeaders.Add("user-id", aze<arg>.Instance.User.Id);
+        http.DefaultRequestHeaders.Add("user-id", WPFLauncher.Common.azf<arg>.Instance.User.Id);
         http.DefaultRequestHeaders.Add("user-token", userToken);
         var content = new StringContent(data, Encoding.UTF8, "application/json");
         // https://x19apigatewayobt.nie.netease.com/online-lobby-member/query/list-by-room-id
-        HttpResponseMessage responseData = http.PostAsync(aze<axh>.Instance.Url.ApiGatewayUrl + url, content).Result;
+        HttpResponseMessage responseData = http.PostAsync(WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.Url.ApiGatewayUrl + url, content).Result;
         string get_result = responseData.Content.ReadAsStringAsync().Result;
         return get_result;
     }
@@ -47,14 +47,14 @@ public class X19Http
 	    HttpClient http = new HttpClient();
 	    string userToken = WPFLauncher.Util.ss.e(url, data);
 	    http.DefaultRequestHeaders.Clear();
-	    http.DefaultRequestHeaders.Add("user-id", aze<arg>.Instance.User.Id);
+	    http.DefaultRequestHeaders.Add("user-id", WPFLauncher.Common.azf<arg>.Instance.User.Id);
 	    http.DefaultRequestHeaders.Add("user-token", userToken);
 	    string Key = string.Empty;
 	    byte[] byteArray = WPFLauncher.Util.ss.b(url, data, out Key);
 	    var content = new ByteArrayContent(byteArray);
 	    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
 	    // https://x19apigatewayobt.nie.netease.com/online-lobby-member/query/list-by-room-id
-	    string SaltUrl = aze<axh>.Instance.Url.ApiGatewayUrl;
+	    string SaltUrl = WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.Url.ApiGatewayUrl;
 	    if (Salt != "Auto")
 	    {
 		    SaltUrl = Salt;

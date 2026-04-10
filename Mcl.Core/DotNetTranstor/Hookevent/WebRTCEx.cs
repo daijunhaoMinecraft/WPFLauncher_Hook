@@ -39,7 +39,7 @@ public class WebRtcEx : IMethodHook
     }
     
     // 拦截Java启动
-    [HookMethod("WPFLauncher.Manager.Game.Launcher.auv", "m", "RunGameOriginal")]
+    [HookMethod("WPFLauncher.Manager.Game.Launcher.auw", "m", "RunGameOriginal")]
     private int RunGame()
     {
         try
@@ -250,7 +250,7 @@ public class WebRtcEx : IMethodHook
     }
 
     /// <summary>
-    /// 使用反射调用 aze<atp>.Instance.d() 方法
+    /// 使用反射调用 WPFLauncher.Common.azf<atp>.Instance.d() 方法
     /// </summary>
     /// <param name="gameM">GameM 参数</param>
     /// <param name="roomVisibleStatus">RoomVisibleStatus 参数</param>
@@ -276,8 +276,8 @@ public class WebRtcEx : IMethodHook
                 return false;
             }
 
-            // 构造 aze<> 泛型类型
-            Type azeGenericType = typeof(aze<>);
+            // 构造 WPFLauncher.Common.azf<> 泛型类型
+            Type azeGenericType = typeof(WPFLauncher.Common.azf<>);
             Type constructedAzeType = azeGenericType.MakeGenericType(atpType);
 
             // 获取 Instance 属性
@@ -497,12 +497,12 @@ public class WebRtcEx : IMethodHook
         {
             ClearProcessOriginal(min);
             // // 1. 获取 aqr 的单例实例
-            // // 假设 aze<T> 是一个泛型单例类，Instance 是静态属性
-            // var instanceProperty = typeof(aze<aqr>).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
+            // // 假设 WPFLauncher.Common.azf<T> 是一个泛型单例类，Instance 是静态属性
+            // var instanceProperty = typeof(WPFLauncher.Common.azf<aqr>).GetProperty("Instance", BindingFlags.Public | BindingFlags.Static);
             //
             // if (instanceProperty == null)
             // {
-            //     Console.WriteLine("错误: 未找到 aze<aqr>.Instance 属性");
+            //     Console.WriteLine("错误: 未找到 WPFLauncher.Common.azf<aqr>.Instance 属性");
             //     return;
             // }
             //

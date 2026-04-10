@@ -54,103 +54,102 @@ public class WebSocket_WebRtc : IMethodHook
             Console.WriteLine(
                 $"[RECV] Peer:{peerId} Len:{dataSize}, Data: {BitConverter.ToString(rawData).Replace('-', ' ')}");
 
-        // 调试日志：查看原始数据前几个字节
-        // Console.WriteLine($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
-        bool passToNetwork = true;
-
-        if (VirualIpProto.IsMagicHeader(rawData))
+        if (Path_Bool.UseNetworkMode)
         {
-            if (WebRtcVar.Mode == ForwardMode.Server)
+            // 调试日志：查看原始数据前几个字节
+            // Console.WriteLine($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
+            bool passToNetwork = true;
+
+            if (VirualIpProto.IsMagicHeader(rawData))
             {
-                // 3. 提取 IP 字节部分 (从索引 3 开始，取 4 个字节)
-                var ipBytes = new byte[4];
-                Array.Copy(rawData, 3, ipBytes, 0, 4);
-
-                // 4. 转换回 IP 地址对象
-                var receivedIp = new IPAddress(ipBytes);
-                var virtualIpString = receivedIp.ToString();
-
-                Console.WriteLine($"Received PeerId: {peerId} Virtual IP: {virtualIpString}");
-
-                // 【修改点】使用 for 循环手动查找索引，替代 FindIndex
-                // ObservableCollection 不支持 FindIndex，但支持通过索引器访问
-                int index = -1;
-                for (int i = 0; i < WebRtcVar.PlayerList.Count; i++)
+                if (WebRtcVar.Mode == ForwardMode.Server)
                 {
-                    if (WebRtcVar.PlayerList[i].PeerId == peerId)
+                    // 3. 提取 IP 字节部分 (从索引 3 开始，取 4 个字节)
+                    var ipBytes = new byte[4];
+                    Array.Copy(rawData, 3, ipBytes, 0, 4);
+
+                    // 4. 转换回 IP 地址对象
+                    var receivedIp = new IPAddress(ipBytes);
+                    var virtualIpString = receivedIp.ToString();
+
+                    Console.WriteLine($"Received PeerId: {peerId} Virtual IP: {virtualIpString}");
+
+                    // 【修改点】使用 for 循环手动查找索引，替代 FindIndex
+                    // ObservableCollection 不支持 FindIndex，但支持通过索引器访问
+                    int index = -1;
+                    for (int i = 0; i < WebRtcVar.PlayerList.Count; i++)
                     {
-                        index = i;
-                        break;
+                        if (WebRtcVar.PlayerList[i].PeerId == peerId)
+                        {
+                            index = i;
+                            break;
+                        }
                     }
+
+                    // 2. 检查索引是否有效
+                    if (index != -1)
+                    {
+                        // 3. 通过索引获取当前元素（如果是 struct，这里拿到的是副本）
+                        var playerInfo = WebRtcVar.PlayerList[index];
+        
+                        // 4. 修改副本的属性
+                        playerInfo.VirtualIp = virtualIpString;
+                        playerInfo.Status = "已连接";
+        
+                        // 5. 【关键步骤】将修改后的副本写回列表
+                        // 对于 ObservableCollection，这一步会触发 CollectionChanged 事件，通知 UI 更新
+                        WebRtcVar.PlayerList[index] = playerInfo;
+                        WintunRouterService.Instance.SetRouting(virtualIpString, peerId);
+                        if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
+
+                        // 6. 执行后续逻辑
+                        WintunRouterService.Instance.SendServerPlayerInfo();
+        
+                        Console.WriteLine($"[成功] 已更新 PeerId {peerId} 的虚拟 IP 为 {playerInfo.VirtualIp}");
+                    }
+                    else
+                    {
+                        // 可选：调试用
+                        Console.WriteLine($"[警告] 未找到 PeerId 为 {peerId} 的玩家，无法更新 IP。");
+                    }
+
+                    passToNetwork = false;
                 }
+            }
 
-                // 2. 检查索引是否有效
-                if (index != -1)
+            if (GetPlayerListProto.IsMagicHeader(rawData))
+            {
+                // 假设 PlayerList 已经填充了数据
+                ObservableCollection<LanGamePlayerInfo> currentPlayers = WebRtcVar.PlayerList;
+
+                // 调用工具生成字节包
+                byte[] packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
+                SendData(peerId, packetToSend);
+                Console.WriteLine($"[Info] peerId: {peerId} 玩家进入选择IP阶段");
+                passToNetwork = false;
+            }
+            
+            if (LanGameProtocolHelper.IsGamePlayerInfoMagicHeader(rawData))
+            {
+                // 尝试解析为玩家列表
+                if (LanGameProtocolHelper.TryParsePlayerListPacket(rawData, out var players))
                 {
-                    // 3. 通过索引获取当前元素（如果是 struct，这里拿到的是副本）
-                    var playerInfo = WebRtcVar.PlayerList[index];
-    
-                    // 4. 修改副本的属性
-                    playerInfo.VirtualIp = virtualIpString;
-                    playerInfo.Status = "已连接";
-    
-                    // 5. 【关键步骤】将修改后的副本写回列表
-                    // 对于 ObservableCollection，这一步会触发 CollectionChanged 事件，通知 UI 更新
-                    WebRtcVar.PlayerList[index] = playerInfo;
-                    WintunRouterService.Instance.SetRouting(virtualIpString, peerId);
-                    if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
+                    // 解析成功，更新本地 UI 或逻辑
+                    Console.WriteLine($"收到玩家列表，共 {players.Count} 人");
 
-                    // 6. 执行后续逻辑
-                    WintunRouterService.Instance.SendServerPlayerInfo();
-    
-                    Console.WriteLine($"[成功] 已更新 PeerId {peerId} 的虚拟 IP 为 {playerInfo.VirtualIp}");
+                    // 例如：更新全局列表
+                    WebRtcVar.PlayerList = players;
+                    if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
+                    // RefreshUiPlayerList();
                 }
                 else
                 {
-                    // 可选：调试用
-                    Console.WriteLine($"[警告] 未找到 PeerId 为 {peerId} 的玩家，无法更新 IP。");
+                    // 解析失败，可能是其他类型的包，或者数据包损坏
+                    // 这里可以添加对其他 PacketType (如心跳) 的判断逻辑
+                    Console.WriteLine("收到无效或非玩家列表的数据包");
                 }
-
                 passToNetwork = false;
             }
-        }
-
-        if (GetPlayerListProto.IsMagicHeader(rawData))
-        {
-            // 假设 PlayerList 已经填充了数据
-            ObservableCollection<LanGamePlayerInfo> currentPlayers = WebRtcVar.PlayerList;
-
-            // 调用工具生成字节包
-            byte[] packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
-            SendData(peerId, packetToSend);
-            Console.WriteLine($"[Info] peerId: {peerId} 玩家进入选择IP阶段");
-            passToNetwork = false;
-        }
-        
-        if (LanGameProtocolHelper.IsGamePlayerInfoMagicHeader(rawData))
-        {
-            // 尝试解析为玩家列表
-            if (LanGameProtocolHelper.TryParsePlayerListPacket(rawData, out var players))
-            {
-                // 解析成功，更新本地 UI 或逻辑
-                Console.WriteLine($"收到玩家列表，共 {players.Count} 人");
-
-                // 例如：更新全局列表
-                WebRtcVar.PlayerList = players;
-                if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
-                // RefreshUiPlayerList();
-            }
-            else
-            {
-                // 解析失败，可能是其他类型的包，或者数据包损坏
-                // 这里可以添加对其他 PacketType (如心跳) 的判断逻辑
-                Console.WriteLine("收到无效或非玩家列表的数据包");
-            }
-            passToNetwork = false;
-        }
-
-        if (Path_Bool.UseNetworkMode)
-        {
             if (passToNetwork)
             {
                 // 收到数据，交给路由器模块处理 (包含路由转发和注入功能)
@@ -433,17 +432,19 @@ public class WebSocket_WebRtc : IMethodHook
                     Status = "连接中..."
                 };
                 WebRtcVar.PlayerList.Add(player);
-                
-                // 假设 PlayerList 已经填充了数据
-                ObservableCollection<LanGamePlayerInfo> currentPlayers = WebRtcVar.PlayerList;
+                if (Path_Bool.UseNetworkMode)
+                {
+                    // 假设 PlayerList 已经填充了数据
+                    ObservableCollection<LanGamePlayerInfo> currentPlayers = WebRtcVar.PlayerList;
 
-                // 调用工具生成字节包
-                byte[] packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
-                // 发送给特定 peer 或 广播
-                SendData(data.PeerId.ToString(), packetToSend);
-                Console.WriteLine($"[Router] 玩家列表已发送给 {data.PeerId.ToString()}。");
-                WintunRouterService.Instance.SendServerPlayerInfo();
-                if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
+                    // 调用工具生成字节包
+                    byte[] packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
+                    // 发送给特定 peer 或 广播
+                    SendData(data.PeerId.ToString(), packetToSend);
+                    Console.WriteLine($"[Router] 玩家列表已发送给 {data.PeerId.ToString()}。");
+                    WintunRouterService.Instance.SendServerPlayerInfo();
+                    if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
+                }
             }
             else if (messageId == 257)
             {
@@ -463,8 +464,8 @@ public class WebSocket_WebRtc : IMethodHook
                     {
                         var player = new LanGamePlayerInfo
                         {
-                            Name = aze<arg>.Instance.User.Nickname,
-                            UserID = aze<arg>.Instance.User.UserID.ToString(),
+                            Name = WPFLauncher.Common.azf<arg>.Instance.User.Nickname,
+                            UserID = WPFLauncher.Common.azf<arg>.Instance.User.UserID.ToString(),
                             PeerId = "Any",
                             VirtualIp = "",
                             Status = "无状态"
@@ -513,8 +514,12 @@ public class WebSocket_WebRtc : IMethodHook
         {
             Console.WriteLine($"玩家 {player.Name} 断开连接");
             WebRtcVar.PlayerList.Remove(player);
-            WintunRouterService.Instance.RemoveRouting(peerId);
-            WintunRouterService.Instance.SendServerPlayerInfo();
+            if (Path_Bool.UseNetworkMode)
+            {
+                WintunRouterService.Instance.RemoveRouting(peerId);
+                WintunRouterService.Instance.SendServerPlayerInfo();
+            }
+
             if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
         }
         else

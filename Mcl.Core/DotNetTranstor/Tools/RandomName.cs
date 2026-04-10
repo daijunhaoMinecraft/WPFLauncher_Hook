@@ -88,7 +88,7 @@ namespace WPFLauncher.Util
 				string text = generator();
 				if (!string.IsNullOrEmpty(text))
 				{
-					if ((!checkDuplicate || !aze<ul>.Instance.g(text)) && !(text == exclude))
+					if ((!checkDuplicate || !WPFLauncher.Common.azf<ul>.Instance.g(text)) && !(text == exclude))
 					{
 						if (validator == null)
 						{

@@ -71,9 +71,9 @@ public class SolveJavaMemoryLimit : IMethodHook
         return MemoryUtils.GetPerfectMemory();
     }
     
-    [HookMethod("WPFLauncher.Manager.Game.Launcher.auv","g",null)]
+    [HookMethod("WPFLauncher.Manager.Game.Launcher.auw","g",null)]
     private int JavaMaxMemory()
     {
-        return aze<axh>.Instance.User.GameMemorySize;
+        return WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.User.GameMemorySize;
     }
 }
