@@ -39,9 +39,15 @@ public class WebRtcEx : IMethodHook
     }
     
     // 拦截Java启动
-    [HookMethod("WPFLauncher.Manager.Game.Launcher.auw", "m", "RunGameOriginal")]
+    [HookMethod(TargetConst.JavaProcess, TargetConst.JavaStartTarget, "RunGameOriginal")]
     private int RunGame()
     {
+        if (WebRtcVar.LanGameManager != null)
+        {
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.WriteLine(WebRtcVar.LanGameManager.ae());
+            Console.ForegroundColor = ConsoleColor.White;
+        }
         try
         {
             if (Path_Bool.UseNetworkMode)
@@ -164,17 +170,17 @@ public class WebRtcEx : IMethodHook
                             return -1;
                         }
 
-                        if (WebRtcVar.AitFunction == null)
+                        if (WebRtcVar.LanGameManager == null)
                         {
                             Console.WriteLine("[警告] ait 为 null");
                         }
-                        else if (WebRtcVar.AitFunction.axy == null)
+                        else if (WebRtcVar.LanGameManager.aya == null)
                         {
                             Console.WriteLine("[警告] 发包函数为Null");
                         }
 
                         // 执行游戏逻辑
-                        CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
+                        CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager as GameM, RoomVisibleStatus.OPEN);
                         CallShowRoomManageReflection();
 
                         Console.WriteLine($"[服务端] 正在启动虚拟网卡 ({serverIp})...");
@@ -213,16 +219,16 @@ public class WebRtcEx : IMethodHook
                     {
                         WebRtcVar.Mode = ForwardMode.Server;
                         using (var f = new ServerSelectPort()) f.ShowDialog();
-                        if (WebRtcVar.AitFunction == null)
+                        if (WebRtcVar.LanGameManager == null)
                         {
                             Console.WriteLine("ait 为 null");
                         }
-                        else if (WebRtcVar.AitFunction.axy == null)
+                        else if (WebRtcVar.LanGameManager.aya == null)
                         {
                             Console.WriteLine("发包函数为Null");
                         }
-                        CallAtpDMethodUsingReflection(WebRtcVar.AitFunction as GameM, RoomVisibleStatus.OPEN);
-                        // WebRtcVar.gameM.axy.@as(new object[]
+                        CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager as GameM, RoomVisibleStatus.OPEN);
+                        // WebRtcVar.gameM.aya.@as(new object[]
                         // {
                         //     528,
                         //     (byte)RoomVisibleStatus.OPEN
@@ -326,7 +332,7 @@ public class WebRtcEx : IMethodHook
     private static void CallShowRoomManageReflection()
     {
         // 获取目标对象
-        object target = WebRtcVar.AitFunction;
+        object target = WebRtcVar.LanGameManager;
 
         if (target == null)
         {
@@ -385,10 +391,35 @@ public class WebRtcEx : IMethodHook
     [OriginalMethod]
     public void SetGameMOriginal(ait gameM) {}
     
-    [HookMethod("WPFLauncher.Manager.LanGame.atm", "e", "SetGameMOriginal")]
+    /*
+     * 特征:
+     * 		// Token: 0x060064A3 RID: 25763 RVA: 0x0002CC40 File Offset: 0x0002AE40
+		public void e(ait nxq)
+		{
+			this.g = new WeakReference(nxq);
+		}
+
+		// Token: 0x060064A4 RID: 25764 RVA: 0x00149CF8 File Offset: 0x00147EF8
+		public void f()
+		{
+			if (this.l != null && this.i && !this.l.ag("Any"))
+			{
+				this.g();
+			}
+		}
+
+		// Token: 0x060064A5 RID: 25765 RVA: 0x0002CC4E File Offset: 0x0002AE4E
+		public void g()
+		{
+			te.Default.Info("ReconnectRtc StartAnswer", new object[0]);
+			this.l.ad("Any");
+			this.l.y();
+		}
+     */
+    [HookMethod(TargetConst.LanGameManager, "e", "SetGameMOriginal")]
     public void SetGameM(ait gameM)
     {
-        WebRtcVar.AitFunction = gameM;
+        WebRtcVar.LanGameManager = gameM;
         Console.WriteLine("获取gameM实例成功!");
         SetGameMOriginal(gameM);
     }
@@ -443,7 +474,7 @@ public class WebRtcEx : IMethodHook
     {
     }
 
-    [HookMethod("WPFLauncher.Manager.LanGame.atm", "af", "JoinRoomResultOriginal")]
+    [HookMethod(TargetConst.LanGameManager, "af", "JoinRoomResultOriginal")]
     private void JoinRoomResult(byte[] data)
     {
         WebRtcVar.Mode = ForwardMode.Client;
@@ -456,12 +487,12 @@ public class WebRtcEx : IMethodHook
     {
     }
 
-    [HookMethod("WPFLauncher.Manager.LanGame.atm", "aa", "SendCreateRoomOriginal")]
+    [HookMethod(TargetConst.LanGameManager, "aa", "SendCreateRoomOriginal")]
     private void SendCreateRoom(ait config)
     {
         if (config != null)
         {
-            WebRtcVar.AitFunction = config;
+            WebRtcVar.LanGameManager = config;
         }
         else
         {
@@ -478,7 +509,7 @@ public class WebRtcEx : IMethodHook
     {
     }
 
-    [HookMethod("WPFLauncher.Manager.LanGame.atm", "t", "ExitRoomOriginal")]
+    [HookMethod(TargetConst.LanGameManager, "t", "ExitRoomOriginal")]
     public void ExitRoom()
     {
         Console.WriteLine("[WebRtc] 退出房间");

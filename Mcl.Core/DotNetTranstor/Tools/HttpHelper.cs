@@ -467,7 +467,7 @@ public class SimpleHttpServer
                 SendResponse.data = new
                 {
                     playerlist = WebRtcVar.PlayerList,
-                    InLanGame = WebRtcVar.AitFunction != null
+                    InLanGame = WebRtcVar.LanGameManager != null
                 };
                 break;
             case "/get_login_info":

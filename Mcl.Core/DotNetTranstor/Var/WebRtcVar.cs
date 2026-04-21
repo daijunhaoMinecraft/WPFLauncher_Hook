@@ -92,7 +92,7 @@ namespace Mcl.Core.DotNetTranstor.Var
         
         public static object CmInstance = null;
         public static string MyPeerId = string.Empty;
-        public static ait AitFunction = null;
+        public static ait LanGameManager = null;
         
         public static string MyVirtualIp { get; set; } = string.Empty;
 
@@ -150,9 +150,9 @@ namespace Mcl.Core.DotNetTranstor.Var
             // Clear 会触发 CollectionChanged 事件，从而自动通知 UI
             PlayerList.Clear(); 
             
-            if (AitFunction != null && AitFunction.axy != null)
+            if (LanGameManager != null && LanGameManager.aya != null)
             {
-                AitFunction.axy.e(null);
+                LanGameManager.aya.e(null);
             }
         }
 

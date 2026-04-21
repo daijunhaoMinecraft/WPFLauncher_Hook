@@ -689,7 +689,7 @@ public class WebSocket_WebRtc : IMethodHook
     //     return true;
     // }
     //
-    // [HookMethod("WPFLauncher.Manager.LanGame.atm","as","sendTransferMessage")]
+    // [HookMethod(TargetConst.LanGameManager,"as","sendTransferMessage")]
     // public bool SendTransferMessage_HookMethod(params object[] ObjectMessage)
     // {
     //     Console.ForegroundColor = ConsoleColor.Yellow; // 发送用黄色
