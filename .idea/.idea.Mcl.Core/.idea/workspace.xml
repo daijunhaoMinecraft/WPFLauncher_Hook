@@ -5,19 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/TargetConst.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/FixErr.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveJavaMemoryLimit.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveJavaMemoryLimit.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebRTCEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebRTCEx.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebSocket_WebRtc.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WebSocket_WebRtc.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HttpHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HttpHelper.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Var/WebRtcVar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Var/WebRtcVar.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/ForwarderControlPanel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Window/ForwarderControlPanel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
@@ -58,6 +50,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/89520504235a41e7a424f4e66c487d9b522790/03/072776ee/UInt32.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fcd34e621d73473aacfa0467c0fef5548fc00/af/f23757b5/LogEventInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/DisableClearProcess.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/FixErr.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveHyt.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveJavaMemoryLimit.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Model/TransferStruct.cs" root0="FORCE_HIGHLIGHTING" />
@@ -185,7 +178,8 @@
       <workItem from="1774778754563" duration="132000" />
       <workItem from="1775823578343" duration="2365000" />
       <workItem from="1776603432878" duration="93000" />
-      <workItem from="1776772842194" duration="861000" />
+      <workItem from="1776772842194" duration="1713000" />
+      <workItem from="1776857220964" duration="2308000" />
     </task>
     <task id="LOCAL-00001" summary="修复&quot;等待用户选择好IP地址&quot;部分可能会因为while无Sleep问题造成系统卡顿">
       <option name="closed" value="true" />
@@ -475,7 +469,15 @@
       <option name="project" value="LOCAL" />
       <updated>1775824948525</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="适配版本: 1.15.22.54976">
+      <option name="closed" value="true" />
+      <created>1776773796732</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1776773796732</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -496,7 +498,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复Left退出房间的逻辑(自动关闭窗口)/优化房间信息窗口显示避免多个窗口" />
     <MESSAGE value="新增功能:禁用联机大厅退出房间二次提示(可禁用/启用)&#10;修复联机大厅启动游戏步骤中内存溢出问题" />
     <MESSAGE value="软件版本小修改" />
     <MESSAGE value="修复花雨庭等大部分停服维护服务器无法进入的问题" />
@@ -521,7 +522,8 @@
     <MESSAGE value="update image" />
     <MESSAGE value="修复问题:&#10; - 无法终止基岩版客户端进程&#10;新增内容:&#10; - 新增配置: 大小限制(小于此大小即为小文件, 只使用单线程下载, 单位MB)" />
     <MESSAGE value="适配版本: 1.15.21.52607" />
-    <option name="LAST_COMMIT_MESSAGE" value="适配版本: 1.15.21.52607" />
+    <MESSAGE value="适配版本: 1.15.22.54976" />
+    <option name="LAST_COMMIT_MESSAGE" value="适配版本: 1.15.22.54976" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
