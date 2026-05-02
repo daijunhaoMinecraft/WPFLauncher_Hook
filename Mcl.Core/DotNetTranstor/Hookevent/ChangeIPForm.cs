@@ -1,10 +1,12 @@
 using System;
 using System.Drawing;
+using System.IO;
 using System.Net;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using WPFLauncher.Model.Game;
 using WPFLauncher.Network.Protocol.LobbyGame;
+using WPFLauncher.Util;
 
 namespace DotNetTranstor.Hookevent
 {
@@ -113,6 +115,8 @@ namespace DotNetTranstor.Hookevent
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine($"[CustomIP] CppGamePath: {sCppGameConfigPath}");
                 System.IO.File.WriteAllText(sCppGameConfigPath, JsonConvert.SerializeObject(_roomInfo.CppGameCfg));
+                // Fuck Netease: temp/temp.config
+                System.IO.File.WriteAllText(Path.Combine(tb.n, "temp", "temp.config"), JsonConvert.SerializeObject(_roomInfo.CppGameCfg));
                 Console.WriteLine("[CustomIP] Config Saved!");
                 Console.ForegroundColor = ConsoleColor.White;
                 // _roomInfo.CppGameCfg.Save();

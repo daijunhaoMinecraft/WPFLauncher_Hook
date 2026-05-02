@@ -111,60 +111,13 @@ namespace DotNetTranstor.Hookevent
         {
             try
             {
-                string configPath = Path.Combine(Directory.GetCurrentDirectory(), "BedrockPath.txt");
-                string targetDir = null;
-
-                // 1. 尝试从 BedrockPath.txt 读取路径
-                if (File.Exists(configPath))
+                if (Directory.Exists(Path_Bool.BedrockPath))
                 {
-                    string savedPath = File.ReadAllText(configPath).Trim();
-                    if (!string.IsNullOrEmpty(savedPath) && Directory.Exists(savedPath))
-                    {
-                        targetDir = savedPath;
-                    }
-                }
-
-                // 2. 如果配置文件中没有，或者无效，可以尝试检查 tb.s (根据你提供的另一段代码推测的全局路径变量)
-                // 注意：如果 tb.s 在你的命名空间中不可见，请注释掉下面这段，或者替换为你实际使用的默认路径获取逻辑
-                /*
-                if (string.IsNullOrEmpty(targetDir))
-                {
-                     // 假设 tb 是某个静态类，s 是静态属性
-                     // if (Directory.Exists(tb.s)) 
-                     // {
-                     //     targetDir = tb.s;
-                     // }
-                }
-                */
-
-                // 3. 如果仍然没有路径，返回 false
-                if (string.IsNullOrEmpty(targetDir))
-                {
-                    return false;
-                }
-
-                // 4. 检查该目录下是否存在 Minecraft.Windows.exe
-                // 有些版本可能在子目录，这里先检查根目录。如果需要递归扫描子目录，逻辑会更复杂，
-                // 但通常 BedrockPath.txt 指向的是包含 exe 的具体版本文件夹或主文件夹。
-                // 根据 BedrockPathWindow_Select 的逻辑，它扫描子目录。
-                // 这里为了简化，我们先检查 targetDir 本身，如果 targetDir 是父目录，可能需要扫描。
-                
-                // 策略 A: 假设 BedrockPath.txt 指向的是包含 Minecraft.Windows.exe 的具体文件夹
-                string exePath = Path.Combine(targetDir, "Minecraft.Windows.exe");
-                if (File.Exists(exePath))
-                {
-                    return true;
-                }
-
-                // 策略 B: 如果 BedrockPath.txt 指向的是父目录（包含多个版本文件夹），则扫描子目录
-                // 这与 BedrockPathWindow_Select.ScanVersions 逻辑一致
-                if (Directory.Exists(targetDir))
-                {
-                    foreach (var dir in Directory.GetDirectories(targetDir))
+                    foreach (var dir in Directory.GetDirectories(Path_Bool.BedrockPath))
                     {
                         if (File.Exists(Path.Combine(dir, "Minecraft.Windows.exe")))
                         {
-                            return true; // 只要找到一个版本就算存在
+                            return true;
                         }
                     }
                 }

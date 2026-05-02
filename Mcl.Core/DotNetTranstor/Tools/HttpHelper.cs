@@ -649,7 +649,7 @@ public class SimpleHttpServer
                 break;
             case "/get_pathinfo":
                 var staticMembers =
-                    typeof(ta).GetFields(BindingFlags.Static | BindingFlags.Public);
+                    typeof(tb).GetFields(BindingFlags.Static | BindingFlags.Public);
 
                 foreach (var member in staticMembers)
                 {

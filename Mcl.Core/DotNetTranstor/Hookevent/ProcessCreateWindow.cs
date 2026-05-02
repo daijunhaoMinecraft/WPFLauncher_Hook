@@ -38,7 +38,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
         private TextBox _pathTextBox;
         private ListBox _versionListBox;
         private string _selectedPath;
-        private string _configPath = Path.Combine(Directory.GetCurrentDirectory(), "BedrockPath.txt");
+        // private string _configPath = Path.Combine(Directory.GetCurrentDirectory(), "BedrockPath.txt");
         private Action<string> _onVersionSelected;
 
         public BedrockPathWindow_Select(Action<string> onVersionSelected)
@@ -153,18 +153,24 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                 ScanVersions();
                 // return;
             }
-
-            // 如果sm.w不存在或无效，则尝试从BedrockConfig.txt读取
-            if (File.Exists(_configPath))
+            if (Directory.Exists(Path_Bool.BedrockPath))
             {
-                string savedPath = File.ReadAllText(_configPath);
-                if (Directory.Exists(savedPath))
-                {
-                    _pathTextBox.Text = savedPath;
-                    _selectedPath = savedPath;
-                    ScanVersions();
-                }
+                _pathTextBox.Text = Path_Bool.BedrockPath;
+                _selectedPath = Path_Bool.BedrockPath;
+                ScanVersions();
             }
+
+            // // 如果sm.w不存在或无效，则尝试从BedrockConfig.txt读取
+            // if (File.Exists(_configPath))
+            // {
+            //     string savedPath = File.ReadAllText(_configPath);
+            //     if (Directory.Exists(savedPath))
+            //     {
+            //         _pathTextBox.Text = savedPath;
+            //         _selectedPath = savedPath;
+            //         ScanVersions();
+            //     }
+            // }
         }
 
         private void SelectButton_Click(object sender, RoutedEventArgs e)
@@ -179,7 +185,9 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                     
                     try
                     {
-                        File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "BedrockPath.txt"), _selectedPath);
+                        Path_Bool.BedrockPath = _selectedPath;
+                        ConfigManager.Save();
+                        // File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "BedrockPath.txt"), _selectedPath);
                     }
                     catch (Exception ex)
                     {

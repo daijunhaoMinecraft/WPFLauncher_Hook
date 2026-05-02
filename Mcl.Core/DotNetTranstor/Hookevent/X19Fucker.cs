@@ -194,9 +194,23 @@ namespace DotNetTranstor.Hookevent
                     if (ctrl is CheckBox cb) field.SetValue(null, cb.IsChecked);
                     else if (ctrl is TextBox tb) field.SetValue(null, Convert.ChangeType(tb.Text, item.FieldType));
                 }
-                ConfigManager.Save();
-                // ApplyRuntimeSettings();
-                win.Close();
+                bool error = false;
+                // 检查基岩版路径合法性
+                try
+                {
+                    Path.GetFullPath(Path_Bool.BedrockPath);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("请输入正确的基岩版路径!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    error = true;
+                }
+                if (!error)
+                {
+                    ConfigManager.Save();
+                    // ApplyRuntimeSettings();
+                    win.Close();
+                }
             };
 
             footer.Child = btnSave;

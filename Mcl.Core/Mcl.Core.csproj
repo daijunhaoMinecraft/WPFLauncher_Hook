@@ -169,10 +169,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>F:\Code\C#\C#杂项\WPFTool\Newtonsoft.Json.dll</HintPath>
+      <HintPath>E:\MCLauncher\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>F:\Code\C#\C#杂项\WPFTool\NLog.dll</HintPath>
+      <HintPath>E:\MCLauncher\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -180,14 +180,14 @@
     <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="websocket-sharp">
-      <HintPath>F:\Code\C#\C#杂项\WPFTool\websocket-sharp.dll</HintPath>
+      <HintPath>E:\MCLauncher\websocket-sharp.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="WPFControls">
-      <HintPath>F:\Code\C#\C#杂项\WPFTool\WPFControls.dll</HintPath>
+      <HintPath>E:\MCLauncher\WPFControls.dll</HintPath>
     </Reference>
     <Reference Include="WPFLauncher">
-      <HintPath>F:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>
+      <HintPath>..\..\..\..\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
