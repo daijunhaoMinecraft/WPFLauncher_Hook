@@ -455,6 +455,28 @@ public class SimpleHttpServer
         dynamic SendResponse = new ExpandoObject();
         switch (context.Request.Url.AbsolutePath)
         {
+            case "/test":
+                Type adeType = typeof(ade);
+                FieldInfo ffield = adeType.GetField("f", BindingFlags.NonPublic | BindingFlags.Static);
+                FieldInfo cfield = adeType.GetField("c", BindingFlags.Public | BindingFlags.Instance);
+
+                if (ffield == null)
+                {
+                    SendResponse.error = 1;
+                }
+                else
+                {
+                    SendResponse.f = ffield.GetValue(WPFLauncher.Common.azf<arg>.Instance);
+                }
+                if (cfield == null)
+                {
+                    SendResponse.error = 2;
+                }
+                else
+                {
+                    SendResponse.c = cfield.GetValue(WPFLauncher.Common.azf<arg>.Instance);
+                }
+                break;
             case "/help":
                 // 重定向到URL : https://wpflauncherhook.apifox.cn/
                 context.Response.Redirect("https://wpflauncherhook.apifox.cn/");

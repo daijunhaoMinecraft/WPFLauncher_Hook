@@ -31,6 +31,7 @@
     <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
     <Compile Include="DotNetTranstor\Hookevent\DisableClearProcess.cs" />
     <Compile Include="DotNetTranstor\Hookevent\DownloadEvent.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\EnableBrowseRightClick.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ExitPop.cs" />
     <Compile Include="DotNetTranstor\Hookevent\FixErr.cs" />
     <Compile Include="DotNetTranstor\Hookevent\FixFriendShow.cs" />
@@ -166,6 +167,9 @@
     <Compile Include="Utils\Util\FileVersionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CefSharp">
+      <HintPath>E:\MCLauncher\CefSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json">

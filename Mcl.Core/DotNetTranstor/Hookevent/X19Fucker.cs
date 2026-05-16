@@ -269,6 +269,7 @@ namespace DotNetTranstor.Hookevent
             try
             {
                 HttpClient httpClient = new HttpClient();
+                httpClient.Timeout = new TimeSpan(0, 0, 3);
                 httpClient.DefaultRequestHeaders.Clear();
                 HttpResponseMessage messageData = httpClient.GetAsync("https://gitee.com/dai-junhao-123/app-config/raw/master/HookConfig/AppInfo.json").Result;
                 JObject messageJson = JObject.Parse(messageData.Content.ReadAsStringAsync().Result);

@@ -60,3 +60,5 @@ G:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mc
 G:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.csproj.Up2Date
 G:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.dll
 G:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.pdb
+G:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.dll
+G:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.xml

@@ -391,28 +391,33 @@ public class WebSocket_WebRtc : IMethodHook
                 Console.WriteLine($"Data (Hex): {hexString}");
                 Console.WriteLine("--------------------------\n");
             }
-            // if (messageId == 517)
-            // {
-            //     TransferStruct.PlayerStateChange data = default(TransferStruct.PlayerStateChange);
-            //     var deserializer = new PacketDeserializer(messageData);
-            //     deserializer.Deserialize<TransferStruct.PlayerStateChange>(ref data);
-            //
-            //     if (WebRtcVar.AitFunction != null)
-            //     {
-            //         Console.ForegroundColor = ConsoleColor.Yellow;
-            //         if (data.State == 1)
-            //         {
-            //             Console.WriteLine($"玩家 {data.UserID} 加入了房间");
-            //             WebRtcVar.PlayerList.Add(data.UserID);
-            //         }
-            //         else
-            //         {
-            //             Console.WriteLine($"玩家 {data.UserID} 离开了房间");
-            //             WebRtcVar.PlayerList.Remove(data.UserID);
-            //         }
-            //         Console.ForegroundColor = ConsoleColor.White;
-            //     }
-            // }
+            if (messageId == 517)
+            {
+                TransferStruct.PlayerStateChange data = default(TransferStruct.PlayerStateChange);
+                var deserializer = new PacketDeserializer(messageData);
+                deserializer.Deserialize<TransferStruct.PlayerStateChange>(ref data);
+            
+                if (WebRtcVar.LanGameManager != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    if (data.State == 1)
+                    {
+                        Console.WriteLine($"玩家 {data.UserID} 加入了房间");
+                        // WebRtcVar.PlayerList.Add(data.UserID);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"玩家 {data.UserID} 离开了房间");
+                        var player = WebRtcVar.PlayerList.FirstOrDefault(x => x.UserID == data.UserID.ToString());
+                        
+                        if (player != null)
+                        {
+                            WebRtcVar.PlayerList.Remove(player);
+                        }
+                    }
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
             else if (messageId == 515)
             {
                 var data = default(TransferStruct.PlayerCreateWebRtcConnectEvent);
@@ -531,31 +536,48 @@ public class WebSocket_WebRtc : IMethodHook
         OriginalOnDataClose(peerId);
     }
 
-    // [OriginalMethod]
-    //  private void Original_WebSocket_WebRtc_OnMessage(string Message)
-    //  {
-    //  }
-    //
-    //  [HookMethod("WebRtc.NET.cm", "f", "Original_WebSocket_WebRtc_OnMessage")]
-    //  private void WebSocket_OnMessage(string Message)
-    //  {
-    //      Console.ForegroundColor = ConsoleColor.Green;
-    //      Console.WriteLine($"[WebSocket_WebRtc]收到消息:{Message}");
-    //      Console.ForegroundColor = ConsoleColor.White;
-    //      Original_WebSocket_WebRtc_OnMessage(Message);
-    //  }
-    //  [OriginalMethod]
-    //  private void Original_WebSocket_WebRtc_SendMessage(string Message)
-    //  {
-    //  }
-    //  [HookMethod("WebRtc.NET.cm", "h", "Original_WebSocket_WebRtc_SendMessage")]
-    //  private void WebSocket_SendMessage(string Message)
-    //  {
-    //      Console.ForegroundColor = ConsoleColor.Green;
-    //      Console.WriteLine($"[WebSocket_WebRtc]发送消息:{Message}");
-    //      Console.ForegroundColor = ConsoleColor.White;
-    //      Original_WebSocket_WebRtc_SendMessage(Message);
-    //  }
+    [OriginalMethod]
+     private void Original_WebSocket_WebRtc_OnMessage(string Message)
+     {
+     }
+    
+     [HookMethod("WebRtc.NET.cm", "f", "Original_WebSocket_WebRtc_OnMessage")]
+     private void WebSocket_OnMessage(string Message)
+     {
+         Console.ForegroundColor = ConsoleColor.Green;
+         Console.WriteLine($"[WebSocket_WebRtc]收到消息:{Message}");
+         Console.ForegroundColor = ConsoleColor.White;
+         Original_WebSocket_WebRtc_OnMessage(Message);
+     }
+     [OriginalMethod]
+     private void Original_WebSocket_WebRtc_SendMessage(string Message)
+     {
+     }
+     [HookMethod("WebRtc.NET.cm", "h", "Original_WebSocket_WebRtc_SendMessage")]
+     private void WebSocket_SendMessage(string Message)
+     {
+         Console.ForegroundColor = ConsoleColor.Green;
+         Console.WriteLine($"[WebSocket_WebRtc]发送消息:{Message}");
+         Console.ForegroundColor = ConsoleColor.White;
+         Original_WebSocket_WebRtc_SendMessage(Message);
+     }
+     
+     // [OriginalMethod]
+     // private void Original_WebSocket_WebRtc_ReceiveUserName(string message)
+     // {
+     // }
+     // [HookMethod("WebRtc.NET.cm", "l", "Original_WebSocket_WebRtc_ReceiveUserName")]
+     // private void WebSocket_ReceiveUserName(string message)
+     // {
+     //     Original_WebSocket_WebRtc_ReceiveUserName(message);
+     //     Console.ForegroundColor = ConsoleColor.Yellow;
+     //     Console.WriteLine($"[WebSocket_WebRtc]连接成功, 连接RTC中...");
+     //     Console.ForegroundColor = ConsoleColor.White;
+     //     Type cm = WebRtcVar.CmInstance.GetType();
+     //     MethodInfo field = cm.GetMethod("ad", BindingFlags.Public | BindingFlags.Instance);
+     //     field.Invoke(WebRtcVar.CmInstance, new []{ "Any" });
+     // }
+     
     //  
     //  
     //  // ====================================================================
