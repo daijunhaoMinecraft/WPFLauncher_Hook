@@ -33,7 +33,7 @@ namespace DotNetTranstor.Hookevent
 		public static void f(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue = null)
 		{
 		}
-		
+
 		[CompilerGenerated]
 		[HookMethod("WPFLauncher.Network.Launcher.acp", "g", "g")]
 		public static async Task g(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
@@ -45,112 +45,244 @@ namespace DotNetTranstor.Hookevent
 			}
 			else
 			{
-				messageBoxResult = uz.q("是否使用Cookie登录?", "", "确定", "使用原号登录", "");
+				messageBoxResult = uz.q("是否使用Cookie登录?", "", "多账号管理", "使用原号登录", "");
 			}
 			if (messageBoxResult == MessageBoxResult.OK)
 			{
-				string text3 = "cookies.txt";
-				string filePath = Path.Combine(Environment.CurrentDirectory, text3);
-				string text = "";
-				bool loginby4399 = false;
-				if (File.Exists(filePath))
+				// 多账号管理器
+				var accountForm = new AccountSelectForm();
+				accountForm.ShowDialog();
+
+				if (accountForm.Action == AccountSelectForm.LoginAction.UseSelected && accountForm.SelectedAccount != null)
 				{
-					text = File.ReadAllText(filePath);
+					// 使用选中的已保存账号
+					LoginWithSavedAccount(accountForm.SelectedAccount, hud, hue);
 				}
-				int get = 0;
-				string text4 = "4399.txt";
-				string filePath2 = Path.Combine(Environment.CurrentDirectory, text4);
-				string text2 = "";
-				if (File.Exists(filePath2))
+				else if (accountForm.Action == AccountSelectForm.LoginAction.ManualInput)
 				{
-					text2 = File.ReadAllText(filePath2);
-				}
-				if (uz.r("请选择cookie登录或4399登录", string.Empty, "cookie", "4399", "") == MessageBoxResult.Yes)
-				{
-					text = Interaction.InputBox("请输入Cookies \n如果原号登陆请输入off或者空"/*\n自动获取cookie请输入1"*/, "Cookies", text, -1, -1);
-					/*if (text == "1")
-					{
-						text = "off";
-						string text5 = Tool.CalculateMD5Hash("VIP_Azure_a09s8ug" + Tool.GetCurrentTimeStamp());
-						text = Tool.HttpGet("http://111.180.204.28:4514/extract?md5=" + text5 + "&timestamp=" + Tool.GetCurrentTimeStamp());
-						if (text == "Key not found.")
-						{
-							us.n("当前时间段或当天获取总数搭上限，请等待一小时后再试", "");
-							text = "off";
-						}
-						if (text.ToLower().Contains("too late") || text.ToLower().Contains("too early"))
-						{
-							us.n("时间戳验证错误，请检测你的网络或修改你的系统时间后重试", "");
-							text = "off";
-						}
-						if (!(text == "error") && !(text == "访问速度过快，请等待10秒钟再访问。频繁访问可能会导致封禁。"))
-						{
-							get = 1;
-						}
-						else
-						{
-							us.n("cookie自动获取失败", "");
-							text = "off";
-						}
-					}
-					else
-					{
-						get = 2;
-					}*/
-					get = 2;
+					// 手动输入（兼容旧流程）
+					DoManualLogin(hud, hue);
 				}
 				else
 				{
+					// 使用原号登录
+					LoginWithOriginal(hud, hue);
+				}
+			}
+			else if (messageBoxResult == MessageBoxResult.None)
+			{
+				LoginWithOriginal(hud, hue);
+			}
+			else
+			{
+				LoginWithOriginal(hud, hue);
+			}
+		}
+
+		/// <summary>
+		/// 使用已保存的账号登录
+		/// </summary>
+		private static void LoginWithSavedAccount(AccountInfo acc, string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
+		{
+			string text9 = "";
+
+			if (acc.Type == AccountType._4399)
+			{
+				try
+				{
+					string token = FeverToSauth.FeverAuth.Base64Encode(
+						JsonConvert.SerializeObject(new FeverToSauth.FeverAuth.SDK4399Token
+						{
+							username = acc.Username,
+							password = acc.Password
+						}));
+					text9 = FeverToSauth.FeverAuth.SDK4399ToSauth(token);
+					Tool.PrintYellow("4399:" + acc.Username);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.ToString());
+					Tool.PrintRed("4399账号转换失败，切换为原号登录");
+					LoginWithOriginal(hud, hue);
+					return;
+				}
+			}
+			else if (acc.Type == AccountType.Phone)
+			{
+				// 手机号登录 — 先检查是否有缓存的 Cookie
+				if (!string.IsNullOrEmpty(acc.CookieData) && acc.CookieData.Contains("\"sauth_json\""))
+				{
+					// 有缓存的 sauth_json，尝试直接使用
 					try
 					{
-						text2 = Interaction.InputBox("请输入4399账号 \n如果原号登陆请输入off或者空\n4399账号格式为 xxxx----xxxx(4个减号) \n例如UserName----UserPassword", "4399LOGIN", text2, -1, -1);
-						loginby4399 = true;
-						if (!(text2 == "off") && !(text2 == ""))
-						{
-							string[] array = text2.Split(new string[] { "----" }, StringSplitOptions.None);
-							string text6 = array[0];
-							string text7 = array[1];
-							string text8 = FeverToSauth.FeverAuth.SDK4399ToSauth(FeverToSauth.FeverAuth.Base64Encode(JsonConvert.SerializeObject(new FeverToSauth.FeverAuth.SDK4399Token() {username = text6,password = text7}))); // from null application
-							text = text8;
-							get = 3;
-						}
+						text9 = JObject.Parse(acc.CookieData)["sauth_json"].ToString();
+						Tool.PrintYellow($"[Phone] 使用缓存凭证 {acc.PhoneNumber}");
 					}
-					catch (Exception ex)
+					catch
 					{
-						Console.WriteLine(ex.ToString());
-						if (Path_Bool.IsStartWebSocket)
-						{
-							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
-						}
-						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
-						Path_Bool.IsLogin = true;
-						LoginFucker.f(hud, hue);
+						text9 = null;
 					}
 				}
-				string text9 = "";
-				if (text.StartsWith("{"))
+
+				if (string.IsNullOrEmpty(text9))
+				{
+					// 需要完整手机号登录流程
+					Tool.PrintYellow($"[Phone] 开始手机号登录: {acc.PhoneNumber}");
+					string sauthJson = MpayPhoneLogin.FullLoginFlow(acc.PhoneNumber, acc.DeviceId);
+
+					if (string.IsNullOrEmpty(sauthJson))
+					{
+						Tool.PrintRed("手机号登录失败，切换为原号登录");
+						LoginWithOriginal(hud, hue);
+						return;
+					}
+
+					// 缓存 sauth_json 到账号
+					acc.CookieData = sauthJson;
+					acc.DeviceId = MpayPhoneLogin.GetOrRegisterDevice(acc.DeviceId);
+					AccountManager.Update(acc.Name, acc);
+
+					try
+					{
+						text9 = JObject.Parse(sauthJson)["sauth_json"].ToString();
+					}
+					catch
+					{
+						text9 = sauthJson;
+					}
+				}
+			}
+			else // Cookie
+			{
+				string cookieData = acc.CookieData;
+				if (cookieData.StartsWith("{"))
 				{
 					try
 					{
-						if (text.Contains("\"sauth_json\":"))
+						if (cookieData.Contains("\"sauth_json\":"))
 						{
-							text9 = JObject.Parse(text)["sauth_json"].ToString();
+							text9 = JObject.Parse(cookieData)["sauth_json"].ToString();
 						}
 						else
 						{
-							text9 = text;
+							text9 = cookieData;
 						}
-						goto IL_0412;
 					}
 					catch (Exception)
 					{
-						if (text.Contains("sauth_json"))
+						if (cookieData.Contains("sauth_json"))
 						{
-							text9 = new Regex("\\\"sauth_json\\\":\\\"(.*?)\\\"}\\\"}").Match(text).Groups[1].Value + "\"}";
+							text9 = new Regex("\\\"sauth_json\\\":\\\"(.*?)\\\"}\\\"}").Match(cookieData).Groups[1].Value + "\"}";
 						}
-						goto IL_0412;
 					}
 				}
+				if (string.IsNullOrEmpty(text9))
+				{
+					text9 = cookieData;
+				}
+				Tool.PrintYellow("cookies:" + cookieData);
+			}
+
+			if (string.IsNullOrEmpty(text9))
+			{
+				Tool.PrintRed("账号凭证有误，切换为原号登录");
+				LoginWithOriginal(hud, hue);
+				return;
+			}
+
+			if (Path_Bool.IsStartWebSocket)
+			{
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
+			}
+			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
+			Path_Bool.IsLogin = true;
+			LoginFucker.f(text9, hue);
+		}
+
+		/// <summary>
+		/// 使用原号登录（不替换Cookie）
+		/// </summary>
+		private static void LoginWithOriginal(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
+		{
+			if (Path_Bool.IsStartWebSocket)
+			{
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
+			}
+			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
+			Path_Bool.IsLogin = true;
+			LoginFucker.f(hud, hue);
+		}
+
+		/// <summary>
+		/// 手动输入登录（兼容旧版InputBox流程）
+		/// </summary>
+		private static void DoManualLogin(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
+		{
+			string text3 = "cookies.txt";
+			string filePath = Path.Combine(Environment.CurrentDirectory, text3);
+			string text = "";
+			bool loginby4399 = false;
+			if (File.Exists(filePath))
+			{
+				text = File.ReadAllText(filePath);
+			}
+			string text4 = "4399.txt";
+			string filePath2 = Path.Combine(Environment.CurrentDirectory, text4);
+			string text2 = "";
+			if (File.Exists(filePath2))
+			{
+				text2 = File.ReadAllText(filePath2);
+			}
+			if (uz.r("请选择cookie登录或4399登录", string.Empty, "cookie", "4399", "") == MessageBoxResult.Yes)
+			{
+				text = Interaction.InputBox("请输入Cookies \n如果原号登陆请输入off或者空", "Cookies", text, -1, -1);
+			}
+			else
+			{
+				try
+				{
+					text2 = Interaction.InputBox("请输入4399账号 \n如果原号登陆请输入off或者空\n4399账号格式为 xxxx----xxxx(4个减号) \n例如UserName----UserPassword", "4399LOGIN", text2, -1, -1);
+					loginby4399 = true;
+					if (!(text2 == "off") && !(text2 == ""))
+					{
+						string[] array = text2.Split(new string[] { "----" }, StringSplitOptions.None);
+						string text6 = array[0];
+						string text7 = array[1];
+						string text8 = FeverToSauth.FeverAuth.SDK4399ToSauth(FeverToSauth.FeverAuth.Base64Encode(JsonConvert.SerializeObject(new FeverToSauth.FeverAuth.SDK4399Token() {username = text6,password = text7})));
+						text = text8;
+					}
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.ToString());
+					LoginWithOriginal(hud, hue);
+					return;
+				}
+			}
+			string text9 = "";
+			if (text.StartsWith("{"))
+			{
+				try
+				{
+					if (text.Contains("\"sauth_json\":"))
+					{
+						text9 = JObject.Parse(text)["sauth_json"].ToString();
+					}
+					else
+					{
+						text9 = text;
+					}
+				}
+				catch (Exception)
+				{
+					if (text.Contains("sauth_json"))
+					{
+						text9 = new Regex("\\\"sauth_json\\\":\\\"(.*?)\\\"}\\\"}").Match(text).Groups[1].Value + "\"}";
+					}
+				}
+			}
+			if (string.IsNullOrEmpty(text9) && !text.StartsWith("{"))
+			{
 				Tool.PrintRed("cookies有误");
 				if (loginby4399)
 				{
@@ -160,146 +292,48 @@ namespace DotNetTranstor.Hookevent
 				{
 					text = "";
 				}
-				IL_0412:
-				if (loginby4399)
-				{
-					if (!(text2 == "off") && !(text2 == ""))
-					{
-						Tool.PrintYellow("4399:" + text2);
-						File.WriteAllText(filePath2, text2);
-						if (Path_Bool.IsStartWebSocket)
-						{
-							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
-						}
-						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
-						Path_Bool.IsLogin = true;
-						LoginFucker.f(text9, hue);
-					}
-					else
-					{
-						Tool.PrintYellow("选择原号登录(原因：玩家填入off或空或填入的cookie有误)");
-						if (Path_Bool.IsStartWebSocket)
-						{
-							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
-						}
-						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
-						Path_Bool.IsLogin = true;
-						LoginFucker.f(hud, hue);
-					}
-				}
-				else if (!(text == "off") && !(text == ""))
-				{
-					if (get == 1)
-					{
-						Tool.PrintYellow("cookies:" + text);
-						File.WriteAllText(filePath, text);
-						if (Path_Bool.IsStartWebSocket)
-						{
-							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
-						}
-						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
-						Path_Bool.IsLogin = true;
-						LoginFucker.f(text9, hue);
-					}
-					else if (get == 2)
-					{
-						Tool.PrintYellow("cookies:" + text);
-						File.WriteAllText(filePath, text);
-						if (Path_Bool.IsStartWebSocket)
-						{
-							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
-						}
-						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
-						Path_Bool.IsLogin = true;
-						LoginFucker.f(text9, hue);
-					}
-				}
-				else
-				{
-					Tool.PrintYellow("选择原号登录(原因：玩家填入off或空或填入的cookie有误)");
-					Path_Bool.IsLogin = true;
-					LoginFucker.f(hud, hue);
-				}
-				
-				/*HttpClient client = new HttpClient();
-				WebClient client_beiyong = new WebClient();
-				string text = Interaction.InputBox("请输入Cookies卡登录或按否使用本地账号登陆!", "Cookie_Login", "", -1, -1);
-				bool flag4 = text.Contains("4399");
-				if (flag4)
-				{
-					string text2 = text.Replace("\\", "");
-					string GetSauth_Content = string.Concat(new string[]
-					{
-						"{\"gameid\":\"x19\",\"login_channel\":\"4399pc\",\"app_channel\":\"4399pc\",\"platform\":\"pc\",\"sdkuid\":\"",
-						LoginFucker.ExtractTextBetween(text2, "sdkuid\":\"", "\""),
-						"\",\"sessionid\":\"",
-						LoginFucker.ExtractTextBetween(text2, "sessionid\":\"", "\""),
-						"\",\"sdk_version\":\"1.0.0\",\"udid\":\"",
-						LoginFucker.ExtractTextBetween(text2, "udid\":\"", "\""),
-						"\",\"deviceid\":\"",
-						LoginFucker.ExtractTextBetween(text2, "deviceid\":\"", "\""),
-						"\",\"aim_info\":\"{\\\"aim\\\":\\\"127.0.0.1\\\",\\\"country\\\":\\\"CN\\\",\\\"tz\\\":\\\"+0800\\\",\\\"tzid\\\":\\\"\\\"}\",\"client_login_sn\":\"5F3B00E48A434706BE5F0DFC7041D899\",\"gas_token\":\"\",\"source_platform\":\"pc\",\"ip\":\"127.0.0.1\",\"userid\":\"",
-						LoginFucker.ExtractTextBetween(text2, "\"userid\":\"", "\""),
-						"\",\"realname\":\"{\\\"realname_type\\\":\\\"0\\\"}\",\"timestamp\":\"",
-						LoginFucker.ExtractTextBetween(text2, "timestamp\":\"", "\""),
-						"\"}"
-					});
-					if (Path_Bool.IsStartWebSocket)
-					{
-						WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = GetSauth_Content } }));
-					}
-					Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = GetSauth_Content })}");
-					LoginFucker.f(GetSauth_Content, hue);
-				}
-				else
-				{
-					bool flag5 = text != "";
-					if (flag5)
-					{
-						string right2 = ",\\\"aim_info\\";
-						string str2 = ",\"aim_info\":\"{\\\"aim\\\":\\\"100.100.100.100\\\",\\\"country\\\":\\\"CN\\\",\\\"tz\\\":\\\" 0800\\\",\\\"tzid\\\":\\\"\\\"}\"}";
-						if (Path_Bool.IsStartWebSocket)
-						{
-							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
-						}
-						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
-						LoginFucker.f(LoginFucker.TextGainCenter("{\"sauth_json\":\"", right2, text) + str2, hue);
-						right2 = null;
-						str2 = null;
-					}
-					else
-					{
-						if (Path_Bool.IsStartWebSocket)
-						{
-							WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
-						}
-						Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
-						LoginFucker.f(hud, hue);
-					}
-				}*/
 			}
-			else if (messageBoxResult == MessageBoxResult.None)
+			if (loginby4399)
 			{
-				if (Path_Bool.IsStartWebSocket)
+				if (!(text2 == "off") && !(text2 == ""))
 				{
-					WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
+					Tool.PrintYellow("4399:" + text2);
+					File.WriteAllText(filePath2, text2);
+					LoginWithCookieData(text9, hue);
 				}
-				Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
-				Path_Bool.IsLogin = true;
-				LoginFucker.f(hud, hue);
+				else
+				{
+					Tool.PrintYellow("选择原号登录(原因：玩家填入off或空)");
+					LoginWithOriginal(hud, hue);
+				}
+			}
+			else if (!(text == "off") && !(text == ""))
+			{
+				Tool.PrintYellow("cookies:" + text);
+				File.WriteAllText(filePath, text);
+				LoginWithCookieData(text9, hue);
 			}
 			else
 			{
-				if (Path_Bool.IsStartWebSocket)
-				{
-					WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
-				}
-				Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
-				Path_Bool.IsLogin = true;
-				LoginFucker.f(hud, hue);
+				Tool.PrintYellow("选择原号登录(原因：玩家填入off或空)");
+				LoginWithOriginal(hud, hue);
 			}
 		}
-		
+
+		/// <summary>
+		/// 用Cookie数据登录（WebSocket通知 + 调用原始登录方法）
+		/// </summary>
+		private static void LoginWithCookieData(string text9, Action<EntityResponse<acl.Resposne>, Exception> hue)
+		{
+			if (Path_Bool.IsStartWebSocket)
+			{
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
+			}
+			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
+			Path_Bool.IsLogin = true;
+			LoginFucker.f(text9, hue);
+		}
+
 		// Token: 0x06000040 RID: 64 RVA: 0x00003334 File Offset: 0x00001534
 		public static string TextGainCenter(string left, string right, string text)
 		{

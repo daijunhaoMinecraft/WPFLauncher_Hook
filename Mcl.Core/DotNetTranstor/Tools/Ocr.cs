@@ -87,6 +87,19 @@ internal class Ocr
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             form.MinimizeBox = false;
             form.MaximizeBox = false;
+            form.TopMost = DotNetTranstor.Hookevent.Path_Bool.IsWindowTopMost;
+
+            var topMostCheck = new CheckBox
+            {
+                Text = "置顶",
+                Size = new System.Drawing.Size(55, 20),
+                Checked = DotNetTranstor.Hookevent.Path_Bool.IsWindowTopMost,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            topMostCheck.Left = form.ClientSize.Width - topMostCheck.Width - 15;
+            topMostCheck.Top = 5;
+            topMostCheck.CheckedChanged += (s, e) => form.TopMost = topMostCheck.Checked;
+            form.Controls.Add(topMostCheck);
 
             var label = new Label
             {

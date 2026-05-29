@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Var;
 
 namespace Mcl.Core.DotNetTranstor.Window
@@ -21,6 +22,18 @@ namespace Mcl.Core.DotNetTranstor.Window
             this.Size = new Size(350, 250);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.TopMost = Path_Bool.IsWindowTopMost;
+
+            var topMostCheck = new CheckBox
+            {
+                Text = "置顶",
+                Size = new Size(55, 20),
+                Checked = Path_Bool.IsWindowTopMost,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;
+            topMostCheck.Top = 8;
+            topMostCheck.CheckedChanged += (s, e) => this.TopMost = topMostCheck.Checked;
 
             Label ipLabel = new Label() { Text = "目标IP:", Location = new Point(20, 20), Size = new Size(60, 20) };
             ipTextBox = new TextBox() { Location = new Point(100, 20), Size = new Size(200, 20), Text = "127.0.0.1" };
@@ -51,7 +64,7 @@ namespace Mcl.Core.DotNetTranstor.Window
             cancelButton = new Button() { Text = "取消", Location = new Point(180, 140), Size = new Size(80, 30) };
             cancelButton.Click += (s, e) => this.Close();
 
-            this.Controls.AddRange(new Control[] { ipLabel, ipTextBox, portLabel, portTextBox, compressCheckBox, applyButton, cancelButton });
+            this.Controls.AddRange(new Control[] { topMostCheck, ipLabel, ipTextBox, portLabel, portTextBox, applyButton, cancelButton });
         }
     }
 }

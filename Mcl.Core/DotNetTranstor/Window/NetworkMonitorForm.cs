@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Tools.Network;
 using Mcl.Core.DotNetTranstor.Var;
 using Mcl.Core.DotNetTranstor.Model;
@@ -39,6 +40,7 @@ namespace Mcl.Core.DotNetTranstor.Window
             _toolTip.AutoPopDelay = 5000; // 显示持续时间
 
             this.Text = "异地组网状态查看器 - Mcl Network Monitor";
+            this.TopMost = Path_Bool.IsWindowTopMost;
             this.Size = new Size(900, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
@@ -184,6 +186,19 @@ namespace Mcl.Core.DotNetTranstor.Window
             this.Controls.Add(_dataGridView);
             this.Controls.Add(_lblStatus);
             this.Controls.Add(bottomPanel);
+
+            var topMostCheck = new CheckBox
+            {
+                Text = "置顶",
+                Size = new Size(55, 20),
+                Checked = Path_Bool.IsWindowTopMost,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;
+            topMostCheck.Top = 5;
+            topMostCheck.CheckedChanged += (s, e) => this.TopMost = topMostCheck.Checked;
+            this.Controls.Add(topMostCheck);
+            topMostCheck.BringToFront();
         }
 
         // --- 辅助方法：获取当前选中的玩家对象 ---

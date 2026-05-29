@@ -35,6 +35,19 @@ namespace DotNetTranstor.Hookevent
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.TopMost = Path_Bool.IsWindowTopMost;
+
+            // 置顶复选框
+            var topMostCheck = new CheckBox
+            {
+                Text = "置顶",
+                Location = new Point(this.ClientSize.Width - 65, 8),
+                Size = new Size(55, 20),
+                Checked = Path_Bool.IsWindowTopMost,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            topMostCheck.CheckedChanged += (s, e) => this.TopMost = topMostCheck.Checked;
+            this.Controls.Add(topMostCheck);
 
             // IP标签
             ipLabel = new Label();

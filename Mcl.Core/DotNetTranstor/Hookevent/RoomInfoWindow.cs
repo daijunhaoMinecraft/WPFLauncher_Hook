@@ -41,16 +41,21 @@ namespace DotNetTranstor.Hookevent
             Height = 500;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Background = new SolidColorBrush(Colors.WhiteSmoke);
-            
+            Topmost = Path_Bool.IsWindowTopMost;
+
             var mainPanel = new StackPanel { Margin = new Thickness(20) };
-            
+
             var scrollViewer = new ScrollViewer
             {
                 Content = mainPanel,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            
+
             Content = scrollViewer;
+
+            var titleBar = new Grid { Margin = new Thickness(0, 0, 0, 20) };
+            titleBar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            titleBar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             var titleBlock = new TextBlock
             {
@@ -58,13 +63,27 @@ namespace DotNetTranstor.Hookevent
                 FontSize = 24,
                 FontWeight = FontWeights.Bold,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 0, 0, 20)
+                Margin = new Thickness(40, 0, 0, 0)
             };
-            mainPanel.Children.Add(titleBlock);
+            Grid.SetColumn(titleBlock, 0);
+
+            var topMostCheck = new CheckBox
+            {
+                Content = "置顶",
+                VerticalAlignment = VerticalAlignment.Center,
+                IsChecked = Path_Bool.IsWindowTopMost
+            };
+            topMostCheck.Checked += (s, e) => Topmost = true;
+            topMostCheck.Unchecked += (s, e) => Topmost = false;
+            Grid.SetColumn(topMostCheck, 1);
+
+            titleBar.Children.Add(titleBlock);
+            titleBar.Children.Add(topMostCheck);
+            mainPanel.Children.Add(titleBar);
 
             var infoPanel = CreateInfoPanel();
             mainPanel.Children.Add(infoPanel);
-            
+
             var logPanel = CreateLogPanel();
             mainPanel.Children.Add(logPanel);
         }

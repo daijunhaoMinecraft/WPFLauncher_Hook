@@ -93,7 +93,8 @@ namespace DotNetTranstor.Hookevent
                 Background = Brushes.White,
                 FontFamily = new FontFamily("Segoe UI, Microsoft YaHei"),
                 ResizeMode = ResizeMode.NoResize,
-                WindowStyle = WindowStyle.SingleBorderWindow
+                WindowStyle = WindowStyle.SingleBorderWindow,
+                Topmost = Path_Bool.IsWindowTopMost
             };
 
             var mainGrid = new Grid();
@@ -104,6 +105,17 @@ namespace DotNetTranstor.Hookevent
             var container = new StackPanel();
             scroll.Content = container;
             Grid.SetRow(scroll, 0);
+
+            var topMostCheck = new CheckBox
+            {
+                Content = "置顶",
+                HorizontalAlignment = HorizontalAlignment.Right,
+                IsChecked = Path_Bool.IsWindowTopMost,
+                Margin = new Thickness(0, 0, 0, 8)
+            };
+            topMostCheck.Checked += (s, e) => win.Topmost = true;
+            topMostCheck.Unchecked += (s, e) => win.Topmost = false;
+            container.Children.Add(topMostCheck);
 
             var controlMap = new Dictionary<string, FrameworkElement>();
             var categories = ConfigManager.Registry.Select(x => x.Category).Distinct();

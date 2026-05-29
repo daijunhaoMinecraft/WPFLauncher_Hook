@@ -56,9 +56,14 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
             Height = 500;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Background = new SolidColorBrush(Colors.WhiteSmoke);
-            
+            Topmost = Path_Bool.IsWindowTopMost;
+
             var mainPanel = new StackPanel { Margin = new Thickness(20) };
-            
+
+            var titleBar = new Grid { Margin = new Thickness(0, 0, 0, 20) };
+            titleBar.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            titleBar.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
             // 标题
             var titleBlock = new TextBlock
             {
@@ -66,10 +71,24 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
                 FontSize = 24,
                 FontWeight = FontWeights.Bold,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 0, 0, 20),
+                Margin = new Thickness(40, 0, 0, 0),
                 Foreground = new SolidColorBrush(Color.FromRgb(51, 51, 51))
             };
-            mainPanel.Children.Add(titleBlock);
+            Grid.SetColumn(titleBlock, 0);
+
+            var topMostCheck = new System.Windows.Controls.CheckBox
+            {
+                Content = "置顶",
+                VerticalAlignment = VerticalAlignment.Center,
+                IsChecked = Path_Bool.IsWindowTopMost
+            };
+            topMostCheck.Checked += (s, e) => Topmost = true;
+            topMostCheck.Unchecked += (s, e) => Topmost = false;
+            Grid.SetColumn(topMostCheck, 1);
+
+            titleBar.Children.Add(titleBlock);
+            titleBar.Children.Add(topMostCheck);
+            mainPanel.Children.Add(titleBar);
 
             // 路径选择面板
             var pathPanel = new Grid { Margin = new Thickness(0, 0, 0, 20) };

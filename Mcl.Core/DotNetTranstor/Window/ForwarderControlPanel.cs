@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Var;
 using WPFLauncher.Manager.LanGame;
 
@@ -35,6 +36,18 @@ namespace Mcl.Core.DotNetTranstor.Window
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.BackColor = SystemColors.Control;
+            this.TopMost = Path_Bool.IsWindowTopMost;
+
+            var topMostCheck = new CheckBox
+            {
+                Text = "置顶",
+                Size = new Size(55, 20),
+                Checked = Path_Bool.IsWindowTopMost,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;
+            topMostCheck.Top = 8;
+            topMostCheck.CheckedChanged += (s, e) => this.TopMost = topMostCheck.Checked;
 
             // 标题
             Label titleLabel = new Label
@@ -136,6 +149,7 @@ namespace Mcl.Core.DotNetTranstor.Window
             // 添加控件
             this.Controls.AddRange(new Control[]
             {
+                topMostCheck,
                 titleLabel,
                 modeTitle, modeLabel,
                 portTitle, portLabel,

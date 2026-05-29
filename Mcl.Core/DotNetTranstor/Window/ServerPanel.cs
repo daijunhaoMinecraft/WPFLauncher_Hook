@@ -24,6 +24,19 @@ namespace Mcl.Core.DotNetTranstor.Window
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.TopMost = Path_Bool.IsWindowTopMost;
+
+            var topMostCheck = new CheckBox
+            {
+                Text = "置顶",
+                Size = new Size(55, 20),
+                Checked = Path_Bool.IsWindowTopMost,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right
+            };
+            topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;
+            topMostCheck.Top = 8;
+            topMostCheck.CheckedChanged += (s, e) => this.TopMost = topMostCheck.Checked;
+            this.Controls.Add(topMostCheck);
             
             // ServerInfoLabel = new Label();
             // ServerInfoLabel.Text = $"服务器内网Ip:{WebRtcVar.Port}\n服务器端口: {WebRtcVar.Port.ToString()}\n房间号详见网易弹出的房间管理窗口";
