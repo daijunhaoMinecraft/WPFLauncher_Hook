@@ -79,7 +79,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
-
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using WPFLauncher;
 using WPFLauncher.Common;

@@ -1,5 +1,6 @@
 ﻿using System;
 using DotNetTranstor;
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Code;

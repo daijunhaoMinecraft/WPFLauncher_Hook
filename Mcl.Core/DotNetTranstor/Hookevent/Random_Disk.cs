@@ -1,5 +1,5 @@
-﻿using Azure;
-using DotNetTranstor;
+﻿using DotNetTranstor;
+using Mcl.Core.DotNetTranstor.Tools;
 
 namespace MicrosoftTranslator.DotNetTranstor.Hookevent
 {

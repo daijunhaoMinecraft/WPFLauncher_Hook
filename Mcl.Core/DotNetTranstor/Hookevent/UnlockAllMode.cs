@@ -6,6 +6,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Windows;
+using Mcl.Core.DotNetTranstor.Tools;
 using Mcl.Core.Network;
 using Mcl.Core.Network.Interface;
 using Mcl.Core.Utils;

@@ -1,16 +1,10 @@
 using System;
-using System.Text;
-using System.Threading;
-using System.Timers;
-using WebSocketSharp;
-using WebSocketSharp.Server;
-using System.Windows;
-using DotNetTranstor.Hookevent;
 using DotNetTranstor.Tools;
-using MicrosoftTranslator.DotNetTranstor.Hookevent;
-using MicrosoftTranslator.DotNetTranstor.Tools;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq; // 需要安装 Newtonsoft.Json 库
+
+// 需要安装 Newtonsoft.Json 库
+
+namespace Mcl.Core.DotNetTranstor.Tools;
 
 public static class WebSocketHelper
 {
@@ -49,7 +43,7 @@ public static class WebSocketHelper
             timestamp = DateTime.UtcNow.ToString("o") // 使用 UTC 时间并格式化为 ISO 8601 格式
         };
 
-        string message = JsonConvert.SerializeObject(heartbeat);
+        var message = JsonConvert.SerializeObject(heartbeat);
         //DebugPrint.LogDebug_NoColorSelect($"[WebSocket]发送心跳包: {message}");
 
         // 向所有连接的客户端发送消息

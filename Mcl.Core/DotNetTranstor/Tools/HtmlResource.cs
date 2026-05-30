@@ -1,32 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using DotNetTranstor.Hookevent;
-using Newtonsoft.Json;
-using WPFLauncher.Code;
 
-namespace DotNetTranstor.Tools
+namespace DotNetTranstor.Tools;
+
+/// <summary>
+///     HTML资源管理类，用于存储和获取HTML内容
+/// </summary>
+public static class HtmlResource
 {
-    /// <summary>
-    /// HTML资源管理类，用于存储和获取HTML内容
-    /// </summary>
-    public static class HtmlResource
+    // 获取RoomManage.html内容
+    public static string GetRoomManageHtml()
     {
-        
-        // 获取RoomManage.html内容
-        public static string GetRoomManageHtml()
-        {
-            // 直接返回嵌入的HTML内容，不再尝试从文件读取
-            return GetDefaultRoomManageHtml();
-        }
+        // 直接返回嵌入的HTML内容，不再尝试从文件读取
+        return GetDefaultRoomManageHtml();
+    }
 
 
-        // 获取默认的RoomManage.html内容
-        private static string GetDefaultRoomManageHtml()
-        {
-            // 在这里放入默认的HTML内容，仅用作备份，通常应该使用现有的HTML文件
-            return $@"<!DOCTYPE html>
+    // 获取默认的RoomManage.html内容
+    private static string GetDefaultRoomManageHtml()
+    {
+        // 在这里放入默认的HTML内容，仅用作备份，通常应该使用现有的HTML文件
+        return $@"<!DOCTYPE html>
 <html lang=""zh-CN"">
 <head>
     <meta charset=""UTF-8"">
@@ -1238,10 +1231,11 @@ namespace DotNetTranstor.Tools
     </script>
 </body>
 </html> ";
-        }
-        public static string GetHotUpdateHtml()
-        {
-            return @"
+    }
+
+    public static string GetHotUpdateHtml()
+    {
+        return @"
 <!DOCTYPE html>
 <html lang='zh-CN'>
 <head>
@@ -1356,6 +1350,5 @@ namespace DotNetTranstor.Tools
     </script>
 </body>
 </html>";
-        }
     }
 }

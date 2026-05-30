@@ -7,6 +7,7 @@ using System.Threading;
 using DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Hookevent;
 using Mcl.Core.DotNetTranstor.Model;
+using Mcl.Core.DotNetTranstor.Tools;
 using Mcl.Core.DotNetTranstor.Tools.Network;
 using Mcl.Core.DotNetTranstor.Window;
 using WPFLauncher.Model;
@@ -132,14 +133,14 @@ namespace Mcl.Core.DotNetTranstor.Var
             //     _playerList.CollectionChanged += PlayerList_CollectionChanged;
             // }
 
-            if (Mode == ForwardMode.Client) Mcl.Core.LocalProxyListener.Start(Port);
+            if (Mode == ForwardMode.Client) LocalProxyListener.Start(Port);
             StartCleanupTask();
         }
         
         public static void StopForwarder()
         {
             Enable = false;
-            Mcl.Core.LocalProxyListener.Stop();
+            LocalProxyListener.Stop();
             foreach (var s in Sessions.Values) s.Close();
             Sessions.Clear();
             PeerSupportMultiplex.Clear();

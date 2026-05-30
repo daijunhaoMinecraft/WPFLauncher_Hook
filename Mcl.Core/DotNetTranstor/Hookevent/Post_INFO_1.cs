@@ -15,6 +15,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
+using Mcl.Core.DotNetTranstor.Tools;
 using Mcl.Core.Network;
 using Mcl.Core.Network.Interface;
 using Newtonsoft.Json;

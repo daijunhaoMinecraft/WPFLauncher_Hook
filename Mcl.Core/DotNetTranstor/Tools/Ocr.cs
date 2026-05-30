@@ -1,21 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Text;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms; // 添加 WinForms 支持
+using System.Windows.Forms;
+using DotNetTranstor.Hookevent;
+
+namespace Mcl.Core.DotNetTranstor.Tools;
+// 添加 WinForms 支持
 
 // Token: 0x0200000A RID: 10
 internal class Ocr
 {
+    // Token: 0x04000021 RID: 33
+    private static object inner_asyncObject = new();
+
+    // Token: 0x04000022 RID: 34
+    private static int inner_startPort = 50001;
+
     /// <summary>
-    /// 异步执行命令（已清空，不再使用）
+    ///     异步执行命令（已清空，不再使用）
     /// </summary>
     public static async Task InvokeCmdAsync(string cmdArgs)
     {
@@ -24,23 +30,36 @@ internal class Ocr
     }
 
     /// <summary>
-    /// OCR 识别函数 - 现改为弹窗让用户输入验证码
+    ///     OCR 识别函数 - 弹窗让用户输入验证码。
     /// </summary>
     /// <param name="string_0">base64 编码的验证码图片</param>
     /// <returns>用户输入的验证码文本，或 null（取消）</returns>
     public static string GetOcr(string string_0)
     {
-        // 使用 STA 线程模式显示 UI（WinForms 要求）
+        return GetOcrWithRefresh(string_0, null);
+    }
+
+    /// <summary>
+    ///     OCR 识别函数（带刷新按钮）。
+    ///     当 onRefresh 不为 null 时显示"刷新"按钮，
+    ///     点击后调用 onRefresh 获取新图片 base64 并更新显示。
+    /// </summary>
+    /// <param name="imageBase64">base64 编码的验证码图片</param>
+    /// <param name="onRefresh">刷新回调，返回新图片 base64</param>
+    /// <returns>用户输入的验证码文本，或 null（取消）</returns>
+    public static string GetOcrWithRefresh(
+        string imageBase64, Func<string> onRefresh)
+    {
         string result = null;
         ThreadHelperSTATask.Run(() =>
         {
-            result = ShowCaptchaInputForm(string_0);
+            result = ShowCaptchaInputForm(imageBase64, onRefresh);
         });
         return result;
     }
 
     /// <summary>
-    /// 获取未使用的端口（已清空）
+    ///     获取未使用的端口（已清空）
     /// </summary>
     public static int GetUnusedPort()
     {
@@ -49,7 +68,7 @@ internal class Ocr
     }
 
     /// <summary>
-    /// 获取已被占用的端口列表（已清空）
+    ///     获取已被占用的端口列表（已清空）
     /// </summary>
     private static List<int> GetPortIsInOccupiedState()
     {
@@ -58,7 +77,7 @@ internal class Ocr
     }
 
     /// <summary>
-    /// 通过 netstat 获取占用端口（已清空）
+    ///     通过 netstat 获取占用端口（已清空）
     /// </summary>
     private static string GetPortIsInOccupiedStateByNetStat()
     {
@@ -66,34 +85,29 @@ internal class Ocr
         return "";
     }
 
-    // Token: 0x04000021 RID: 33
-    private static object inner_asyncObject = new object();
-
-    // Token: 0x04000022 RID: 34
-    private static int inner_startPort = 50001;
-
 
     // ================================
     // 私有辅助方法：显示验证码输入窗口
     // ================================
-    private static string ShowCaptchaInputForm(string imageBase64)
+    private static string ShowCaptchaInputForm(
+        string imageBase64, Func<string> onRefresh = null)
     {
         using (var form = new Form())
         {
             form.Text = "请输入验证码";
-            form.Width = 300;
-            form.Height = 200;
+            form.Width = 320;
+            form.Height = 240;
             form.StartPosition = FormStartPosition.CenterScreen;
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             form.MinimizeBox = false;
             form.MaximizeBox = false;
-            form.TopMost = DotNetTranstor.Hookevent.Path_Bool.IsWindowTopMost;
+            form.TopMost = Path_Bool.IsWindowTopMost;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
-                Size = new System.Drawing.Size(55, 20),
-                Checked = DotNetTranstor.Hookevent.Path_Bool.IsWindowTopMost,
+                Size = new Size(55, 20),
+                Checked = Path_Bool.IsWindowTopMost,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = form.ClientSize.Width - topMostCheck.Width - 15;
@@ -104,47 +118,71 @@ internal class Ocr
             var label = new Label
             {
                 Text = "验证码：",
-                Location = new System.Drawing.Point(15, 15),
+                Location = new Point(15, 15),
                 AutoSize = true
             };
 
             var textBox = new TextBox
             {
-                Location = new System.Drawing.Point(15, 40),
-                Width = 250
+                Location = new Point(15, 40),
+                Width = 200
             };
 
             // 图片显示
-            if (!string.IsNullOrEmpty(imageBase64))
+            PictureBox pictureBox = null;
+            Action<string> updateImage = (b64) =>
             {
+                if (pictureBox != null)
+                    form.Controls.Remove(pictureBox);
+                if (string.IsNullOrEmpty(b64)) return;
                 try
                 {
-                    byte[] imageBytes = Convert.FromBase64String(imageBase64);
+                    var imageBytes = Convert.FromBase64String(b64);
                     using (var ms = new MemoryStream(imageBytes))
                     {
-                        var img = System.Drawing.Image.FromStream(ms);
-                        var pictureBox = new PictureBox
+                        var img = Image.FromStream(ms);
+                        pictureBox = new PictureBox
                         {
                             Image = img,
-                            Location = new System.Drawing.Point(15, 70),
-                            Size = new System.Drawing.Size(100, 50),
+                            Location = new Point(15, 70),
+                            Size = new Size(120, 60),
                             SizeMode = PictureBoxSizeMode.Zoom
                         };
-                        form.Height = 250;
                         form.Controls.Add(pictureBox);
                     }
                 }
-                catch
+                catch { }
+            };
+
+            updateImage(imageBase64);
+
+            // 刷新按钮
+            if (onRefresh != null)
+            {
+                var btnRefresh = new Button
                 {
-                    // 忽略图片加载失败
-                }
+                    Text = "刷新",
+                    Size = new Size(60, 25),
+                    Location = new Point(220, 38)
+                };
+                btnRefresh.Click += (s, e) =>
+                {
+                    try
+                    {
+                        var newImage = onRefresh();
+                        if (!string.IsNullOrEmpty(newImage))
+                            updateImage(newImage);
+                    }
+                    catch { }
+                };
+                form.Controls.Add(btnRefresh);
             }
 
             var btnOk = new Button { Text = "确定", DialogResult = DialogResult.OK };
-            btnOk.Location = new System.Drawing.Point(130, form.Height - 60);
+            btnOk.Location = new Point(130, form.Height - 60);
 
             var btnCancel = new Button { Text = "取消", DialogResult = DialogResult.Cancel };
-            btnCancel.Location = new System.Drawing.Point(215, form.Height - 60);
+            btnCancel.Location = new Point(215, form.Height - 60);
 
             form.AcceptButton = btnOk;
             form.CancelButton = btnCancel;
@@ -165,25 +203,22 @@ internal class Ocr
 // ================================
 internal static class ThreadHelperSTATask
 {
-    [System.Runtime.InteropServices.ComImport]
-    [System.Runtime.InteropServices.Guid("45D8CCCD-0A1B-4E9E-9F7F-8E3C8B5E7F9D")]
-    [System.Runtime.InteropServices.InterfaceType(System.Runtime.InteropServices.ComInterfaceType.InterfaceIsIUnknown)]
-    private interface IThreadContext
-    {
-        void DoWork(Action action);
-    }
-
     public static void Run(Action worker)
     {
-        var thread = new System.Threading.Thread(() =>
-        {
-            worker();
-        })
+        var thread = new Thread(() => { worker(); })
         {
             IsBackground = true,
-            ApartmentState = System.Threading.ApartmentState.STA // 关键：设置为 STA
+            ApartmentState = ApartmentState.STA // 关键：设置为 STA
         };
         thread.Start();
         thread.Join(); // 等待完成
+    }
+
+    [ComImport]
+    [Guid("45D8CCCD-0A1B-4E9E-9F7F-8E3C8B5E7F9D")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    private interface IThreadContext
+    {
+        void DoWork(Action action);
     }
 }

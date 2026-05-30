@@ -1,91 +1,80 @@
-using System.Text;
-using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Reflection;
+using System.Net.Http.Headers;
 using System.Text;
-using System.Windows.Forms;
-using DotNetTranstor.Hookevent;
-using Microsoft.VisualBasic.ApplicationServices;
-using MicrosoftTranslator.DotNetTranstor.Hookevent;
-using MicrosoftTranslator.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WPFLauncher.Code;
 using WPFLauncher.Common;
 using WPFLauncher.Manager;
 using WPFLauncher.Manager.Configuration;
-using WPFLauncher.Manager.Login;
-using WPFLauncher.Model;
-using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.Util;
-using Exception = System.Exception;
+
+namespace Mcl.Core.DotNetTranstor.Tools;
 
 public class X19Http
 {
     public static string RequestX19Api(string url, string data)
     {
-        HttpClient http = new HttpClient();
-        string userToken = WPFLauncher.Util.ss.e(url, data);
+        var http = new HttpClient();
+        var userToken = ss.e(url, data);
         http.DefaultRequestHeaders.Clear();
-        http.DefaultRequestHeaders.Add("user-id", WPFLauncher.Common.azf<arg>.Instance.User.Id);
+        http.DefaultRequestHeaders.Add("user-id", azf<arg>.Instance.User.Id);
         http.DefaultRequestHeaders.Add("user-token", userToken);
         var content = new StringContent(data, Encoding.UTF8, "application/json");
         // https://x19apigatewayobt.nie.netease.com/online-lobby-member/query/list-by-room-id
-        HttpResponseMessage responseData = http.PostAsync(WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.Url.ApiGatewayUrl + url, content).Result;
-        string get_result = responseData.Content.ReadAsStringAsync().Result;
+        var responseData = http.PostAsync(azf<axi>.Instance.Url.ApiGatewayUrl + url, content).Result;
+        var get_result = responseData.Content.ReadAsStringAsync().Result;
         return get_result;
     }
 
     public static byte[] RequestX19ApiEncrypt(string url, string data, string Salt = "Auto")
     {
-	    HttpClient http = new HttpClient();
-	    string userToken = WPFLauncher.Util.ss.e(url, data);
-	    http.DefaultRequestHeaders.Clear();
-	    http.DefaultRequestHeaders.Add("user-id", WPFLauncher.Common.azf<arg>.Instance.User.Id);
-	    http.DefaultRequestHeaders.Add("user-token", userToken);
-	    string Key = string.Empty;
-	    byte[] byteArray = WPFLauncher.Util.ss.b(url, data, out Key);
-	    var content = new ByteArrayContent(byteArray);
-	    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-	    // https://x19apigatewayobt.nie.netease.com/online-lobby-member/query/list-by-room-id
-	    string SaltUrl = WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.Url.ApiGatewayUrl;
-	    if (Salt != "Auto")
-	    {
-		    SaltUrl = Salt;
-	    }
-	    HttpResponseMessage responseData = http.PostAsync(SaltUrl + url, content).Result;
-	    byte[] get_result = responseData.Content.ReadAsByteArrayAsync().Result;
-	    return get_result;
+        var http = new HttpClient();
+        var userToken = ss.e(url, data);
+        http.DefaultRequestHeaders.Clear();
+        http.DefaultRequestHeaders.Add("user-id", azf<arg>.Instance.User.Id);
+        http.DefaultRequestHeaders.Add("user-token", userToken);
+        var Key = string.Empty;
+        var byteArray = ss.b(url, data, out Key);
+        var content = new ByteArrayContent(byteArray);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        // https://x19apigatewayobt.nie.netease.com/online-lobby-member/query/list-by-room-id
+        var SaltUrl = azf<axi>.Instance.Url.ApiGatewayUrl;
+        if (Salt != "Auto") SaltUrl = Salt;
+        var responseData = http.PostAsync(SaltUrl + url, content).Result;
+        var get_result = responseData.Content.ReadAsByteArrayAsync().Result;
+        return get_result;
     }
+
     public static JObject Get_Player_Info(string uid)
     {
-        return JObject.Parse(X19Http.RequestX19Api("/user/query/search-by-uid", JsonConvert.SerializeObject(new { user_id = uid })));
+        return JObject.Parse(RequestX19Api("/user/query/search-by-uid",
+            JsonConvert.SerializeObject(new { user_id = uid })));
     }
+
     public static JObject Get_Players_Info(List<string> uids)
     {
-        return JObject.Parse(X19Http.RequestX19Api("/user/query/search-by-ids", JsonConvert.SerializeObject(new { entity_ids = uids })));
+        return JObject.Parse(RequestX19Api("/user/query/search-by-ids",
+            JsonConvert.SerializeObject(new { entity_ids = uids })));
     }
+
     public static string unix_timestamp_to(long get_unix)
     {
-        DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(get_unix);
+        var dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(get_unix);
         return dateTimeOffset.ToOffset(TimeSpan.FromHours(8)).ToString();
     }
-	public static class TimestampHelper
-	{
-		public static long GetCurrentTimestampSeconds()
-		{
-			return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
-		}
 
-		public static long GetCurrentTimestampMilliseconds()
-		{
-			return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
-		}
-	}
+    public static class TimestampHelper
+    {
+        public static long GetCurrentTimestampSeconds()
+        {
+            return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        }
+
+        public static long GetCurrentTimestampMilliseconds()
+        {
+            return (long)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds;
+        }
+    }
 }

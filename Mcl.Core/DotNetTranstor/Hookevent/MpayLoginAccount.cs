@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.VisualBasic;
 using Microsoft.Win32;
@@ -16,9 +17,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
-using Azure;
-
-using Mcl.Core.Azure.RIP;
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher;
@@ -181,25 +180,25 @@ namespace DotNetTranstor.Hookevent
 			{
 				try
 				{
-					string token = FeverToSauth.FeverAuth.Base64Encode(
-						JsonConvert.SerializeObject(new FeverToSauth.FeverAuth.SDK4399Token
-						{
-							username = acc.Username,
-							password = acc.Password
-						}));
-					string sauthJson = FeverToSauth.FeverAuth.SDK4399ToSauth(token);
-					if (sauthJson.StartsWith("{"))
+					var loginResult = Task.Run(() =>
+						_4399.LoginAsync(acc.Username, acc.Password)).Result;
+					if (loginResult.Success && loginResult.SauthJson.StartsWith("{"))
 					{
 						try
 						{
-							sauthContent = JObject.Parse(sauthJson)["sauth_json"].ToString();
+							sauthContent = JObject.Parse(loginResult.SauthJson)["sauth_json"].ToString();
 						}
 						catch
 						{
-							sauthContent = sauthJson;
+							sauthContent = loginResult.SauthJson;
 						}
+						Tool.PrintYellow("4399:" + acc.Username);
 					}
-					Tool.PrintYellow("4399:" + acc.Username);
+					else
+					{
+						uz.n("4399登录失败: " + (loginResult.ErrorMessage ?? "未知错误"), "");
+						return null;
+					}
 				}
 				catch (Exception ex)
 				{

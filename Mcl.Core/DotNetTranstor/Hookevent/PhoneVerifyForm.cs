@@ -1,7 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Azure;
+using Mcl.Core.DotNetTranstor.Tools;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent

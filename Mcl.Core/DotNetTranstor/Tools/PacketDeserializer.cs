@@ -169,134 +169,134 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
 using WPFLauncher.Manager.LanGame;
 using WPFLauncher.Network.Message;
 
-namespace Mcl.Core.DotNetTranstor.Tools
+namespace Mcl.Core.DotNetTranstor.Tools;
+
+// Token: 0x02000F8A RID: 3978
+public class PacketDeserializer
 {
-	// Token: 0x02000F8A RID: 3978
-	public class PacketDeserializer
-	{
-		// Token: 0x06006463 RID: 25699 RVA: 0x0002CABD File Offset: 0x0002ACBD
-		public PacketDeserializer(byte[] data)
-		{
-			this.content = data;
-			this.Offset = 0;
-			this.UnkownNumber = 0;
-		}
+    // Token: 0x04003514 RID: 13588
+    private readonly byte[] content;
 
-		// Token: 0x06006464 RID: 25700 RVA: 0x0014856C File Offset: 0x0014676C
-		public void Deserialize<T>(ref T target)
-		{
-			Type typeFromHandle = typeof(T);
-			FieldInfo[] fields = typeFromHandle.GetFields();
-			foreach (FieldInfo fieldInfo in fields)
-			{
-				object value = fieldInfo.GetValue(target);
-				Type fieldType = fieldInfo.FieldType;
-				this.ReadValue(ref value, fieldType);
-				object obj = target;
-				fieldInfo.SetValue(obj, value);
-				target = ConvertType<T>(obj);
-			}
-		}
+    // Token: 0x04003515 RID: 13589
+    private int Offset;
 
-		// Token: 0x06006465 RID: 25701 RVA: 0x001485EC File Offset: 0x001467EC
-		public static T ConvertType<T>(object type)
-		{
-			return (T)((object)Convert.ChangeType(type, typeof(T)));
-		}
+    // Token: 0x04003516 RID: 13590
+    private ushort UnkownNumber;
 
-		// Token: 0x06006466 RID: 25702 RVA: 0x00148610 File Offset: 0x00146810
-		private void ReadValue(ref object value, Type type)
-		{
-			switch (Type.GetTypeCode(type))
-			{
-			case TypeCode.Object:
-				if (type == typeof(GameDescription))
-				{
-					ushort num = this.UnkownNumber;
-					string @string = Encoding.UTF8.GetString(this.content, this.Offset, (int)num);
-					value = JsonConvert.DeserializeObject<GameDescription>(@string);
-					this.Offset += (int)num;
-				}
-				else if (type == typeof(byte[]))
-				{
-					ushort num2 = this.UnkownNumber;
-					value = this.content.Skip(this.Offset).Take((int)num2).ToArray<byte>();
-					this.Offset += (int)num2;
-				}
-				else if (type == typeof(List<uint>))
-				{
-					ushort num3 = this.UnkownNumber;
-					List<uint> list = new List<uint>();
-					while (num3 > 0)
-					{
-						uint num4 = BitConverter.ToUInt32(this.content, this.Offset);
-						list.Add(num4);
-						this.Offset += 4;
-						num3 -= 4;
-					}
-					value = list;
-				}
-				else if (!(type == typeof(List<ahj.g>)) && type == typeof(List<ahj.h>))
-				{
-				}
-				break;
-			case TypeCode.Boolean:
-				value = BitConverter.ToBoolean(this.content, this.Offset);
-				this.Offset++;
-				break;
-			case TypeCode.Byte:
-				value = this.content[this.Offset];
-				this.Offset++;
-				break;
-			case TypeCode.Int16:
-				value = BitConverter.ToInt16(this.content, this.Offset);
-				this.Offset += 2;
-				break;
-			case TypeCode.UInt16:
-				value = BitConverter.ToUInt16(this.content, this.Offset);
-				this.Offset += 2;
-				this.UnkownNumber = (ushort)value;
-				break;
-			case TypeCode.Int32:
-				value = BitConverter.ToInt32(this.content, this.Offset);
-				this.Offset += 4;
-				break;
-			case TypeCode.UInt32:
-				value = BitConverter.ToUInt32(this.content, this.Offset);
-				this.Offset += 4;
-				break;
-			case TypeCode.Int64:
-				value = BitConverter.ToInt64(this.content, this.Offset);
-				this.Offset += 8;
-				break;
-			case TypeCode.UInt64:
-				value = BitConverter.ToUInt64(this.content, this.Offset);
-				this.Offset += 8;
-				break;
-			case TypeCode.String:
-			{
-				ushort num5 = BitConverter.ToUInt16(this.content, this.Offset);
-				this.Offset += 2;
-				value = Encoding.UTF8.GetString(this.content, this.Offset, (int)num5);
-				this.Offset += (int)num5;
-				break;
-			}
-			}
-		}
+    // Token: 0x06006463 RID: 25699 RVA: 0x0002CABD File Offset: 0x0002ACBD
+    public PacketDeserializer(byte[] data)
+    {
+        content = data;
+        Offset = 0;
+        UnkownNumber = 0;
+    }
 
-		// Token: 0x04003514 RID: 13588
-		private byte[] content;
+    // Token: 0x06006464 RID: 25700 RVA: 0x0014856C File Offset: 0x0014676C
+    public void Deserialize<T>(ref T target)
+    {
+        var typeFromHandle = typeof(T);
+        var fields = typeFromHandle.GetFields();
+        foreach (var fieldInfo in fields)
+        {
+            var value = fieldInfo.GetValue(target);
+            var fieldType = fieldInfo.FieldType;
+            ReadValue(ref value, fieldType);
+            object obj = target;
+            fieldInfo.SetValue(obj, value);
+            target = ConvertType<T>(obj);
+        }
+    }
 
-		// Token: 0x04003515 RID: 13589
-		private int Offset;
+    // Token: 0x06006465 RID: 25701 RVA: 0x001485EC File Offset: 0x001467EC
+    public static T ConvertType<T>(object type)
+    {
+        return (T)Convert.ChangeType(type, typeof(T));
+    }
 
-		// Token: 0x04003516 RID: 13590
-		private ushort UnkownNumber;
-	}
+    // Token: 0x06006466 RID: 25702 RVA: 0x00148610 File Offset: 0x00146810
+    private void ReadValue(ref object value, Type type)
+    {
+        switch (Type.GetTypeCode(type))
+        {
+            case TypeCode.Object:
+                if (type == typeof(GameDescription))
+                {
+                    var num = UnkownNumber;
+                    var @string = Encoding.UTF8.GetString(content, Offset, num);
+                    value = JsonConvert.DeserializeObject<GameDescription>(@string);
+                    Offset += num;
+                }
+                else if (type == typeof(byte[]))
+                {
+                    var num2 = UnkownNumber;
+                    value = content.Skip(Offset).Take(num2).ToArray();
+                    Offset += num2;
+                }
+                else if (type == typeof(List<uint>))
+                {
+                    var num3 = UnkownNumber;
+                    var list = new List<uint>();
+                    while (num3 > 0)
+                    {
+                        var num4 = BitConverter.ToUInt32(content, Offset);
+                        list.Add(num4);
+                        Offset += 4;
+                        num3 -= 4;
+                    }
+
+                    value = list;
+                }
+                else if (!(type == typeof(List<ahj.g>)) && type == typeof(List<ahj.h>))
+                {
+                }
+
+                break;
+            case TypeCode.Boolean:
+                value = BitConverter.ToBoolean(content, Offset);
+                Offset++;
+                break;
+            case TypeCode.Byte:
+                value = content[Offset];
+                Offset++;
+                break;
+            case TypeCode.Int16:
+                value = BitConverter.ToInt16(content, Offset);
+                Offset += 2;
+                break;
+            case TypeCode.UInt16:
+                value = BitConverter.ToUInt16(content, Offset);
+                Offset += 2;
+                UnkownNumber = (ushort)value;
+                break;
+            case TypeCode.Int32:
+                value = BitConverter.ToInt32(content, Offset);
+                Offset += 4;
+                break;
+            case TypeCode.UInt32:
+                value = BitConverter.ToUInt32(content, Offset);
+                Offset += 4;
+                break;
+            case TypeCode.Int64:
+                value = BitConverter.ToInt64(content, Offset);
+                Offset += 8;
+                break;
+            case TypeCode.UInt64:
+                value = BitConverter.ToUInt64(content, Offset);
+                Offset += 8;
+                break;
+            case TypeCode.String:
+            {
+                var num5 = BitConverter.ToUInt16(content, Offset);
+                Offset += 2;
+                value = Encoding.UTF8.GetString(content, Offset, num5);
+                Offset += num5;
+                break;
+            }
+        }
+    }
 }

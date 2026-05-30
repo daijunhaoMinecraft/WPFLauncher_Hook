@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using DotNetTranstor;
+using Mcl.Core.DotNetTranstor.Tools;
 using WPFLauncher.Common;
 using WPFLauncher.Manager.Configuration;
 using WPFLauncher.SQLite;

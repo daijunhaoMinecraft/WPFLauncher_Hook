@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices.ComTypes;
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using WPFLauncher.Util;
 using MicrosoftTranslator.DotNetTranstor.Tools;

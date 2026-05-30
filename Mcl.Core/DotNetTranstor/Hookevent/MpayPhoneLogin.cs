@@ -5,9 +5,9 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Azure;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 
 namespace DotNetTranstor.Hookevent

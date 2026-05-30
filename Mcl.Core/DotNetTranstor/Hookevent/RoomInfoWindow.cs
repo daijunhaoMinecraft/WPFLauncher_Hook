@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Network.Protocol.LobbyGame;
 using MicrosoftTranslator.DotNetTranstor.Tools;

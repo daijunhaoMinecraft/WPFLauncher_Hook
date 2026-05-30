@@ -14,13 +14,11 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.Util;
 using System.Windows;
-using Azure;
-using Mcl.Core.Azure.RIP;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager.PCChannel;
 using WPFLauncher.Network.Message;
-using JS4399MC;
+using Mcl.Core.DotNetTranstor.Tools;
 using MessageBox = System.Windows.MessageBox;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 
@@ -90,14 +88,19 @@ namespace DotNetTranstor.Hookevent
 			{
 				try
 				{
-					string token = FeverToSauth.FeverAuth.Base64Encode(
-						JsonConvert.SerializeObject(new FeverToSauth.FeverAuth.SDK4399Token
-						{
-							username = acc.Username,
-							password = acc.Password
-						}));
-					text9 = FeverToSauth.FeverAuth.SDK4399ToSauth(token);
-					Tool.PrintYellow("4399:" + acc.Username);
+					var loginResult = Task.Run(() =>
+						_4399.LoginAsync(acc.Username, acc.Password)).Result;
+					if (loginResult.Success)
+					{
+						text9 = loginResult.SauthJson;
+						Tool.PrintYellow("4399:" + acc.Username);
+					}
+					else
+					{
+						uz.n("4399登录失败: " + (loginResult.ErrorMessage ?? "未知错误"), "");
+						LoginWithOriginal(hud, hue);
+						return;
+					}
 				}
 				catch (Exception ex)
 				{
@@ -248,8 +251,12 @@ namespace DotNetTranstor.Hookevent
 						string[] array = text2.Split(new string[] { "----" }, StringSplitOptions.None);
 						string text6 = array[0];
 						string text7 = array[1];
-						string text8 = FeverToSauth.FeverAuth.SDK4399ToSauth(FeverToSauth.FeverAuth.Base64Encode(JsonConvert.SerializeObject(new FeverToSauth.FeverAuth.SDK4399Token() {username = text6,password = text7})));
-						text = text8;
+						var loginResult2 = Task.Run(() =>
+							_4399.LoginAsync(text6, text7)).Result;
+						if (loginResult2.Success)
+							text = loginResult2.SauthJson;
+						else
+							uz.n("4399登录失败: " + (loginResult2.ErrorMessage ?? "未知错误"), "");
 					}
 				}
 				catch (Exception ex)

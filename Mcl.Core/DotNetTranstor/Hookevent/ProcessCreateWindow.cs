@@ -20,6 +20,7 @@ using System.Windows.Forms;
 using System.Windows.Media.Effects;
 using DotNetTranstor.Hookevent;
 using Login.NetEase;
+using Mcl.Core.DotNetTranstor.Tools;
 using NLog.Targets;
 using WPFLauncher.Common;
 using WPFLauncher.Manager.Configuration;

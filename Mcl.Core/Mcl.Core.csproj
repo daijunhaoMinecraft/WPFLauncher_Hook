@@ -106,15 +106,11 @@
     <Compile Include="DotNetTranstor\Tools\ByteArrayExtensions.cs" />
     <Compile Include="DotNetTranstor\Tools\DebugPrint.cs" />
     <Compile Include="DotNetTranstor\Tools\ExitRoom.cs" />
-    <Compile Include="DotNetTranstor\Tools\FeverAuth.cs" />
     <Compile Include="DotNetTranstor\Tools\Function.cs" />
     <Compile Include="DotNetTranstor\Tools\HashExtensions.cs" />
     <Compile Include="DotNetTranstor\Tools\HtmlResource.cs" />
     <Compile Include="DotNetTranstor\Tools\HttpHelper.cs" />
     <Compile Include="DotNetTranstor\Tools\IpConfigManager.cs" />
-    <Compile Include="DotNetTranstor\Tools\JS4399.cs" />
-    <Compile Include="DotNetTranstor\Tools\JS4399HttpConfig.cs" />
-    <Compile Include="DotNetTranstor\Tools\JS4399Result.cs" />
     <Compile Include="DotNetTranstor\Tools\LocalProxyListener.cs" />
     <Compile Include="DotNetTranstor\Tools\MemoryUtils.cs" />
     <Compile Include="DotNetTranstor\Tools\Network\WintunNetworkModule.cs" />

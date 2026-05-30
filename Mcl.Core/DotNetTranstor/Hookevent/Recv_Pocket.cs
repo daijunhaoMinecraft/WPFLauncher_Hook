@@ -35,6 +35,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
 using Mcl.Core.DotNetTranstor.Model;
+using Mcl.Core.DotNetTranstor.Tools;
 using Application = System.Windows.Application;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 

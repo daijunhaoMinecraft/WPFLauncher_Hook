@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using DotNetTranstor;
 using DotNetTranstor.Hookevent;
+using Mcl.Core.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using WPFLauncher.Manager.Login;
 using WPFLauncher.Util;
