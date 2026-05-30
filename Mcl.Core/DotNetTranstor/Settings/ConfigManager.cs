@@ -42,7 +42,7 @@ namespace DotNetTranstor.Hookevent
             new ConfigEntry { Key = "UseNetworkMode", Description = "使用组网模式", FieldType = typeof(bool), Category = "本地联机" },
 
             // 模组与高级
-            // new ConfigEntry { Key = "EnableModsInject", Description = "启用模组注入", FieldType = typeof(bool), Category = "高级功能" },
+            new ConfigEntry { Key = "EnableModsInject", Description = "启用模组注入", FieldType = typeof(bool), Category = "高级功能" },
             new ConfigEntry { Key = "NeteaseUpdateDomainhttp", Description = "网易更新域名", FieldType = typeof(string), Category = "高级功能" },
             
             // Experiment
@@ -90,32 +90,6 @@ namespace DotNetTranstor.Hookevent
             catch (Exception ex) { Console.WriteLine("[Config] 加载失败: " + ex.Message); }
         }
 
-        // 自动为 Path_Bool 的变量生成 UI 控件
-        public static void BuildUI(StackPanel container, Dictionary<string, FrameworkElement> controlMap)
-        {
-            foreach (var item in Registry)
-            {
-                var field = typeof(Path_Bool).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
-                var currentVal = field.GetValue(null);
-
-                if (item.FieldType == typeof(bool))
-                {
-                    var cb = new CheckBox { Content = item.Description, IsChecked = (bool)currentVal, Margin = new Thickness(0, 5, 0, 5), FontSize = 14 };
-                    container.Children.Add(cb);
-                    controlMap[item.Key] = cb;
-                }
-                else
-                {
-                    var sp = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 5, 0, 5) };
-                    sp.Children.Add(new TextBlock { Text = item.Description + ": ", Width = 150, VerticalAlignment = VerticalAlignment.Center });
-                    var tb = new TextBox { Text = currentVal?.ToString(), Width = 200 };
-                    sp.Children.Add(tb);
-                    container.Children.Add(sp);
-                    controlMap[item.Key] = tb;
-                }
-            }
-        }
-        
         // 获取当前所有配置的值 (用于 /config/get)
         public static Dictionary<string, object> GetCurrentConfigValues()
         {

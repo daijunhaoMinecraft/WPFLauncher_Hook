@@ -49,6 +49,21 @@ namespace DotNetTranstor.Hookevent
                 ShowConfigWindow();
             }
 
+            // 如果启用了模组注入，打开 ModsInject 文件夹并提示
+            if (Path_Bool.EnableModsInject)
+            {
+                string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
+                if (!Directory.Exists(modsInjectPath))
+                {
+                    Directory.CreateDirectory(modsInjectPath);
+                }
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
+                Console.WriteLine($"[ModsInject] {modsInjectPath}");
+                Console.ResetColor();
+                System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
+            }
+
             // 3. 应用运行逻辑
             ApplyRuntimeSettings();
             return false;
@@ -149,11 +164,11 @@ namespace DotNetTranstor.Hookevent
 
                     if (item.FieldType == typeof(bool))
                     {
-                        var cb = new CheckBox { 
-                            Content = item.Description, 
-                            IsChecked = (bool)val, 
+                        var cb = new CheckBox {
+                            Content = item.Description,
+                            IsChecked = (bool)val,
                             Margin = new Thickness(0, 6, 0, 6),
-                            FontSize = 13 
+                            FontSize = 13
                         };
                         cardContent.Children.Add(cb);
                         controlMap[item.Key] = cb;
@@ -220,7 +235,22 @@ namespace DotNetTranstor.Hookevent
                 if (!error)
                 {
                     ConfigManager.Save();
-                    // ApplyRuntimeSettings();
+
+                    // 如果启用了模组注入，打开 ModsInject 文件夹并提示
+                    if (Path_Bool.EnableModsInject)
+                    {
+                        string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
+                        if (!Directory.Exists(modsInjectPath))
+                        {
+                            Directory.CreateDirectory(modsInjectPath);
+                        }
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
+                        Console.WriteLine($"[ModsInject] {modsInjectPath}");
+                        Console.ResetColor();
+                        System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
+                    }
+
                     win.Close();
                 }
             };
