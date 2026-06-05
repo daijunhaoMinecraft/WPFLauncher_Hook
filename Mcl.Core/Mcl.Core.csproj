@@ -27,6 +27,7 @@
     <Compile Include="DotNetTranstor\DetourWays\NativeDetourFor32Bit.cs" />
     <Compile Include="DotNetTranstor\DetourWays\NativeDetourFor64Bit.cs" />
     <Compile Include="DotNetTranstor\Extensions\TypeExtensions.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\BypassForbidden.cs" />
     <Compile Include="DotNetTranstor\Hookevent\BypassUpdate.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
     <Compile Include="DotNetTranstor\Hookevent\DisableClearProcess.cs" />

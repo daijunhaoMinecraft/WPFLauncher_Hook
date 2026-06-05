@@ -188,8 +188,8 @@
 在开始之前，请确保您的系统是支持.NET Framework 4.8.1支持库
 ### 2. 快速开始 (Quick Start)
 
-第一步: [下载网易我的世界启动器](https://adl.netease.com/d/g/mc/c/pe?type=windows)
-
+第一步: [下载网易我的世界启动器](https://adl.netease.com/d/g/mc/c/pe?type=windows)<br/>
+**2025/8/12:Latest:目前网易我的世界启动器官网只有一个发烧平台的包体，[32位包体下载链接](https://adl.netease.com/d/g/mc/c/pe?type=windows)**<br/>
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/1.png" width="700" alt="1"/></div>
 
 <p align="center" style="color: #808080">这一步已废弃,原因是无法找到下载入口,请打开第一步的链接直接下载</p>
