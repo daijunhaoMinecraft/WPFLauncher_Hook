@@ -92,7 +92,8 @@ namespace DotNetTranstor.Hookevent
 						_4399.LoginAsync(acc.Username, acc.Password)).Result;
 					if (loginResult.Success)
 					{
-						text9 = loginResult.SauthJson;
+						text9 = JObject.Parse(loginResult.SauthJson)["sauth_json"].ToString();
+						// text9 = loginResult.SauthJson;
 						Tool.PrintYellow("4399:" + acc.Username);
 					}
 					else
@@ -254,7 +255,8 @@ namespace DotNetTranstor.Hookevent
 						var loginResult2 = Task.Run(() =>
 							_4399.LoginAsync(text6, text7)).Result;
 						if (loginResult2.Success)
-							text = loginResult2.SauthJson;
+							text = JObject.Parse(loginResult2.SauthJson)["sauth_json"].ToString();
+							// text = loginResult2.SauthJson;
 						else
 							uz.n("4399登录失败: " + (loginResult2.ErrorMessage ?? "未知错误"), "");
 					}

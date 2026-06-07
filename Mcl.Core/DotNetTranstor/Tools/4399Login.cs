@@ -101,10 +101,30 @@ namespace Mcl.Core.DotNetTranstor.Tools
 
                             var sauthJson = BuildSauthJson(oauthData.Uid,
                                 oauthData.State);
+                            Console.WriteLine("[4399PE] Step 5: 获取 uni_sauth 返回");
+
+                            var sauthUrl = "https://mgbsdk.matrix.netease.com/x19/sdk/uni_sauth";
+                            using (var sauthClient = CreateHttpClient())
+                            {
+                                var sauthContent = new StringContent(
+                                    sauthJson, Encoding.UTF8, "application/json");
+                                var sauthResponse = await sauthClient.PostAsync(
+                                        sauthUrl, sauthContent)
+                                    .ConfigureAwait(false);
+                                var sauthResult = await sauthResponse.Content
+                                    .ReadAsStringAsync()
+                                    .ConfigureAwait(false);
+                                Console.WriteLine(
+                                    $"[4399PE] uni_sauth HTTP {(int)sauthResponse.StatusCode}");
+                                Console.WriteLine(
+                                    $"[4399PE] uni_sauth 返回: {sauthResult}");
+                            }
+
                             var result = new JObject
                             {
                                 ["sauth_json"] = sauthJson,
                             };
+                            
                             Console.WriteLine("[4399PE] ========== 登录成功! ==========");
                             return LoginResult.Ok(
                                 JsonConvert.SerializeObject(result));

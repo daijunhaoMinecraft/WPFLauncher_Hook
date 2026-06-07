@@ -188,8 +188,9 @@ namespace DotNetTranstor.Hookevent
 						{
 							sauthContent = JObject.Parse(loginResult.SauthJson)["sauth_json"].ToString();
 						}
-						catch
+						catch (Exception ex)
 						{
+							Console.WriteLine($"解析Json失败: {ex}");
 							sauthContent = loginResult.SauthJson;
 						}
 						Tool.PrintYellow("4399:" + acc.Username);
