@@ -51,6 +51,7 @@
     <Compile Include="DotNetTranstor\Hookevent\NoRealname.cs" />
     <Compile Include="DotNetTranstor\Hookevent\MpayLoginAccount.cs" />
     <Compile Include="DotNetTranstor\Hookevent\MpayPhoneLogin.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\OptimizeDeleteFile.cs" />
     <Compile Include="DotNetTranstor\Hookevent\PhoneVerifyForm.cs" />
     <Compile Include="DotNetTranstor\Hookevent\NoRealname_2.cs" />
     <Compile Include="DotNetTranstor\Hookevent\No_GameUpdate_1.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="DotNetTranstor\Tools\HttpHelper.cs" />
     <Compile Include="DotNetTranstor\Tools\IpConfigManager.cs" />
     <Compile Include="DotNetTranstor\Tools\LocalProxyListener.cs" />
+    <Compile Include="DotNetTranstor\Tools\Logger.cs" />
     <Compile Include="DotNetTranstor\Tools\MemoryUtils.cs" />
     <Compile Include="DotNetTranstor\Tools\Network\WintunNetworkModule.cs" />
     <Compile Include="DotNetTranstor\Tools\Ocr.cs" />
