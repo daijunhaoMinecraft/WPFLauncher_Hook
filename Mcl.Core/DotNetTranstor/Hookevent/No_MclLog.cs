@@ -9,11 +9,17 @@ namespace DotNetTranstor.Hookevent
     public class No_MclLog : IMethodHook
     {
         [HookMethod("WPFLauncher.Manager.apg", "r", null)]
-        public void r(string errorInfo = "No Exception Description\r\n", int maw = 0)
+        public void Log(string errorInfo = "No Exception Description\r\n", int maw = 0)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"[ERROR]ErrorInfo:{errorInfo}");
-            Console.ForegroundColor = ConsoleColor.White;
+            try
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[ERROR]ErrorInfo:{errorInfo}");
+                Console.ForegroundColor = ConsoleColor.White;
+            }
+            catch (Exception ex)
+            {
+            }
         }
     }
 }

@@ -117,7 +117,6 @@ namespace DotNetTranstor.Hookevent
                 Size = new Size(100, 20),
                 Checked = Account.Type == AccountType.Cookie
             };
-            cookieRadio.CheckedChanged += OnTypeChanged;
             this.Controls.Add(cookieRadio);
 
             _4399Radio = new RadioButton
@@ -137,7 +136,11 @@ namespace DotNetTranstor.Hookevent
                 Checked = Account.Type == AccountType.Phone
             };
             this.Controls.Add(phoneRadio);
-
+            
+            cookieRadio.CheckedChanged += OnTypeChanged;
+            _4399Radio.CheckedChanged += OnTypeChanged;
+            phoneRadio.CheckedChanged += OnTypeChanged;
+            
             y += 35;
 
             // Cookie panel
@@ -341,16 +344,15 @@ namespace DotNetTranstor.Hookevent
                 cookiePanel.Visible = true;
                 _4399Panel.Visible = false;
                 phonePanel.Visible = false;
-                cookiePanel.Top = _4399Panel.Top;
             }
-            else if (_4399Radio.Checked)
+            if (_4399Radio.Checked)
             {
                 Account.Type = AccountType._4399;
                 cookiePanel.Visible = false;
                 _4399Panel.Visible = true;
                 phonePanel.Visible = false;
             }
-            else
+            if (phoneRadio.Checked)
             {
                 Account.Type = AccountType.Phone;
                 cookiePanel.Visible = false;

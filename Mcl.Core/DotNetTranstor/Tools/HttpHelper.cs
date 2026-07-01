@@ -153,6 +153,9 @@ public class SimpleHttpServer
     [DllImport("kernel32.dll")]
     private static extern bool FreeConsole();
 
+    [DllImport("kernel32.dll")]
+    private static extern bool SetConsoleOutputCP(uint wCodePageID);
+
     #region Tools
 
     /// <summary>
@@ -999,6 +1002,17 @@ public class SimpleHttpServer
                         try
                         {
                             AllocConsole(); // 使用Kernel32.dll分配一个新的控制台
+                            // 重新初始化控制台输出（GBK编码，与AppMutexHelper.CheckAppMutex一致）
+                            const uint CP_GBK = 936;
+                            SetConsoleOutputCP(CP_GBK);
+                            Console.OutputEncoding = Encoding.GetEncoding(936);
+                            var writer = new StreamWriter(
+                                Console.OpenStandardOutput(),
+                                Console.OutputEncoding
+                            );
+                            writer.AutoFlush = true;
+                            Console.SetOut(writer);
+                            Console.CursorVisible = false;
                             SendResponse = new { error = 0, message = "控制台已显示" };
                         }
                         catch (Exception ex)
@@ -1010,6 +1024,9 @@ public class SimpleHttpServer
                     {
                         try
                         {
+                            // 先重定向输出流到Null，防止后续Console.WriteLine报IOException
+                            Console.SetOut(TextWriter.Null);
+                            Console.SetError(TextWriter.Null);
                             FreeConsole(); // 使用Kernel32.dll释放当前进程的控制台
                             SendResponse = new { error = 0, message = "控制台已隐藏" };
                         }
@@ -1946,64 +1963,64 @@ public class SimpleHttpServer
                             }
 
                             break;
-                        case "/config/apply":
-                            // 更新配置
-                            try
-                            {
-                                var configData = JsonConvert.DeserializeObject<JObject>(requestBody);
-
-                                // 更新Path_Bool中的配置项
-                                if (configData["IsBypassGameUpdate_Bedrock"] != null)
-                                    Path_Bool.IsBypassGameUpdate_Bedrock =
-                                        configData["IsBypassGameUpdate_Bedrock"].Value<bool>();
-
-                                if (configData["IsEnableX64mc"] != null)
-                                    Path_Bool.IsEnableX64mc = configData["IsEnableX64mc"].Value<bool>();
-
-                                if (configData["IsDebug"] != null)
-                                    Path_Bool.IsDebug = configData["IsDebug"].Value<bool>();
-
-                                if (configData["EnableRoomBlacklist"] != null)
-                                    Path_Bool.EnableRoomBlacklist = configData["EnableRoomBlacklist"].Value<bool>();
-
-                                if (configData["EnableRegexBlacklist"] != null)
-                                    Path_Bool.EnableRoomBlacklist = configData["EnableRegexBlacklist"].Value<bool>();
-
-                                if (configData["MaxRoomCount"] != null)
-                                    Path_Bool.MaxRoomCount = configData["MaxRoomCount"].Value<int>();
-
-                                if (configData["HttpPort"] != null)
-                                    Path_Bool.HttpPort = configData["HttpPort"].Value<int>();
-
-                                if (configData["NeteaseUpdateDomainhttp"] != null)
-                                    Path_Bool.NeteaseUpdateDomainhttp =
-                                        configData["NeteaseUpdateDomainhttp"].Value<string>();
-
-                                if (configData["AlwaysSaveWorld"] != null)
-                                    Path_Bool.AlwaysSaveWorld = configData["AlwaysSaveWorld"].Value<bool>();
-
-                                if (configData["IsCustomIP"] != null)
-                                    Path_Bool.IsCustomIP = configData["IsCustomIP"].Value<bool>();
-
-                                if (configData["NoTwoExitMessage"] != null)
-                                    Path_Bool.NoTwoExitMessage = configData["NoTwoExitMessage"].Value<bool>();
-
-                                SendResponse = new
-                                {
-                                    error = 0,
-                                    message = "配置更新成功"
-                                };
-                            }
-                            catch (Exception ex)
-                            {
-                                SendResponse = new
-                                {
-                                    error = 1,
-                                    message = "配置更新失败: " + ex.Message
-                                };
-                            }
-
-                            break;
+                        // case "/config/apply":
+                        //     // 更新配置
+                        //     try
+                        //     {
+                        //         var configData = JsonConvert.DeserializeObject<JObject>(requestBody);
+                        //
+                        //         // 更新Path_Bool中的配置项
+                        //         if (configData["IsBypassGameUpdate_Bedrock"] != null)
+                        //             Path_Bool.IsBypassGameUpdate_Bedrock =
+                        //                 configData["IsBypassGameUpdate_Bedrock"].Value<bool>();
+                        //
+                        //         if (configData["IsEnableX64mc"] != null)
+                        //             Path_Bool.IsEnableX64mc = configData["IsEnableX64mc"].Value<bool>();
+                        //
+                        //         if (configData["IsDebug"] != null)
+                        //             Path_Bool.IsDebug = configData["IsDebug"].Value<bool>();
+                        //
+                        //         if (configData["EnableRoomBlacklist"] != null)
+                        //             Path_Bool.EnableRoomBlacklist = configData["EnableRoomBlacklist"].Value<bool>();
+                        //
+                        //         if (configData["EnableRegexBlacklist"] != null)
+                        //             Path_Bool.EnableRoomBlacklist = configData["EnableRegexBlacklist"].Value<bool>();
+                        //
+                        //         if (configData["MaxRoomCount"] != null)
+                        //             Path_Bool.MaxRoomCount = configData["MaxRoomCount"].Value<int>();
+                        //
+                        //         if (configData["HttpPort"] != null)
+                        //             Path_Bool.HttpPort = configData["HttpPort"].Value<int>();
+                        //
+                        //         if (configData["NeteaseUpdateDomainhttp"] != null)
+                        //             Path_Bool.NeteaseUpdateDomainhttp =
+                        //                 configData["NeteaseUpdateDomainhttp"].Value<string>();
+                        //
+                        //         if (configData["AlwaysSaveWorld"] != null)
+                        //             Path_Bool.AlwaysSaveWorld = configData["AlwaysSaveWorld"].Value<bool>();
+                        //
+                        //         if (configData["IsCustomIP"] != null)
+                        //             Path_Bool.IsCustomIP = configData["IsCustomIP"].Value<bool>();
+                        //
+                        //         if (configData["NoTwoExitMessage"] != null)
+                        //             Path_Bool.NoTwoExitMessage = configData["NoTwoExitMessage"].Value<bool>();
+                        //
+                        //         SendResponse = new
+                        //         {
+                        //             error = 0,
+                        //             message = "配置更新成功"
+                        //         };
+                        //     }
+                        //     catch (Exception ex)
+                        //     {
+                        //         SendResponse = new
+                        //         {
+                        //             error = 1,
+                        //             message = "配置更新失败: " + ex.Message
+                        //         };
+                        //     }
+                        //
+                        //     break;
                     }
 
                     sendJsonResponse(context.Response, SendResponse);

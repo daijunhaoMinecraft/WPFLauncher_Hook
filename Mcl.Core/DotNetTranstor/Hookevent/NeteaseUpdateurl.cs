@@ -6,7 +6,7 @@ namespace MicrosoftTranslator.DotNetTranstor.Hookevent
 {
     public class NeteaseUpdateUrl : IMethodHook
     {
-        [HookMethod("WPFLauncher.Manager.Configuration.axf", "c", null)]
+        [HookMethod("WPFLauncher.Manager.Configuration.axg", "c", null)]
         public string UpdateUrl()
         {
             return Path_Bool.NeteaseUpdateDomainhttp;
