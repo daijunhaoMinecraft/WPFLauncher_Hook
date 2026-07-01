@@ -42,7 +42,8 @@
     <Compile Include="DotNetTranstor\Hookevent\AccountInfo.cs" />
     <Compile Include="DotNetTranstor\Hookevent\AccountManager.cs" />
     <Compile Include="DotNetTranstor\Hookevent\AccountSelectForm.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\LoginFucker.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\LoggerHook.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\LoginFix.cs" />
     <Compile Include="DotNetTranstor\Hookevent\MinecraftPath.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Mods.cs" />
     <Compile Include="DotNetTranstor\Hookevent\mods_inject.cs" />
@@ -55,7 +56,6 @@
     <Compile Include="DotNetTranstor\Hookevent\PhoneVerifyForm.cs" />
     <Compile Include="DotNetTranstor\Hookevent\NoRealname_2.cs" />
     <Compile Include="DotNetTranstor\Hookevent\No_GameUpdate_1.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\No_MclLog.cs" />
     <Compile Include="DotNetTranstor\Hookevent\No_MuteBan.cs" />
     <Compile Include="DotNetTranstor\Hookevent\No_SaveWorldEncrypt.cs" />
     <Compile Include="DotNetTranstor\Hookevent\No_StartGameTestfor.cs" />
@@ -82,13 +82,13 @@
     <Compile Include="DotNetTranstor\Hookevent\VapeDetect.cs" />
     <Compile Include="DotNetTranstor\Hookevent\WebRTCEx.cs" />
     <Compile Include="DotNetTranstor\Hookevent\WebSocket_WebRtc.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\WPFLauncherLogging.cs" />
-    <Compile Include="DotNetTranstor\Hookevent\X19Fucker.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\BypassFever.cs" />
     <Compile Include="DotNetTranstor\HookMethodAttribute.cs" />
     <Compile Include="DotNetTranstor\IDetour.cs" />
     <Compile Include="DotNetTranstor\IMethodHook.cs" />
     <Compile Include="DotNetTranstor\IMethodHookWithSet.cs" />
     <Compile Include="DotNetTranstor\IMethodMonitor.cs" />
+    <Compile Include="DotNetTranstor\Initialize.cs" />
     <Compile Include="DotNetTranstor\LDasm.cs" />
     <Compile Include="DotNetTranstor\Libraries\String.cs" />
     <Compile Include="DotNetTranstor\MethodHook.cs" />

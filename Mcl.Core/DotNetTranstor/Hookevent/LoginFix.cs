@@ -25,7 +25,7 @@ using MicrosoftTranslator.DotNetTranstor.Tools;
 namespace DotNetTranstor.Hookevent
 {
 	// Token: 0x02000017 RID: 23
-	internal class LoginFucker : IMethodHook
+	internal class LoginFix : IMethodHook
 	{
 		[OriginalMethod]
 		public static void f(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue = null)
@@ -200,7 +200,7 @@ namespace DotNetTranstor.Hookevent
 			}
 			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
 			Path_Bool.IsLogin = true;
-			LoginFucker.f(text9, hue);
+			LoginFix.f(text9, hue);
 		}
 
 		/// <summary>
@@ -214,7 +214,7 @@ namespace DotNetTranstor.Hookevent
 			}
 			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
 			Path_Bool.IsLogin = true;
-			LoginFucker.f(hud, hue);
+			LoginFix.f(hud, hue);
 		}
 
 		/// <summary>
@@ -340,7 +340,7 @@ namespace DotNetTranstor.Hookevent
 			}
 			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
 			Path_Bool.IsLogin = true;
-			LoginFucker.f(text9, hue);
+			LoginFix.f(text9, hue);
 		}
 
 		// Token: 0x06000040 RID: 64 RVA: 0x00003334 File Offset: 0x00001534

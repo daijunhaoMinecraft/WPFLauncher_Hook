@@ -1241,7 +1241,7 @@ public static class HtmlResource
 <head>
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>X19Fucker 控制台</title>
+    <title>Settings</title>
     <script src='https://cdn.tailwindcss.com'></script>
     <style>
         body { background-color: #f8f9fa; font-family: 'Segoe UI', system-ui, sans-serif; }
@@ -1257,7 +1257,7 @@ public static class HtmlResource
 <body class='p-4 md:p-8'>
     <div class='max-w-2xl mx-auto'>
         <div class='flex items-center justify-between mb-8'>
-            <h1 class='text-2xl font-bold text-gray-800'>X19Fucker 配置中心</h1>
+            <h1 class='text-2xl font-bold text-gray-800'>设置</h1>
         </div>
 
         <div id='config-container' class='space-y-4'>

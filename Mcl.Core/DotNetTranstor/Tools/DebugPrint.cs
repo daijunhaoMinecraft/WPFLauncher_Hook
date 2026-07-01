@@ -18,7 +18,6 @@ public class DebugPrint
             // {
             //     Directory.CreateDirectory(logDir);
             // }
-
             // 写入日志文件
             //File.AppendAllText(LogFilePath, logMessage + Environment.NewLine);
             Console.ForegroundColor = ConsoleColor.White;

@@ -29,6 +29,7 @@ namespace DotNetTranstor.Hookevent
             new ConfigEntry { Key = "IsEnableX64mc", Description = "使用X64版本(基岩)", FieldType = typeof(bool), Category = "基础设置" },
             new ConfigEntry { Key = "IsWindowTopMost", Description = "窗口保持在最上层", FieldType = typeof(bool), Category = "基础设置" },
             new ConfigEntry { Key = "IsDebug", Description = "详细日志模式", FieldType = typeof(bool), Category = "基础设置" },
+            new ConfigEntry { Key = "IsLogOutputFolder", Description = "启动器日志输出到文件夹", FieldType = typeof(bool), Category = "基础设置" },
             new ConfigEntry { Key = "IsStartWebSocket", Description = "启用Web服务器", FieldType = typeof(bool), Category = "基础设置" },
             new ConfigEntry { Key = "HttpPort", Description = "Web服务器端口", FieldType = typeof(int), Category = "基础设置" },
             

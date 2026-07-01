@@ -1,37 +1,119 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Newtonsoft.Json;
+using DotNetDetour;
+using DotNetTranstor.Hookevent;
 using DotNetTranstor.Tools;
 using Newtonsoft.Json.Linq;
-using WPFLauncher.Common;
-using WPFLauncher.Manager.Configuration;
 using WPFLauncher.Util;
 
-namespace DotNetTranstor.Hookevent
+// 1. 手动补齐 .NET 4.8.1 缺失的 ModuleInitializerAttribute 特性
+// 注意：命名空间必须严格是 System.Runtime.CompilerServices
+namespace System.Runtime.CompilerServices
 {
-    internal class X19Fucker : IMethodHook
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class ModuleInitializerAttribute : Attribute
     {
-        [DllImport("kernel32.dll")]
+    }
+}
+
+namespace Mcl.Core // 替换为你的项目命名空间
+{
+    // 2. 编写启动器类
+    public static class HookBootstrapper
+    {
+        // 导入 AllocConsole 函数
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool AllocConsole();
+		        
+        [DllImport("kernel32.dll")]
+        private static extern bool SetConsoleOutputCP(uint wCodePageID);
 
-        [OriginalMethod]
-        public static void X19_Fever_bypass() { }
+        [DllImport("kernel32.dll")]
+        private static extern uint GetConsoleOutputCP();
 
-        [HookMethod("WPFLauncher.Manager.apm", "aj", "X19_Fever_bypass")]
-        public bool Fever_False()
+        // 标记为 ModuleInitializer
+        [ModuleInitializer]
+        internal static void InitializeOnLoad()
         {
-            // AllocConsole();
+            if (!File.Exists("DisableConsole"))
+            {
+            	// 分配一个新的控制台
+            	AllocConsole();
+            
+            	const uint CP_GBK = 936;
+            
+            	// 1. 强制设置控制台输出代码页为 936 (GBK)
+            	SetConsoleOutputCP(CP_GBK);
+            
+            	// 2. 设置 .NET 控制台输出编码为 GBK
+            	Console.OutputEncoding = Encoding.GetEncoding(936);
+            
+            	// 3. 重定向输出流，并显式指定编码！
+            	var writer = new StreamWriter(
+            		Console.OpenStandardOutput(),
+            		Console.OutputEncoding  // 👈 关键：使用一致的编码
+            	);
+            	writer.AutoFlush = true;
+            	Console.SetOut(writer);
+            	Console.CursorVisible = false;
+            }
+            try
+            {
+            	MethodHook.Install(null);
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+            	Console.WriteLine("=== ReflectionTypeLoadException: 部分类型加载失败 ===");
+            
+            	// 输出成功加载的类型（可选）
+            	if (ex.Types != null)
+            	{
+            		var loadedTypes = ex.Types.Where(t => t != null).ToArray();
+            		Console.WriteLine($"成功加载 {loadedTypes.Length} 个类型:");
+            		foreach (var type in loadedTypes)
+            		{
+            			Console.WriteLine($"  ✔ {type?.FullName}");
+            		}
+            	}
+            
+            	// 输出加载失败的异常信息
+            	Console.WriteLine($"\n失败的加载异常 ({ex.LoaderExceptions.Length} 个):");
+            	for (int i = 0; i < ex.LoaderExceptions.Length; i++)
+            	{
+            		var loaderEx = ex.LoaderExceptions[i];
+            		Console.WriteLine($"--- 加载异常 #{i + 1} ---");
+            		Console.WriteLine(loaderEx.Message);
+            
+            		// 如果是文件找不到，输出更详细信息
+            		if (loaderEx is FileNotFoundException fileEx && !string.IsNullOrEmpty(fileEx.FileName))
+            		{
+            			Console.WriteLine($"缺少程序集: {fileEx.FileName}");
+            		}
+            
+            		// 输出完整堆栈（可选）
+            		Console.WriteLine(loaderEx.StackTrace);
+            	}
+            }
+            catch (Exception ex)
+            {
+            	// 其他非 ReflectionTypeLoadException 的异常
+            	Console.WriteLine("=== 未处理异常 ===");
+            	Console.WriteLine(ex);
+            }
+            
             PrintStatus();
 
             // 1. 初始化加载
@@ -41,35 +123,37 @@ namespace DotNetTranstor.Hookevent
             // 2. 交互逻辑
             if (File.Exists("config.json"))
             {
-                var res = uz.q("检测到配置文件，是否直接加载运行?", "启动选择", "直接加载", "进入设置", "");
-                if (res != MessageBoxResult.OK) ShowConfigWindow();
+	            var res = uz.q("检测到配置文件，是否直接加载运行?", "启动选择", "直接加载", "进入设置", "");
+	            if (res != MessageBoxResult.OK) ShowConfigWindow();
             }
             else
             {
-                ShowConfigWindow();
+	            ShowConfigWindow();
             }
 
             // 如果启用了模组注入，打开 ModsInject 文件夹并提示
             if (Path_Bool.EnableModsInject)
             {
-                string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
-                if (!Directory.Exists(modsInjectPath))
-                {
-                    Directory.CreateDirectory(modsInjectPath);
-                }
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-                Console.WriteLine($"[ModsInject] {modsInjectPath}");
-                Console.ResetColor();
-                System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
+	            string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
+	            if (!Directory.Exists(modsInjectPath))
+	            {
+		            Directory.CreateDirectory(modsInjectPath);
+	            }
+	            Console.ForegroundColor = ConsoleColor.Green;
+	            Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
+	            Console.WriteLine($"[ModsInject] {modsInjectPath}");
+	            Console.ResetColor();
+	            System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
             }
+
+            InitIdentity();
 
             // 3. 应用运行逻辑
             ApplyRuntimeSettings();
-            return false;
         }
-
-        private void InitIdentity()
+        
+        
+        private static void InitIdentity()
         {
             string mac = Get_MacAddr();
             string randomMac = GenerateRandomMacAddress();
@@ -79,10 +163,10 @@ namespace DotNetTranstor.Hookevent
             Console.WriteLine($"[Identity] Mac: {mac} -> Random: {randomMac}");
             
             // 路径设置
-            string javaPath = Path.Combine(tb.n, "Game", ".minecraft");
-            Directory.CreateDirectory(javaPath);
-            Path_Bool.JavaGamePath = javaPath;
-            WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.App.JavaGamePath = javaPath;
+            // string javaPath = Path.Combine(tb.n, "Game", ".minecraft");
+            // Directory.CreateDirectory(javaPath);
+            // Path_Bool.JavaGamePath = javaPath;
+            // WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.App.JavaGamePath = javaPath;
         }
 
         // --- 工具函数 (保持不变) ---
@@ -99,7 +183,7 @@ namespace DotNetTranstor.Hookevent
             catch { return "000000000000"; }
         }
         
-        private void ShowConfigWindow()
+        private static void ShowConfigWindow()
         {
             var win = new Window {
                 Title = "设置",
@@ -264,7 +348,7 @@ namespace DotNetTranstor.Hookevent
             win.ShowDialog();
         }
 
-        private void ApplyRuntimeSettings()
+        private static void ApplyRuntimeSettings()
         {
             // 这里放你原本在 Save 按钮里的那些初始化逻辑
             if (Path_Bool.IsStartWebSocket)
@@ -282,7 +366,7 @@ namespace DotNetTranstor.Hookevent
             // ... 其余逻辑保持不变 ...
         }
 
-        private void PrintStatus()
+        private static void PrintStatus()
         {
             // Console.ForegroundColor = ConsoleColor.Green;
             // Console.WriteLine("========================================");

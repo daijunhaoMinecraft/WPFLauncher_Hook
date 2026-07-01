@@ -14,7 +14,7 @@ namespace DotNetTranstor.Hookevent
 {
     public class Path_Bool
     {
-        public static string Version = "4.0.7-Public-Beta6";
+        public static string Version = "4.0.7-Public-Beta7";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
@@ -54,6 +54,7 @@ namespace DotNetTranstor.Hookevent
         public static string BedrockPath = tb.s;
         public static bool IsWindowTopMost = true;
         public static bool EnableModsInject = false;
+        public static bool IsLogOutputFolder = true;
 
         public static List<FriendStatus> ListFriendStatus = new List<FriendStatus>();
 
