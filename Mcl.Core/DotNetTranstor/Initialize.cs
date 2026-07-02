@@ -13,9 +13,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DotNetDetour;
+using DotNetTranstor;
 using DotNetTranstor.Hookevent;
 using DotNetTranstor.Tools;
+using Mcl.Core.DotNetTranstor.Hookevent;
 using Newtonsoft.Json.Linq;
+using WPFLauncher.Manager;
 using WPFLauncher.Util;
 
 // 1. 手动补齐 .NET 4.8.1 缺失的 ModuleInitializerAttribute 特性
@@ -44,112 +47,40 @@ namespace Mcl.Core // 替换为你的项目命名空间
         [DllImport("kernel32.dll")]
         private static extern uint GetConsoleOutputCP();
 
+        [OriginalMethod]
+        public static void MainOriginal()
+        {
+        }
+
+        
+        
         // 标记为 ModuleInitializer
         [ModuleInitializer]
         internal static void InitializeOnLoad()
         {
             if (!File.Exists("DisableConsole"))
             {
-            	// 分配一个新的控制台
-            	AllocConsole();
+                // 分配一个新的控制台
+                AllocConsole();
             
-            	const uint CP_GBK = 936;
+                const uint CP_GBK = 936;
             
-            	// 1. 强制设置控制台输出代码页为 936 (GBK)
-            	SetConsoleOutputCP(CP_GBK);
+                // 1. 强制设置控制台输出代码页为 936 (GBK)
+                SetConsoleOutputCP(CP_GBK);
             
-            	// 2. 设置 .NET 控制台输出编码为 GBK
-            	Console.OutputEncoding = Encoding.GetEncoding(936);
+                // 2. 设置 .NET 控制台输出编码为 GBK
+                Console.OutputEncoding = Encoding.GetEncoding(936);
             
-            	// 3. 重定向输出流，并显式指定编码！
-            	var writer = new StreamWriter(
-            		Console.OpenStandardOutput(),
-            		Console.OutputEncoding  // 👈 关键：使用一致的编码
-            	);
-            	writer.AutoFlush = true;
-            	Console.SetOut(writer);
-            	Console.CursorVisible = false;
+                // 3. 重定向输出流，并显式指定编码！
+                var writer = new StreamWriter(
+                    Console.OpenStandardOutput(),
+                    Console.OutputEncoding  // 👈 关键：使用一致的编码
+                );
+                writer.AutoFlush = true;
+                Console.SetOut(writer);
+                Console.CursorVisible = false;
             }
-            try
-            {
-            	MethodHook.Install(null);
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-            	Console.WriteLine("=== ReflectionTypeLoadException: 部分类型加载失败 ===");
-            
-            	// 输出成功加载的类型（可选）
-            	if (ex.Types != null)
-            	{
-            		var loadedTypes = ex.Types.Where(t => t != null).ToArray();
-            		Console.WriteLine($"成功加载 {loadedTypes.Length} 个类型:");
-            		foreach (var type in loadedTypes)
-            		{
-            			Console.WriteLine($"  ✔ {type?.FullName}");
-            		}
-            	}
-            
-            	// 输出加载失败的异常信息
-            	Console.WriteLine($"\n失败的加载异常 ({ex.LoaderExceptions.Length} 个):");
-            	for (int i = 0; i < ex.LoaderExceptions.Length; i++)
-            	{
-            		var loaderEx = ex.LoaderExceptions[i];
-            		Console.WriteLine($"--- 加载异常 #{i + 1} ---");
-            		Console.WriteLine(loaderEx.Message);
-            
-            		// 如果是文件找不到，输出更详细信息
-            		if (loaderEx is FileNotFoundException fileEx && !string.IsNullOrEmpty(fileEx.FileName))
-            		{
-            			Console.WriteLine($"缺少程序集: {fileEx.FileName}");
-            		}
-            
-            		// 输出完整堆栈（可选）
-            		Console.WriteLine(loaderEx.StackTrace);
-            	}
-            }
-            catch (Exception ex)
-            {
-            	// 其他非 ReflectionTypeLoadException 的异常
-            	Console.WriteLine("=== 未处理异常 ===");
-            	Console.WriteLine(ex);
-            }
-            
-            PrintStatus();
-
-            // 1. 初始化加载
-            ConfigManager.Load();
-            Path_Bool.ReadRoomBlacklist(); // 原有的特殊读取逻辑
-
-            // 2. 交互逻辑
-            if (File.Exists("config.json"))
-            {
-	            var res = uz.q("检测到配置文件，是否直接加载运行?", "启动选择", "直接加载", "进入设置", "");
-	            if (res != MessageBoxResult.OK) ShowConfigWindow();
-            }
-            else
-            {
-	            ShowConfigWindow();
-            }
-
-            // 如果启用了模组注入，打开 ModsInject 文件夹并提示
-            if (Path_Bool.EnableModsInject)
-            {
-	            string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
-	            if (!Directory.Exists(modsInjectPath))
-	            {
-		            Directory.CreateDirectory(modsInjectPath);
-	            }
-	            Console.ForegroundColor = ConsoleColor.Green;
-	            Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-	            Console.WriteLine($"[ModsInject] {modsInjectPath}");
-	            Console.ResetColor();
-	            System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
-            }
-
-            InitIdentity();
-
-            // 3. 应用运行逻辑
-            ApplyRuntimeSettings();
+            MethodHook.InstallTypes(new[] { typeof(InitHook) });
         }
         
         

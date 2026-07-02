@@ -37,21 +37,79 @@ namespace DotNetDetour
         static public BindingFlags AllFlag = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static;
         static bool installed = false;
         static List<DestAndOri> destAndOris = new List<DestAndOri>();
+        
+        /// <summary>
+        /// 精确安装指定的 Hook 类 (不传则安装全部)
+        /// </summary>
+        public static void InstallTypes(Type[] specificHookTypes = null)
+        {
+            if (installed && specificHookTypes == null) return;
+            if (specificHookTypes == null) installed = true;
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            IEnumerable<IMethodHook> monitors;
+
+            // 核心修改：如果传了特定类型，只实例化这些特定的 Hook 类
+            if (specificHookTypes != null)
+            {
+                monitors = specificHookTypes.Select(t => (IMethodHook)Activator.CreateInstance(t));
+            }
+            else
+            {
+                monitors = new[] { Assembly.GetExecutingAssembly() }
+                    .SelectMany(t => t.GetImplementedObjectsByInterface<IMethodHook>());
+            }
+
+            foreach (var monitor in monitors)
+            {
+                // 如果这个 monitor 已经被解析过了，就跳过防止重复
+                if (destAndOris.Any(d => d.Obj.GetType() == monitor.GetType())) continue;
+
+                var all = monitor.GetType().GetMethods(AllFlag);
+                var hookMethods = all.Where(t => t.CustomAttributes.Any(a => typeof(HookMethodAttribute).IsAssignableFrom(a.AttributeType)));
+                var originalMethods = all.Where(t => t.CustomAttributes.Any(a => typeof(OriginalMethodAttribute).IsAssignableFrom(a.AttributeType))).ToArray();
+
+                var destCount = hookMethods.Count();
+                foreach (var hookMethod in hookMethods)
+                {
+                    DestAndOri destAndOri = new DestAndOri();
+                    destAndOri.Obj = monitor;
+                    destAndOri.HookMethod = hookMethod;
+                    if (destCount == 1)
+                    {
+                        destAndOri.OriginalMethod = originalMethods.FirstOrDefault();
+                    }
+                    else
+                    {
+                        var originalMethodName = hookMethod.GetCustomAttribute<HookMethodAttribute>().GetOriginalMethodName(hookMethod);
+                        destAndOri.OriginalMethod = FindMethod(originalMethods, originalMethodName, hookMethod, assemblies);
+                    }
+                    destAndOris.Add(destAndOri);
+                }
+            }
+
+            // InstallInternal 保持你最原始的代码即可，不需要做任何拦截
+            InstallInternal(true, assemblies); 
+        }
 
         /// <summary>
         /// 安装监视器
         /// </summary>
-        public static void Install(string dir = null)
-        {
-            if (installed)
-                return;
-            installed = true;
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            IEnumerable<IMethodHook> monitors;
-            if (string.IsNullOrEmpty(dir))
-            {
-                monitors = assemblies.SelectMany(t => t.GetImplementedObjectsByInterface<IMethodHook>());
-            }
+		public static void Install(string dir = null)
+		{
+			if (installed)
+				return;
+			installed = true;
+			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			IEnumerable<IMethodHook> monitors;
+			if (string.IsNullOrEmpty(dir))
+			{
+				// 只扫描当前程序集(Mcl.Core.dll)中的IMethodHook实现
+				// 避免对目标程序集(WPFLauncher.exe)调用GetTypes()导致过早触发静态构造函数
+				// (如tb类的static readonly字段初始化, 在模块初始化阶段依赖的状态尚未就绪)
+				monitors = new[] { Assembly.GetExecutingAssembly() }
+					.SelectMany(t => t.GetImplementedObjectsByInterface<IMethodHook>());
+			}
             else
             {
                 assemblies = assemblies.Concat(Directory

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using DotNetTranstor;
 using DotNetTranstor.Hookevent;
 using Mcl.Core.Utils;

@@ -44,6 +44,7 @@
     <Compile Include="DotNetTranstor\Hookevent\AccountSelectForm.cs" />
     <Compile Include="DotNetTranstor\Hookevent\LoggerHook.cs" />
     <Compile Include="DotNetTranstor\Hookevent\LoginFix.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\InitHook.cs" />
     <Compile Include="DotNetTranstor\Hookevent\MinecraftPath.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Mods.cs" />
     <Compile Include="DotNetTranstor\Hookevent\mods_inject.cs" />

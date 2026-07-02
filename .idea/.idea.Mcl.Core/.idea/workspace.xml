@@ -11,23 +11,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/BypassFever.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/LoggerHook.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Initialize.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/InitHook.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/LoginFucker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/LoginFix.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/MinecraftPath.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/MinecraftPath.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Mods.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Mods.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/No_MclLog.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/WPFLauncherLogging.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/X19Fucker.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Settings/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Settings/ConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/DebugPrint.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/DebugPrint.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HtmlResource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/HtmlResource.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Initialize.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/MethodHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/MethodHook.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Utils/AppMutexHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Utils/AppMutexHelper.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
@@ -67,6 +60,7 @@
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/EnableBrowseRightClick.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/FixErr.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/LoggerHook.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/MainHook.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/OptimizeDeleteFile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveHyt.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveJavaMemoryLimit.cs" root0="FORCE_HIGHLIGHTING" />
@@ -227,7 +221,9 @@
       <workItem from="1780713213879" duration="221000" />
       <workItem from="1780818538273" duration="3189000" />
       <workItem from="1782884356516" duration="8024000" />
-      <workItem from="1782904445447" duration="3583000" />
+      <workItem from="1782904445447" duration="4846000" />
+      <workItem from="1782989679562" duration="4978000" />
+      <workItem from="1782994698703" duration="1401000" />
     </task>
     <task id="LOCAL-00001" summary="修复&quot;等待用户选择好IP地址&quot;部分可能会因为while无Sleep问题造成系统卡顿">
       <option name="closed" value="true" />
@@ -613,7 +609,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782904551018</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="优化Hook初始化方式, 添加日志输出到文件夹功能, 去除网易我的世界基岩版自动转向 MinecraftBENeteasePath 文件夹问题, 再次修复无法自定义网易我的世界启动器服务器问题: #38">
+      <option name="closed" value="true" />
+      <created>1782908270277</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1782908270277</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -634,7 +638,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="更新版本:4.0.1-Public" />
     <MESSAGE value="更新版本: 4.0.2-Public" />
     <MESSAGE value="主要更新:&#10; - 配置部分大改动(之前写的太夸张了写一个新功能配置需要修改10多个地方才能同步)&#10; - 修改了网易Java内存分配问题(不限制最大内存/最优内存优化)" />
     <MESSAGE value="修复 Issue # 17 的问题&#10;新增异地组网功能(需服务端和客户端都前往设置开启&quot;使用组网模式&quot;功能)&#10;请注意:&#10; - 组网模式目前处于测试阶段,因此功能不稳定(目前仅支持一个服务端和一个客户端, 因为服务端和客户端的ip分配我还没写好)&#10; - 组网模式需要wintun.dll的支持(将wintun.dll放入MCLauncher根目录下, 此文件可在github中Mcl.Core.dll所在的文件夹找到(实在找不到的GitHub上面或许有个搜索工具,试着搜索wintun.dll(当前项目搜索)))" />
@@ -659,7 +662,8 @@
     <MESSAGE value="修复 #32 的 4399 相关登录问题" />
     <MESSAGE value="修复问题: #39 #38 #37" />
     <MESSAGE value="[未实验] 采纳建议: #34" />
-    <option name="LAST_COMMIT_MESSAGE" value="[未实验] 采纳建议: #34" />
+    <MESSAGE value="优化Hook初始化方式, 添加日志输出到文件夹功能, 去除网易我的世界基岩版自动转向 MinecraftBENeteasePath 文件夹问题, 再次修复无法自定义网易我的世界启动器服务器问题: #38" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化Hook初始化方式, 添加日志输出到文件夹功能, 去除网易我的世界基岩版自动转向 MinecraftBENeteasePath 文件夹问题, 再次修复无法自定义网易我的世界启动器服务器问题: #38" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
