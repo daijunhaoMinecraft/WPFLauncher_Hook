@@ -11,20 +11,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/InitHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/MinecraftPath.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/MinecraftPath.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Initialize.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/MethodHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/MethodHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +47,6 @@
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/EnableBrowseRightClick.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/FixErr.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/LoggerHook.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/MainHook.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/OptimizeDeleteFile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveHyt.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/SolveJavaMemoryLimit.cs" root0="FORCE_HIGHLIGHTING" />
