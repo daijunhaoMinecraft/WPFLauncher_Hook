@@ -38,6 +38,8 @@
     <Compile Include="DotNetTranstor\Hookevent\FixErr.cs" />
     <Compile Include="DotNetTranstor\Hookevent\FixFriendShow.cs" />
     <Compile Include="DotNetTranstor\Hookevent\Get_Netease_Error.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\4399AltApi.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\4399AltApiKeyDialog.cs" />
     <Compile Include="DotNetTranstor\Hookevent\AccountEditDialog.cs" />
     <Compile Include="DotNetTranstor\Hookevent\AccountInfo.cs" />
     <Compile Include="DotNetTranstor\Hookevent\AccountManager.cs" />

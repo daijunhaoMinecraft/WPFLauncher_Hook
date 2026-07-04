@@ -160,6 +160,8 @@ namespace DotNetTranstor.Hookevent
                     existing.CookieData = account.CookieData;
                     existing.Username = account.Username;
                     existing.Password = account.Password;
+                    existing.PhoneNumber = account.PhoneNumber;
+                    existing.DeviceId = account.DeviceId;
                     existing.Notes = account.Notes;
                     Save();
                 }
@@ -201,6 +203,24 @@ namespace DotNetTranstor.Hookevent
         public static List<AccountInfo> GetAllSorted()
         {
             return Accounts.OrderByDescending(a => a.LastUsed).ToList();
+        }
+
+        public static string GetAvailableName(string baseName, string ignoredOriginalName = null)
+        {
+            if (string.IsNullOrWhiteSpace(baseName))
+            {
+                baseName = "账号";
+            }
+
+            string baseNameTrimmed = baseName.Trim();
+            string candidate = baseNameTrimmed;
+            int index = 2;
+            while (Accounts.Any(a => a.Name == candidate && a.Name != ignoredOriginalName))
+            {
+                candidate = $"{baseNameTrimmed} ({index})";
+                index++;
+            }
+            return candidate;
         }
     }
 }

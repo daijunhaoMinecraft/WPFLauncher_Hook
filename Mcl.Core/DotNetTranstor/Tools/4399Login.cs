@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Runtime.InteropServices;
 using MicrosoftTranslator.DotNetTranstor.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,6 +25,11 @@ namespace Mcl.Core.DotNetTranstor.Tools
 {
     internal class _4399
     {
+        [DllImport("ocr.dll")]
+        private static extern string ocr4399(string imageBase64);
+
+        public static int OcrMaxAttempts { get; set; } = 5;
+
         // ══════════════════════════════════════════════════════
         // 公开 API
         // ══════════════════════════════════════════════════════
@@ -38,6 +44,7 @@ namespace Mcl.Core.DotNetTranstor.Tools
         {
             Console.WriteLine("[4399PE] ========== 登录开始 ==========");
             Console.WriteLine($"[4399PE] 用户名: {username}");
+            var ocrAttemptCount = 0;
 
             while (true)
             {
@@ -48,14 +55,18 @@ namespace Mcl.Core.DotNetTranstor.Tools
                         .Replace("-", "").ToUpper();
                     Console.WriteLine($"[4399PE] Step 1: captchaId={captchaId}");
 
-                    var captchaResult = await GetAndSolveCaptchaAsync(captchaId)
+                    var captchaResult = await GetAndSolveCaptchaAsync(
+                            captchaId, ocrAttemptCount)
                         .ConfigureAwait(false);
-                    if (string.IsNullOrEmpty(captchaResult))
+                    if (captchaResult == null ||
+                        string.IsNullOrEmpty(captchaResult.Text))
                     {
                         Console.WriteLine("[4399PE] 用户取消验证码输入");
                         return LoginResult.Fail("验证码输入取消");
                     }
-                    Console.WriteLine($"[4399PE] 验证码结果: \"{captchaResult}\"");
+                    if (captchaResult.UsedOcr)
+                        ocrAttemptCount++;
+                    Console.WriteLine($"[4399PE] 验证码结果: \"{captchaResult.Text}\"");
 
                     // ── 2. 获取 OAuth 参数 ─────────────────────
                     Console.WriteLine("[4399PE] Step 2: 获取 OAuth 参数...");
@@ -65,7 +76,8 @@ namespace Mcl.Core.DotNetTranstor.Tools
 
                     // ── 3. POST loginAndAuthorize ──────────────
                     var form = BuildLoginForm(username, password,
-                        captchaResult, captchaId, oauthParams);
+                        captchaResult.Text, captchaResult.CaptchaId,
+                        oauthParams);
                     var loginUrl = OAuth2BaseUrl + "loginAndAuthorize.do" +
                                    "?channel=&sdk=op&sdk_version=" + SdkVersion;
                     Console.WriteLine("[4399PE] Step 3: POST loginAndAuthorize...");
@@ -265,21 +277,40 @@ namespace Mcl.Core.DotNetTranstor.Tools
         // 验证码: 下载 + OCR（支持刷新）
         // ══════════════════════════════════════════════════════
 
-        private static async Task<string> GetAndSolveCaptchaAsync(
-            string initialCaptchaId)
+        private static Task<CaptchaSolveResult> GetAndSolveCaptchaAsync(
+            string initialCaptchaId, int ocrAttemptCount)
         {
             // 下载初始验证码图片
             var base64 = DownloadCaptchaImageSync(initialCaptchaId);
-            if (string.IsNullOrEmpty(base64)) return null;
+            if (string.IsNullOrEmpty(base64)) return Task.FromResult<CaptchaSolveResult>(null);
 
             Console.WriteLine(
                 $"[4399PE][Captcha] 图片大小: {Convert.FromBase64String(base64).Length} bytes");
+
+            var currentCaptchaId = initialCaptchaId;
+            if (ocrAttemptCount < OcrMaxAttempts)
+            {
+                try
+                {
+                    var ocrText = ocr4399(base64)?.Trim();
+                    if (!string.IsNullOrEmpty(ocrText))
+                    {
+                        Console.WriteLine("[4399PE][Captcha] OCR识别成功");
+                        return Task.FromResult(new CaptchaSolveResult(
+                            ocrText, currentCaptchaId, true));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[4399PE][Captcha] OCR失败: {ex.Message}");
+                }
+            }
+
             Console.WriteLine(
                 "[4399PE][Captcha] 调用 OCR 弹窗（支持刷新）...");
 
             // 刷新回调：生成新 captchaId → 下载新图片 → 返回 base64
             // 此回调在 OCR 对话框的 STA 线程上同步执行
-            var currentCaptchaId = initialCaptchaId;
             Func<string> onRefresh = () =>
             {
                 currentCaptchaId = Guid.NewGuid().ToString()
@@ -289,7 +320,28 @@ namespace Mcl.Core.DotNetTranstor.Tools
                 return DownloadCaptchaImageSync(currentCaptchaId);
             };
 
-            return Ocr.GetOcrWithRefresh(base64, onRefresh);
+            var manualText = Ocr.GetOcrWithRefresh(base64, onRefresh);
+            if (string.IsNullOrEmpty(manualText))
+            {
+                return Task.FromResult<CaptchaSolveResult>(null);
+            }
+
+            return Task.FromResult(new CaptchaSolveResult(
+                manualText, currentCaptchaId, false));
+        }
+
+        private sealed class CaptchaSolveResult
+        {
+            public CaptchaSolveResult(string text, string captchaId, bool usedOcr)
+            {
+                Text = text;
+                CaptchaId = captchaId;
+                UsedOcr = usedOcr;
+            }
+
+            public string Text { get; }
+            public string CaptchaId { get; }
+            public bool UsedOcr { get; }
         }
 
         /// <summary>
