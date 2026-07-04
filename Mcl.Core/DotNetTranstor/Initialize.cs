@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,9 @@ using DotNetTranstor;
 using DotNetTranstor.Hookevent;
 using DotNetTranstor.Tools;
 using Mcl.Core.DotNetTranstor.Hookevent;
+using Mcl.Core.DotNetTranstor.Tools;
+using Microsoft.VisualBasic.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager;
 using WPFLauncher.Util;
@@ -43,13 +47,72 @@ namespace Mcl.Core // 替换为你的项目命名空间
 		        
         [DllImport("kernel32.dll")]
         private static extern bool SetConsoleOutputCP(uint wCodePageID);
+        
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool SetConsoleCtrlHandler(ConsoleCtrlDelegate handler, bool add);
 
-        [DllImport("kernel32.dll")]
-        private static extern uint GetConsoleOutputCP();
+        public delegate bool ConsoleCtrlDelegate(int ctrlType);
 
-        [OriginalMethod]
-        public static void MainOriginal()
+        // 控制台事件类型枚举
+        public const int CTRL_C_EVENT = 0;
+        public const int CTRL_BREAK_EVENT = 1;
+        public const int CTRL_CLOSE_EVENT = 2; // 点击 "X" 按钮
+        public const int CTRL_LOGOFF_EVENT = 5;
+        public const int CTRL_SHUTDOWN_EVENT = 6;
+
+        private static ConsoleCtrlDelegate _consoleHandler;
+
+        private static void ExitProcess()
         {
+            Logger.Info("程序即将退出, 正在执行清理操作...");
+            Logger.Info("检查是否进入联机大厅房间");
+            if (Path_Bool.RoomInfo != null)
+            {
+                if (!string.IsNullOrWhiteSpace(Path_Bool.RoomInfo.entity.entity_id))
+                {
+                    Logger.Info("检测到用户尚未退出房间, 正在退出...");
+                    Console.WriteLine("[AutoExit] 正在退出房间...");
+                    var sExitRoomResult = X19Http.RequestX19Api("/online-lobby-room-enter/leave-room",
+                        JsonConvert.SerializeObject(new { room_id = Path_Bool.RoomInfo.entity.entity_id }));
+                    Console.WriteLine($"[AutoExit] 退出房间返回:{Regex.Escape(sExitRoomResult)}");
+                    if (JObject.Parse(sExitRoomResult)["code"].ToObject<int>() == 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("[AutoExit] 退出房间成功!");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"[AutoExit] 退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");
+                        Console.ForegroundColor = ConsoleColor.White;
+                    }
+                }
+            }
+            Logger.Info("通过, 正在退出程序...");
+        }
+        
+        // 2. 拦截事件的执行逻辑
+        private static bool HandlerRoutine(int ctrlType)
+        {
+            if (ctrlType == CTRL_CLOSE_EVENT)
+            {
+                // 在这里运行你的拦截代码！
+                Console.WriteLine("\n[拦截] 检测到控制台正在关闭！");
+            
+                // 运行清理代码、保存数据等操作
+                ExitProcess();
+
+                return true; 
+            }
+
+            return false;
+        }
+        
+        
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            ExitProcess();
         }
 
         
@@ -58,6 +121,8 @@ namespace Mcl.Core // 替换为你的项目命名空间
         [ModuleInitializer]
         internal static void InitializeOnLoad()
         {
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
+
             if (!File.Exists("DisableConsole"))
             {
                 // 分配一个新的控制台
@@ -79,264 +144,14 @@ namespace Mcl.Core // 替换为你的项目命名空间
                 writer.AutoFlush = true;
                 Console.SetOut(writer);
                 Console.CursorVisible = false;
+                
+                // 实例化委托并保持引用
+                _consoleHandler = new ConsoleCtrlDelegate(HandlerRoutine);
+        
+                // 注册控制台事件处理器
+                SetConsoleCtrlHandler(_consoleHandler, true);
             }
             MethodHook.InstallTypes(new[] { typeof(InitHook) });
-        }
-        
-        
-        private static void InitIdentity()
-        {
-            string mac = Get_MacAddr();
-            string randomMac = GenerateRandomMacAddress();
-            Path_Bool.Mac_Addr = mac;
-            Path_Bool.Random_Mac_Addr = ConvertToOriginalFormat(randomMac);
-
-            Console.WriteLine($"[Identity] Mac: {mac} -> Random: {randomMac}");
-            
-            // 路径设置
-            // string javaPath = Path.Combine(tb.n, "Game", ".minecraft");
-            // Directory.CreateDirectory(javaPath);
-            // Path_Bool.JavaGamePath = javaPath;
-            // WPFLauncher.Common.azf<WPFLauncher.Manager.Configuration.axi>.Instance.App.JavaGamePath = javaPath;
-        }
-
-        // --- 工具函数 (保持不变) ---
-        public static string GenerateRandomMacAddress() {
-            Random r = new Random();
-            byte[] b = new byte[6]; r.NextBytes(b);
-            b[0] = (byte)(b[0] & 254);
-            return string.Join(":", b.Select(x => x.ToString("X2")));
-        }
-        public static string ConvertToOriginalFormat(string m) => m.Replace(":", "");
-        public static string Get_MacAddr() {
-            try { return NetworkInterface.GetAllNetworkInterfaces()
-                .FirstOrDefault()?.GetPhysicalAddress().ToString() ?? "000000000000"; }
-            catch { return "000000000000"; }
-        }
-        
-        private static void ShowConfigWindow()
-        {
-            var win = new Window {
-                Title = "设置",
-                Width = 420, Height = 600,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                Background = Brushes.White,
-                FontFamily = new FontFamily("Segoe UI, Microsoft YaHei"),
-                ResizeMode = ResizeMode.NoResize,
-                WindowStyle = WindowStyle.SingleBorderWindow,
-                Topmost = Path_Bool.IsWindowTopMost
-            };
-
-            var mainGrid = new Grid();
-            mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-            mainGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(70) });
-
-            var scroll = new ScrollViewer { VerticalScrollBarVisibility = ScrollBarVisibility.Auto, Padding = new Thickness(20, 10, 20, 10) };
-            var container = new StackPanel();
-            scroll.Content = container;
-            Grid.SetRow(scroll, 0);
-
-            var topMostCheck = new CheckBox
-            {
-                Content = "置顶",
-                HorizontalAlignment = HorizontalAlignment.Right,
-                IsChecked = Path_Bool.IsWindowTopMost,
-                Margin = new Thickness(0, 0, 0, 8)
-            };
-            topMostCheck.Checked += (s, e) => win.Topmost = true;
-            topMostCheck.Unchecked += (s, e) => win.Topmost = false;
-            container.Children.Add(topMostCheck);
-
-            var controlMap = new Dictionary<string, FrameworkElement>();
-            var categories = ConfigManager.Registry.Select(x => x.Category).Distinct();
-
-            foreach (var cat in categories)
-            {
-                // 分类标题
-                container.Children.Add(new TextBlock { 
-                    Text = cat, 
-                    FontSize = 14, 
-                    FontWeight = FontWeights.Bold, 
-                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#444")),
-                    Margin = new Thickness(0, 15, 0, 8)
-                });
-
-                // 分类卡片区域 (简洁线条风格)
-                var card = new Border {
-                    BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EEE")),
-                    BorderThickness = new Thickness(1),
-                    CornerRadius = new CornerRadius(6),
-                    Padding = new Thickness(12),
-                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FAFAFA")),
-                    Margin = new Thickness(0, 0, 0, 10)
-                };
-
-                var cardContent = new StackPanel();
-                foreach (var item in ConfigManager.Registry.Where(x => x.Category == cat))
-                {
-                    var field = typeof(Path_Bool).GetField(item.Key);
-                    var val = field.GetValue(null);
-
-                    if (item.FieldType == typeof(bool))
-                    {
-                        var cb = new CheckBox {
-                            Content = item.Description,
-                            IsChecked = (bool)val,
-                            Margin = new Thickness(0, 6, 0, 6),
-                            FontSize = 13
-                        };
-                        cardContent.Children.Add(cb);
-                        controlMap[item.Key] = cb;
-                    }
-                    else
-                    {
-                        var sp = new StackPanel { Margin = new Thickness(0, 6, 0, 6) };
-                        sp.Children.Add(new TextBlock { Text = item.Description, FontSize = 12, Foreground = Brushes.Gray, Margin = new Thickness(0, 0, 0, 4) });
-                        var tb = new TextBox { 
-                            Text = val?.ToString(), 
-                            Height = 28, 
-                            VerticalContentAlignment = VerticalAlignment.Center,
-                            Padding = new Thickness(5, 0, 5, 0),
-                            Background = Brushes.White,
-                            BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DDD"))
-                        };
-                        sp.Children.Add(tb);
-                        cardContent.Children.Add(sp);
-                        controlMap[item.Key] = tb;
-                    }
-                }
-                card.Child = cardContent;
-                container.Children.Add(card);
-            }
-
-            // 底部保存按钮区
-            var footer = new Border { 
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F3F3F3")),
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EEE")),
-                BorderThickness = new Thickness(0, 1, 0, 0)
-            };
-            var btnSave = new Button {
-                Content = "保存并应用配置",
-                Width = 160, Height = 36,
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0078D4")), // Windows 蓝色
-                Foreground = Brushes.White,
-                BorderThickness = new Thickness(0),
-                FontWeight = FontWeights.SemiBold
-            };
-            
-            // 悬停变色
-            btnSave.MouseEnter += (s, e) => btnSave.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#005A9E"));
-            btnSave.MouseLeave += (s, e) => btnSave.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#0078D4"));
-
-            btnSave.Click += (s, e) => {
-                foreach (var item in ConfigManager.Registry)
-                {
-                    var field = typeof(Path_Bool).GetField(item.Key);
-                    var ctrl = controlMap[item.Key];
-                    if (ctrl is CheckBox cb) field.SetValue(null, cb.IsChecked);
-                    else if (ctrl is TextBox tb) field.SetValue(null, Convert.ChangeType(tb.Text, item.FieldType));
-                }
-                bool error = false;
-                // 检查基岩版路径合法性
-                try
-                {
-                    Path.GetFullPath(Path_Bool.BedrockPath);
-                }
-                catch (Exception)
-                {
-                    MessageBox.Show("请输入正确的基岩版路径!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                    error = true;
-                }
-                if (!error)
-                {
-                    ConfigManager.Save();
-
-                    // 如果启用了模组注入，打开 ModsInject 文件夹并提示
-                    if (Path_Bool.EnableModsInject)
-                    {
-                        string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
-                        if (!Directory.Exists(modsInjectPath))
-                        {
-                            Directory.CreateDirectory(modsInjectPath);
-                        }
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-                        Console.WriteLine($"[ModsInject] {modsInjectPath}");
-                        Console.ResetColor();
-                        System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
-                    }
-
-                    win.Close();
-                }
-            };
-
-            footer.Child = btnSave;
-            Grid.SetRow(footer, 1);
-
-            mainGrid.Children.Add(scroll);
-            mainGrid.Children.Add(footer);
-            win.Content = mainGrid;
-            win.ShowDialog();
-        }
-
-        private static void ApplyRuntimeSettings()
-        {
-            // 这里放你原本在 Save 按钮里的那些初始化逻辑
-            if (Path_Bool.IsStartWebSocket)
-            {
-                Path_Bool.Default_HttpAddress = $"http://127.0.0.1:{Path_Bool.HttpPort}/";
-                var server = new SimpleHttpServer(); 
-                Task.Run(() => server.Start(Path_Bool.Default_HttpAddress));
-                Console.WriteLine($"[Web] 服务器已启动: {Path_Bool.Default_HttpAddress}");
-            }
-            
-            // Mac 地址逻辑
-            Path_Bool.Mac_Addr = Get_MacAddr();
-            Path_Bool.Random_Mac_Addr = ConvertToOriginalFormat(GenerateRandomMacAddress());
-            
-            // ... 其余逻辑保持不变 ...
-        }
-
-        private static void PrintStatus()
-        {
-            // Console.ForegroundColor = ConsoleColor.Green;
-            // Console.WriteLine("========================================");
-            // Console.WriteLine($"  X19Fucker v{Path_Bool.Version}  ");
-            // Console.WriteLine("  Status: System Hooked Successfully    ");
-            // try
-            // {
-            //     HttpClient httpClient = new HttpClient();
-            //     httpClient.DefaultRequestHeaders.Clear();
-            //     HttpResponseMessage messageData = httpClient.GetAsync("https://gitee.com/dai-junhao-123/app-config/raw/master/HookConfig/AppInfo.json").Result;
-            //     JObject messageJson = JObject.Parse(messageData.Content.ReadAsStringAsync().Result);
-            //     Console.WriteLine($"公告:\n{messageJson["announcement"]}");
-            // }
-            // catch (Exception e)
-            // {
-            //     Console.WriteLine($"[ERROR] 获取公告失败:{e} \n {e.StackTrace}");
-            // }
-            // Console.WriteLine("========================================");
-            // Console.ResetColor();
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine("\u2588\u2588\u2557    \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2557  \u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557  \u2588\u2588\u2557\n\u2588\u2588\u2551    \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551 \u2588\u2588\u2554\u255d\n\u2588\u2588\u2551 \u2588\u2557 \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2554\u255d \n\u2588\u2588\u2551\u2588\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u255d \u2588\u2588\u2554\u2550\u2550\u255d  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2588\u2588\u2557 \n\u255a\u2588\u2588\u2588\u2554\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551     \u2588\u2588\u2551     \u2588\u2588\u2551  \u2588\u2588\u2551\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551  \u2588\u2588\u2557\n \u255a\u2550\u2550\u255d\u255a\u2550\u2550\u255d \u255a\u2550\u255d     \u255a\u2550\u255d     \u255a\u2550\u255d  \u255a\u2550\u255d \u255a\u2550\u2550\u2550\u2550\u2550\u255d  \u255a\u2550\u2550\u2550\u2550\u2550\u255d \u255a\u2550\u255d  \u255a\u2550\u255d\n                                                            ");
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("[INFO]控制台输出成功启动!");
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\n当前Hook版本:{Path_Bool.Version}\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao");
-            try
-            {
-                HttpClient httpClient = new HttpClient();
-                httpClient.Timeout = new TimeSpan(0, 0, 3);
-                httpClient.DefaultRequestHeaders.Clear();
-                HttpResponseMessage messageData = httpClient.GetAsync("https://gitee.com/dai-junhao-123/app-config/raw/master/HookConfig/AppInfo.json").Result;
-                JObject messageJson = JObject.Parse(messageData.Content.ReadAsStringAsync().Result);
-                Console.WriteLine($"公告:\n{messageJson["announcement"]}");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"[ERROR] 获取公告失败:{e} \n {e.StackTrace}");
-            }
-            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }
