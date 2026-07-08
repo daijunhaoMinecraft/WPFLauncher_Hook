@@ -211,14 +211,7 @@
       <workItem from="1782989679562" duration="4978000" />
       <workItem from="1782994698703" duration="1401000" />
       <workItem from="1783166649287" duration="5071000" />
-    </task>
-    <task id="LOCAL-00004" summary="Test">
-      <option name="closed" value="true" />
-      <created>1764473109138</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1764473109138</updated>
+      <workItem from="1783518409903" duration="301000" />
     </task>
     <task id="LOCAL-00005" summary="修复获取网易服务器列表问题">
       <option name="closed" value="true" />
@@ -604,7 +597,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783171346038</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="更好最终版本, 更新内容: 禁用网易更新, 发布完Release后项目直接Archive仓库了">
+      <option name="closed" value="true" />
+      <created>1783518566610</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1783518566611</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -625,7 +626,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复网易我的世界启动器自身问题: 好友后在线启动器仍然显示离线问题&#10;没错网易写的就是这么离谱&#10;主要出现在: 当自己上线了,而好友之后上线,然后出现自己这边显示好友没有在线的问题" />
     <MESSAGE value="推送新版本: 4.0.3-DLL-Public" />
     <MESSAGE value="更新构建方法" />
     <MESSAGE value="更新构建方法_1" />
@@ -650,7 +650,8 @@
     <MESSAGE value="更新版本号以发布正式版本" />
     <MESSAGE value="新增: 4399小号自动获取(4399.nekoinsi.de), 4399登录验证码自动识别(需在网易我的世界启动器的目录下添加WmCode.dll, OcrProxy.dll, ocr.dll)" />
     <MESSAGE value="修复部分4399账号无法购买物品问题, 增加退出事件(修复因关闭不当造成的联机大厅无法进入房间问题)" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复部分4399账号无法购买物品问题, 增加退出事件(修复因关闭不当造成的联机大厅无法进入房间问题)" />
+    <MESSAGE value="更好最终版本, 更新内容: 禁用网易更新, 发布完Release后项目直接Archive仓库了" />
+    <option name="LAST_COMMIT_MESSAGE" value="更好最终版本, 更新内容: 禁用网易更新, 发布完Release后项目直接Archive仓库了" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

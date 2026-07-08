@@ -4,6 +4,11 @@
 
 <p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
+# 2026/07/08 发布最后一个稳定版本, 停止更新
+**原因: 收到来自网易的警告**<br/>
+
+![Image](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/main/image/PixPin_2026-07-08_21-54-46.png)<br/>
+
 # 下载方式
 | 下载方式 | 描述                                                       |
 | --- |----------------------------------------------------------|
