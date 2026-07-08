@@ -10,18 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/AuthenticationFix.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Tools/SauthJsonRandomGenerator.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Hookevent/Path_Bool.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/DotNetTranstor/Initialize.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -221,15 +210,7 @@
       <workItem from="1782904445447" duration="4846000" />
       <workItem from="1782989679562" duration="4978000" />
       <workItem from="1782994698703" duration="1401000" />
-      <workItem from="1783166649287" duration="4577000" />
-    </task>
-    <task id="LOCAL-00003" summary="缩短启动时间">
-      <option name="closed" value="true" />
-      <created>1764473089334</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1764473089334</updated>
+      <workItem from="1783166649287" duration="5071000" />
     </task>
     <task id="LOCAL-00004" summary="Test">
       <option name="closed" value="true" />
@@ -615,7 +596,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783168723264</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="修复部分4399账号无法购买物品问题, 增加退出事件(修复因关闭不当造成的联机大厅无法进入房间问题)">
+      <option name="closed" value="true" />
+      <created>1783171346038</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1783171346038</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -636,7 +625,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复 Issue # 17 的问题&#10;新增异地组网功能(需服务端和客户端都前往设置开启&quot;使用组网模式&quot;功能)&#10;请注意:&#10; - 组网模式目前处于测试阶段,因此功能不稳定(目前仅支持一个服务端和一个客户端, 因为服务端和客户端的ip分配我还没写好)&#10; - 组网模式需要wintun.dll的支持(将wintun.dll放入MCLauncher根目录下, 此文件可在github中Mcl.Core.dll所在的文件夹找到(实在找不到的GitHub上面或许有个搜索工具,试着搜索wintun.dll(当前项目搜索)))" />
     <MESSAGE value="修复网易我的世界启动器自身问题: 好友后在线启动器仍然显示离线问题&#10;没错网易写的就是这么离谱&#10;主要出现在: 当自己上线了,而好友之后上线,然后出现自己这边显示好友没有在线的问题" />
     <MESSAGE value="推送新版本: 4.0.3-DLL-Public" />
     <MESSAGE value="更新构建方法" />
@@ -661,7 +649,8 @@
     <MESSAGE value="优化Hook初始化方式, 添加日志输出到文件夹功能, 去除网易我的世界基岩版自动转向 MinecraftBENeteasePath 文件夹问题, 再次修复无法自定义网易我的世界启动器服务器问题: #38" />
     <MESSAGE value="更新版本号以发布正式版本" />
     <MESSAGE value="新增: 4399小号自动获取(4399.nekoinsi.de), 4399登录验证码自动识别(需在网易我的世界启动器的目录下添加WmCode.dll, OcrProxy.dll, ocr.dll)" />
-    <option name="LAST_COMMIT_MESSAGE" value="新增: 4399小号自动获取(4399.nekoinsi.de), 4399登录验证码自动识别(需在网易我的世界启动器的目录下添加WmCode.dll, OcrProxy.dll, ocr.dll)" />
+    <MESSAGE value="修复部分4399账号无法购买物品问题, 增加退出事件(修复因关闭不当造成的联机大厅无法进入房间问题)" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复部分4399账号无法购买物品问题, 增加退出事件(修复因关闭不当造成的联机大厅无法进入房间问题)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
