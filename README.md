@@ -8,6 +8,8 @@
 **原因: 收到来自网易的警告**<br/>
 
 ![Image](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/main/image/PixPin_2026-07-08_21-54-46.png)<br/>
+<img width="1220" height="985" alt="115724a4120f30f13b77dea7301d1114" src="https://github.com/user-attachments/assets/ae82b972-d3c3-4673-9418-4928e672903e" /><br/>
+现在时间: 2026/07/09 10:31:22
 
 # 下载方式
 | 下载方式 | 描述                                                       |
