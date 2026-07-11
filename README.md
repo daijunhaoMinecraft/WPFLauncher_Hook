@@ -5,8 +5,7 @@
 <p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
 ~~2026/07/08 发布最后一个稳定版本, 停止更新~~<br/>
-<img width="1220" height="985" alt="115724a4120f30f13b77dea7301d1114" src="https://github.com/user-attachments/assets/ae82b972-d3c3-4673-9418-4928e672903e" /><br/>
-现在时间: 2026/07/09 10:31:22
+突然想起来这不是网易的律师函, 而是被恶意举报了<br/>
 
 # 下载方式
 | 下载方式 | 描述                                                       |
