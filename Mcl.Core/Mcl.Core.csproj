@@ -31,6 +31,7 @@
     <Compile Include="DotNetTranstor\Hookevent\BypassForbidden.cs" />
     <Compile Include="DotNetTranstor\Hookevent\BypassUpdate.cs" />
     <Compile Include="DotNetTranstor\Hookevent\ChangeIPForm.cs" />
+    <Compile Include="DotNetTranstor\Hookevent\DirectoryEvent.cs" />
     <Compile Include="DotNetTranstor\Hookevent\DisableClearProcess.cs" />
     <Compile Include="DotNetTranstor\Hookevent\disableCPPLow.cs" />
     <Compile Include="DotNetTranstor\Hookevent\DownloadEvent.cs" />

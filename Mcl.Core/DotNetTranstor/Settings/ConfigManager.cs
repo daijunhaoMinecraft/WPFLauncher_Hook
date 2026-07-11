@@ -33,6 +33,12 @@ namespace DotNetTranstor.Hookevent
             new ConfigEntry { Key = "IsStartWebSocket", Description = "启用Web服务器", FieldType = typeof(bool), Category = "基础设置" },
             new ConfigEntry { Key = "HttpPort", Description = "Web服务器端口", FieldType = typeof(int), Category = "基础设置" },
             
+            // Java启动设置
+            new ConfigEntry { Key = "KeepOffDeleteLastResourcepacks", Description = "阻止网易删除resourcepacks文件夹", FieldType = typeof(bool), Category = "Java启动设置" },
+            new ConfigEntry { Key = "KeepOffDeleteLastConfig", Description = "阻止网易删除config文件夹", FieldType = typeof(bool), Category = "Java启动设置" },
+            new ConfigEntry { Key = "KeepOffDeleteLastShaderPacks", Description = "阻止网易删除shaderpacks文件夹", FieldType = typeof(bool), Category = "Java启动设置" },
+            
+            
             // 联机大厅设置
             new ConfigEntry { Key = "MaxRoomCount", Description = "最大房间数量", FieldType = typeof(int), Category = "联机大厅设置" },
             new ConfigEntry { Key = "IsCustomIP", Description = "自定义IP进入服务器", FieldType = typeof(bool), Category = "联机大厅设置" },
