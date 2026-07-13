@@ -1,6 +1,5 @@
 using System.Drawing;
 using System.Windows.Forms;
-using Mcl.Core.Dotnetdetour.Hookevent;
 using Mcl.Core.Dotnetdetour.Var;
 
 namespace Mcl.Core.Dotnetdetour.Window
@@ -21,13 +20,13 @@ namespace Mcl.Core.Dotnetdetour.Window
             this.Size = new Size(350, 250);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.TopMost = Path_Bool.IsWindowTopMost;
+            this.TopMost = WpfConfig.IsWindowTopMost;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = Path_Bool.IsWindowTopMost,
+                Checked = WpfConfig.IsWindowTopMost,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;

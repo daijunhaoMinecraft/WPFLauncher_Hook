@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Mcl.Core.Dotnetdetour;
-using Mcl.Core.Dotnetdetour.Hookevent;
+using Mcl.Core.Dotnetdetour.HookList;
 using Mcl.Core.Dotnetdetour.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -49,14 +49,14 @@ public static class HookBootstrapper
     {
         Logger.Info("程序即将退出, 正在执行清理操作...");
         Logger.Info("检查是否进入联机大厅房间");
-        if (Path_Bool.RoomInfo != null)
+        if (WpfConfig.RoomInfo != null)
         {
-            if (!string.IsNullOrWhiteSpace(Path_Bool.RoomInfo.entity.entity_id))
+            if (!string.IsNullOrWhiteSpace(WpfConfig.RoomInfo.entity.entity_id))
             {
                 Logger.Info("检测到用户尚未退出房间, 正在退出...");
                 Console.WriteLine("[AutoExit] 正在退出房间...");
                 var sExitRoomResult = X19Http.RequestX19Api("/online-lobby-room-enter/leave-room",
-                    JsonConvert.SerializeObject(new { room_id = Path_Bool.RoomInfo.entity.entity_id }));
+                    JsonConvert.SerializeObject(new { room_id = WpfConfig.RoomInfo.entity.entity_id }));
                 Console.WriteLine($"[AutoExit] 退出房间返回:{Regex.Escape(sExitRoomResult)}");
                 if (JObject.Parse(sExitRoomResult)["code"].ToObject<int>() == 0)
                 {

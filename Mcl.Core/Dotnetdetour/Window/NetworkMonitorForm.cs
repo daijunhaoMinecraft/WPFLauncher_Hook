@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using Mcl.Core.Dotnetdetour.Hookevent;
 using Mcl.Core.Dotnetdetour.Model;
 using Mcl.Core.Dotnetdetour.Tools.Network;
 using Mcl.Core.Dotnetdetour.Var;
@@ -38,7 +37,7 @@ namespace Mcl.Core.Dotnetdetour.Window
             _toolTip.AutoPopDelay = 5000; // 显示持续时间
 
             this.Text = "异地组网状态查看器 - Mcl Network Monitor";
-            this.TopMost = Path_Bool.IsWindowTopMost;
+            this.TopMost = WpfConfig.IsWindowTopMost;
             this.Size = new Size(900, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.White;
@@ -189,7 +188,7 @@ namespace Mcl.Core.Dotnetdetour.Window
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = Path_Bool.IsWindowTopMost,
+                Checked = WpfConfig.IsWindowTopMost,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;

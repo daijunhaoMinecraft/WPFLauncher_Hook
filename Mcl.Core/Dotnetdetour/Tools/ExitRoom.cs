@@ -12,7 +12,7 @@ namespace Mcl.Core.Dotnetdetour.Tools;
 
 public class ExitRoom // 退出此前进入过的房间 By Daijunhao
 {
-    public static bool autoExitRoom()
+    public static bool AutoExitRoom()
     {
         // 获取所有房间
         var instance = azf<aum>.Instance;

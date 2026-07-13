@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
-using Mcl.Core.Dotnetdetour.Hookevent;
 using Mcl.Core.Dotnetdetour.Var;
 
 namespace Mcl.Core.Dotnetdetour.Tools;
@@ -40,7 +39,7 @@ public static class LocalProxyListener
                     // 2. 获取正确的 PeerId (优先使用 TargetPeerId)
                     var pid = WebRtcVar.TargetPeerId;
 
-                    if (Path_Bool.IsDebug) Console.WriteLine($"[LocalProxy] 新连接! ConnId={connId}, Target={pid}");
+                    if (WpfConfig.IsDebug) Console.WriteLine($"[LocalProxy] 新连接! ConnId={connId}, Target={pid}");
 
                     // 3. 必须确保发送握手（如果这个 Peer 还没标记为 Mux）
                     if (!WebRtcVar.PeerSupportMultiplex.ContainsKey(pid) || pid == "Any") SendMultiplexHandshake(pid);
@@ -70,7 +69,7 @@ public static class LocalProxyListener
                 sMethod.Invoke(null,
                     new object[] { ptr.Value, MultiplexProto.MagicHandshake, MultiplexProto.MagicHandshake.Length });
                 WebRtcVar.PeerSupportMultiplex[pid] = true;
-                if (Path_Bool.IsDebug) Console.WriteLine($"[LocalProxy] 成功向 {pid} 发送 Mux 握手信号");
+                if (WpfConfig.IsDebug) Console.WriteLine($"[LocalProxy] 成功向 {pid} 发送 Mux 握手信号");
             }
             catch (Exception ex)
             {

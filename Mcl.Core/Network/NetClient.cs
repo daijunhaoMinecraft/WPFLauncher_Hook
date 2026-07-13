@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Mcl.Core.Dotnetdetour;
 using Mcl.Core.Extensions;
 using Mcl.Core.Network.Interface;
 
@@ -20,6 +21,9 @@ namespace Mcl.Core.Network
 		// Token: 0x060000CE RID: 206 RVA: 0x00003DB4 File Offset: 0x00001FB4
 		public virtual NetRequestAsyncHandle ExecuteAsync(INetRequest request, Action<INetResponse, NetRequestAsyncHandle> callback)
 		{
+			var uri = new Uri(new Uri(this.BaseUrl.ToString()), request.Resource);
+			WpfConfig.DefaultLogger.Info($"[AsyncRequest] url: {uri}");
+
 			string name = Enum.GetName(typeof(Method), request.Method);
 			Method method = request.Method;
 			NetRequestAsyncHandle netRequestAsyncHandle;

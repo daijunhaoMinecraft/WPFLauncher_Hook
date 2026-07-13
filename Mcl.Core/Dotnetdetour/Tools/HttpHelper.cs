@@ -14,7 +14,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using Mcl.Core.Dotnetdetour.Hookevent;
 using Mcl.Core.Dotnetdetour.Settings;
 using Mcl.Core.Dotnetdetour.Var;
 using Newtonsoft.Json;
@@ -69,7 +68,7 @@ public class SimpleHttpServer
         }
 
         // 使用配置中的HTTP端口
-        var httpAddress = $"http://127.0.0.1:{Path_Bool.HttpPort}/";
+        var httpAddress = $"http://127.0.0.1:{WpfConfig.HttpPort}/";
 
         _httpListener = new HttpListener();
         _httpListener.Prefixes.Add(httpAddress); // 使用配置的地址
@@ -255,7 +254,7 @@ public class SimpleHttpServer
             dynamic serverResponse = new ExpandoObject();
             serverResponse.error = 0;
             serverResponse.isEnabled = true;
-            serverResponse.patterns = (Path_Bool.RegexBlacklist ?? new List<string>()).Select(pattern => new
+            serverResponse.patterns = (WpfConfig.RegexBlacklist ?? new List<string>()).Select(pattern => new
             {
                 pattern,
                 isValid = true // 假设所有模式都是有效的
@@ -266,13 +265,13 @@ public class SimpleHttpServer
         else if (context.Request.Url.AbsolutePath == apiRequestList[1])
         {
             // 新的API端点，返回规范化的用户黑名单列表，并包含用户详情
-            if (Path_Bool.EnableRoomBlacklist)
+            if (WpfConfig.EnableRoomBlacklist)
             {
                 var blacklistUsers = new List<object>();
-                if (Path_Bool.RoomBlacklist != null && Path_Bool.RoomBlacklist.Count > 0)
+                if (WpfConfig.RoomBlacklist != null && WpfConfig.RoomBlacklist.Count > 0)
                     try
                     {
-                        var userDetails = X19Http.Get_Players_Info(Path_Bool.RoomBlacklist);
+                        var userDetails = X19Http.Get_Players_Info(WpfConfig.RoomBlacklist);
                         if (userDetails != null && userDetails["entities"] != null)
                             foreach (var user in userDetails["entities"])
                                 blacklistUsers.Add(new
@@ -288,7 +287,7 @@ public class SimpleHttpServer
                         var foundUserIds = new HashSet<string>();
                         foreach (var user in blacklistUsers) foundUserIds.Add(((dynamic)user).userId.ToString());
 
-                        foreach (var userId in Path_Bool.RoomBlacklist)
+                        foreach (var userId in WpfConfig.RoomBlacklist)
                             if (!foundUserIds.Contains(userId))
                                 blacklistUsers.Add(new
                                 {
@@ -301,7 +300,7 @@ public class SimpleHttpServer
                     catch (Exception ex)
                     {
                         // 如果获取用户详情失败，至少返回基本ID信息
-                        foreach (var userId in Path_Bool.RoomBlacklist)
+                        foreach (var userId in WpfConfig.RoomBlacklist)
                             blacklistUsers.Add(new
                             {
                                 userId,
@@ -379,7 +378,7 @@ public class SimpleHttpServer
                     SendResponse = get_result;
                 }
 
-                if (Path_Bool.IsDebug) DebugPrint.LogDebug_NoColorSelect("[HTTP][POST]请求返回内容:" + get_result);
+                if (WpfConfig.IsDebug) DebugPrint.LogDebug_NoColorSelect("[HTTP][POST]请求返回内容:" + get_result);
             }
             else if (context.Request.HttpMethod == "GET")
             {
@@ -430,7 +429,7 @@ public class SimpleHttpServer
                         SendResponse = resultContent;
                     }
 
-                    if (Path_Bool.IsDebug) DebugPrint.LogDebug_NoColorSelect("[HTTP][POST]请求返回内容:" + resultContent);
+                    if (WpfConfig.IsDebug) DebugPrint.LogDebug_NoColorSelect("[HTTP][POST]请求返回内容:" + resultContent);
                     IsPostFlag = true;
                 }
 
@@ -452,7 +451,7 @@ public class SimpleHttpServer
                         SendResponse = get_result;
                     }
 
-                    if (Path_Bool.IsDebug) DebugPrint.LogDebug_NoColorSelect("[HTTP][GET]请求返回内容:" + get_result);
+                    if (WpfConfig.IsDebug) DebugPrint.LogDebug_NoColorSelect("[HTTP][GET]请求返回内容:" + get_result);
                 }
             }
 
@@ -569,16 +568,16 @@ public class SimpleHttpServer
                         JsonConvert.SerializeObject(azf<axi>.Instance));
                 break;
             case "/get_roominfo":
-                if (Path_Bool.RoomInfo != null)
+                if (WpfConfig.RoomInfo != null)
                 {
                     // 创建更完整的房间信息响应
                     dynamic response = new ExpandoObject();
 
                     // 设置基本房间信息
-                    response.roomInfo = Path_Bool.RoomInfo;
+                    response.roomInfo = WpfConfig.RoomInfo;
 
                     // 提取和设置常用属性
-                    var entity = Path_Bool.RoomInfo.entity;
+                    var entity = WpfConfig.RoomInfo.entity;
                     response.roomId = entity.entity_id;
                     response.roomName = entity.room_name;
                     response.ownerId = entity.owner_id;
@@ -587,12 +586,12 @@ public class SimpleHttpServer
                     response.gameStatus = entity.game_status;
                     response.version = entity.version;
                     response.hasPassword = entity.password != null && entity.password.ToString() != "0";
-                    response.password = Path_Bool.Password;
+                    response.password = WpfConfig.Password;
                     response.visibility = entity.visibility;
                     response.allowSave = entity.allow_save;
                     response.resId = entity.res_id;
-                    SendResponse.UserJoinTime = Path_Bool.JoinOrCreateTime;
-                    response.UserInputPassword = Path_Bool.Password;
+                    SendResponse.UserJoinTime = WpfConfig.JoinOrCreateTime;
+                    response.UserInputPassword = WpfConfig.Password;
 
                     // 设置当前用户ID
                     response.currentUserId = azf<arg>.Instance.User.Id;
@@ -601,8 +600,8 @@ public class SimpleHttpServer
                     response.isOwner = entity.owner_id == azf<arg>.Instance.User.Id;
 
                     // 房间黑名单配置信息
-                    response.isRoomBlacklistEnabled = Path_Bool.EnableRoomBlacklist;
-                    response.isRegexBlacklistEnabled = Path_Bool.EnableRoomBlacklist;
+                    response.isRoomBlacklistEnabled = WpfConfig.EnableRoomBlacklist;
+                    response.isRegexBlacklistEnabled = WpfConfig.EnableRoomBlacklist;
 
                     // 获取并设置玩家信息
                     if (entity.fids != null && entity.fids.Count > 0)
@@ -634,8 +633,8 @@ public class SimpleHttpServer
                                 playerData.avatarUrl = avatarUrl;
                                 playerData.role = userId == entity.owner_id ? "房主" : "成员";
                                 playerData.ident = userId == entity.owner_id ? 1 : 0;
-                                playerData.inBlacklist = Path_Bool.RoomBlacklist != null &&
-                                                         Path_Bool.RoomBlacklist.Contains(userId);
+                                playerData.inBlacklist = WpfConfig.RoomBlacklist != null &&
+                                                         WpfConfig.RoomBlacklist.Contains(userId);
                                 playerData.frameId = frameId;
                                 playerData.gender = gender;
                                 playerData.signature = signature;
@@ -655,14 +654,14 @@ public class SimpleHttpServer
                     response.ownerInfo = JObject.Parse(ownerInfoResponse);
 
                     // 获取房间黑名单
-                    if (Path_Bool.EnableRoomBlacklist)
-                        response.roomBlacklist = Path_Bool.RoomBlacklist;
+                    if (WpfConfig.EnableRoomBlacklist)
+                        response.roomBlacklist = WpfConfig.RoomBlacklist;
                     else
                         response.roomBlacklist = new List<string>();
 
                     // 获取正则黑名单
-                    if (Path_Bool.EnableRoomBlacklist)
-                        response.regexBlacklist = Path_Bool.RegexBlacklist;
+                    if (WpfConfig.EnableRoomBlacklist)
+                        response.regexBlacklist = WpfConfig.RegexBlacklist;
                     else
                         response.regexBlacklist = new List<string>();
 
@@ -689,34 +688,34 @@ public class SimpleHttpServer
                 break;
             case "/get_roominfo_fast":
                 // 设置基本房间信息
-                SendResponse.roomInfo = Path_Bool.RoomInfo;
+                SendResponse.roomInfo = WpfConfig.RoomInfo;
 
-                // 提取和设置常用属性 Path_Bool.RoomInfo.entity;
-                SendResponse.roomId = Path_Bool.RoomInfo.entity.entity_id;
-                SendResponse.roomName = Path_Bool.RoomInfo.entity.room_name;
-                SendResponse.ownerId = Path_Bool.RoomInfo.entity.owner_id;
-                SendResponse.maxPlayers = Path_Bool.RoomInfo.entity.max_count;
-                SendResponse.currentPlayers = Path_Bool.RoomInfo.entity.cur_num;
-                SendResponse.gameStatus = Path_Bool.RoomInfo.entity.game_status;
-                SendResponse.version = Path_Bool.RoomInfo.entity.version;
-                SendResponse.hasPassword = Path_Bool.RoomInfo.entity.password != null &&
-                                           Path_Bool.RoomInfo.entity.password.ToString() != "0";
-                SendResponse.password = Path_Bool.Password;
-                SendResponse.visibility = Path_Bool.RoomInfo.entity.visibility;
-                SendResponse.allowSave = Path_Bool.RoomInfo.entity.allow_save;
-                SendResponse.resId = Path_Bool.RoomInfo.entity.res_id;
-                SendResponse.UserInputPassword = Path_Bool.Password;
-                SendResponse.UserJoinTime = Path_Bool.JoinOrCreateTime;
-                SendResponse.PlayerList = Path_Bool.RoomPlayerList;
+                // 提取和设置常用属性 WpfConfig.RoomInfo.entity;
+                SendResponse.roomId = WpfConfig.RoomInfo.entity.entity_id;
+                SendResponse.roomName = WpfConfig.RoomInfo.entity.room_name;
+                SendResponse.ownerId = WpfConfig.RoomInfo.entity.owner_id;
+                SendResponse.maxPlayers = WpfConfig.RoomInfo.entity.max_count;
+                SendResponse.currentPlayers = WpfConfig.RoomInfo.entity.cur_num;
+                SendResponse.gameStatus = WpfConfig.RoomInfo.entity.game_status;
+                SendResponse.version = WpfConfig.RoomInfo.entity.version;
+                SendResponse.hasPassword = WpfConfig.RoomInfo.entity.password != null &&
+                                           WpfConfig.RoomInfo.entity.password.ToString() != "0";
+                SendResponse.password = WpfConfig.Password;
+                SendResponse.visibility = WpfConfig.RoomInfo.entity.visibility;
+                SendResponse.allowSave = WpfConfig.RoomInfo.entity.allow_save;
+                SendResponse.resId = WpfConfig.RoomInfo.entity.res_id;
+                SendResponse.UserInputPassword = WpfConfig.Password;
+                SendResponse.UserJoinTime = WpfConfig.JoinOrCreateTime;
+                SendResponse.PlayerList = WpfConfig.RoomPlayerList;
                 // 设置当前用户ID
                 SendResponse.currentUserId = azf<arg>.Instance.User.Id;
 
                 // 判断是否是房主
-                SendResponse.isOwner = Path_Bool.RoomInfo.entity.owner_id == azf<arg>.Instance.User.Id;
+                SendResponse.isOwner = WpfConfig.RoomInfo.entity.owner_id == azf<arg>.Instance.User.Id;
 
                 // 房间黑名单配置信息
-                SendResponse.isRoomBlacklistEnabled = Path_Bool.EnableRoomBlacklist;
-                SendResponse.isRegexBlacklistEnabled = Path_Bool.EnableRoomBlacklist;
+                SendResponse.isRoomBlacklistEnabled = WpfConfig.EnableRoomBlacklist;
+                SendResponse.isRegexBlacklistEnabled = WpfConfig.EnableRoomBlacklist;
                 break;
             case "/get_pathinfo":
                 var staticMembers =
@@ -737,23 +736,23 @@ public class SimpleHttpServer
                 SendResponse.Base64Token = Convert.ToBase64String(array);
                 break;
             case "/get_RecvInfo":
-                SendResponse = new { ade.SendKey, ade.RecvKey, DataList = Path_Bool.RecvList };
+                SendResponse = new { ade.SendKey, ade.RecvKey, DataList = WpfConfig.RecvList };
                 break;
             case "/get_RoomBlacklist":
-                if (Path_Bool.EnableRoomBlacklist) // 判断房间黑名单功能是否开启
+                if (WpfConfig.EnableRoomBlacklist) // 判断房间黑名单功能是否开启
                 {
-                    if (Path_Bool.RoomBlacklist != null && Path_Bool.RoomBlacklist.Count > 0)
+                    if (WpfConfig.RoomBlacklist != null && WpfConfig.RoomBlacklist.Count > 0)
                         // 获取黑名单用户详细信息
                         try
                         {
-                            var blacklistUsersInfo = X19Http.Get_Players_Info(Path_Bool.RoomBlacklist);
+                            var blacklistUsersInfo = X19Http.Get_Players_Info(WpfConfig.RoomBlacklist);
                             SendResponse = new
                             {
                                 error = 0,
                                 message = "获取黑名单成功",
-                                blacklist = Path_Bool.RoomBlacklist.ToList(),
+                                blacklist = WpfConfig.RoomBlacklist.ToList(),
                                 blacklistInfo = blacklistUsersInfo,
-                                count = Path_Bool.RoomBlacklist.Count
+                                count = WpfConfig.RoomBlacklist.Count
                             };
                         }
                         catch (Exception ex)
@@ -763,9 +762,9 @@ public class SimpleHttpServer
                             {
                                 error = 0,
                                 message = "获取黑名单成功，但获取用户详情失败",
-                                blacklist = Path_Bool.RoomBlacklist.ToList(),
+                                blacklist = WpfConfig.RoomBlacklist.ToList(),
                                 errorDetail = ex.Message,
-                                count = Path_Bool.RoomBlacklist.Count
+                                count = WpfConfig.RoomBlacklist.Count
                             };
                         }
                     else
@@ -778,13 +777,13 @@ public class SimpleHttpServer
 
                 break;
             case "/get_RegexBlacklist":
-                if (Path_Bool.EnableRoomBlacklist) // 判断正则表达式黑名单功能是否开启
+                if (WpfConfig.EnableRoomBlacklist) // 判断正则表达式黑名单功能是否开启
                 {
-                    if (Path_Bool.RegexBlacklist != null && Path_Bool.RegexBlacklist.Count > 0)
+                    if (WpfConfig.RegexBlacklist != null && WpfConfig.RegexBlacklist.Count > 0)
                     {
                         // 返回更详细的黑名单信息
                         var regexDetails = new List<object>();
-                        foreach (var pattern in Path_Bool.RegexBlacklist)
+                        foreach (var pattern in WpfConfig.RegexBlacklist)
                             regexDetails.Add(new
                             {
                                 pattern,
@@ -795,9 +794,9 @@ public class SimpleHttpServer
                         {
                             error = 0,
                             message = "获取正则黑名单成功",
-                            regexBlacklist = Path_Bool.RegexBlacklist.ToList(),
+                            regexBlacklist = WpfConfig.RegexBlacklist.ToList(),
                             regexDetails,
-                            count = Path_Bool.RegexBlacklist.Count
+                            count = WpfConfig.RegexBlacklist.Count
                         };
                     }
                     else
@@ -819,13 +818,13 @@ public class SimpleHttpServer
                     error = 0,
                     roomBlacklist = new
                     {
-                        isEnabled = Path_Bool.EnableRoomBlacklist,
-                        count = Path_Bool.RoomBlacklist?.Count ?? 0
+                        isEnabled = WpfConfig.EnableRoomBlacklist,
+                        count = WpfConfig.RoomBlacklist?.Count ?? 0
                     },
                     regexBlacklist = new
                     {
-                        isEnabled = Path_Bool.EnableRoomBlacklist,
-                        count = Path_Bool.RegexBlacklist?.Count ?? 0
+                        isEnabled = WpfConfig.EnableRoomBlacklist,
+                        count = WpfConfig.RegexBlacklist?.Count ?? 0
                     }
                 };
                 break;
@@ -854,17 +853,17 @@ public class SimpleHttpServer
                         var startTime = DateTime.Now;
                         while (true)
                         {
-                            if (!string.IsNullOrEmpty(Path_Bool.Get_Recv_String_ChatResult))
+                            if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
                             {
                                 var Get_Recv_String_ChatResult_ToJson =
-                                    JObject.Parse(Path_Bool.Get_Recv_String_ChatResult);
+                                    JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
                                 if (!((IDictionary<string, JToken>)
                                         Get_Recv_String_ChatResult_ToJson).ContainsKey("Get_Recv_String_ChatResult") &&
                                     Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
                                 {
                                     SendResponse = new
                                         { error = 1, message = "发送失败", errorInfo = Get_Recv_String_ChatResult_ToJson };
-                                    Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                 }
                                 else
                                 {
@@ -873,7 +872,7 @@ public class SimpleHttpServer
                                         error = 0, message = "发送成功", SendResult = Get_Recv_String_ChatResult_ToJson,
                                         SendMessage = message, ToUserID = ChatUserID
                                     };
-                                    Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                 }
 
                                 break;
@@ -882,7 +881,7 @@ public class SimpleHttpServer
                             if ((DateTime.Now - startTime).TotalSeconds > 3)
                             {
                                 SendResponse = new { error = 1, message = "发送超时" };
-                                Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                 break;
                             }
                         }
@@ -919,17 +918,17 @@ public class SimpleHttpServer
                         var startTime = DateTime.Now;
                         while (true)
                         {
-                            if (!string.IsNullOrEmpty(Path_Bool.Get_Recv_String_ChatResult))
+                            if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
                             {
                                 var Get_Recv_String_ChatResult_ToJson =
-                                    JObject.Parse(Path_Bool.Get_Recv_String_ChatResult);
+                                    JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
                                 if (!((IDictionary<string, JToken>)
                                         Get_Recv_String_ChatResult_ToJson).ContainsKey("Get_Recv_String_ChatResult") &&
                                     Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
                                 {
                                     SendResponse = new
                                         { error = 1, message = "发送失败", errorInfo = Get_Recv_String_ChatResult_ToJson };
-                                    Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                 }
                                 else
                                 {
@@ -938,7 +937,7 @@ public class SimpleHttpServer
                                         error = 0, message = "发送成功", SendResult = Get_Recv_String_ChatResult_ToJson,
                                         SendMessage = message, ToGroupID = GroupID
                                     };
-                                    Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                 }
 
                                 break;
@@ -947,7 +946,7 @@ public class SimpleHttpServer
                             if ((DateTime.Now - startTime).TotalSeconds > 3)
                             {
                                 SendResponse = new { error = 1, message = "发送超时" };
-                                Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                 break;
                             }
                         }
@@ -1087,37 +1086,37 @@ public class SimpleHttpServer
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "用户ID不能为空" });
                         }
-                        else if (Path_Bool.RoomInfo == null)
+                        else if (WpfConfig.RoomInfo == null)
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "当前未在房间中" });
                         }
-                        else if (!Path_Bool.EnableRoomBlacklist)
+                        else if (!WpfConfig.EnableRoomBlacklist)
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "房间黑名单功能未开启" });
                         }
                         else
                         {
                             // 将用户添加到黑名单
-                            if (Path_Bool.RoomBlacklist == null) Path_Bool.RoomBlacklist = new List<string>();
+                            if (WpfConfig.RoomBlacklist == null) WpfConfig.RoomBlacklist = new List<string>();
 
-                            if (!Path_Bool.RoomBlacklist.Contains(userId)) Path_Bool.RoomBlacklist.Add(userId);
+                            if (!WpfConfig.RoomBlacklist.Contains(userId)) WpfConfig.RoomBlacklist.Add(userId);
 
                             // 保存黑名单到文件
                             var blacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
                             var blacklistFilePath = Path.Combine(blacklistFolderPath, "BlackList.json");
 
                             Directory.CreateDirectory(blacklistFolderPath);
-                            File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(Path_Bool.RoomBlacklist));
+                            File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(WpfConfig.RoomBlacklist));
 
                             // 如果当前用户是房主，尝试踢出黑名单用户
                             var currentUserId = azf<arg>.Instance.User.Id;
-                            if (Path_Bool.RoomInfo.entity.owner_id == currentUserId &&
-                                Path_Bool.RoomInfo.entity.fids.Contains(userId))
+                            if (WpfConfig.RoomInfo.entity.owner_id == currentUserId &&
+                                WpfConfig.RoomInfo.entity.fids.Contains(userId))
                                 try
                                 {
                                     var requestData = JsonConvert.SerializeObject(new
                                     {
-                                        room_id = Path_Bool.RoomInfo.entity.entity_id,
+                                        room_id = WpfConfig.RoomInfo.entity.entity_id,
                                         user_id = userId
                                     });
 
@@ -1141,25 +1140,25 @@ public class SimpleHttpServer
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "用户ID不能为空" });
                         }
-                        else if (!Path_Bool.EnableRoomBlacklist)
+                        else if (!WpfConfig.EnableRoomBlacklist)
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "房间黑名单功能未开启" });
                         }
-                        else if (Path_Bool.RoomBlacklist == null || !Path_Bool.RoomBlacklist.Contains(userId))
+                        else if (WpfConfig.RoomBlacklist == null || !WpfConfig.RoomBlacklist.Contains(userId))
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "该用户不在黑名单中" });
                         }
                         else
                         {
                             // 从黑名单中移除用户
-                            Path_Bool.RoomBlacklist.Remove(userId);
+                            WpfConfig.RoomBlacklist.Remove(userId);
 
                             // 保存黑名单到文件
                             var blacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
                             var blacklistFilePath = Path.Combine(blacklistFolderPath, "BlackList.json");
 
                             Directory.CreateDirectory(blacklistFolderPath);
-                            File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(Path_Bool.RoomBlacklist));
+                            File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(WpfConfig.RoomBlacklist));
 
                             SendResponse = JToken.FromObject(new { error = 0, message = "已将用户从黑名单中移除" });
                         }
@@ -1171,7 +1170,7 @@ public class SimpleHttpServer
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "用户ID不能为空" });
                         }
-                        else if (Path_Bool.RoomInfo == null)
+                        else if (WpfConfig.RoomInfo == null)
                         {
                             SendResponse = JToken.FromObject(new { error = 1, message = "当前未在房间中" });
                         }
@@ -1179,16 +1178,16 @@ public class SimpleHttpServer
                         {
                             // 检查当前用户是否是房主
                             var currentUserId = azf<arg>.Instance.User.Id;
-                            if (Path_Bool.RoomInfo.entity.owner_id != currentUserId)
+                            if (WpfConfig.RoomInfo.entity.owner_id != currentUserId)
                                 SendResponse = JToken.FromObject(new { error = 1, message = "只有房主才能踢出玩家" });
-                            else if (!Path_Bool.RoomInfo.entity.fids.Contains(userId))
+                            else if (!WpfConfig.RoomInfo.entity.fids.Contains(userId))
                                 SendResponse = JToken.FromObject(new { error = 1, message = "该玩家不在房间中" });
                             else
                                 try
                                 {
                                     var requestData = JsonConvert.SerializeObject(new
                                     {
-                                        room_id = Path_Bool.RoomInfo.entity.entity_id,
+                                        room_id = WpfConfig.RoomInfo.entity.entity_id,
                                         user_id = userId
                                     });
 
@@ -1218,26 +1217,26 @@ public class SimpleHttpServer
                         var addedPatterns = new List<string>();
                         var skippedPatterns = new List<string>();
 
-                        if (Path_Bool.EnableRoomBlacklist)
+                        if (WpfConfig.EnableRoomBlacklist)
                         {
-                            if (string.IsNullOrEmpty(pattern) || Path_Bool.RegexBlacklist.Contains(pattern))
+                            if (string.IsNullOrEmpty(pattern) || WpfConfig.RegexBlacklist.Contains(pattern))
                             {
                                 skippedPatterns.Add(pattern);
                             }
                             else
                             {
-                                Path_Bool.RegexBlacklist.Add(pattern);
+                                WpfConfig.RegexBlacklist.Add(pattern);
                                 addedPatterns.Add(pattern);
                             }
 
                             // 刷新正则黑名单文件
-                            Path_Bool.WriteRegexBlacklist();
-                            if (Path_Bool.RoomInfo != null)
+                            WpfConfig.WriteRegexBlacklist();
+                            if (WpfConfig.RoomInfo != null)
                             {
                                 var RoomKickInfo = new JArray();
                                 var RoomPlayerIsMatchInfo = new JArray();
                                 var Get_RoomPlayerInfo =
-                                    X19Http.Get_Players_Info(Path_Bool.RoomInfo.entity.fids);
+                                    X19Http.Get_Players_Info(WpfConfig.RoomInfo.entity.fids);
                                 foreach (var player in Get_RoomPlayerInfo["entities"])
                                 {
                                     var playerName = player?["name"]?.ToObject<string>();
@@ -1248,9 +1247,9 @@ public class SimpleHttpServer
                                         RoomPlayerIsMatchInfo.Add(JToken.FromObject(new
                                             { UserID = userId, RoomplayerName = playerName, IsMatchRegex = true }));
                                         // 判断userId是否存在黑名单里
-                                        if (!Path_Bool.RoomBlacklist.Contains(userId))
+                                        if (!WpfConfig.RoomBlacklist.Contains(userId))
                                             // 将玩家UID加入黑名单
-                                            Path_Bool.RoomBlacklist.Add(userId);
+                                            WpfConfig.RoomBlacklist.Add(userId);
                                         // 踢出玩家
                                         JObject RemovePlayerReturn;
                                         do
@@ -1259,7 +1258,7 @@ public class SimpleHttpServer
                                                 JObject.Parse(X19Http.RequestX19Api("/online-lobby-member-kick",
                                                     JsonConvert.SerializeObject(new
                                                     {
-                                                        room_id = Path_Bool.RoomInfo.entity.entity_id, user_id = userId
+                                                        room_id = WpfConfig.RoomInfo.entity.entity_id, user_id = userId
                                                     })));
                                             if (RemovePlayerReturn["code"].ToObject<int>() == 0)
                                             {
@@ -1284,7 +1283,7 @@ public class SimpleHttpServer
                                     }
                                 }
 
-                                Path_Bool.WriteRoomBlacklist();
+                                WpfConfig.WriteRoomBlacklist();
                                 SendResponse = JToken.FromObject(new
                                 {
                                     error = 0, message = "添加成功", addedPatterns, skippedPatterns,
@@ -1306,18 +1305,18 @@ public class SimpleHttpServer
                     else if (context.Request.Url.AbsolutePath.StartsWith("/Room/RemoveRegexBlacklist/"))
                     {
                         var regexPattern = context.Request.Url.AbsolutePath.Substring(27);
-                        if (Path_Bool.EnableRoomBlacklist) // 判断正则黑名单功能是否开启
+                        if (WpfConfig.EnableRoomBlacklist) // 判断正则黑名单功能是否开启
                         {
-                            if (Path_Bool.RegexBlacklist.Contains(regexPattern)) // 判断正则是否在黑名单内
+                            if (WpfConfig.RegexBlacklist.Contains(regexPattern)) // 判断正则是否在黑名单内
                             {
-                                Path_Bool.RegexBlacklist.Remove(regexPattern);
+                                WpfConfig.RegexBlacklist.Remove(regexPattern);
                                 // 刷新正则黑名单文件
                                 var regexBlacklistFolderPath =
                                     Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
                                 var regexBlacklistFilePath =
                                     Path.Combine(regexBlacklistFolderPath, "RegexBlackList.json");
                                 File.WriteAllText(regexBlacklistFilePath,
-                                    JsonConvert.SerializeObject(Path_Bool.RegexBlacklist));
+                                    JsonConvert.SerializeObject(WpfConfig.RegexBlacklist));
                                 SendResponse = new { error = 0, message = "删除成功" };
                             }
                             else
@@ -1563,9 +1562,9 @@ public class SimpleHttpServer
                     else if (context.Request.Url.AbsolutePath.StartsWith("/LeftRoom"))
                     {
                         var enableAlwaysSaveWorld = false;
-                        if (Path_Bool.AlwaysSaveWorld)
+                        if (WpfConfig.AlwaysSaveWorld)
                         {
-                            Path_Bool.AlwaysSaveWorld = false;
+                            WpfConfig.AlwaysSaveWorld = false;
                             enableAlwaysSaveWorld = true;
                         }
 
@@ -1620,7 +1619,7 @@ public class SimpleHttpServer
                             }
                         }
 
-                        if (enableAlwaysSaveWorld) Path_Bool.AlwaysSaveWorld = true;
+                        if (enableAlwaysSaveWorld) WpfConfig.AlwaysSaveWorld = true;
                         SendResponse = new { code = 0, message = "成功退出房间", details = "" };
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/settings"))
@@ -1639,7 +1638,7 @@ public class SimpleHttpServer
                         {
                             error = 0,
                             message = "获取成功",
-                            data = ConfigManager.GetCurrentConfigValues() // 自动获取所有 Path_Bool 里的值
+                            data = ConfigManager.GetCurrentConfigValues() // 自动获取所有 WpfConfig 里的值
                         };
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/config/settingslist"))
@@ -1657,7 +1656,7 @@ public class SimpleHttpServer
                                new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
                         {
                             var json = reader.ReadToEnd();
-                            ConfigManager.UpdateFromJson(json); // 自动更新 Path_Bool 并保存文件
+                            ConfigManager.UpdateFromJson(json); // 自动更新 WpfConfig 并保存文件
                         }
 
                         SendResponse = new { error = 0, message = "配置已更新" };
@@ -1778,10 +1777,10 @@ public class SimpleHttpServer
                                     var startTime = DateTime.Now;
                                     while (true)
                                     {
-                                        if (!string.IsNullOrEmpty(Path_Bool.Get_Recv_String_ChatResult))
+                                        if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
                                         {
                                             var Get_Recv_String_ChatResult_ToJson =
-                                                JObject.Parse(Path_Bool.Get_Recv_String_ChatResult);
+                                                JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
                                             if (!((IDictionary<string, JToken>)Get_Recv_String_ChatResult_ToJson)
                                                     .ContainsKey("Get_Recv_String_ChatResult") &&
                                                 Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
@@ -1791,7 +1790,7 @@ public class SimpleHttpServer
                                                     error = 1, message = "发送失败",
                                                     errorInfo = Get_Recv_String_ChatResult_ToJson
                                                 };
-                                                Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                             }
                                             else
                                             {
@@ -1801,7 +1800,7 @@ public class SimpleHttpServer
                                                     SendResult = Get_Recv_String_ChatResult_ToJson,
                                                     SendMessage = message, ToUserID = ChatUserID
                                                 };
-                                                Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                             }
 
                                             break;
@@ -1810,7 +1809,7 @@ public class SimpleHttpServer
                                         if ((DateTime.Now - startTime).TotalSeconds > 3)
                                         {
                                             SendResponse = new { error = 1, message = "发送超时" };
-                                            Path_Bool.Get_Recv_String_ChatResult = string.Empty;
+                                            WpfConfig.Get_Recv_String_ChatResult = string.Empty;
                                             break;
                                         }
                                     }
@@ -1839,29 +1838,29 @@ public class SimpleHttpServer
                             SendResponse.ToEncryptX19sign = requestBody.a();
                             break;
                         case "/Room/AddRegexBlacklist":
-                            if (Path_Bool.EnableRoomBlacklist)
+                            if (WpfConfig.EnableRoomBlacklist)
                             {
                                 string pattern = requestObject["pattern"].ToString();
                                 if (string.IsNullOrEmpty(pattern))
                                 {
                                     SendResponse = new { error = 1, message = "正则表达式不能为空" };
                                 }
-                                else if (Path_Bool.RegexBlacklist.Contains(pattern))
+                                else if (WpfConfig.RegexBlacklist.Contains(pattern))
                                 {
                                     SendResponse = new { error = 1, message = "该正则表达式已存在于黑名单中" };
                                 }
                                 else
                                 {
-                                    Path_Bool.RegexBlacklist.Add(pattern);
-                                    Path_Bool.WriteRegexBlacklist();
+                                    WpfConfig.RegexBlacklist.Add(pattern);
+                                    WpfConfig.WriteRegexBlacklist();
 
                                     // 如果在房间中，检查玩家是否符合黑名单规则
-                                    if (Path_Bool.RoomInfo != null)
+                                    if (WpfConfig.RoomInfo != null)
                                     {
                                         var RoomKickInfo = new JArray();
                                         var RoomPlayerIsMatchInfo = new JArray();
                                         var Get_RoomPlayerInfo =
-                                            X19Http.Get_Players_Info(Path_Bool.RoomInfo.entity.fids);
+                                            X19Http.Get_Players_Info(WpfConfig.RoomInfo.entity.fids);
                                         foreach (var player in Get_RoomPlayerInfo["entities"])
                                         {
                                             var playerName = player?["name"]?.ToObject<string>();
@@ -1874,9 +1873,9 @@ public class SimpleHttpServer
                                                     UserID = userId, RoomplayerName = playerName, IsMatchRegex = true
                                                 }));
                                                 // 判断userId是否存在黑名单里
-                                                if (!Path_Bool.RoomBlacklist.Contains(userId))
+                                                if (!WpfConfig.RoomBlacklist.Contains(userId))
                                                     // 将玩家UID加入黑名单
-                                                    Path_Bool.RoomBlacklist.Add(userId);
+                                                    WpfConfig.RoomBlacklist.Add(userId);
                                                 // 踢出玩家
                                                 JObject RemovePlayerReturn;
                                                 do
@@ -1885,7 +1884,7 @@ public class SimpleHttpServer
                                                         JObject.Parse(X19Http.RequestX19Api("/online-lobby-member-kick",
                                                             JsonConvert.SerializeObject(new
                                                             {
-                                                                room_id = Path_Bool.RoomInfo.entity.entity_id,
+                                                                room_id = WpfConfig.RoomInfo.entity.entity_id,
                                                                 user_id = userId
                                                             })));
                                                     if (RemovePlayerReturn["code"].ToObject<int>() == 0)
@@ -1915,7 +1914,7 @@ public class SimpleHttpServer
                                             }
                                         }
 
-                                        Path_Bool.WriteRoomBlacklist();
+                                        WpfConfig.WriteRoomBlacklist();
                                         SendResponse = new
                                         {
                                             error = 0, message = "添加成功",
@@ -1938,21 +1937,21 @@ public class SimpleHttpServer
 
                             break;
                         case "/Room/RemoveRegexBlacklist":
-                            if (Path_Bool.EnableRoomBlacklist)
+                            if (WpfConfig.EnableRoomBlacklist)
                             {
                                 string pattern = requestObject["pattern"].ToString();
                                 if (string.IsNullOrEmpty(pattern))
                                 {
                                     SendResponse = new { error = 1, message = "正则表达式不能为空" };
                                 }
-                                else if (!Path_Bool.RegexBlacklist.Contains(pattern))
+                                else if (!WpfConfig.RegexBlacklist.Contains(pattern))
                                 {
                                     SendResponse = new { error = 1, message = "该正则表达式不在黑名单中" };
                                 }
                                 else
                                 {
-                                    Path_Bool.RegexBlacklist.Remove(pattern);
-                                    Path_Bool.WriteRegexBlacklist();
+                                    WpfConfig.RegexBlacklist.Remove(pattern);
+                                    WpfConfig.WriteRegexBlacklist();
                                     SendResponse = new { error = 0, message = "已从正则黑名单移除" };
                                 }
                             }
@@ -1968,41 +1967,41 @@ public class SimpleHttpServer
                         //     {
                         //         var configData = JsonConvert.DeserializeObject<JObject>(requestBody);
                         //
-                        //         // 更新Path_Bool中的配置项
+                        //         // 更新WpfConfig中的配置项
                         //         if (configData["IsBypassGameUpdate_Bedrock"] != null)
-                        //             Path_Bool.IsBypassGameUpdate_Bedrock =
+                        //             WpfConfig.IsBypassGameUpdate_Bedrock =
                         //                 configData["IsBypassGameUpdate_Bedrock"].Value<bool>();
                         //
                         //         if (configData["IsEnableX64mc"] != null)
-                        //             Path_Bool.IsEnableX64mc = configData["IsEnableX64mc"].Value<bool>();
+                        //             WpfConfig.IsEnableX64mc = configData["IsEnableX64mc"].Value<bool>();
                         //
                         //         if (configData["IsDebug"] != null)
-                        //             Path_Bool.IsDebug = configData["IsDebug"].Value<bool>();
+                        //             WpfConfig.IsDebug = configData["IsDebug"].Value<bool>();
                         //
                         //         if (configData["EnableRoomBlacklist"] != null)
-                        //             Path_Bool.EnableRoomBlacklist = configData["EnableRoomBlacklist"].Value<bool>();
+                        //             WpfConfig.EnableRoomBlacklist = configData["EnableRoomBlacklist"].Value<bool>();
                         //
                         //         if (configData["EnableRegexBlacklist"] != null)
-                        //             Path_Bool.EnableRoomBlacklist = configData["EnableRegexBlacklist"].Value<bool>();
+                        //             WpfConfig.EnableRoomBlacklist = configData["EnableRegexBlacklist"].Value<bool>();
                         //
                         //         if (configData["MaxRoomCount"] != null)
-                        //             Path_Bool.MaxRoomCount = configData["MaxRoomCount"].Value<int>();
+                        //             WpfConfig.MaxRoomCount = configData["MaxRoomCount"].Value<int>();
                         //
                         //         if (configData["HttpPort"] != null)
-                        //             Path_Bool.HttpPort = configData["HttpPort"].Value<int>();
+                        //             WpfConfig.HttpPort = configData["HttpPort"].Value<int>();
                         //
                         //         if (configData["NeteaseUpdateDomainhttp"] != null)
-                        //             Path_Bool.NeteaseUpdateDomainhttp =
+                        //             WpfConfig.NeteaseUpdateDomainhttp =
                         //                 configData["NeteaseUpdateDomainhttp"].Value<string>();
                         //
                         //         if (configData["AlwaysSaveWorld"] != null)
-                        //             Path_Bool.AlwaysSaveWorld = configData["AlwaysSaveWorld"].Value<bool>();
+                        //             WpfConfig.AlwaysSaveWorld = configData["AlwaysSaveWorld"].Value<bool>();
                         //
                         //         if (configData["IsCustomIP"] != null)
-                        //             Path_Bool.IsCustomIP = configData["IsCustomIP"].Value<bool>();
+                        //             WpfConfig.IsCustomIP = configData["IsCustomIP"].Value<bool>();
                         //
                         //         if (configData["NoTwoExitMessage"] != null)
-                        //             Path_Bool.NoTwoExitMessage = configData["NoTwoExitMessage"].Value<bool>();
+                        //             WpfConfig.NoTwoExitMessage = configData["NoTwoExitMessage"].Value<bool>();
                         //
                         //         SendResponse = new
                         //         {

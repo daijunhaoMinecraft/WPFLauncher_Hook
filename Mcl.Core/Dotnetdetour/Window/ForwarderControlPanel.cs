@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Mcl.Core.Dotnetdetour.Hookevent;
 using Mcl.Core.Dotnetdetour.Var;
 using WPFLauncher.Manager.LanGame;
 
@@ -36,13 +35,13 @@ namespace Mcl.Core.Dotnetdetour.Window
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.BackColor = SystemColors.Control;
-            this.TopMost = Path_Bool.IsWindowTopMost;
+            this.TopMost = WpfConfig.IsWindowTopMost;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = Path_Bool.IsWindowTopMost,
+                Checked = WpfConfig.IsWindowTopMost,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;

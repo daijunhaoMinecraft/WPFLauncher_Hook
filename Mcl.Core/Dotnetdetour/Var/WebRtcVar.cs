@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading;
-using Mcl.Core.Dotnetdetour.Hookevent;
 using Mcl.Core.Dotnetdetour.Model;
 using Mcl.Core.Dotnetdetour.Tools;
 using Mcl.Core.Dotnetdetour.Tools.Network;
@@ -76,7 +75,7 @@ namespace Mcl.Core.Dotnetdetour.Var
                 lock (_lock)
                 {
                     _activeIds.Remove(id);
-                    if (Path_Bool.IsDebug)
+                    if (WpfConfig.IsDebug)
                     {
                         Console.WriteLine($"[ConnManager] 已释放 ID: {id}, 当前活跃数: {_activeIds.Count}");
                     }

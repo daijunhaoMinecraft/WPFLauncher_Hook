@@ -6,18 +6,12 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Mcl.Core.Dotnetdetour.Hookevent;
 
 namespace Mcl.Core.Dotnetdetour.Tools;
 // 添加 WinForms 支持
 
-// Token: 0x0200000A RID: 10
 internal class Ocr
 {
-    // Token: 0x04000021 RID: 33
-    private static object inner_asyncObject = new();
-
-    // Token: 0x04000022 RID: 34
     private static int inner_startPort = 50001;
 
     /// <summary>
@@ -32,11 +26,11 @@ internal class Ocr
     /// <summary>
     ///     OCR 识别函数 - 弹窗让用户输入验证码。
     /// </summary>
-    /// <param name="string_0">base64 编码的验证码图片</param>
+    /// <param name="base64Image">base64 编码的验证码图片</param>
     /// <returns>用户输入的验证码文本，或 null（取消）</returns>
-    public static string GetOcr(string string_0)
+    public static string GetOcr(string base64Image)
     {
-        return GetOcrWithRefresh(string_0, null);
+        return GetOcrWithRefresh(base64Image, null);
     }
 
     /// <summary>
@@ -101,13 +95,13 @@ internal class Ocr
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             form.MinimizeBox = false;
             form.MaximizeBox = false;
-            form.TopMost = Path_Bool.IsWindowTopMost;
+            form.TopMost = WpfConfig.IsWindowTopMost;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = Path_Bool.IsWindowTopMost,
+                Checked = WpfConfig.IsWindowTopMost,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = form.ClientSize.Width - topMostCheck.Width - 15;

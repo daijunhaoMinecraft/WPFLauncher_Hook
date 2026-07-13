@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Mcl.Core.Dotnetdetour.Hookevent;
 using Newtonsoft.Json;
 
 namespace Mcl.Core.Dotnetdetour.Settings
 {
     public class ConfigEntry
     {
-        public string Key { get; set; }        // 必须对应 Path_Bool 里的静态字段名
+        public string Key { get; set; }        // 必须对应 WpfConfig 里的静态字段名
         public string Description { get; set; } // UI 上显示的中文名
         public Type FieldType { get; set; }    // 变量类型
         public string Category { get; set; } // 新增：分类 (如 "基础", "联机", "高级")
@@ -57,20 +56,20 @@ namespace Mcl.Core.Dotnetdetour.Settings
             new ConfigEntry { Key = "LimitDownload", Description = "大小限制(小于此大小即为小文件, 只使用单线程下载, 单位MB)", FieldType = typeof(int), Category = "实验功能" },
         };
 
-        // 自动保存 Path_Bool 里的值到 JSON
+        // 自动保存 WpfConfig 里的值到 JSON
         public static void Save()
         {
             var data = new Dictionary<string, object>();
             foreach (var item in Registry)
             {
-                var field = typeof(Path_Bool).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
+                var field = typeof(WpfConfig).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
                 if (field != null) data[item.Key] = field.GetValue(null);
             }
             File.WriteAllText(CONFIG_FILE, JsonConvert.SerializeObject(data, Formatting.Indented));
             Console.WriteLine("[Config] 配置已保存到 JSON");
         }
 
-        // 自动从 JSON 加载值到 Path_Bool
+        // 自动从 JSON 加载值到 WpfConfig
         public static void Load()
         {
             if (!File.Exists(CONFIG_FILE)) return;
@@ -82,7 +81,7 @@ namespace Mcl.Core.Dotnetdetour.Settings
                 {
                     if (data.TryGetValue(item.Key, out object val))
                     {
-                        var field = typeof(Path_Bool).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
+                        var field = typeof(WpfConfig).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
                         if (field != null)
                         {
                             // 自动处理 Json 反序列化时的类型转换
@@ -102,7 +101,7 @@ namespace Mcl.Core.Dotnetdetour.Settings
             var data = new Dictionary<string, object>();
             foreach (var item in Registry)
             {
-                var field = typeof(Path_Bool).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
+                var field = typeof(WpfConfig).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
                 if (field != null) data[item.Key] = field.GetValue(null);
             }
             return data;
@@ -118,13 +117,13 @@ namespace Mcl.Core.Dotnetdetour.Settings
             );
         }
 
-        // 从 JSON 字符串批量更新 Path_Bool (用于 Web 保存)
+        // 从 JSON 字符串批量更新 WpfConfig (用于 Web 保存)
         public static void UpdateFromJson(string json)
         {
             var updates = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             foreach (var key in updates.Keys)
             {
-                var field = typeof(Path_Bool).GetField(key, BindingFlags.Public | BindingFlags.Static);
+                var field = typeof(WpfConfig).GetField(key, BindingFlags.Public | BindingFlags.Static);
                 var registryItem = Registry.FirstOrDefault(x => x.Key == key);
                 if (field != null && registryItem != null)
                 {

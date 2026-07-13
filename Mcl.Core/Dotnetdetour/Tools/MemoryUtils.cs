@@ -2,7 +2,7 @@
 
 namespace Mcl.Core.Dotnetdetour.Tools;
 
-public class MemoryUtils
+public static class MemoryUtils
 {
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
     private static extern bool GlobalMemoryStatusEx([In] [Out] MEMORYSTATUSEX lpBuffer);

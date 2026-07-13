@@ -1,5 +1,3 @@
-using Mcl.Core.Dotnetdetour.Hookevent;
-
 namespace Mcl.Core.Dotnetdetour.Tools;
 
 /// <summary>
@@ -658,7 +656,7 @@ public static class HtmlResource
         // 从URL获取WebSocket端口
         function getWebSocketPort() {{
             // 默认端口
-            let port = {Path_Bool.HttpPort.ToString()};
+            let port = {WpfConfig.HttpPort.ToString()};
             
             // 尝试从URL参数获取端口
             const urlParams = new URLSearchParams(window.location.search);
