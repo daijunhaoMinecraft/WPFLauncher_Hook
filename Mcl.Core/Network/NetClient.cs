@@ -741,7 +741,7 @@ namespace Mcl.Core.Network
 				Console.WriteLine($"sauth_json随机化(authentication-otp): {sauthJson}");
 				JObject decryptBody = JObject.Parse(X19Crypt.DecryptX19Body(body));
 				decryptBody["sauth_json"] =  sauthJson;
-				SetRequestBody(request, decryptBody.ToString());
+				SetRequestBody(request, X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(decryptBody.ToString())));
 			}
 
 			if (method - Method.POST > 1 && method != Method.PATCH)
