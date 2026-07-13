@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Mcl.Core.Dotnetdetour.HookList
 {
 	//去除网易存档加密功能
-	internal class No_GameUqdate_1 : IMethodHook
+	internal class DisableCppUpdate : IMethodHook
 	{
 		[OriginalMethod]
 		public bool No_Update(bool skipValidation = true)
@@ -37,7 +37,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERROR_Bedrock] 检查本地游戏文件时发生异常: {ex.Message}");
+	            WpfConfig.DefaultLogger.Error($"检查本地游戏文件时发生异常: {ex.Message}");
                 return false;
             }
         }
@@ -61,11 +61,9 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 // --- 新增逻辑开始 ---
                 if (!IsLocalBedrockGameExists())
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("[WARNING_Bedrock] 已启用跳过更新，但未在本地硬盘检测到有效的基岩版游戏文件 (Minecraft.Windows.exe)。");
-                    Console.WriteLine("[WARNING_Bedrock] 将回退到原始更新检查逻辑。");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    
+                    WpfConfig.DefaultLogger.Warn("已启用跳过更新，但未在本地硬盘检测到有效的基岩版游戏文件 (Minecraft.Windows.exe)。");
+                    WpfConfig.DefaultLogger.Warn("将回退到原始更新检查逻辑。");
+
                     // 返回原始方法的结果 (通常为 false，意味着需要更新或验证失败)
                     return No_Update(skipValidation);
                 }

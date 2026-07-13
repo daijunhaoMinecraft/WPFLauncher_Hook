@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Mcl.Core.Dotnetdetour.Tools;
+using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Code;
 using WPFLauncher.Network.Protocol.LobbyGame;
@@ -169,7 +170,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
             var entity = roomInfo.entity;
             
-            JObject ownerInfo = X19Http.Get_Player_Info(entity.owner_id);
+            JObject ownerInfo = X19Http.GetPlayerInfo(entity.owner_id);
             
             _infoBlocks["RoomNumber"].Text = entity.room_name;
             _infoBlocks["Owner"].Text = $"{ownerInfo["entity"]["name"]} ({entity.owner_id})";
@@ -266,7 +267,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 if (((IDictionary<string, JToken>)roomInfo).ContainsKey("owner_id"))
                 {
                     string ownerId = roomInfo["owner_id"].ToString();
-                    JObject ownerInfo = X19Http.Get_Player_Info(ownerId);
+                    JObject ownerInfo = X19Http.GetPlayerInfo(ownerId);
                     _infoBlocks["Owner"].Text = $"{ownerInfo["entity"]["name"]} ({ownerId})";
                     AddLogEntry($"房主更改为: {ownerInfo["entity"]["name"]} ({ownerId})", ConsoleColor.Yellow);
                 }
@@ -332,7 +333,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             try
             {
-                var playerInfo = await Task.Run(() => X19Http.Get_Player_Info(playerId));
+                var playerInfo = await Task.Run(() => X19Http.GetPlayerInfo(playerId));
                 if (playerInfo != null && playerInfo["entity"] != null)
                 {
                     string playerName = playerInfo["entity"]["name"].ToString();
@@ -365,7 +366,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 // 尝试获取玩家信息并记录日志
                 try
                 {
-                    var playerInfo = await Task.Run(() => X19Http.Get_Player_Info(playerId));
+                    var playerInfo = await Task.Run(() => X19Http.GetPlayerInfo(playerId));
                     if (playerInfo != null && 
                         playerInfo["entity"] != null && 
                         playerInfo["entity"]["name"] != null)

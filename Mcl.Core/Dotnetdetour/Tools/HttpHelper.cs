@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Mcl.Core.Dotnetdetour.Settings;
 using Mcl.Core.Dotnetdetour.Var;
+using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFControls.Helpers;
@@ -271,7 +272,7 @@ public class SimpleHttpServer
                 if (WpfConfig.RoomBlacklist != null && WpfConfig.RoomBlacklist.Count > 0)
                     try
                     {
-                        var userDetails = X19Http.Get_Players_Info(WpfConfig.RoomBlacklist);
+                        var userDetails = X19Http.GetPlayersInfo(WpfConfig.RoomBlacklist);
                         if (userDetails != null && userDetails["entities"] != null)
                             foreach (var user in userDetails["entities"])
                                 blacklistUsers.Add(new
@@ -607,7 +608,7 @@ public class SimpleHttpServer
                     if (entity.fids != null && entity.fids.Count > 0)
                     {
                         // 获取玩家详细信息
-                        var playersInfoResponse = X19Http.RequestX19Api("/user/query/search-by-ids",
+                        var playersInfoResponse = X19Http.Post("/user/query/search-by-ids",
                             JsonConvert.SerializeObject(new { entity_ids = entity.fids }));
                         response.playersInfo = JsonConvert.DeserializeObject(playersInfoResponse);
 
@@ -649,7 +650,7 @@ public class SimpleHttpServer
                     }
 
                     // 获取并设置房主信息
-                    var ownerInfoResponse = X19Http.RequestX19Api("/user/query/search-by-uid",
+                    var ownerInfoResponse = X19Http.Post("/user/query/search-by-uid",
                         JsonConvert.SerializeObject(new { user_id = entity.owner_id }));
                     response.ownerInfo = JObject.Parse(ownerInfoResponse);
 
@@ -668,12 +669,12 @@ public class SimpleHttpServer
                     // 获取地图资源信息
                     if (!string.IsNullOrEmpty(entity.res_id))
                     {
-                        var resourceInfoResponse = X19Http.RequestX19Api("/item-details/get_v2",
+                        var resourceInfoResponse = X19Http.Post("/item-details/get_v2",
                             JsonConvert.SerializeObject(new { item_id = entity.res_id }));
                         response.resourceInfo = JsonConvert.DeserializeObject(resourceInfoResponse);
 
                         // 获取资源图片信息
-                        var titleImageResponse = X19Http.RequestX19Api("/item-channel/query/search-by-item-channel",
+                        var titleImageResponse = X19Http.Post("/item-channel/query/search-by-item-channel",
                             JsonConvert.SerializeObject(new { item_id = entity.res_id, channel_id = "11" }));
                         response.roomTitleImage = JsonConvert.DeserializeObject(titleImageResponse);
                     }
@@ -745,7 +746,7 @@ public class SimpleHttpServer
                         // 获取黑名单用户详细信息
                         try
                         {
-                            var blacklistUsersInfo = X19Http.Get_Players_Info(WpfConfig.RoomBlacklist);
+                            var blacklistUsersInfo = X19Http.GetPlayersInfo(WpfConfig.RoomBlacklist);
                             SendResponse = new
                             {
                                 error = 0,
@@ -970,7 +971,7 @@ public class SimpleHttpServer
                         var contentAfterApiPost = context.Request.Url.AbsolutePath.Substring(6);
                         // 使用逗号分割多个用户ID
                         var userIds = contentAfterApiPost.Split(',').ToList();
-                        var response = X19Http.Get_Players_Info(userIds);
+                        var response = X19Http.GetPlayersInfo(userIds);
                         SendResponse = JToken.FromObject(response);
                     }
                     else if (context.Request.Url.AbsolutePath == "/roommanage")
@@ -1121,7 +1122,7 @@ public class SimpleHttpServer
                                     });
 
                                     var kickResult =
-                                        JObject.Parse(X19Http.RequestX19Api("/online-lobby-member-kick", requestData));
+                                        JObject.Parse(X19Http.Post("/online-lobby-member-kick", requestData));
                                     if (kickResult["code"].ToObject<int>() == 0)
                                         Console.WriteLine($"[RoomManage] 已将玩家 {userId} 踢出房间并加入黑名单");
                                 }
@@ -1192,7 +1193,7 @@ public class SimpleHttpServer
                                     });
 
                                     var kickResult =
-                                        JObject.Parse(X19Http.RequestX19Api("/online-lobby-member-kick", requestData));
+                                        JObject.Parse(X19Http.Post("/online-lobby-member-kick", requestData));
                                     if (kickResult["code"].ToObject<int>() == 0)
                                     {
                                         SendResponse = JToken.FromObject(new { error = 0, message = "已将玩家踢出房间" });
@@ -1236,7 +1237,7 @@ public class SimpleHttpServer
                                 var RoomKickInfo = new JArray();
                                 var RoomPlayerIsMatchInfo = new JArray();
                                 var Get_RoomPlayerInfo =
-                                    X19Http.Get_Players_Info(WpfConfig.RoomInfo.entity.fids);
+                                    X19Http.GetPlayersInfo(WpfConfig.RoomInfo.entity.fids);
                                 foreach (var player in Get_RoomPlayerInfo["entities"])
                                 {
                                     var playerName = player?["name"]?.ToObject<string>();
@@ -1255,7 +1256,7 @@ public class SimpleHttpServer
                                         do
                                         {
                                             RemovePlayerReturn =
-                                                JObject.Parse(X19Http.RequestX19Api("/online-lobby-member-kick",
+                                                JObject.Parse(X19Http.Post("/online-lobby-member-kick",
                                                     JsonConvert.SerializeObject(new
                                                     {
                                                         room_id = WpfConfig.RoomInfo.entity.entity_id, user_id = userId
@@ -1333,7 +1334,7 @@ public class SimpleHttpServer
                     {
                         var itemID = context.Request.Url.AbsolutePath.Substring("/GetItemIDFileUrl/".Length);
                         SendResponse = JObject.Parse(
-                            X19Http.RequestX19Api("/user-item-download-v2",
+                            X19Http.Post("/user-item-download-v2",
                                 JsonConvert.SerializeObject(new
                                 {
                                     item_id = itemID, length = 0, offset = 0
@@ -1825,11 +1826,11 @@ public class SimpleHttpServer
                             SendResponse.ToJsonEscape = requestBody.Replace("\"", "\\\"");
                             break;
                         case "/userToInfo":
-                            SendResponse = X19Http.Get_Player_Info(requestObject["userid"].ToString());
+                            SendResponse = X19Http.GetPlayerInfo(requestObject["userid"].ToString());
                             break;
                         case "/usersToInfo":
                             SendResponse =
-                                X19Http.Get_Players_Info(requestObject["entity_ids"].ToObject<List<string>>());
+                                X19Http.GetPlayersInfo(requestObject["entity_ids"].ToObject<List<string>>());
                             break;
                         case "/DecryptX19sign":
                             SendResponse.ToDecryptX19sign = requestBody.b();
@@ -1860,7 +1861,7 @@ public class SimpleHttpServer
                                         var RoomKickInfo = new JArray();
                                         var RoomPlayerIsMatchInfo = new JArray();
                                         var Get_RoomPlayerInfo =
-                                            X19Http.Get_Players_Info(WpfConfig.RoomInfo.entity.fids);
+                                            X19Http.GetPlayersInfo(WpfConfig.RoomInfo.entity.fids);
                                         foreach (var player in Get_RoomPlayerInfo["entities"])
                                         {
                                             var playerName = player?["name"]?.ToObject<string>();
@@ -1881,7 +1882,7 @@ public class SimpleHttpServer
                                                 do
                                                 {
                                                     RemovePlayerReturn =
-                                                        JObject.Parse(X19Http.RequestX19Api("/online-lobby-member-kick",
+                                                        JObject.Parse(X19Http.Post("/online-lobby-member-kick",
                                                             JsonConvert.SerializeObject(new
                                                             {
                                                                 room_id = WpfConfig.RoomInfo.entity.entity_id,
@@ -1961,64 +1962,6 @@ public class SimpleHttpServer
                             }
 
                             break;
-                        // case "/config/apply":
-                        //     // 更新配置
-                        //     try
-                        //     {
-                        //         var configData = JsonConvert.DeserializeObject<JObject>(requestBody);
-                        //
-                        //         // 更新WpfConfig中的配置项
-                        //         if (configData["IsBypassGameUpdate_Bedrock"] != null)
-                        //             WpfConfig.IsBypassGameUpdate_Bedrock =
-                        //                 configData["IsBypassGameUpdate_Bedrock"].Value<bool>();
-                        //
-                        //         if (configData["IsEnableX64mc"] != null)
-                        //             WpfConfig.IsEnableX64mc = configData["IsEnableX64mc"].Value<bool>();
-                        //
-                        //         if (configData["IsDebug"] != null)
-                        //             WpfConfig.IsDebug = configData["IsDebug"].Value<bool>();
-                        //
-                        //         if (configData["EnableRoomBlacklist"] != null)
-                        //             WpfConfig.EnableRoomBlacklist = configData["EnableRoomBlacklist"].Value<bool>();
-                        //
-                        //         if (configData["EnableRegexBlacklist"] != null)
-                        //             WpfConfig.EnableRoomBlacklist = configData["EnableRegexBlacklist"].Value<bool>();
-                        //
-                        //         if (configData["MaxRoomCount"] != null)
-                        //             WpfConfig.MaxRoomCount = configData["MaxRoomCount"].Value<int>();
-                        //
-                        //         if (configData["HttpPort"] != null)
-                        //             WpfConfig.HttpPort = configData["HttpPort"].Value<int>();
-                        //
-                        //         if (configData["NeteaseUpdateDomainhttp"] != null)
-                        //             WpfConfig.NeteaseUpdateDomainhttp =
-                        //                 configData["NeteaseUpdateDomainhttp"].Value<string>();
-                        //
-                        //         if (configData["AlwaysSaveWorld"] != null)
-                        //             WpfConfig.AlwaysSaveWorld = configData["AlwaysSaveWorld"].Value<bool>();
-                        //
-                        //         if (configData["IsCustomIP"] != null)
-                        //             WpfConfig.IsCustomIP = configData["IsCustomIP"].Value<bool>();
-                        //
-                        //         if (configData["NoTwoExitMessage"] != null)
-                        //             WpfConfig.NoTwoExitMessage = configData["NoTwoExitMessage"].Value<bool>();
-                        //
-                        //         SendResponse = new
-                        //         {
-                        //             error = 0,
-                        //             message = "配置更新成功"
-                        //         };
-                        //     }
-                        //     catch (Exception ex)
-                        //     {
-                        //         SendResponse = new
-                        //         {
-                        //             error = 1,
-                        //             message = "配置更新失败: " + ex.Message
-                        //         };
-                        //     }
-                        //
-                        //     break;
                     }
 
                     sendJsonResponse(context.Response, SendResponse);

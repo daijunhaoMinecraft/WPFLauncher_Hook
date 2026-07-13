@@ -8,6 +8,7 @@ using Mcl.Core.Dotnetdetour.Model;
 using Mcl.Core.Dotnetdetour.Tools;
 using Mcl.Core.Dotnetdetour.Tools.Network;
 using Mcl.Core.Dotnetdetour.Var;
+using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json;
 using WPFLauncher.Manager;
 
@@ -422,7 +423,7 @@ public class WebSocket_WebRtc : IMethodHook
                 Console.WriteLine(
                     $"MessageData: {BitConverter.ToString(messageData)}, UserId: {data.UserID}, PeerId: {data.PeerId}");
 
-                var playerInfo = X19Http.Get_Player_Info(data.UserID.ToString());
+                var playerInfo = X19Http.GetPlayerInfo(data.UserID.ToString());
                 Console.WriteLine($"玩家 {playerInfo["entity"]["name"]} 创建了一个 WebRTC 连接, PeerId: {data.PeerId}");
                 var player = new LanGamePlayerInfo
                 {

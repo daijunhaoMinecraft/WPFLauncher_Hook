@@ -18,7 +18,7 @@ public class disableCPPLow : IMethodHook
     public static ama ProcessVersion(GetRoomListPost.RoomEntity roomEntity)
     {
         ama result = ProcessVersionOriginal(roomEntity);
-        Console.WriteLine($"BedrockRoomStatusCheck, result: {result.MaintainStatus}, Fix To: GAME_STATUS_OK");
+        WpfConfig.DefaultLogger.Info($"BedrockRoomStatusCheck, result: {result.MaintainStatus}, Fix To: GAME_STATUS_OK");
         result.MaintainStatus = MaintainStatus.GAME_STATUS_OK;
         return result;
     }

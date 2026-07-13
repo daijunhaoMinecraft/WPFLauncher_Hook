@@ -31,12 +31,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.Util.we", "ac", null)]
         public static bool CheckPermission(string directory)
         {
-            Logger.Info($"开始检查目录状态: \"{directory}\"");
+            WpfConfig.DefaultLogger.Info($"开始检查目录状态: \"{directory}\"");
 
             // 1. 检查路径字符串是否为空
             if (string.IsNullOrWhiteSpace(directory))
             {
-                Logger.Error("检查失败: 传入的路径为空或全是空格。");
+                WpfConfig.DefaultLogger.Error("检查失败: 传入的路径为空或全是空格。");
                 return false;
             }
 
@@ -44,19 +44,19 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 // 2. 检查路径是否正常（格式是否合法）
                 string fullPath = Path.GetFullPath(directory);
-                Logger.Info($"路径格式验证通过，绝对路径为: {fullPath}");
+                WpfConfig.DefaultLogger.Info($"路径格式验证通过，绝对路径为: {fullPath}");
 
                 // 3. 检查目录是否存在
                 if (!Directory.Exists(fullPath))
                 {
-                    Logger.Warn($"目录不存在: {fullPath}");
+                    WpfConfig.DefaultLogger.Warn($"目录不存在: {fullPath}");
                     return false; 
                 }
-                Logger.Info("目录存在，准备检查访问权限...");
+                WpfConfig.DefaultLogger.Info("目录存在，准备检查访问权限...");
 
                 // 4. 检查是否可访问 (尝试读取目录信息)
                 Directory.GetDirectories(fullPath);
-                Logger.Info("目录读取权限正常，准备检查写入权限...");
+                WpfConfig.DefaultLogger.Info("目录读取权限正常，准备检查写入权限...");
 
                 // 5. 检查是否可写入 (尝试创建并删除临时文件)
                 string tempFilePath = Path.Combine(fullPath, Guid.NewGuid().ToString("N") + ".tmp");
@@ -66,42 +66,42 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 }
                 
                 // 全通过
-                Logger.Success($"检查完成！该目录状态正常，允许访问及写入。");
+                WpfConfig.DefaultLogger.Info($"检查完成！该目录状态正常，允许访问及写入。");
                 return true;
             }
             catch (UnauthorizedAccessException ex)
             {
-                Logger.Error($"权限不足，拒绝访问 (请检查是否需要管理员权限): {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"权限不足，拒绝访问 (请检查是否需要管理员权限): {ex.Message}");
                 return false; 
             }
             catch (PathTooLongException)
             {
-                Logger.Error("路径字符串太长，系统无法处理。");
+                WpfConfig.DefaultLogger.Error("路径字符串太长，系统无法处理。");
                 return false;
             }
             catch (DirectoryNotFoundException)
             {
-                Logger.Error("找不到该驱动器或路径中的某一层文件夹。");
+                WpfConfig.DefaultLogger.Error("找不到该驱动器或路径中的某一层文件夹。");
                 return false;
             }
             catch (NotSupportedException)
             {
-                Logger.Error("路径格式不受支持 (可能包含了无效的驱动器盘符)。");
+                WpfConfig.DefaultLogger.Error("路径格式不受支持 (可能包含了无效的驱动器盘符)。");
                 return false;
             }
             catch (IOException ex)
             {
-                Logger.Error($"发生 IO 错误 (可能是磁盘已满，或网络共享断开): {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"发生 IO 错误 (可能是磁盘已满，或网络共享断开): {ex.Message}");
                 return false;
             }
             catch (ArgumentException)
             {
-                Logger.Error("路径包含非法字符 (例如 < > | 等)。");
+                WpfConfig.DefaultLogger.Error("路径包含非法字符 (例如 < > | 等)。");
                 return false;
             }
             catch (Exception ex)
             {
-                Logger.Error($"发生未知异常: {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"发生未知异常: {ex.Message}");
                 return false;
             }
         }
@@ -117,7 +117,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             result = userSelectPath;
             if (!checkResultUserSelectPath && !checkResultRegGetPath)
             {
-                Logger.Error($"MinecraftBENeteasePath not valid permission: {regGetPath} | {userSelectPath}");
+                WpfConfig.DefaultLogger.Error($"MinecraftBENeteasePath not valid permission: {regGetPath} | {userSelectPath}");
                 result = Path.Combine(tb.n, "MinecraftBENeteasePath");
                 RegistryHelper.SetValue("MinecraftBENeteasePath", result);
             }

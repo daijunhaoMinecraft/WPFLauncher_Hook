@@ -109,8 +109,8 @@ public class InitHook : IMethodHook
 	            Directory.CreateDirectory(modsInjectPath);
             }
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-            Console.WriteLine($"[ModsInject] {modsInjectPath}");
+            WpfConfig.DefaultLogger.Info($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
+            WpfConfig.DefaultLogger.Info($"[ModsInject] {modsInjectPath}");
             Console.ResetColor();
             System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
         }
@@ -280,10 +280,8 @@ public class InitHook : IMethodHook
                     {
                         Directory.CreateDirectory(modsInjectPath);
                     }
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-                    Console.WriteLine($"[ModsInject] {modsInjectPath}");
-                    Console.ResetColor();
+                    WpfConfig.DefaultLogger.Info($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
+                    WpfConfig.DefaultLogger.Info($"[ModsInject] {modsInjectPath}");
                     System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
                 }
 
@@ -308,7 +306,7 @@ public class InitHook : IMethodHook
             WpfConfig.Default_HttpAddress = $"http://127.0.0.1:{WpfConfig.HttpPort}/";
             var server = new SimpleHttpServer(); 
             Task.Run(() => server.Start(WpfConfig.Default_HttpAddress));
-            Console.WriteLine($"[Web] 服务器已启动: {WpfConfig.Default_HttpAddress}");
+            WpfConfig.DefaultLogger.Info($"[Web] 服务器已启动: {WpfConfig.Default_HttpAddress}");
         }
         
         // Mac 地址逻辑
@@ -320,24 +318,6 @@ public class InitHook : IMethodHook
 
     private static void PrintStatus()
     {
-        // Console.ForegroundColor = ConsoleColor.Green;
-        // Console.WriteLine("========================================");
-        // Console.WriteLine($"  X19Fucker v{WpfConfig.Version}  ");
-        // Console.WriteLine("  Status: System Hooked Successfully    ");
-        // try
-        // {
-        //     HttpClient httpClient = new HttpClient();
-        //     httpClient.DefaultRequestHeaders.Clear();
-        //     HttpResponseMessage messageData = httpClient.GetAsync("https://gitee.com/dai-junhao-123/app-config/raw/master/HookConfig/AppInfo.json").Result;
-        //     JObject messageJson = JObject.Parse(messageData.Content.ReadAsStringAsync().Result);
-        //     Console.WriteLine($"公告:\n{messageJson["announcement"]}");
-        // }
-        // catch (Exception e)
-        // {
-        //     Console.WriteLine($"[ERROR] 获取公告失败:{e} \n {e.StackTrace}");
-        // }
-        // Console.WriteLine("========================================");
-        // Console.ResetColor();
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("\u2588\u2588\u2557    \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2557  \u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557  \u2588\u2588\u2557\n\u2588\u2588\u2551    \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551 \u2588\u2588\u2554\u255d\n\u2588\u2588\u2551 \u2588\u2557 \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2554\u255d \n\u2588\u2588\u2551\u2588\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u255d \u2588\u2588\u2554\u2550\u2550\u255d  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2588\u2588\u2557 \n\u255a\u2588\u2588\u2588\u2554\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551     \u2588\u2588\u2551     \u2588\u2588\u2551  \u2588\u2588\u2551\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551  \u2588\u2588\u2557\n \u255a\u2550\u2550\u255d\u255a\u2550\u2550\u255d \u255a\u2550\u255d     \u255a\u2550\u255d     \u255a\u2550\u255d  \u255a\u2550\u255d \u255a\u2550\u2550\u2550\u2550\u2550\u255d  \u255a\u2550\u2550\u2550\u2550\u2550\u255d \u255a\u2550\u255d  \u255a\u2550\u255d\n                                                            ");
         Console.ForegroundColor = ConsoleColor.White;

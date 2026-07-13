@@ -61,7 +61,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     _cachedUniqueId = cache?["unique_id"]?.ToString();
                     if (!string.IsNullOrEmpty(_cachedDeviceId))
                     {
-                        Tool.PrintYellow($"[MpayPhone] 从缓存加载设备 ID: {_cachedDeviceId}");
+                        WpfConfig.DefaultLogger.Info($"[MpayPhone] 从缓存加载设备 ID: {_cachedDeviceId}");
                     }
                 }
             }
@@ -85,7 +85,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[MpayPhone] 保存设备缓存失败: {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"[MpayPhone] 保存设备缓存失败: {ex.Message}");
             }
         }
 
@@ -132,7 +132,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
             try
             {
-                Tool.PrintYellow("[MpayPhone] 正在注册新设备...");
+                WpfConfig.DefaultLogger.Info("[MpayPhone] 正在注册新设备...");
                 var content = new FormUrlEncodedContent(formData);
                 var resp = _client.PostAsync(url, content).Result;
                 resp.EnsureSuccessStatusCode();
@@ -141,11 +141,11 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 _cachedUniqueId = uniqueId;
 
                 SaveDeviceCache(uniqueId, _cachedDeviceId);
-                Tool.PrintYellow($"[MpayPhone] 新设备注册成功: {_cachedDeviceId}");
+                WpfConfig.DefaultLogger.Info($"[MpayPhone] 新设备注册成功: {_cachedDeviceId}");
             }
             catch (Exception ex)
             {
-                Tool.PrintRed($"[MpayPhone] 设备注册失败: {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"[MpayPhone] 设备注册失败: {ex.Message}");
                 throw;
             }
         }
@@ -314,7 +314,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[MpayPhone] 完成登录失败: {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"[MpayPhone] 完成登录失败: {ex.Message}");
                 return null;
             }
         }
@@ -334,12 +334,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 string devId = GetOrRegisterDevice(deviceId);
 
                 // 2. 发送短信
-                Tool.PrintYellow($"[MpayPhone] 正在向 {phoneNumber} 发送验证码...");
+                WpfConfig.DefaultLogger.Info($"[MpayPhone] 正在向 {phoneNumber} 发送验证码...");
                 var smsResult = SendSms(phoneNumber, devId);
 
                 if (smsResult.Status == SmsStatus.Failed)
                 {
-                    Tool.PrintRed($"[MpayPhone] 发送验证码失败: {smsResult.ErrorMessage}");
+                    WpfConfig.DefaultLogger.Error($"[MpayPhone] 发送验证码失败: {smsResult.ErrorMessage}");
                     return null;
                 }
 
@@ -349,26 +349,26 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
                 if (dialogResult != System.Windows.Forms.DialogResult.OK || string.IsNullOrEmpty(verifyForm.Ticket))
                 {
-                    Tool.PrintYellow("[MpayPhone] 用户取消验证或验证失败");
+                    WpfConfig.DefaultLogger.Warn("[MpayPhone] 用户取消验证或验证失败");
                     return null;
                 }
 
                 // 4. 完成登录
-                Tool.PrintYellow("[MpayPhone] 正在完成登录...");
+                WpfConfig.DefaultLogger.Info("[MpayPhone] 正在完成登录...");
                 string sauthJson = CompleteLogin(phoneNumber, verifyForm.Ticket, devId);
 
                 if (string.IsNullOrEmpty(sauthJson))
                 {
-                    Tool.PrintRed("[MpayPhone] 最终登录失败，接口返回异常");
+                    WpfConfig.DefaultLogger.Error("[MpayPhone] 最终登录失败，接口返回异常");
                     return null;
                 }
 
-                Tool.PrintYellow($"[MpayPhone] 手机号 {phoneNumber} 登录成功!");
+                WpfConfig.DefaultLogger.Info($"[MpayPhone] 手机号 {phoneNumber} 登录成功!");
                 return sauthJson;
             }
             catch (Exception ex)
             {
-                Tool.PrintRed($"[MpayPhone] 登录流程异常: {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"[MpayPhone] 登录流程异常: {ex.Message}");
                 return null;
             }
         }

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Mcl.Core.Dotnetdetour.Tools;
+using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Code;
@@ -96,7 +97,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
 				Console.ForegroundColor = ConsoleColor.White;
 				Console.WriteLine($"房主 ID: {result.entity.owner_id}");
-				JObject ownerInfo = X19Http.Get_Player_Info(result.entity.owner_id);
+				JObject ownerInfo = X19Http.GetPlayerInfo(result.entity.owner_id);
 				Console.WriteLine("房主名称:" + ownerInfo["entity"]["name"]);
 
 				Console.ForegroundColor = ConsoleColor.Gray;
@@ -132,7 +133,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				// 		Console.WriteLine("[Roommanage] 创建HTML目录失败: " + ex.Message);
 				// 	}
 				// }
-				WpfConfig.JoinOrCreateTime = X19Http.TimestampHelper.GetCurrentTimestampMilliseconds();
+				WpfConfig.JoinOrCreateTime = X19Tools.TimestampHelper.GetCurrentTimestampMilliseconds();
 				Console.WriteLine($"[RoomManage] 创建房间时间:{WpfConfig.JoinOrCreateTime}");
 				WpfConfig.RoomPlayerList.Clear();
 				var BuildPostGetPlayerInfo = new
@@ -141,7 +142,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				};
 				BuildPostGetPlayerInfo.entity_ids.Add(result.entity.owner_id);
 				// 获取玩家信息
-				JObject GetPlayerInfoResult = JObject.Parse(X19Http.RequestX19Api("/user/query/search-by-ids",JsonConvert.SerializeObject(BuildPostGetPlayerInfo)));
+				JObject GetPlayerInfoResult = JObject.Parse(X19Http.Post("/user/query/search-by-ids",JsonConvert.SerializeObject(BuildPostGetPlayerInfo)));
 				foreach (var PlayerInfo in GetPlayerInfoResult["entities"])
 				{
 					PlayerInfo["JoinRoomTime"] = WpfConfig.JoinOrCreateTime;
@@ -229,7 +230,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 					var window = new RoomInfoWindow(Get_Room_Info);
 					window.Show();
 				});
-				JObject Get_Owner_Info = X19Http.Get_Player_Info(Get_Room_Info.entity.owner_id);
+				JObject Get_Owner_Info = X19Http.GetPlayerInfo(Get_Room_Info.entity.owner_id);
 				Console.ForegroundColor = ConsoleColor.Cyan;
 				DebugPrint.LogDebug_NoColorSelect("[RoomInfo]成功获取到房间信息");
 				Console.WriteLine("-----------------------------------------------------------");
@@ -275,7 +276,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				Console.ForegroundColor = ConsoleColor.White;
 				WpfConfig.RoomInfo = Get_Room_Info;
 				WpfConfig.RoomInfo.entity.fids.Add(WPFLauncher.Common.azf<arg>.Instance.User.Id);
-				WpfConfig.JoinOrCreateTime = X19Http.TimestampHelper.GetCurrentTimestampMilliseconds();
+				WpfConfig.JoinOrCreateTime = X19Tools.TimestampHelper.GetCurrentTimestampMilliseconds();
 				Console.WriteLine($"[RoomManage] 加入房间时间:{WpfConfig.JoinOrCreateTime}");
 				if (WpfConfig.IsStartWebSocket)
 				{
@@ -309,7 +310,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			Console.WriteLine("[RoomInfo]你已被房主踢出房间,正在重新加入房间");
 			while (true)
 			{
-				JObject Get_RoomEnter_Info = JObject.Parse(X19Http.RequestX19Api("/online-lobby-room-enter",
+				JObject Get_RoomEnter_Info = JObject.Parse(X19Http.Post("/online-lobby-room-enter",
 					JsonConvert.SerializeObject(new
 					{
 						room_id = WpfConfig.RoomInfo.entity.entity_id, password = WpfConfig.Password,
@@ -456,7 +457,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				result.entities.Add(new WPFLauncher.Network.Protocol.LobbyGame.LobbyRoomMemberInfoEntity(){member_id = WPFLauncher.Common.azf<arg>.Instance.User.UserID,ident = HaveOwner ? 0 : 1});
 			}
 			// 获取玩家信息
-			JObject Get_Player_Info = X19Http.Get_Players_Info(newPlayerList);
+			JObject Get_Player_Info = X19Http.GetPlayersInfo(newPlayerList);
 			Console.ForegroundColor = ConsoleColor.Cyan;
 			DebugPrint.LogDebug_NoColorSelect("[RoomInfo]获取房间成员信息成功,以下是成员信息:");
 			DebugPrint.LogDebug_NoColorSelect("-----------------------------------------------------------");
@@ -643,7 +644,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 						{
 							break;
 						}
-						JObject Get_Backup_Return = JObject.Parse(X19Http.RequestX19Api("/online-lobby-backup/create",
+						JObject Get_Backup_Return = JObject.Parse(X19Http.Post("/online-lobby-backup/create",
 							JsonConvert.SerializeObject(new { backup_id = "1", name = "Server_Backup" })));
 						Console.ForegroundColor = ConsoleColor.Cyan;
 						if (Get_Backup_Return["code"].ToObject<int>() != 0)
@@ -679,8 +680,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
 							Console.WriteLine("-----------------------------------------------------------");
 							Console.WriteLine("存档名称:" + Get_Backup_Return["entity"]["name"].ToString());
 							Console.WriteLine("存档ResID:" + Get_Backup_Return["entity"]["res_id"].ToString());
-							Console.WriteLine("存档保存时间:" + X19Http.unix_timestamp_to(Get_Backup_Return["entity"]["timestamp"].ToObject<long>()));
-							Console.WriteLine("存档过期时间:" + X19Http.unix_timestamp_to(Get_Backup_Return["entity"]["expire_time"].ToObject<long>()));
+							Console.WriteLine("存档保存时间:" + X19Tools.unix_timestamp_to(Get_Backup_Return["entity"]["timestamp"].ToObject<long>()));
+							Console.WriteLine("存档过期时间:" + X19Tools.unix_timestamp_to(Get_Backup_Return["entity"]["expire_time"].ToObject<long>()));
 							Console.WriteLine("存档大小:" + Get_Backup_Return["entity"]["size"].ToString() + "字节");
 							Console.WriteLine("备份存档返回值:" + Get_Backup_Return["code"].ToString());
 							Console.WriteLine("备份存档返回消息:" + Get_Backup_Return["message"].ToString());

@@ -278,7 +278,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     if (result.Success)
                     {
                         Ticket = result.Ticket;
-                        Tool.PrintYellow("[MpayPhone] 验证成功!");
+                        WpfConfig.DefaultLogger.Info("[MpayPhone] 验证成功!");
                         this.DialogResult = DialogResult.OK;
                         this.Close();
                     }
@@ -315,7 +315,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     if (result.Status == SmsStatus.Success)
                     {
                         errorLabel.Text = "";
-                        Tool.PrintYellow("[MpayPhone] 验证码已重新发送");
+                        WpfConfig.DefaultLogger.Info("[MpayPhone] 验证码已重新发送");
                     }
                     else
                     {

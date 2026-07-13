@@ -15,7 +15,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.ViewModel.LobbyGame.jo", "c", "No_Password_Number")]
 		public static bool c(string dpu)
 		{
-			//Console.WriteLine($"[INFO]发现WPFLauncher正在调用密码是否为整数,检测字符串:{dpu}");
 			return true;
 		}
 	}

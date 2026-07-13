@@ -10,8 +10,12 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour;
+using Mcl.Core.Dotnetdetour.Tools;
 using Mcl.Core.Extensions;
+using Mcl.Core.NeteaseProtocol;
 using Mcl.Core.Network.Interface;
+using Mcl.Core.Tools;
+using Newtonsoft.Json.Linq;
 
 namespace Mcl.Core.Network
 {
@@ -23,10 +27,91 @@ namespace Mcl.Core.Network
 		{
 			var uri = new Uri(new Uri(this.BaseUrl.ToString()), request.Resource);
 			WpfConfig.DefaultLogger.Info($"[AsyncRequest] url: {uri}");
+			
+			// 获取请求内容
+			byte[] body = new byte[] { };
+			string stringBody = "";
+			bool isString = false;
+			foreach (var param in request.Parameters)
+			{
+				if (param.Type == ParameterType.RequestBody)
+				{
+					if (param.Value is byte[] byteValue)
+					{
+						body = byteValue;
+					}
+					else if (param.Value is string stringValue)
+					{
+						isString = true;
+						stringBody = stringValue;
+						body = Encoding.UTF8.GetBytes(stringValue);
+					}
+				}
+			}
 
 			string name = Enum.GetName(typeof(Method), request.Method);
 			Method method = request.Method;
-			NetRequestAsyncHandle netRequestAsyncHandle;
+			NetRequestAsyncHandle netRequestAsyncHandle = new NetRequestAsyncHandle();
+			NetResponse netResponse = new NetResponse();
+
+			try
+			{
+				if (uri.ToString().EndsWith("/salog-new"))
+				{
+					string decryptString = X19Crypt.DecryptX19Body(body);
+					JObject parseJson = JObject.Parse(decryptString);
+					WpfConfig.DefaultLogger.Info($"[Netease Anti Cheat] 发现/salog-new的post请求(进程检测/dll检测/注入检测等)已及时制止");
+					WpfConfig.DefaultLogger.Info("[INFO]检测类型: " + parseJson["type"].ToString() + "发送数据: " + parseJson["data"].ToString());
+					return netRequestAsyncHandle;
+				}
+				if (uri.ToString().EndsWith("/salog"))
+				{
+					JObject JsonRequest = JObject.Parse(stringBody);
+					WpfConfig.DefaultLogger.Info($"[Salog] type: {JsonRequest["type"]}, data: {JsonRequest["data"]}");
+					return netRequestAsyncHandle;
+				}
+				if (uri.ToString().EndsWith("/client-log"))
+				{
+					JObject JsonRequest = JObject.Parse(stringBody);
+					WpfConfig.DefaultLogger.Info($"[ClientLog] FileName: {JsonRequest["file_name"]}, msg: {JsonRequest["msg"]}");
+					return netRequestAsyncHandle;
+				}
+				if (uri.ToString().EndsWith("/diagnostic-log"))
+				{
+					WpfConfig.DefaultLogger.Info($"[diagnosticLog] Json: {stringBody}");
+					return netRequestAsyncHandle;
+				}
+
+				if (uri.ToString().EndsWith("/diagnostic-value"))
+				{
+					WpfConfig.DefaultLogger.Info($"[diagnosticValue] Json: {stringBody}");
+					return netRequestAsyncHandle;
+				}
+
+				if (uri.ToString().EndsWith("game-play-v2/start"))
+				{
+					WpfConfig.DefaultLogger.Info($"用户启动了游戏");
+					string result = "{\n   \"code\" : 0,\n   \"details\" : \"\",\n   \"entity\" : {\n      \"anti_addiction_info\" : {\n         \"current_online_time_sum\" : 0,\n         \"msg\" : \"\",\n         \"online_time_left\" : 0,\n         \"online_time_limit\" : 0,\n         \"online_time_sum\" : 0,\n         \"status\" : 0\n      },\n      \"is_anti_addiction\" : false,\n      \"record\" : null\n   },\n   \"message\" : \"正常返回\"\n}";
+					netResponse.Content = result;
+					callback(netResponse, netRequestAsyncHandle);
+					return netRequestAsyncHandle;
+				}
+				
+				if (uri.ToString().EndsWith("game-play-v2/stop"))
+				{
+					WpfConfig.DefaultLogger.Info($"用户关闭了游戏");
+					string result = "{\"code\":0,\"message\":\"\\u6b63\\u5e38\\u8fd4\\u56de\",\"details\":\"\",\"entity\":null}";
+					netResponse.Content = result;
+					callback(netResponse, netRequestAsyncHandle);
+					return netRequestAsyncHandle;
+				}
+			}
+			catch (Exception e)
+			{
+				WpfConfig.DefaultLogger.Error(e);
+				return netRequestAsyncHandle;
+			}
+			
 			if (method - Method.POST > 1 && method != Method.PATCH)
 			{
 				netRequestAsyncHandle = this.ExecuteAsync(request, callback, name, new Func<IHttp, Action<HttpResponse>, string, HttpWebRequest>(NetClient.DoAsGetAsync));
@@ -555,13 +640,110 @@ namespace Mcl.Core.Network
 			}
 			return netResponse.RawBytes;
 		}
+		
+		// 用字符串替换请求体
+		private void SetRequestBody(INetRequest request, string newBody)
+		{
+			foreach (var param in request.Parameters)
+			{
+				if (param.Type == ParameterType.RequestBody)
+				{
+					param.Value = newBody;
+					break;
+				}
+			}
+		}
+
+		// 用字节数组替换请求体
+		private void SetRequestBody(INetRequest request, byte[] newBody)
+		{
+			foreach (var param in request.Parameters)
+			{
+				if (param.Type == ParameterType.RequestBody)
+				{
+					param.Value = newBody;
+					break;
+				}
+			}
+		}
 
 		// Token: 0x06000101 RID: 257 RVA: 0x00004E88 File Offset: 0x00003088
 		public virtual INetResponse Execute(INetRequest request)
 		{
+			bool isServerListRequest = false;
+			var uri = new Uri(new Uri(this.BaseUrl.ToString()), request.Resource);
+			WpfConfig.DefaultLogger.Info($"[Request] url: {uri.ToString()}");
+			if (request.Resource.EndsWith("/serverlist/release.json") || uri.ToString().EndsWith("/serverlist/release.json"))
+			{
+				WpfConfig.DefaultLogger.Info("更改服务器");
+				request.Resource = "";
+				this.BaseUrl = WpfConfig.ServerListUri;
+				isServerListRequest = true;
+			}
+
+			// 获取请求内容
+			byte[] body = new byte[] { };
+			string stringBody = "";
+			bool isString = false;
+			foreach (var param in request.Parameters)
+			{
+				if (param.Type == ParameterType.RequestBody)
+				{
+					if (param.Value is byte[] byteValue)
+					{
+						body = byteValue;
+					}
+					else if (param.Value is string stringValue)
+					{
+						isString = true;
+						stringBody = stringValue;
+						body = Encoding.UTF8.GetBytes(stringValue);
+					}
+				}
+			}
+			
 			string name = Enum.GetName(typeof(Method), request.Method);
 			Method method = request.Method;
-			INetResponse netResponse;
+			INetResponse netResponse = new NetResponse();
+			
+			if (uri.ToString().EndsWith("/diagnostic-log"))
+			{
+				WpfConfig.DefaultLogger.Info($"diagnosticLog, Json: {stringBody}");
+				return netResponse;
+			}
+
+			if (uri.ToString().EndsWith("popup-window/query"))
+			{
+				WpfConfig.DefaultLogger.Info($"拦截网易我的世界启动器弹窗广告获取请求");
+				netResponse.Content = "{\"code\":0,\"details\":\"\",\"entity\":{\"popup_window\":[],\"server_time\":0},\"message\":\"正常返回\"}";
+				return netResponse;
+			}
+
+			if (uri.ToString().EndsWith("pe-item/query/search-lobby-by-id-list"))
+			{
+				WpfConfig.DefaultLogger.Info($"拦截网易我的世界启动器联机大厅下载请求");
+				netResponse.Content = "{\"code\":0,\"details\":\"\",\"entities\":[],\"message\":\"正常返回\",\"total\":0}";
+				return netResponse;
+			}
+			
+			if (uri.ToString().EndsWith("/salog-new"))
+			{
+				string decryptString = X19Crypt.DecryptX19Body(body);
+				JObject parseJson = JObject.Parse(decryptString);
+				WpfConfig.DefaultLogger.Info($"[Netease Anti Cheat] 发现/salog-new的post请求(进程检测/dll检测/注入检测等)已及时制止");
+				WpfConfig.DefaultLogger.Info("[INFO]检测类型: " + parseJson["type"].ToString() + "发送数据: " + parseJson["data"].ToString());
+				return netResponse;
+			}
+
+			if (uri.ToString().EndsWith("/authentication-otp"))
+			{
+				string sauthJson = SauthJsonRandomGenerator.Generate();
+				Console.WriteLine($"sauth_json随机化(authentication-otp): {sauthJson}");
+				JObject decryptBody = JObject.Parse(X19Crypt.DecryptX19Body(body));
+				decryptBody["sauth_json"] =  sauthJson;
+				SetRequestBody(request, decryptBody.ToString());
+			}
+
 			if (method - Method.POST > 1 && method != Method.PATCH)
 			{
 				netResponse = this.Execute(request, name, new Func<IHttp, string, HttpResponse>(NetClient.DoExecuteAsGet));
@@ -570,6 +752,35 @@ namespace Mcl.Core.Network
 			{
 				netResponse = this.Execute(request, name, new Func<IHttp, string, HttpResponse>(NetClient.DoExecuteAsPost));
 			}
+			
+			if (uri.ToString().EndsWith("/authentication-otp"))
+			{
+				string decryptString = X19Crypt.DecryptX19Body(netResponse.RawBytes);
+				JObject authResult = JObject.Parse(decryptString);
+				WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {decryptString}");
+				if (authResult["code"].ToObject<int>() == 0)
+				{
+					X19Crypt.Token = authResult["entity"]["token"].ToString();
+					X19Crypt.UserId = authResult["entity"]["entity_id"].ToString();
+					string UserDetailResult = X19Http.Post("/user-detail", "");
+					WpfConfig.DefaultLogger.Info($"Login Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}, userDetail: {UserDetailResult}");
+				}
+				else if (authResult["code"].ToObject<int>() == 29)
+				{
+					JObject detailsObj = JObject.Parse(authResult["details"].ToString());
+					WpfConfig.DefaultLogger.Error($"因 {detailsObj["ban_msg"]} 您的账号被禁止登录游戏至 {X19Tools.unix_timestamp_to(detailsObj["ban_to_ts"].ToObject<long>())}，{authResult["message"].ToString()}!");
+				}
+				else
+				{
+					WpfConfig.DefaultLogger.Error($"Auth Failed: {decryptString}");
+				}
+			}
+			
+			if (isServerListRequest)
+			{
+				WpfConfig.ServerList = JObject.Parse(netResponse.Content);
+			}
+			
 			return netResponse;
 		}
 

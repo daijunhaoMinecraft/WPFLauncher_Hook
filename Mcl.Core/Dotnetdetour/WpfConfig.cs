@@ -13,7 +13,7 @@ namespace Mcl.Core.Dotnetdetour
 {
     public class WpfConfig
     {
-        public static string Version = "4.0.8-Public-Beta3";
+        public static string Version = "4.0.8-Public-Beta4";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
@@ -34,8 +34,11 @@ namespace Mcl.Core.Dotnetdetour
         public static int MaxRoomCount = 16;
         public static bool IsLogin = false;
         public static bool AlwaysSaveWorld = true;
-        public static string NeteaseUpdateDomainhttp = "https://x19.update.netease.com/serverlist/release.json";
-        public static List<DecryptItemInfo> DecryptItems = new List<DecryptItemInfo>();
+
+        public static string ServerListUrl = "https://x19.update.netease.com/serverlist/release.json";
+        public static Uri ServerListUri = new Uri(ServerListUrl);
+        public static JObject ServerList = new();
+
         public static JArray RoomPlayerList = new JArray();
         public static long JoinOrCreateTime = 0;
         public static string wpflauncherRoot = Directory.GetCurrentDirectory();
@@ -63,21 +66,6 @@ namespace Mcl.Core.Dotnetdetour
 
         public static List<FriendStatus> ListFriendStatus = new List<FriendStatus>();
 
-        public class DecryptItemInfo
-        {
-            /// <summary>
-            /// 组件ID
-            /// </summary>
-            public string item_id { get; set; }
-            /// <summary>
-            /// 解密密钥
-            /// </summary>
-            public string decryptkey { get; set; }
-            /// <summary>
-            /// 组件UUID
-            /// </summary>
-            public string uuid { get; set; }
-        }
         public static void WriteRoomBlacklist()
         {
             string blacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
@@ -99,13 +87,13 @@ namespace Mcl.Core.Dotnetdetour
             {
                 // Create Directory RoomConfig
                 Directory.CreateDirectory($"{WpfConfig.wpflauncherRoot}/RoomConfig");
-                Console.WriteLine("[Warn] 未创建RoomConfig文件夹,已自动创建");
+                WpfConfig.DefaultLogger.Warn("未创建RoomConfig文件夹,已自动创建");
             }
             if (!File.Exists($"{WpfConfig.wpflauncherRoot}/RoomConfig/BlackList.json"))
             {
                 // Init BlackList
                 File.WriteAllText($"{WpfConfig.wpflauncherRoot}/RoomConfig/BlackList.json", "[]");
-                Console.WriteLine("[Warn] 未创建RoomConfig/BlackList.json文件,已自动创建");
+                WpfConfig.DefaultLogger.Warn("[Warn] 未创建RoomConfig/BlackList.json文件,已自动创建");
             }
             WpfConfig.RoomBlacklist = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(blacklistFilePath));
         }

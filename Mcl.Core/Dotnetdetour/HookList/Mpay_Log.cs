@@ -17,7 +17,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		{
 			if (WpfConfig.IsDebug)
 			{
-				Console.WriteLine(log);
+				WpfConfig.DefaultLogger.Info(log);
 			}
 		}
 	}

@@ -25,6 +25,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             return null;
         }
+
         [HookMethod("WPFLauncher.Manager.Game.Launcher.auw", "o", "StartJava_Original")]
         private aqq StartJava(string oby, EventHandler obz, JavaType oca, string ocb, bool occ = true)
         {
@@ -55,10 +56,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     string destinationPath = System.IO.Path.Combine(minecraftModsPath, newfilename);
 
                     System.IO.File.Copy(jarFile, destinationPath, true);
-                    Console.WriteLine($"[INFO]成功复制模组: {fileName}(修改后的文件名称:{newfilename}) 到 {minecraftModsPath}");
+                    WpfConfig.DefaultLogger.Info($"成功复制模组: {fileName}(修改后的文件名称:{newfilename}) 到 {minecraftModsPath}");
                 }
-                System.Diagnostics.Process.Start("explorer.exe", minecraftModsPath);
-                //uz.n("已为您打开模组文件夹,确认模组无误后再点击确定即可开始游戏", "");
             }
             return StartJava_Original(oby, obz, oca, ocb, occ);
         }

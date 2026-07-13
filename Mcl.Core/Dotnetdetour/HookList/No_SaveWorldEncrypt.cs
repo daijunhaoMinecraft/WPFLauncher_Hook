@@ -8,23 +8,17 @@ namespace Mcl.Core.Dotnetdetour.HookList
 	{
 		[CompilerGenerated]
 		[HookMethod("MCStudio.Utils.cd", "b", null)]
-		public static string b(string aam)
+		public static string EncryptFolder(string path)
 		{
-			if (WpfConfig.IsDebug)
-			{
-				Console.WriteLine($"[INFO]发现网易正在加密存档已被制止,存档路径:{aam}");
-			}
+			WpfConfig.DefaultLogger.Info($"发现网易正在加密存档已被制止,存档路径:{path}");
 			return "";
 		}
 		
 		[CompilerGenerated]
 		[HookMethod("MCStudio.Utils.cd", "d", null)]
-		private unsafe static string d(string aao)
+		private unsafe static string EncryptSingleFile(string path)
 		{
-			if (WpfConfig.IsDebug)
-			{
-				Console.WriteLine($"[INFO]发现网易正在加密存档已被制止,加密文件路径:{aao}");
-			}
+			WpfConfig.DefaultLogger.Info($"[INFO]发现网易正在加密存档已被制止,加密文件路径:{path}");
 			return "";
 		}
 

@@ -48,9 +48,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		{
 			if (WpfConfig.IsDebug)
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("[MpayLogin]返回代码: " + code.ToString());
-				Console.ForegroundColor = ConsoleColor.White;
+				WpfConfig.DefaultLogger.Info("[MpayLogin]返回代码: " + code.ToString());
 			}
 
 			if (code == 1)
@@ -106,7 +104,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
 			if (string.IsNullOrEmpty(sauthContent))
 			{
-				Tool.PrintRed("账号凭证提取失败，使用原号登录");
+				WpfConfig.DefaultLogger.Error("账号凭证提取失败，使用原号登录");
 				No_RealName(1);
 				return;
 			}
@@ -154,7 +152,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				{
 					sauthContent = cookieData;
 				}
-				Tool.PrintYellow("cookies:" + cookieData);
+				WpfConfig.DefaultLogger.Info("cookies:" + cookieData);
 			}
 			else if (acc.Type == AccountType._4399)
 			{
@@ -170,10 +168,10 @@ namespace Mcl.Core.Dotnetdetour.HookList
 						}
 						catch (Exception ex)
 						{
-							Console.WriteLine($"解析Json失败: {ex}");
+							WpfConfig.DefaultLogger.Info($"解析Json失败: {ex}");
 							sauthContent = loginResult.SauthJson;
 						}
-						Tool.PrintYellow("4399:" + acc.Username);
+						WpfConfig.DefaultLogger.Info("4399:" + acc.Username);
 					}
 					else
 					{
@@ -183,8 +181,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine(ex.ToString());
-					Tool.PrintRed("4399账号转换失败");
+					WpfConfig.DefaultLogger.Error($"4399账号转换失败, \n{ex}");
 					return null;
 				}
 			}
@@ -196,7 +193,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 					try
 					{
 						sauthContent = JObject.Parse(acc.CookieData)["sauth_json"].ToString();
-						Tool.PrintYellow($"[Phone] 使用缓存凭证 {acc.PhoneNumber}");
+						WpfConfig.DefaultLogger.Info($"[Phone] 使用缓存凭证 {acc.PhoneNumber}");
 					}
 					catch
 					{
@@ -206,12 +203,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
 				if (string.IsNullOrEmpty(sauthContent))
 				{
-					Tool.PrintYellow($"[Phone] 开始手机号登录: {acc.PhoneNumber}");
+					WpfConfig.DefaultLogger.Info($"[Phone] 开始手机号登录: {acc.PhoneNumber}");
 					string result = MpayPhoneLogin.FullLoginFlow(acc.PhoneNumber, acc.DeviceId);
 
 					if (string.IsNullOrEmpty(result))
 					{
-						Tool.PrintRed("手机号登录失败");
+						WpfConfig.DefaultLogger.Error("手机号登录失败");
 						return null;
 					}
 
@@ -252,7 +249,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				if (fieldI != null)
 				{
 					fieldI.SetValue(arfInstance, true);
-					Console.WriteLine("设置bool成功");
+					WpfConfig.DefaultLogger.Info("设置bool成功");
 				}
 
 				// 构建 SauthJsonEntity 并注入
@@ -277,7 +274,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				if (fieldD != null)
 				{
 					fieldD.SetValue(arfInstance, sauthContent);
-					Console.WriteLine("设置Cookie成功");
+					WpfConfig.DefaultLogger.Info("设置Cookie成功");
 				}
 				else
 				{
@@ -286,7 +283,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 					if (fieldD != null)
 					{
 						fieldD.SetValue(arfInstance, JsonConvert.SerializeObject(sauthJsonEntity));
-						Console.WriteLine("设置Cookie成功(Entity)");
+						WpfConfig.DefaultLogger.Info("设置Cookie成功(Entity)");
 					}
 				}
 
@@ -296,8 +293,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"[MpayLogin] 注入Cookie失败: {ex.Message}");
-				Tool.PrintRed("Cookie注入失败，使用原号登录");
+				WpfConfig.DefaultLogger.Error($"Cookie注入失败, 使用原号登录: \n{ex}");
 				No_RealName(1);
 			}
 		}
@@ -315,7 +311,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				readCookie = File.ReadAllText(filePath);
 			}
 			string cookie = Interaction.InputBox("请输入Cookies"/*\n自动获取cookie请输入1"*/, "Cookies", readCookie, -1, -1);
-			Tool.PrintYellow("cookies:" + cookie);
+			WpfConfig.DefaultLogger.Info("cookies:" + cookie);
 			File.WriteAllText(filePath, cookie);
 
 			// 尝试解析 sauth_json

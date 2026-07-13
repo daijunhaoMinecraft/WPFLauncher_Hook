@@ -88,7 +88,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 					{
 						text9 = JObject.Parse(loginResult.SauthJson)["sauth_json"].ToString();
 						// text9 = loginResult.SauthJson;
-						Tool.PrintYellow("4399:" + acc.Username);
+						WpfConfig.DefaultLogger.Info("4399:" + acc.Username);
 					}
 					else
 					{
@@ -99,8 +99,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine(ex.ToString());
-					Tool.PrintRed("4399账号转换失败，切换为原号登录");
+					WpfConfig.DefaultLogger.Error($"4399账号转换失败，切换为原号登录: \n{ex}");
 					LoginWithOriginal(hud, hue);
 					return;
 				}
@@ -114,7 +113,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 					try
 					{
 						text9 = JObject.Parse(acc.CookieData)["sauth_json"].ToString();
-						Tool.PrintYellow($"[Phone] 使用缓存凭证 {acc.PhoneNumber}");
+						WpfConfig.DefaultLogger.Info($"[Phone] 使用缓存凭证 {acc.PhoneNumber}");
 					}
 					catch
 					{
@@ -125,12 +124,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				if (string.IsNullOrEmpty(text9))
 				{
 					// 需要完整手机号登录流程
-					Tool.PrintYellow($"[Phone] 开始手机号登录: {acc.PhoneNumber}");
+					WpfConfig.DefaultLogger.Info($"[Phone] 开始手机号登录: {acc.PhoneNumber}");
 					string sauthJson = MpayPhoneLogin.FullLoginFlow(acc.PhoneNumber, acc.DeviceId);
 
 					if (string.IsNullOrEmpty(sauthJson))
 					{
-						Tool.PrintRed("手机号登录失败，切换为原号登录");
+						WpfConfig.DefaultLogger.Error("手机号登录失败，切换为原号登录");
 						LoginWithOriginal(hud, hue);
 						return;
 					}
@@ -178,12 +177,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				{
 					text9 = cookieData;
 				}
-				Tool.PrintYellow("cookies:" + cookieData);
+				WpfConfig.DefaultLogger.Info("cookies:" + cookieData);
 			}
 
 			if (string.IsNullOrEmpty(text9))
 			{
-				Tool.PrintRed("账号凭证有误，切换为原号登录");
+				WpfConfig.DefaultLogger.Error("账号凭证有误，切换为原号登录");
 				LoginWithOriginal(hud, hue);
 				return;
 			}
@@ -192,7 +191,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			{
 				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
 			}
-			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
+			WpfConfig.DefaultLogger.Info($"SauthJson: {JsonConvert.SerializeObject(new { sauth_json = text9 })}");
 			WpfConfig.IsLogin = true;
 			LoginFix.f(text9, hue);
 		}
@@ -206,7 +205,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			{
 				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = hud } }));
 			}
-			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
+			WpfConfig.DefaultLogger.Info($"SauthJson:{JsonConvert.SerializeObject(new { sauth_json = hud })}");
 			WpfConfig.IsLogin = true;
 			LoginFix.f(hud, hue);
 		}
@@ -257,7 +256,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine(ex.ToString());
+					WpfConfig.DefaultLogger.Error(ex);
 					LoginWithOriginal(hud, hue);
 					return;
 				}
@@ -286,7 +285,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			}
 			if (string.IsNullOrEmpty(text9) && !text.StartsWith("{"))
 			{
-				Tool.PrintRed("cookies有误");
+				WpfConfig.DefaultLogger.Error("cookies有误");
 				if (loginby4399)
 				{
 					text2 = "";
@@ -300,25 +299,25 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			{
 				if (!(text2 == "off") && !(text2 == ""))
 				{
-					Tool.PrintYellow("4399:" + text2);
+					WpfConfig.DefaultLogger.Info("4399:" + text2);
 					File.WriteAllText(filePath2, text2);
 					LoginWithCookieData(text9, hue);
 				}
 				else
 				{
-					Tool.PrintYellow("选择原号登录(原因：玩家填入off或空)");
+					WpfConfig.DefaultLogger.Info("选择原号登录(原因：玩家填入off或空)");
 					LoginWithOriginal(hud, hue);
 				}
 			}
 			else if (!(text == "off") && !(text == ""))
 			{
-				Tool.PrintYellow("cookies:" + text);
+				WpfConfig.DefaultLogger.Info("cookies:" + text);
 				File.WriteAllText(filePath, text);
 				LoginWithCookieData(text9, hue);
 			}
 			else
 			{
-				Tool.PrintYellow("选择原号登录(原因：玩家填入off或空)");
+				WpfConfig.DefaultLogger.Info("选择原号登录(原因：玩家填入off或空)");
 				LoginWithOriginal(hud, hue);
 			}
 		}
@@ -332,123 +331,9 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			{
 				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = text9 } }));
 			}
-			Console.WriteLine($"[INFO]当前登录账号Cookie内容:{JsonConvert.SerializeObject(new { sauth_json = text9 })}");
+			WpfConfig.DefaultLogger.Info($"SauthJson: {JsonConvert.SerializeObject(new { sauth_json = text9 })}");
 			WpfConfig.IsLogin = true;
 			LoginFix.f(text9, hue);
-		}
-
-		// Token: 0x06000040 RID: 64 RVA: 0x00003334 File Offset: 0x00001534
-		public static string TextGainCenter(string left, string right, string text)
-		{
-			bool flag = string.IsNullOrEmpty(text);
-			string text2;
-			if (flag)
-			{
-				int num = (int)MessageBox.Show("出现严重错误，返回文本为空！\nError:Text is Empty!");
-				text2 = "";
-			}
-			else
-			{
-				int num2 = text.IndexOf(left);
-				bool flag2 = num2 == -1;
-				if (flag2)
-				{
-					int num3 = (int)MessageBox.Show("出现严重错误，返回文本为空！\nError:Can't Find String For Left!");
-					text2 = "";
-				}
-				else
-				{
-					int num4 = num2 + left.Length;
-					int num5 = text.IndexOf(right, num4);
-					bool flag3 = num5 == -1;
-					if (flag3)
-					{
-						int num6 = (int)MessageBox.Show("出现严重错误，返回文本为空！nError:Can't Find String For Right!");
-						text2 = "";
-					}
-					else
-					{
-						string text3 = text.Substring(num4, num5 - num4);
-						string text4 = "\\";
-						string text5 = "";
-						string text6 = text4;
-						string text7 = text5;
-						text2 = text3.Replace(text6, text7);
-					}
-				}
-			}
-			return text2;
-		}
-
-		// Token: 0x06000041 RID: 65 RVA: 0x000033F4 File Offset: 0x000015F4
-		public static string GetRegistryValue(string keyName)
-		{
-			string text = "";
-			try
-			{
-				RegistryKey registryKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Netease\\MCLauncher");
-				text = (string)registryKey.GetValue(keyName);
-			}
-			catch (Exception ex)
-			{
-			}
-			return text;
-		}
-
-		// Token: 0x06000042 RID: 66 RVA: 0x00003444 File Offset: 0x00001644
-		public static string ExtractTextBetween(string text, string left, string right)
-		{
-			bool flag = string.IsNullOrEmpty(text);
-			string text2;
-			if (flag)
-			{
-				Console.WriteLine("文本为空！");
-				text2 = "";
-			}
-			else
-			{
-				int num = text.IndexOf(left);
-				bool flag2 = num == -1;
-				if (flag2)
-				{
-					Console.WriteLine("找不到左边界字符串！");
-					text2 = "";
-				}
-				else
-				{
-					int num2 = num + left.Length;
-					int num3 = text.IndexOf(right, num2);
-					bool flag3 = num3 != -1;
-					if (flag3)
-					{
-						text2 = text.Substring(num2, num3 - num2);
-					}
-					else
-					{
-						Console.WriteLine("找不到右边界字符串！");
-						text2 = "";
-					}
-				}
-			}
-			return text2;
-		}
-
-		// Token: 0x06000043 RID: 67 RVA: 0x000034DC File Offset: 0x000016DC
-		public static string CalculateMD5(string input)
-		{
-			string text;
-			using (MD5 md = MD5.Create())
-			{
-				byte[] bytes = Encoding.UTF8.GetBytes(input);
-				byte[] array = md.ComputeHash(bytes);
-				StringBuilder stringBuilder = new StringBuilder();
-				for (int i = 0; i < array.Length; i++)
-				{
-					stringBuilder.Append(array[i].ToString("x2"));
-				}
-				text = stringBuilder.ToString();
-			}
-			return text;
 		}
 	}
 }

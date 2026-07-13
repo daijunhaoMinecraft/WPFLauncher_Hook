@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using Mcl.Core.Dotnetdetour;
 using Mcl.Core.Dotnetdetour.HookList;
 using Mcl.Core.Dotnetdetour.Tools;
+using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -47,32 +48,27 @@ public static class HookBootstrapper
 
     private static void ExitProcess()
     {
-        Logger.Info("程序即将退出, 正在执行清理操作...");
-        Logger.Info("检查是否进入联机大厅房间");
+        WpfConfig.DefaultLogger.Info("程序即将退出, 正在执行清理操作...");
+        WpfConfig.DefaultLogger.Info("检查是否进入联机大厅房间");
         if (WpfConfig.RoomInfo != null)
         {
             if (!string.IsNullOrWhiteSpace(WpfConfig.RoomInfo.entity.entity_id))
             {
-                Logger.Info("检测到用户尚未退出房间, 正在退出...");
-                Console.WriteLine("[AutoExit] 正在退出房间...");
-                var sExitRoomResult = X19Http.RequestX19Api("/online-lobby-room-enter/leave-room",
+                WpfConfig.DefaultLogger.Info("检测到用户尚未退出房间, 正在退出...");
+                var sExitRoomResult = X19Http.Post("/online-lobby-room-enter/leave-room",
                     JsonConvert.SerializeObject(new { room_id = WpfConfig.RoomInfo.entity.entity_id }));
-                Console.WriteLine($"[AutoExit] 退出房间返回:{Regex.Escape(sExitRoomResult)}");
+                WpfConfig.DefaultLogger.Info($"退出房间返回: {Regex.Escape(sExitRoomResult)}");
                 if (JObject.Parse(sExitRoomResult)["code"].ToObject<int>() == 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("[AutoExit] 退出房间成功!");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WpfConfig.DefaultLogger.Info("退出房间成功!");
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[AutoExit] 退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WpfConfig.DefaultLogger.Error($"退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");
                 }
             }
         }
-        Logger.Info("通过, 正在退出程序...");
+        WpfConfig.DefaultLogger.Info("通过, 正在退出程序...");
     }
         
     // 2. 拦截事件的执行逻辑
@@ -81,7 +77,7 @@ public static class HookBootstrapper
         if (ctrlType == CTRL_CLOSE_EVENT)
         {
             // 在这里运行你的拦截代码！
-            Console.WriteLine("\n[拦截] 检测到控制台正在关闭！");
+            WpfConfig.DefaultLogger.Info("\n[拦截] 检测到控制台正在关闭！");
             
             // 运行清理代码、保存数据等操作
             ExitProcess();

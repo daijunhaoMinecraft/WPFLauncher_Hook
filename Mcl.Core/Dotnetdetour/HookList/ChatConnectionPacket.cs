@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -8,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour.Model;
 using Mcl.Core.Dotnetdetour.Tools;
+using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager;
@@ -17,81 +19,62 @@ using Application = System.Windows.Application;
 
 namespace Mcl.Core.Dotnetdetour.HookList
 {
-    internal class Recv_Pocket : IMethodHook
+    internal class ChatConnectionPacket : IMethodHook
     {
-        private static readonly object _lockObject = new object();
-        private static readonly string LogFilePath = Path.Combine(Directory.GetCurrentDirectory(), "logs", "recv_pocket.log");
-
-        private static void LogDebug(string message, ConsoleColor color = ConsoleColor.White)
+        public class ModuleId
         {
-            try
-            {
-                lock (_lockObject)
-                {
-                    Console.ForegroundColor = color;
-                    string logMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] {message}";
-                    Console.WriteLine(logMessage);
-                    
-                    // 确保日志目录存在
-                    string logDir = Path.GetDirectoryName(LogFilePath);
-                    if (!Directory.Exists(logDir))
-                    {
-                        Directory.CreateDirectory(logDir);
-                    }
-                    
-                    // 写入日志文件
-                    File.AppendAllText(LogFilePath, logMessage + Environment.NewLine);
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"[ERROR] 写入日志失败: {ex.Message}");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            public static byte HandleLogin = 1;
+            public static byte Chat = 5;
+            public static byte FriendLogout = 6;
+            public static byte Unkown1 = 16;
+            public static byte FriendStatus = 39;
+            public static byte ClientStatus = 128;
+            public static byte NetworkService = 144;
+            public static byte LobbyGameRoomManager = 40;
+            public static byte FriendRelation = 27;
         }
-
+        
         [OriginalMethod]
-        public static void Pocket_Info(abx hqx)
+        public static void ProcessPacket(abx packet)
         {
         }
 
         [CompilerGenerated]
         [HookMethod("WPFLauncher.Network.abu", "b", "Pocket_Info")]
-        public static void b(abx message)
+        public static void ProcessPacketHook(abx packet)
         {
-            if (WpfConfig.IsDebug) LogDebug($"[Recv_Pocket]:MessagePackId: {message.b}, Json: {message.a}");
-            //Console.WriteLine($"[Recv_Pocket]:a:{hqx.a},b:{hqx.b},c:{hqx.c},d:{hqx.d}");
-            if (message == null)
+            // message.a: jsonMessage
+            // message.b: moduleId
+            // message.c: commandId
+            // message.d: Unknown
+            // message.e: sequence Number
+            string message = packet.a;
+            byte moduleId = packet.b;
+            byte commandId = packet.c;
+            ushort sequenceId = packet.e;
+            WpfConfig.DefaultLogger.Info($"[ChatConnection] Received a message: {message} , moduleId: {moduleId} , commandId: {commandId} , sequence Number: {sequenceId}");
+            if (string.IsNullOrEmpty(message))
             {
                 return;
             }
-
-            // 启动异步任务处理数据包
             Task.Run(async () =>
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(message.a))
+                    if (moduleId == ModuleId.LobbyGameRoomManager)
                     {
-                        return;
-                    }
-
-                    if (message.a == "[]")
-                    {
-                        if (WpfConfig.RoomInfo != null)
+                        // 处理联机大厅相关事件
+                        if (commandId == 3 && WpfConfig.RoomInfo != null)
                         {
-                            await Task.Run(() => LogDebug("你已被房主踢出房间", ConsoleColor.Red));
+                            WpfConfig.DefaultLogger.Warn("你已被房主踢出房间");
                             if (WpfConfig.IsStartWebSocket)
                             {
                                 await Task.Run(() => WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Recv_Pocket", status = "kick", data = "[]" })));
                             }
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("[RoomInfo]你已被房主踢出房间,正在重新加入房间");
+                            WpfConfig.DefaultLogger.Info("正在重新加入房间...");
                             while (true)
                             {
-                                JObject Get_RoomEnter_Info = JObject.Parse(X19Http.RequestX19Api("/online-lobby-room-enter",
+                                JObject Get_RoomEnter_Info = JObject.Parse(X19Http.Post("/online-lobby-room-enter",
                                     JsonConvert.SerializeObject(new
                                     {
                                         room_id = WpfConfig.RoomInfo.entity.entity_id, password = WpfConfig.Password,
@@ -99,32 +82,27 @@ namespace Mcl.Core.Dotnetdetour.HookList
                                     })));
                                 if (Get_RoomEnter_Info["code"].ToObject<int>() == 0)
                                 {
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine("[RoomInfo]成功加入房间!");
+                                    WpfConfig.DefaultLogger.Info("成功加入房间!");
                                     break;
                                 }
                                 else if (Get_RoomEnter_Info["code"].ToObject<int>() == 12022)
                                 {
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine($"[RoomERROR]加入房间失败:{Get_RoomEnter_Info["message"]},等待0.8秒后再次加入房间");
+                                    WpfConfig.DefaultLogger.Error($"加入房间失败:{Get_RoomEnter_Info["message"]},等待0.8秒后再次加入房间");
                                     Thread.Sleep(200);
                                 }
                                 else
                                 {
-                                    Console.ForegroundColor = ConsoleColor.Red;
-                                    Console.WriteLine($"[RoomERROR]加入房间失败:{Get_RoomEnter_Info["message"]}");
+                                    WpfConfig.DefaultLogger.Info($"加入房间失败:{Get_RoomEnter_Info["message"]}");
                                     break;
                                 }
                             }
-                            Console.ForegroundColor = ConsoleColor.White;
                         }
-                        return;
                     }
 
-                    JObject Get_Json_Recv;
+                    JObject jsonMessage;
                     try
                     {
-                        Get_Json_Recv = JObject.Parse(message.a);
+                        jsonMessage = JObject.Parse(message);
                     }
                     catch (JsonReaderException)
                     {
@@ -135,61 +113,61 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     var processingTasks = new List<Task>();
 
                     // 处理游戏状态变化
-                    if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("game_status"))
+                    if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("game_status"))
                     {
-                        processingTasks.Add(Task.Run(() => HandleGameStatus(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandleGameStatus(jsonMessage)));
                     }
                     // 处理玩家进出
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("op"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("op"))
                     {
-                        processingTasks.Add(Task.Run(() => HandlePlayerOperation(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandlePlayerOperation(jsonMessage)));
                     }
                     // 处理房间信息变化
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("entity_id") || ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("slogan"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("entity_id") || ((IDictionary<string, JToken>)jsonMessage).ContainsKey("slogan"))
                     {
-                        processingTasks.Add(Task.Run(() => HandleRoomInfoChange(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandleRoomInfoChange(jsonMessage)));
                     }
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("friends"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("friends"))
                     {
-                        processingTasks.Add(Task.Run(() => HandleFriendsList(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandleFriendsList(jsonMessage)));
                     }
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("status") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("sn") && 
-                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("hint"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("status") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("sn") && 
+                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("hint"))
                     {
-                        processingTasks.Add(Task.Run(() => HandlePlayerStatus(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandlePlayerStatus(jsonMessage)));
                     }
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("extra_data") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("red_dot_type"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("extra_data") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("red_dot_type"))
                     {
-                        processingTasks.Add(Task.Run(() => HandleRedDot(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandleRedDot(jsonMessage)));
                     }
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("online_pcpe") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("status_json") && 
-                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("online_pcpe") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("status_json") && 
+                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid"))
                     {
-                        processingTasks.Add(Task.Run(() => HandleOnlinePcpe(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandleOnlinePcpe(jsonMessage)));
                     }
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("status_json") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("status_json") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid"))
                     {
-                        processingTasks.Add(Task.Run(() => HandleStatusJson(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandleStatusJson(jsonMessage)));
                     }
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("comment") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("message") && 
-                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("fid"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("comment") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("message") && 
+                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("fid"))
                     {
-                        processingTasks.Add(Task.Run(() => HandlePlayerComment(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandlePlayerComment(jsonMessage)));
                     }
-                    else if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("tgt") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("msgtp") && 
-                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("uid") && ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("words") && 
-                            ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("time"))
+                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("tgt") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("msgtp") && 
+                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("words") && 
+                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("time"))
                     {
-                        processingTasks.Add(Task.Run(() => HandlePlayerChat(Get_Json_Recv)));
+                        processingTasks.Add(Task.Run(() => HandlePlayerChat(jsonMessage)));
                     }
                     else
                     {
                         processingTasks.Add(Task.Run(() => 
                         {
-                            LogDebug($"接收到未分类的数据包: {message.a}", ConsoleColor.Magenta);
+                            WpfConfig.DefaultLogger.Debug($"接收到未分类的数据包: {message}");
                             if (WpfConfig.IsStartWebSocket)
                             {
-                                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Recv_Pocket", data = Get_Json_Recv }));
+                                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Recv_Pocket", data = jsonMessage }));
                             }
                         }));
                     }
@@ -203,24 +181,24 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         // 使用线程安全的方式添加到接收列表
                         lock (WpfConfig.RecvList)
                         {
-                            WpfConfig.RecvList.Add(Get_Json_Recv);
+                            WpfConfig.RecvList.Add(jsonMessage);
                         }
                         
-                        if (((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("player_chatver_id") || ((IDictionary<string, JToken>)Get_Json_Recv).ContainsKey("err"))
+                        if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("player_chatver_id") || ((IDictionary<string, JToken>)jsonMessage).ContainsKey("err"))
                         {
-                            WpfConfig.Get_Recv_String_ChatResult = message.a;
+                            WpfConfig.Get_Recv_String_ChatResult = message;
                         }
                     }
                     catch (Exception ex)
                     {
-                        await Task.Run(() => LogDebug($"更新接收列表失败: {ex.Message}", ConsoleColor.Red));
+                        WpfConfig.DefaultLogger.Error($"更新接收列表失败: {ex.Message}");
                     }
 
-                    await Task.Run(() => Pocket_Info(message));
+                    await Task.Run(() => ProcessPacket(packet));
                 }
                 catch (Exception e)
                 {
-                    await Task.Run(() => LogDebug($"处理数据包时发生错误: {e.Message}\n堆栈跟踪: {e.StackTrace}", ConsoleColor.Red));
+                    await Task.Run(() => WpfConfig.DefaultLogger.Error($"处理数据包时发生错误: {e}"));
                 }
             });
         }
@@ -264,12 +242,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             string uid = jsonData["uid"].ToObject<string>();
             string words = jsonData["words"].ToObject<string>();
-            JObject playerInfo = X19Http.Get_Player_Info(uid);
+            JObject playerInfo = X19Http.GetPlayerInfo(uid);
             string playerName = playerInfo["entity"]["name"].ToObject<string>();
-            JObject tgtPlayerInfo = X19Http.Get_Player_Info(tgt);
+            JObject tgtPlayerInfo = X19Http.GetPlayerInfo(tgt);
             string tgtPlayerName = tgtPlayerInfo["entity"]["name"].ToObject<string>();
-            string time = X19Http.unix_timestamp_to(jsonData["time"].ToObject<long>());
-            LogDebug($"玩家聊天内容: {words} 目标: {tgt} 类型: {msgtp} UID: {uid} 玩家名: {playerName} 目标玩家名: {tgtPlayerName} 时间: {time}", ConsoleColor.Green);
+            string time = X19Tools.unix_timestamp_to(jsonData["time"].ToObject<long>());
+            WpfConfig.DefaultLogger.Info($"玩家聊天内容: {words} 目标: {tgt} 类型: {msgtp} UID: {uid} 玩家名: {playerName} 目标玩家名: {tgtPlayerName} 时间: {time}");
         }
 
         private static void HandlePlayerComment(JObject jsonData)
@@ -279,7 +257,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             string comment = jsonData["comment"].ToObject<string>();
             string message = jsonData["message"].ToObject<string>();
             string fid = jsonData["fid"].ToObject<string>();
-            LogDebug($"添加好友请求: {comment} 消息: {message} 好友ID: {fid}", ConsoleColor.Green);
+            WpfConfig.DefaultLogger.Info($"添加好友请求: {comment} 消息: {message} 好友ID: {fid}");
         }
 
         private static void HandleStatusJson(JObject jsonData)
@@ -287,7 +265,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             //{"status_json":"{\"status\":1,\"hint\":\"\"}","uid":647998524}
             //status 1:在线 2:忙碌 3:离开 0:离线
             // 处理状态JSON
-            JObject playerInfo = X19Http.Get_Player_Info(jsonData["uid"].ToObject<string>());
+            JObject playerInfo = X19Http.GetPlayerInfo(jsonData["uid"].ToObject<string>());
             string playerName = playerInfo["entity"]["name"].ToObject<string>();
             if (jsonData["status_json"].ToString() != "")
             {
@@ -304,16 +282,16 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         string gameType = hintJson["game_type"]?.ToString() ?? "";
                         string gameId = hintJson["game_id"]?.ToString() ?? "";
                         string hostId = hintJson["host_id"]?.ToString() ?? "";
-                        LogDebug($"状态: {statusString} 玩家名: {playerName} 游戏名: {gameName} 游戏类型: {gameType} 游戏ID: {gameId} 房主ID: {hostId}", status == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+                        WpfConfig.DefaultLogger.Info($"状态: {statusString} 玩家名: {playerName} 游戏名: {gameName} 游戏类型: {gameType} 游戏ID: {gameId} 房主ID: {hostId}");
                     }
                     catch
                     {
-                        LogDebug($"状态: {statusString} 玩家名: {playerName} 提示: {hint}", status == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+                        WpfConfig.DefaultLogger.Info($"状态: {statusString} 玩家名: {playerName} 提示: {hint}");
                     }
                 }
                 else
                 {
-                    LogDebug($"状态: {statusString} 玩家名: {playerName}", status == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Info($"状态: {statusString} 玩家名: {playerName}");
                 }
             }
         }
@@ -326,18 +304,18 @@ namespace Mcl.Core.Dotnetdetour.HookList
             int onlinePcpe = jsonData["online_pcpe"].ToObject<int>();
             string stringOnlinePcpe = onlinePcpe == 1 ? "在线" : "离线";
             string uid = jsonData["uid"].ToObject<string>();
-            JObject playerInfo = X19Http.Get_Player_Info(uid);
+            JObject playerInfo = X19Http.GetPlayerInfo(uid);
             string playerName = playerInfo["entity"]["name"].ToObject<string>();
             if (jsonData["status_json"].ToString() != "")
             {
                 JObject statusJson = JObject.Parse(jsonData["status_json"].ToString());
                 string status = statusJson["status"].ToObject<string>();
                 string hint = statusJson["hint"].ToObject<string>();
-                LogDebug($"在线PCPE: {stringOnlinePcpe} UID:{uid} 玩家名: {playerName} 状态: {status} 提示: {hint}", onlinePcpe == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Info($"在线PCPE: {stringOnlinePcpe} UID:{uid} 玩家名: {playerName} 状态: {status} 提示: {hint}");
             }
             else
             {
-                LogDebug($"在线PCPE: {stringOnlinePcpe} UID:{uid} 玩家名: {playerName}", onlinePcpe == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Info($"在线PCPE: {stringOnlinePcpe} UID:{uid} 玩家名: {playerName}");
             }
         }
 
@@ -348,7 +326,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             string activityName = jsonData["extra_data"]["activity_name"].ToObject<string>();
             int weekNum = jsonData["extra_data"]["week_num"].ToObject<int>();
             string questId = jsonData["extra_data"]["quest_id"].ToObject<string>();
-            LogDebug($"活动名称: {activityName} 周数: {weekNum} 任务ID: {questId}", ConsoleColor.Green);
+            WpfConfig.DefaultLogger.Info($"活动名称: {activityName} 周数: {weekNum} 任务ID: {questId}");
         }
 
         private static void HandlePlayerStatus(JObject jsonData)
@@ -360,9 +338,9 @@ namespace Mcl.Core.Dotnetdetour.HookList
             string statusString = status == 1 ? "在线" : "离线";
             string uid = jsonData["uid"].ToObject<string>();
             string hint = jsonData["hint"].ToObject<string>();
-            JObject playerInfo = X19Http.Get_Player_Info(uid);
+            JObject playerInfo = X19Http.GetPlayerInfo(uid);
             string playerName = playerInfo["entity"]["name"].ToObject<string>();
-            LogDebug($"玩家状态: {statusString} UID:{uid} 玩家名: {playerName} 提示: {hint}", status == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+            WpfConfig.DefaultLogger.Info($"玩家状态: {statusString} UID:{uid} 玩家名: {playerName} 提示: {hint}");
             FriendStatus friendStatus = WpfConfig.ListFriendStatus.FirstOrDefault(x => x.UserId.ToString() == uid);
             if (friendStatus == null)
             {
@@ -389,7 +367,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 string uid = friend["uid"].ToObject<string>();
                 string nickname = friend["nickname"].ToObject<string>();
-                LogDebug($"好友: {nickname} UID:{uid}", ConsoleColor.Green);
+                WpfConfig.DefaultLogger.Info($"好友: {nickname} UID:{uid}");
             }
         }
 
@@ -399,7 +377,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 if (WpfConfig.RoomInfo?.entity == null)
                 {
-                    LogDebug("RoomInfo或entity为空，无法更新游戏状态", ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Error("RoomInfo或entity为空，无法更新游戏状态");
                     return;
                 }
 
@@ -411,7 +389,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     ? "游戏状态发生改变,当前可正常启动游戏(服务器在线状态)"
                     : "游戏状态发生改变,当前不可正常启动游戏(服务器离线/不可用状态)";
 
-                LogDebug($"[RoomInfo]{statusMessage}", gameStatus == 1 ? ConsoleColor.Green : ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Info($"{statusMessage}");
 
                 // 更新RoomInfoWindow
                 Application.Current.Dispatcher.Invoke(() =>
@@ -440,7 +418,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                LogDebug($"处理游戏状态时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"处理游戏状态时发生错误: {ex.Message}");
             }
         }
 
@@ -453,14 +431,14 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 
                 if (operation == "in")
                 {
-                    JObject playerInfo = X19Http.Get_Player_Info(userId);
-                    playerInfo["JoinRoomTime"] = X19Http.TimestampHelper.GetCurrentTimestampMilliseconds();
+                    JObject playerInfo = X19Http.GetPlayerInfo(userId);
+                    playerInfo["JoinRoomTime"] = X19Tools.TimestampHelper.GetCurrentTimestampMilliseconds();
                     WpfConfig.RoomPlayerList.Add(JObject.Parse(playerInfo["entity"].ToString()));
                     HandlePlayerJoin(jsonData, userId);
                 }
                 else if (operation == "out")
                 {
-                    JObject playerInfo = X19Http.Get_Player_Info(userId);
+                    JObject playerInfo = X19Http.GetPlayerInfo(userId);
                     // 使用安全的方式查找并移除玩家
                     var playerToRemove = WpfConfig.RoomPlayerList.FirstOrDefault(userProfileEntity => 
                         userProfileEntity["entity_id"].ToString() == playerInfo["entity"]["entity_id"].ToString());
@@ -476,7 +454,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                LogDebug($"处理玩家操作时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"处理玩家操作时发生错误: {ex.Message}");
             }
         }
 
@@ -486,7 +464,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 if (WpfConfig.RoomInfo?.entity?.fids == null)
                 {
-                    LogDebug("RoomInfo或fids列表为空", ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Error("RoomInfo或fids列表为空");
                     return;
                 }
 
@@ -510,8 +488,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 }
                 else
                 {
-                    JObject playerInfo = X19Http.Get_Player_Info(userId);
-                    LogDebug($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间", ConsoleColor.Blue);
+                    JObject playerInfo = X19Http.GetPlayerInfo(userId);
+                    WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间");
                     if (WpfConfig.IsStartWebSocket)
                     {
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
@@ -529,7 +507,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                LogDebug($"处理玩家加入时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"处理玩家加入时发生错误: {ex.Message}");
             }
         }
 
@@ -539,7 +517,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 if (WpfConfig.RoomInfo?.entity?.fids == null)
                 {
-                    LogDebug("RoomInfo或fids列表为空", ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Error("RoomInfo或fids列表为空");
                     return;
                 }
 
@@ -557,7 +535,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     }
                 });
 
-                LogDebug($"[RoomInfo]玩家 {playerName} UID:{userId} 退出了房间", ConsoleColor.Yellow);
+                WpfConfig.DefaultLogger.Warn($"玩家 {playerName} UID:{userId} 退出了房间");
 
                 if (WpfConfig.IsStartWebSocket)
                 {
@@ -574,7 +552,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                LogDebug($"处理玩家离开时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"处理玩家离开时发生错误: {ex.Message}");
             }
         }
 
@@ -612,39 +590,38 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 }
                 else
                 {
-                    JObject playerInfo = X19Http.Get_Player_Info(userId);
+                    JObject playerInfo = X19Http.GetPlayerInfo(userId);
                     //Get_Player_Info Result:
                     /*
                      * {
-"code": 0,
-"message": "正常返回",
-"details": "",
-"entities": [
-{
-"entity_id": "693704387",
-"name": "HHSOOS",
-"avatar_image_url": "https://x19.fp.ps.netease.com/file/6620fc3b5127eaa11460dcb1rHFyzwN005",
-"frame_id": "https://x19.fp.ps.netease.com/file/64ae7241fc3e6eaa6a2de3cflOHWJ2at05",
-"msg_background_id": "",
-"chat_bubble_id": 0,
-"cur_decorate": [
-55,
-57,
-56,
-51
-],
-"gender": "m",
-"register_time": 0,
-"login_time": 0,
-"logout_time": 0,
-"signature": "不会的指令来找我(ˇˍˇ) 想～"
-}
-],
-"total": 1
-}
-
+                            "code": 0,
+                            "message": "正常返回",
+                            "details": "",
+                            "entities": [
+                            {
+                            "entity_id": "693704387",
+                            "name": "HHSOOS",
+                            "avatar_image_url": "https://x19.fp.ps.netease.com/file/6620fc3b5127eaa11460dcb1rHFyzwN005",
+                            "frame_id": "https://x19.fp.ps.netease.com/file/64ae7241fc3e6eaa6a2de3cflOHWJ2at05",
+                            "msg_background_id": "",
+                            "chat_bubble_id": 0,
+                            "cur_decorate": [
+                            55,
+                            57,
+                            56,
+                            51
+                            ],
+                            "gender": "m",
+                            "register_time": 0,
+                            "login_time": 0,
+                            "logout_time": 0,
+                            "signature": "不会的指令来找我(ˇˍˇ) 想～"
+                            }
+                            ],
+                            "total": 1
+                            }
                      */
-                    LogDebug($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间", ConsoleColor.Blue);
+                    WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间");
                     // 检查正则表达式黑名单
                     CheckRegexBlacklist(userId, playerInfo["entity"]["name"].ToString(), blacklistFilePath);
                     if (WpfConfig.IsStartWebSocket)
@@ -664,7 +641,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                LogDebug($"处理黑名单检查时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"处理黑名单检查时发生错误: {ex.Message}");
             }
         }
 
@@ -673,13 +650,13 @@ namespace Mcl.Core.Dotnetdetour.HookList
             if (!Directory.Exists(folderPath))
             {
                 Directory.CreateDirectory(folderPath);
-                LogDebug($"创建房间黑名单文件夹: {folderPath}", ConsoleColor.Green);
+                WpfConfig.DefaultLogger.Info($"创建房间黑名单文件夹: {folderPath}");
             }
 
             if (!File.Exists(filePath))
             {
                 File.WriteAllText(filePath, "[]");
-                LogDebug($"创建房间黑名单文件: {filePath}", ConsoleColor.Green);
+                WpfConfig.DefaultLogger.Info($"创建房间黑名单文件: {filePath}", ConsoleColor.Green);
             }
         }
 
@@ -691,7 +668,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 if (string.IsNullOrEmpty(jsonContent))
                 {
                     WpfConfig.RoomBlacklist = new List<string>();
-                    LogDebug("房间黑名单文件为空,自动替换成空列表", ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Warn("房间黑名单文件为空,自动替换成空列表");
                 }
                 else
                 {
@@ -700,7 +677,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                LogDebug($"读取房间黑名单时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"读取房间黑名单时发生错误: {ex.Message}");
                 WpfConfig.RoomBlacklist = new List<string>();
             }
         }
@@ -711,14 +688,14 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 if (!File.Exists(filePath))
                 {
-                    LogDebug("未检测到房间黑名单文件,自动创建文件",ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Warn("未检测到房间黑名单文件,自动创建文件");
                     File.WriteAllText(filePath, "[]");
                 }
                 string jsonContent = File.ReadAllText(filePath);
                 if (string.IsNullOrEmpty(jsonContent))
                 {
                     WpfConfig.RegexBlacklist = new List<string>();
-                    LogDebug("房间黑名单文件为空,自动替换成空列表", ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Warn("房间黑名单文件为空,自动替换成空列表");
                 }
                 else
                 {
@@ -727,7 +704,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                LogDebug($"读取房间黑名单时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"读取房间黑名单时发生错误: {ex.Message}");
                 WpfConfig.RegexBlacklist = new List<string>();
             }
         }
@@ -740,7 +717,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             else
             {
-                LogDebug($"[RoomInfo]玩家 {userId} 在黑名单内,但不是房主,无法踢出房间", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"[RoomInfo]玩家 {userId} 在黑名单内,但不是房主,无法踢出房间");
             }
         }
 
@@ -762,11 +739,11 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         user_id = userId 
                     });
 
-                    kickResult = JObject.Parse(X19Http.RequestX19Api("/online-lobby-member-kick", requestData));
+                    kickResult = JObject.Parse(X19Http.Post("/online-lobby-member-kick", requestData));
 
                     if (kickResult["code"].ToObject<int>() == 0)
                     {
-                        LogDebug($"[RoomInfo]玩家 {playerName} {reason},已自动踢出房间", ConsoleColor.Red);
+                        WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerName} {reason},已自动踢出房间");
                         
                         if (WpfConfig.IsStartWebSocket)
                         {
@@ -782,13 +759,13 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     }
                     else
                     {
-                        LogDebug($"[RoomInfo]玩家 {playerName} {reason},踢出失败,正在重试...", ConsoleColor.Red);
+                        WpfConfig.DefaultLogger.Error($"[RoomInfo]玩家 {playerName} {reason},踢出失败,正在重试...");
                     }
                 } while (true);
             }
             catch (Exception ex)
             {
-                LogDebug($"踢出玩家时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"踢出玩家时发生错误: {ex.Message}");
             }
         }
 
@@ -808,7 +785,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         // 添加到黑名单
                         WpfConfig.RoomBlacklist.Add(userId);
                         File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(WpfConfig.RoomBlacklist));
-                        LogDebug($"[RoomInfo]玩家 {playerName} 匹配正则表达式 {regex}，已添加到黑名单", ConsoleColor.Yellow);
+                        WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerName} 匹配正则表达式 {regex}，已添加到黑名单");
 
                         // 踢出玩家
                         if (IsCurrentUserRoomOwner())
@@ -820,7 +797,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 }
                 catch (Exception ex)
                 {
-                    LogDebug($"处理正则表达式 {regex} 时发生错误: {ex.Message}", ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Error($"处理正则表达式 {regex} 时发生错误: {ex.Message}");
                 }
             }
         }
@@ -831,12 +808,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 if (WpfConfig.RoomInfo?.entity == null)
                 {
-                    LogDebug("RoomInfo或entity为空，无法更新房间信息", ConsoleColor.Red);
+                    WpfConfig.DefaultLogger.Error("RoomInfo或entity为空，无法更新房间信息");
                     return;
                 }
 
-                LogDebug("房间信息已更改:", ConsoleColor.Cyan);
-                LogDebug("-----------------------------------------------------------", ConsoleColor.Cyan);
+                WpfConfig.DefaultLogger.Warn("房间信息已更改:");
+                WpfConfig.DefaultLogger.Warn("-----------------------------------------------------------");
 
                 // 更新RoomInfoWindow
                 Application.Current.Dispatcher.Invoke(() =>
@@ -867,11 +844,11 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     }));
                 }
 
-                LogDebug("-----------------------------------------------------------", ConsoleColor.Cyan);
+                WpfConfig.DefaultLogger.Warn("-----------------------------------------------------------");
             }
             catch (Exception ex)
             {
-                LogDebug($"处理房间信息变化时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"处理房间信息变化时发生错误: {ex.Message}");
             }
         }
 
@@ -881,7 +858,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
             if (entity.entity_id != newRoomInfo["entity_id"].ToObject<string>())
             {
-                LogDebug($"房间ID更改为: {newRoomInfo["entity_id"].ToObject<string>()}", ConsoleColor.Green);
+                WpfConfig.DefaultLogger.Info($"房间ID更改为: {newRoomInfo["entity_id"].ToObject<string>()}");
             }
 
             if (entity.owner_id != newRoomInfo["owner_id"].ToObject<string>())
@@ -891,24 +868,24 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
             if (entity.room_name != newRoomInfo["room_name"].ToObject<string>())
             {
-                LogDebug($"房间名称更改为: {newRoomInfo["room_name"].ToObject<string>()}", ConsoleColor.Magenta);
+                WpfConfig.DefaultLogger.Info($"房间名称更改为: {newRoomInfo["room_name"].ToObject<string>()}");
             }
 
             if (entity.save_size != newRoomInfo["save_size"].ToObject<uint>())
             {
-                LogDebug($"保存大小更改为: {newRoomInfo["save_size"].ToObject<uint>()}", ConsoleColor.Cyan);
+                WpfConfig.DefaultLogger.Info($"保存大小更改为: {newRoomInfo["save_size"].ToObject<uint>()}");
             }
 
             bool newPasswordStatus = newRoomInfo["password"].ToObject<int>() != 0;
             if (entity.password != newPasswordStatus)
             {
-                LogDebug($"密码保护更改为: {(newPasswordStatus ? "是" : "否")}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Info($"密码保护更改为: {(newPasswordStatus ? "是" : "否")}");
             }
 
             bool newAllowSave = newRoomInfo["allow_save"].ToObject<int>() != 0;
             if (entity.allow_save != newAllowSave)
             {
-                LogDebug($"允许保存更改为: {(newAllowSave ? "是" : "否")}", ConsoleColor.Blue);
+                WpfConfig.DefaultLogger.Info($"允许保存更改为: {(newAllowSave ? "是" : "否")}");
             }
 
             var newVisibility = newRoomInfo["visibility"].ToObject<RoomVisibleStatus>();
@@ -922,18 +899,18 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             try
             {
-                JObject oldOwnerInfo = X19Http.Get_Player_Info(oldOwnerId);
-                JObject newOwnerInfo = X19Http.Get_Player_Info(newOwnerId);
+                JObject oldOwnerInfo = X19Http.GetPlayerInfo(oldOwnerId);
+                JObject newOwnerInfo = X19Http.GetPlayerInfo(newOwnerId);
 
-                LogDebug("当前房间内房主更改", ConsoleColor.Yellow);
-                LogDebug($"原房主的UID: {oldOwnerId}", ConsoleColor.Yellow);
-                LogDebug($"新房主的UID: {newOwnerId}", ConsoleColor.Yellow);
-                LogDebug($"原房主的名称: {oldOwnerInfo["entity"]["name"]}", ConsoleColor.Yellow);
-                LogDebug($"新房主的名称: {newOwnerInfo["entity"]["name"]}", ConsoleColor.Yellow);
+                WpfConfig.DefaultLogger.Warn("当前房间内房主更改");
+                WpfConfig.DefaultLogger.Warn($"原房主的UID: {oldOwnerId}");
+                WpfConfig.DefaultLogger.Warn($"新房主的UID: {newOwnerId}");
+                WpfConfig.DefaultLogger.Warn($"原房主的名称: {oldOwnerInfo["entity"]["name"]}");
+                WpfConfig.DefaultLogger.Warn($"新房主的名称: {newOwnerInfo["entity"]["name"]}");
             }
             catch (Exception ex)
             {
-                LogDebug($"记录房主变更信息时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"记录房主变更信息时发生错误: {ex.Message}");
             }
         }
 
@@ -948,11 +925,11 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         ? descriptionAttribute.Description 
                         : newVisibility.ToString();
 
-                LogDebug($"可见性更改为: {visibilityDescription}", ConsoleColor.Gray);
+                WpfConfig.DefaultLogger.Info($"可见性更改为: {visibilityDescription}");
             }
             catch (Exception ex)
             {
-                LogDebug($"记录可见性变更信息时发生错误: {ex.Message}", ConsoleColor.Red);
+                WpfConfig.DefaultLogger.Error($"记录可见性变更信息时发生错误: {ex.Message}");
             }
         }
 
@@ -992,20 +969,16 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             bool ResultBool = SendMessage(ServerID, Data, ifg, ErrorLog);
             
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("====================");
+            WpfConfig.DefaultLogger.Info("====================");
             
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"服务器ID: {ServerID}");
-            Console.WriteLine($"数据内容: {JsonConvert.SerializeObject(Data, Formatting.Indented)}");
-            Console.WriteLine($"接口信息: {(ifg?.ToString() ?? "null")}");
-            Console.WriteLine($"错误日志: {ErrorLog}");
-            Console.WriteLine($"结果: {ResultBool}");
+            WpfConfig.DefaultLogger.Info($"服务器ID: {ServerID}");
+            WpfConfig.DefaultLogger.Info($"数据内容: {JsonConvert.SerializeObject(Data, Formatting.Indented)}");
+            WpfConfig.DefaultLogger.Info($"接口信息: {(ifg?.ToString() ?? "null")}");
+            WpfConfig.DefaultLogger.Info($"错误日志: {ErrorLog}");
+            WpfConfig.DefaultLogger.Info($"结果: {ResultBool}");
             
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("====================");
+            WpfConfig.DefaultLogger.Info("====================");
             
-            Console.ResetColor();
             return ResultBool;
         }
     }

@@ -123,16 +123,11 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 _roomInfo.CppGameCfg.room_info.ip = ipTextBox.Text;
                 _roomInfo.CppGameCfg.room_info.port = port;
                 string sCppGameConfigPath = _roomInfo.CppGameCfg.path;
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine($"[CustomIP] CppGamePath: {sCppGameConfigPath}");
+                WpfConfig.DefaultLogger.Info($"[CustomIP] CppGamePath: {sCppGameConfigPath}");
                 System.IO.File.WriteAllText(sCppGameConfigPath, JsonConvert.SerializeObject(_roomInfo.CppGameCfg));
                 // Fuck Netease: temp/temp.config
                 System.IO.File.WriteAllText(Path.Combine(tb.n, "temp", "temp.config"), JsonConvert.SerializeObject(_roomInfo.CppGameCfg));
-                Console.WriteLine("[CustomIP] Config Saved!");
-                Console.ForegroundColor = ConsoleColor.White;
-                // _roomInfo.CppGameCfg.Save();
-
-                //MessageBox.Show("IP地址和端口号已成功更新", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                WpfConfig.DefaultLogger.Info("[CustomIP] Config Saved!");
                 this.DialogResult = DialogResult.OK;
                 this.Close();
                 WpfConfig.IsSelectedIP = true;

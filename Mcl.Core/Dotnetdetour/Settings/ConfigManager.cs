@@ -48,7 +48,7 @@ namespace Mcl.Core.Dotnetdetour.Settings
 
             // 模组与高级
             new ConfigEntry { Key = "EnableModsInject", Description = "启用模组注入", FieldType = typeof(bool), Category = "高级功能" },
-            new ConfigEntry { Key = "NeteaseUpdateDomainhttp", Description = "网易更新域名", FieldType = typeof(string), Category = "高级功能" },
+            new ConfigEntry { Key = "ServerListUrl", Description = "网易更新域名", FieldType = typeof(string), Category = "高级功能" },
             
             // Experiment
             new ConfigEntry { Key = "IsDownloadMultiConfig", Description = "启用多线程下载", FieldType = typeof(bool), Category = "实验功能" },

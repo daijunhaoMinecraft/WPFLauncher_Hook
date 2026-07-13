@@ -67,7 +67,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"[AccountManager] 保存账号失败: {ex.Message}");
+                    WpfConfig.DefaultLogger.Error($"[AccountManager] 保存账号失败: {ex.Message}");
                 }
             }
         }
@@ -95,7 +95,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                                 CookieData = cookieData,
                                 Notes = "从 cookies.txt 自动导入"
                             });
-                            Console.WriteLine("[AccountManager] 已从 cookies.txt 导入旧Cookie账号");
+                            WpfConfig.DefaultLogger.Info("[AccountManager] 已从 cookies.txt 导入旧Cookie账号");
                         }
                     }
                 }
@@ -120,7 +120,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                                     Password = parts[1],
                                     Notes = "从 4399.txt 自动导入"
                                 });
-                                Console.WriteLine("[AccountManager] 已从 4399.txt 导入旧4399账号");
+                                WpfConfig.DefaultLogger.Info("[AccountManager] 已从 4399.txt 导入旧4399账号");
                             }
                         }
                     }
@@ -133,7 +133,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AccountManager] 迁移旧账号失败: {ex.Message}");
+                WpfConfig.DefaultLogger.Error($"[AccountManager] 迁移旧账号失败: {ex.Message}");
             }
         }
 

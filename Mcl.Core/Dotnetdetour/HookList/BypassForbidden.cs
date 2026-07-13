@@ -14,9 +14,7 @@ public class BypassForbidden : IMethodHook
     public bool CheckDisable(string key)
     {
         bool result = CheckDisableOriginal(key);
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        Console.WriteLine($"CheckDisable, key: {key}, value: {result}");
-        Console.ForegroundColor = ConsoleColor.White;
+        WpfConfig.DefaultLogger.Info($"CheckDisable, key: {key}, value: {result}");
         return result;
     }
 }
