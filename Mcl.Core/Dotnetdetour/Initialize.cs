@@ -1,20 +1,23 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using Mcl.Core.Dotnetdetour;
 using Mcl.Core.Dotnetdetour.Hookevent;
 using Mcl.Core.Dotnetdetour.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Mcl.Core.Dotnetdetour;
-
 // 1. 手动补齐 .NET 4.8.1 缺失的 ModuleInitializerAttribute 特性
 // 注意：命名空间必须严格是 System.Runtime.CompilerServices
-[AttributeUsage(AttributeTargets.Method, Inherited = false)]
-public sealed class ModuleInitializerAttribute : Attribute
+namespace System.Runtime.CompilerServices
 {
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public sealed class ModuleInitializerAttribute : Attribute
+    {
+    }
 }
 
 // 2. 编写启动器类
