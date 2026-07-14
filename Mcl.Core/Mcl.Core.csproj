@@ -53,6 +53,7 @@
     <Compile Include="Dotnetdetour\HookList\MpayLoginAccount.cs" />
     <Compile Include="Dotnetdetour\HookList\MpayPhoneLogin.cs" />
     <Compile Include="Dotnetdetour\HookList\OptimizeDeleteFile.cs" />
+    <Compile Include="Dotnetdetour\HookList\OptizimeRandomNickName.cs" />
     <Compile Include="Dotnetdetour\HookList\PhoneVerifyForm.cs" />
     <Compile Include="Dotnetdetour\HookList\NoRealname_2.cs" />
     <Compile Include="Dotnetdetour\HookList\DisableCppUpdate.cs" />
