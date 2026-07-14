@@ -22,7 +22,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             if (WpfConfig.IsDebug)
             {
-                Console.WriteLine("[INFO]发现网易正在初始化敏感词功能已被制止");
+                WpfConfig.DefaultLogger.Warn("[INFO]发现网易正在初始化敏感词功能已被制止");
             }
         }
 
@@ -32,7 +32,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             if (WpfConfig.IsDebug)
             {
-                Console.WriteLine("[INFO]发现网易正在初始化敏感词功能已被制止");
+                WpfConfig.DefaultLogger.Warn("[INFO]发现网易正在初始化敏感词功能已被制止");
             }
         }
 
@@ -52,7 +52,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             if (WpfConfig.IsDebug)
             {
-                Console.WriteLine($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+                WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }
             return content;
         }
@@ -63,7 +63,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             if (WpfConfig.IsDebug)
             {
-                Console.WriteLine($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+                WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }
             return content;
         }
@@ -84,7 +84,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             if (WpfConfig.IsDebug)
             {
-                Console.WriteLine($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+                WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }
             return true;
         }
@@ -95,7 +95,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             if (WpfConfig.IsDebug)
             {
-                Console.WriteLine($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+                WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }
             return true;
         }

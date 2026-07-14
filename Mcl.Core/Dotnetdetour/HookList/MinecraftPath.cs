@@ -21,8 +21,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             string NowMinecraftPath = Path.Combine(new string[] { tb.n, "Game", ".minecraft" });
             if (WpfConfig.IsDebug)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("[MinecraftPath]Minecraft路径: " + MinecraftPath);
+                                Console.WriteLine("[MinecraftPath]Minecraft路径: " + MinecraftPath);
                 Console.WriteLine("[MinecraftPath]现在Mincraft路径: " + NowMinecraftPath);
             }
             return NowMinecraftPath;

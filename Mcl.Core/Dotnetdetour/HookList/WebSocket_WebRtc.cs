@@ -48,13 +48,13 @@ public class WebSocket_WebRtc : IMethodHook
         var rawData = new byte[dataSize];
         Marshal.Copy(dataPtr, rawData, 0, dataSize);
         if (WpfConfig.IsDebug)
-            Console.WriteLine(
+            WpfConfig.DefaultLogger.Info(
                 $"[RECV] Peer:{peerId} Len:{dataSize}, Data: {BitConverter.ToString(rawData).Replace('-', ' ')}");
 
         if (WpfConfig.UseNetworkMode)
         {
             // 调试日志：查看原始数据前几个字节
-            // Console.WriteLine($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
+            // WpfConfig.DefaultLogger.Info($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
             bool passToNetwork = true;
 
             if (VirualIpProto.IsMagicHeader(rawData))
@@ -69,7 +69,7 @@ public class WebSocket_WebRtc : IMethodHook
                     var receivedIp = new IPAddress(ipBytes);
                     var virtualIpString = receivedIp.ToString();
 
-                    Console.WriteLine($"Received PeerId: {peerId} Virtual IP: {virtualIpString}");
+                    WpfConfig.DefaultLogger.Info($"Received PeerId: {peerId} Virtual IP: {virtualIpString}");
 
                     // 【修改点】使用 for 循环手动查找索引，替代 FindIndex
                     // ObservableCollection 不支持 FindIndex，但支持通过索引器访问
@@ -102,12 +102,12 @@ public class WebSocket_WebRtc : IMethodHook
                         // 6. 执行后续逻辑
                         WintunRouterService.Instance.SendServerPlayerInfo();
         
-                        Console.WriteLine($"[成功] 已更新 PeerId {peerId} 的虚拟 IP 为 {playerInfo.VirtualIp}");
+                        WpfConfig.DefaultLogger.Info($"[成功] 已更新 PeerId {peerId} 的虚拟 IP 为 {playerInfo.VirtualIp}");
                     }
                     else
                     {
                         // 可选：调试用
-                        Console.WriteLine($"[警告] 未找到 PeerId 为 {peerId} 的玩家，无法更新 IP。");
+                        WpfConfig.DefaultLogger.Warn($"[警告] 未找到 PeerId 为 {peerId} 的玩家，无法更新 IP。");
                     }
 
                     passToNetwork = false;
@@ -122,7 +122,7 @@ public class WebSocket_WebRtc : IMethodHook
                 // 调用工具生成字节包
                 byte[] packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
                 SendData(peerId, packetToSend);
-                Console.WriteLine($"[Info] peerId: {peerId} 玩家进入选择IP阶段");
+                WpfConfig.DefaultLogger.Info($"peerId: {peerId} 玩家进入选择IP阶段");
                 passToNetwork = false;
             }
             
@@ -132,7 +132,7 @@ public class WebSocket_WebRtc : IMethodHook
                 if (LanGameProtocolHelper.TryParsePlayerListPacket(rawData, out var players))
                 {
                     // 解析成功，更新本地 UI 或逻辑
-                    Console.WriteLine($"收到玩家列表，共 {players.Count} 人");
+                    WpfConfig.DefaultLogger.Info($"收到玩家列表，共 {players.Count} 人");
 
                     // 例如：更新全局列表
                     WebRtcVar.PlayerList = players;
@@ -143,7 +143,7 @@ public class WebSocket_WebRtc : IMethodHook
                 {
                     // 解析失败，可能是其他类型的包，或者数据包损坏
                     // 这里可以添加对其他 PacketType (如心跳) 的判断逻辑
-                    Console.WriteLine("收到无效或非玩家列表的数据包");
+                    WpfConfig.DefaultLogger.Warn("收到无效或非玩家列表的数据包");
                 }
                 passToNetwork = false;
             }
@@ -159,14 +159,14 @@ public class WebSocket_WebRtc : IMethodHook
         if (IsMagicHandshake(rawData))
         {
             WebRtcVar.PeerSupportMultiplex[peerId] = true;
-            if (WpfConfig.IsDebug) Console.WriteLine($"[Protocol] {peerId} 握手成功 - 开启多路复用");
+            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Protocol] {peerId} 握手成功 - 开启多路复用");
             return;
         }
 
         if (rawData[0] == 0x00 && rawData.Length == 2)
         {
             int connIdInt = rawData[1];
-            if (WpfConfig.IsDebug) Console.WriteLine($"[Protocol] 关闭连接: {connIdInt}");
+            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Protocol] 关闭连接: {connIdInt}");
 
             var sessionKey_1 = WebRtcVar.Mode == ForwardMode.Server
                 ? $"{peerId}_{connIdInt}"
@@ -189,7 +189,7 @@ public class WebSocket_WebRtc : IMethodHook
             // 如果收到长度为 1 的包（只有 ConnId），代表对端通知连接断开
             if (dataSize == 1)
             {
-                if (WpfConfig.IsDebug) Console.WriteLine($"[Mux] 对端通知关闭 ConnId: {connId}");
+                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 对端通知关闭 ConnId: {connId}");
                 if (WebRtcVar.Sessions.TryRemove($"{peerId}_{connId}", out var s)) s.Close();
                 return;
             }
@@ -207,7 +207,7 @@ public class WebSocket_WebRtc : IMethodHook
         {
             var comp = WebRtcVar.GetCompressor(WebRtcVar.getIntPtrFromPeerId(peerId).Value);
             if (comp != null) final = comp.b(mcData);
-            if (WpfConfig.IsDebug) Console.WriteLine($"[Decompress] {peerId} {BitConverter.ToString(final)}");
+            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Decompress] {peerId} {BitConverter.ToString(final)}");
         }
 
         // 处理 Session 转发
@@ -216,7 +216,7 @@ public class WebSocket_WebRtc : IMethodHook
         if (WebRtcVar.Sessions.TryGetValue(sessionKey, out var session))
         {
             // 解压逻辑（如果是 Zlib）
-            // Console.WriteLine($"Data: {BitConverter.ToString(final)}");
+            // WpfConfig.DefaultLogger.Info($"Data: {BitConverter.ToString(final)}");
             session.SendToSocket(final);
         }
         else
@@ -224,7 +224,7 @@ public class WebSocket_WebRtc : IMethodHook
             // 如果服务端没找到 Session，且是多路复用模式，说明是新请求
             if (WebRtcVar.Mode == ForwardMode.Server && WebRtcVar.PeerSupportMultiplex.ContainsKey(peerId))
             {
-                if (WpfConfig.IsDebug) Console.WriteLine($"[Mux] 创建新服务端 Session: {peerId}_{connId}");
+                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 创建新服务端 Session: {peerId}_{connId}");
 
                 var newSession = new UnifiedSession(peerId, connId);
                 WebRtcVar.Sessions[sessionKey] = newSession;
@@ -236,13 +236,13 @@ public class WebSocket_WebRtc : IMethodHook
                 if (WebRtcVar.IsNativeCompressionEnabled() && !WebRtcVar.PeerSupportMultiplex.ContainsKey(peerId))
                 {
                     // 创建新连接
-                    if (WpfConfig.IsDebug) Console.WriteLine($"[Mux] 创建新客户端 Session: {peerId}_{connId}");
+                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 创建新客户端 Session: {peerId}_{connId}");
                     WebRtcVar.Sessions[sessionKey] = new UnifiedSession(peerId, true);
                     WebRtcVar.Sessions[sessionKey].SendToSocket(final);
                 }
                 else
                 {
-                    if (WpfConfig.IsDebug) Console.WriteLine($"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
+                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn($"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
                 }
             }
         }
@@ -295,17 +295,17 @@ public class WebSocket_WebRtc : IMethodHook
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
             if (WpfConfig.IsDebug)
-                Console.WriteLine(
+                WpfConfig.DefaultLogger.Info(
                     $"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
             var success = (bool)result;
 
-            if (!success) Console.WriteLine("[WebRtc] 一个包发送失败!");
-            // Console.WriteLine($"发送调用结果: {success}");
+            if (!success) WpfConfig.DefaultLogger.Error("[WebRtc] 一个包发送失败!");
+            // WpfConfig.DefaultLogger.Info($"发送调用结果: {success}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            WpfConfig.DefaultLogger.Info($"[WebRtc] SendBack 发送失败: {ex.Message}");
         }
     }
 
@@ -325,17 +325,17 @@ public class WebSocket_WebRtc : IMethodHook
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
             if (WpfConfig.IsDebug)
-                Console.WriteLine(
+                WpfConfig.DefaultLogger.Info(
                     $"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
             var success = (bool)result;
 
-            if (!success) Console.WriteLine("[WebRtc] 一个包发送失败!");
-            // Console.WriteLine($"发送调用结果: {success}");
+            if (!success) WpfConfig.DefaultLogger.Error("[WebRtc] 一个包发送失败!");
+            // WpfConfig.DefaultLogger.Info($"发送调用结果: {success}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            WpfConfig.DefaultLogger.Error($"[WebRtc] SendBack 发送失败: {ex.Message}");
         }
     }
 
@@ -353,17 +353,17 @@ public class WebSocket_WebRtc : IMethodHook
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
             if (WpfConfig.IsDebug)
-                Console.WriteLine(
+                WpfConfig.DefaultLogger.Info(
                     $"[SEND] Peer:{peerId} Len:{data.Length}, Data: {BitConverter.ToString(data).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, data, data.Length });
             var success = (bool)result;
 
-            if (!success) Console.WriteLine("[WebRtc] 一个包发送失败!");
-            // Console.WriteLine($"发送调用结果: {success}");
+            if (!success) WpfConfig.DefaultLogger.Error("[WebRtc] 一个包发送失败!");
+            // WpfConfig.DefaultLogger.Info($"发送调用结果: {success}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            WpfConfig.DefaultLogger.Error($"[WebRtc] SendBack 发送失败: {ex.Message}");
         }
     }
 
@@ -381,12 +381,11 @@ public class WebSocket_WebRtc : IMethodHook
         {
             if (WpfConfig.IsDebug)
             {
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("--- [TransferServer <<< RECV] ---");
+                WpfConfig.DefaultLogger.Info("--- [TransferServer <<< RECV] ---");
                 var hexString = BitConverter.ToString(messageData).Replace("-", " ");
-                Console.WriteLine($"Message ID: {messageId}");
-                Console.WriteLine($"Data (Hex): {hexString}");
-                Console.WriteLine("--------------------------\n");
+                WpfConfig.DefaultLogger.Info($"Message ID: {messageId}");
+                WpfConfig.DefaultLogger.Info($"Data (Hex): {hexString}");
+                WpfConfig.DefaultLogger.Info("--------------------------\n");
             }
             if (messageId == 517)
             {
@@ -396,15 +395,14 @@ public class WebSocket_WebRtc : IMethodHook
             
                 if (WebRtcVar.LanGameManager != null)
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
                     if (data.State == 1)
                     {
-                        Console.WriteLine($"玩家 {data.UserID} 加入了房间");
+                        WpfConfig.DefaultLogger.Warn($"玩家 {data.UserID} 加入了房间");
                         // WebRtcVar.PlayerList.Add(data.UserID);
                     }
                     else
                     {
-                        Console.WriteLine($"玩家 {data.UserID} 离开了房间");
+                        WpfConfig.DefaultLogger.Warn($"玩家 {data.UserID} 离开了房间");
                         var player = WebRtcVar.PlayerList.FirstOrDefault(x => x.UserID == data.UserID.ToString());
                         
                         if (player != null)
@@ -412,7 +410,6 @@ public class WebSocket_WebRtc : IMethodHook
                             WebRtcVar.PlayerList.Remove(player);
                         }
                     }
-                    Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             else if (messageId == 515)
@@ -420,11 +417,11 @@ public class WebSocket_WebRtc : IMethodHook
                 var data = default(TransferStruct.PlayerCreateWebRtcConnectEvent);
                 var deserializer = new PacketDeserializer(messageData);
                 deserializer.Deserialize(ref data);
-                Console.WriteLine(
+                WpfConfig.DefaultLogger.Info(
                     $"MessageData: {BitConverter.ToString(messageData)}, UserId: {data.UserID}, PeerId: {data.PeerId}");
 
                 var playerInfo = X19Http.GetPlayerInfo(data.UserID.ToString());
-                Console.WriteLine($"玩家 {playerInfo["entity"]["name"]} 创建了一个 WebRTC 连接, PeerId: {data.PeerId}");
+                WpfConfig.DefaultLogger.Info($"玩家 {playerInfo["entity"]["name"]} 创建了一个 WebRTC 连接, PeerId: {data.PeerId}");
                 var player = new LanGamePlayerInfo
                 {
                     Name = playerInfo["entity"]["name"].ToString(),
@@ -443,7 +440,7 @@ public class WebSocket_WebRtc : IMethodHook
                     byte[] packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
                     // 发送给特定 peer 或 广播
                     SendData(data.PeerId.ToString(), packetToSend);
-                    Console.WriteLine($"[Router] 玩家列表已发送给 {data.PeerId.ToString()}。");
+                    WpfConfig.DefaultLogger.Info($"[Router] 玩家列表已发送给 {data.PeerId.ToString()}。");
                     WintunRouterService.Instance.SendServerPlayerInfo();
                     if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
                 }
@@ -455,13 +452,11 @@ public class WebSocket_WebRtc : IMethodHook
                 deserializer.Deserialize(ref data);
                 if (data.Result == 255)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"中转服登录失败, 错误码: {data.Result}, 原因: 你未登录/你的账号在另一处登录/Logout");
+                    WpfConfig.DefaultLogger.Error($"中转服登录失败, 错误码: {data.Result}, 原因: 你未登录/你的账号在另一处登录/Logout");
                 }
                 else if (data.Result == 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("中转服登录成功!");
+                    WpfConfig.DefaultLogger.Info("中转服登录成功!");
                     try
                     {
                         var player = new LanGamePlayerInfo
@@ -476,15 +471,13 @@ public class WebSocket_WebRtc : IMethodHook
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine("添加自己到玩家列表失败: " + e);
+                        WpfConfig.DefaultLogger.Info("添加自己到玩家列表失败: " + e);
                     }
                 }
                 else if (data.Result == 4)
                 {
-                    Console.WriteLine($"中转服登录失败, 错误码: {data.Result}, 原因: 服务器忙，登录中转服失败");
+                    WpfConfig.DefaultLogger.Error($"中转服登录失败, 错误码: {data.Result}, 原因: 服务器忙，登录中转服失败");
                 }
-
-                Console.ForegroundColor = ConsoleColor.White;
             }
 
             if (WpfConfig.IsStartWebSocket)
@@ -493,9 +486,7 @@ public class WebSocket_WebRtc : IMethodHook
         }
         catch (Exception e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(e);
-            Console.ForegroundColor = ConsoleColor.White;
+            WpfConfig.DefaultLogger.Error(e);
         }
 
         return processReceiveTransferMessage(messageId, messageData);
@@ -509,12 +500,11 @@ public class WebSocket_WebRtc : IMethodHook
     [HookMethod("WebRtc.NET.cm", "s", "OriginalOnDataClose")]
     private void OnDataClose(string peerId)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
         // 尝试取值
         var player = WebRtcVar.PlayerList.FirstOrDefault(p => p.PeerId == peerId);
         if (player != null)
         {
-            Console.WriteLine($"玩家 {player.Name} 断开连接");
+            WpfConfig.DefaultLogger.Info($"玩家 {player.Name} 断开连接");
             WebRtcVar.PlayerList.Remove(player);
             if (WpfConfig.UseNetworkMode)
             {
@@ -526,10 +516,9 @@ public class WebSocket_WebRtc : IMethodHook
         }
         else
         {
-            Console.WriteLine($"PeerId 断开连接: {peerId}");
+            WpfConfig.DefaultLogger.Info($"PeerId 断开连接: {peerId}");
         }
 
-        Console.ForegroundColor = ConsoleColor.White;
         OriginalOnDataClose(peerId);
     }
 
@@ -541,9 +530,7 @@ public class WebSocket_WebRtc : IMethodHook
      [HookMethod("WebRtc.NET.cm", "f", "Original_WebSocket_WebRtc_OnMessage")]
      private void WebSocket_OnMessage(string Message)
      {
-         Console.ForegroundColor = ConsoleColor.Green;
-         Console.WriteLine($"[WebSocket_WebRtc]收到消息:{Message}");
-         Console.ForegroundColor = ConsoleColor.White;
+         WpfConfig.DefaultLogger.Info($"[WebSocket_WebRtc]收到消息:{Message}");
          Original_WebSocket_WebRtc_OnMessage(Message);
      }
      [OriginalMethod]
@@ -553,218 +540,52 @@ public class WebSocket_WebRtc : IMethodHook
      [HookMethod("WebRtc.NET.cm", "h", "Original_WebSocket_WebRtc_SendMessage")]
      private void WebSocket_SendMessage(string Message)
      {
-         Console.ForegroundColor = ConsoleColor.Green;
-         Console.WriteLine($"[WebSocket_WebRtc]发送消息:{Message}");
-         Console.ForegroundColor = ConsoleColor.White;
+         WpfConfig.DefaultLogger.Info($"[WebSocket_WebRtc]发送消息:{Message}");
          Original_WebSocket_WebRtc_SendMessage(Message);
      }
      
-     // [OriginalMethod]
-     // private void Original_WebSocket_WebRtc_ReceiveUserName(string message)
-     // {
-     // }
-     // [HookMethod("WebRtc.NET.cm", "l", "Original_WebSocket_WebRtc_ReceiveUserName")]
-     // private void WebSocket_ReceiveUserName(string message)
-     // {
-     //     Original_WebSocket_WebRtc_ReceiveUserName(message);
-     //     Console.ForegroundColor = ConsoleColor.Yellow;
-     //     Console.WriteLine($"[WebSocket_WebRtc]连接成功, 连接RTC中...");
-     //     Console.ForegroundColor = ConsoleColor.White;
-     //     Type cm = WebRtcVar.CmInstance.GetType();
-     //     MethodInfo field = cm.GetMethod("ad", BindingFlags.Public | BindingFlags.Instance);
-     //     field.Invoke(WebRtcVar.CmInstance, new []{ "Any" });
-     // }
+    [OriginalMethod]
+    public bool sendTransferMessage(params object[] ObjectMessage)
+    {
+        return true;
+    }
+    
+    [HookMethod(TargetConst.LanGameManager,"as","sendTransferMessage")]
+    public bool SendTransferMessage_HookMethod(params object[] ObjectMessage)
+    {
+                WpfConfig.DefaultLogger.Info("--- [TransferServer >>> SEND] ---");
+        WpfConfig.DefaultLogger.Info(JsonConvert.SerializeObject(ObjectMessage));
+        WpfConfig.DefaultLogger.Info("--------------------------\n");
+        return sendTransferMessage(ObjectMessage);
+    }
+    
+     [OriginalMethod]
+     public void handleReceiveLauncherMessage(ushort messageId, byte[] messageData)
+     {
+     }
      
-    //  
-    //  
-    //  // ====================================================================
-    //  // 1. Hook WebRTC 数据接收
-    //  // 目标: WebRtc.NET.cm.p(string, IntPtr, int)
-    //  // ====================================================================
-    //
-    //  [OriginalMethod]
-    //  private void Original_OnWebRtcDataReceived(string peerId, IntPtr dataPtr, int dataSize)
-    //  {
-    //      // 这个方法体是空的，因为它会被Hook框架替换为对原始方法的调用。
-    //  }
-    //
-    //  [HookMethod("WebRtc.NET.cm", "p", "Original_OnWebRtcDataReceived")]
-    //  private void Hook_OnWebRtcDataReceived(string peerId, IntPtr dataPtr, int dataSize)
-    //  {
-    //      // try
-    //      // {
-    //      //     // 提取数据
-    //      //     byte[] receivedData = new byte[aqp];
-    //      //     Marshal.Copy(aqo, receivedData, 0, aqp);
-    //      //     if (WpfConfig.IsDebug)
-    //      //     {
-    //      //         // 打印日志
-    //      //         Console.ForegroundColor = ConsoleColor.Cyan; // 接收用青色
-    //      //         Console.WriteLine("--- [WebRTC <<< RECV] ---");
-    //      //         Console.WriteLine($"From Peer ID: {aqn}");
-    //      //         Console.WriteLine($"Data Size: {aqp} bytes");
-    //      //     
-    //      //         string hexString = BitConverter.ToString(receivedData).Replace("-", " ");
-    //      //         Console.WriteLine($"Data (Hex): {hexString}");
-    //      //         Console.WriteLine("--------------------------\n");
-    //      //         Console.ForegroundColor = ConsoleColor.White;
-    //      //     }
-    //      // }
-    //      // catch (Exception ex)
-    //      // {
-    //      //     Console.WriteLine($"[Hook Error] in OnWebRtcDataReceived: {ex.Message}");
-    //      // }
-    //      //     // 调用原始方法，确保游戏逻辑继续正常运行
-    //      //     Original_OnWebRtcDataReceived(aqn, aqo, aqp);
-    //      // }
-    //      try
-    //      {
-    //          // 提取数据
-    //          byte[] receivedData = new byte[dataSize];
-    //          Marshal.Copy(dataPtr, receivedData, 0, dataSize);
-    //          
-    //          // 日志输出
-    //          if (WpfConfig.IsDebug)
-    //          {
-    //              Console.ForegroundColor = ConsoleColor.Cyan; // 接收用青色
-    //              Console.WriteLine("--- [WebRTC <<< RECV] ---");
-    //              Console.WriteLine($"From Peer ID: {peerId}");
-    //              Console.WriteLine($"Data Size: {dataSize} bytes");
-    //              
-    //              string hexString = BitConverter.ToString(receivedData).Replace("-", " ");
-    //              Console.WriteLine($"Data (Hex): {hexString}");
-    //              Console.WriteLine("--------------------------\n");
-    //              Console.ForegroundColor = ConsoleColor.White;
-    //          }
-    //      }
-    //      catch (Exception ex)
-    //      {
-    //          Console.WriteLine($"[Hook Error] in OnWebRtcDataReceived: {ex.Message}");
-    //      }
-    //
-    //      // 调用原始方法，确保游戏逻辑继续正常运行
-    //      Original_OnWebRtcDataReceived(peerId, dataPtr, dataSize);
-    //  }
-    //
-    //  // ====================================================================
-    //  // 2. Hook WebRTC 数据发送
-    //  // 目标: WebRtc.NET.cm.ai(IntPtr, byte[])
-    //  // ====================================================================
-    //  
-    //  [OriginalMethod]
-    //  private bool Original_SendDataInternal(IntPtr peerHandle, byte[] data)
-    //  {
-    //      // 空方法体，会被框架替换
-    //      return false; // 返回值需要匹配原方法
-    //  }
-    //
-    //  [HookMethod("WebRtc.NET.cm", "ai", "Original_SendDataInternal")]
-    //  private bool Hook_SendDataInternal(IntPtr arm, byte[] arn)
-    //  {
-    //      try
-    //      {
-    //          // // 尝试从 cm 实例中找到 Peer ID
-    //          // string peerId = "Unknown";
-    //          // // __instance 是Hook框架注入的对 cm 实例的引用
-    //          // if (__instance != null && __instance.d != null)
-    //          // {
-    //          //     foreach (var entry in __instance.d) // 遍历 d (peerConnections) 字典
-    //          //     {
-    //          //         if (entry.Value == arm)
-    //          //         {
-    //          //             peerId = entry.Key;
-    //          //             break;
-    //          //         }
-    //          //     }
-    //          // }
-    //          if (WpfConfig.IsDebug)
-    //          {
-    //              // 打印日志
-    //              Console.ForegroundColor = ConsoleColor.Yellow; // 发送用黄色
-    //              Console.WriteLine("--- [WebRTC >>> SEND] ---");
-    //              Console.WriteLine($"Handle: {arm}");
-    //              Console.WriteLine($"Data Size: {arn.Length} bytes");
-    //
-    //              string hexString = BitConverter.ToString(arn).Replace("-", " ");
-    //              Console.WriteLine($"Data (Hex): {hexString}");
-    //              byte[] compressData = new av().a(arn);
-    //              Console.WriteLine($"Data (Compress): {BitConverter.ToString(compressData).Replace("-", " ")}");
-    //              Console.WriteLine("--------------------------\n");
-    //              Console.ForegroundColor = ConsoleColor.White;
-    //          }
-    //      }
-    //      catch (Exception ex)
-    //      {
-    //          Console.WriteLine($"[Hook Error] in SendDataInternal: {ex.Message}");
-    //      }
-    //
-    //      // 调用原始方法，真正地把数据发送出去
-    //      return Original_SendDataInternal(arm, arn);
-    //  }
-    //  
-    // [OriginalMethod]
-    // public bool sendTransferMessage(params object[] ObjectMessage)
-    // {
-    //     return true;
-    // }
-    //
-    // [HookMethod(TargetConst.LanGameManager,"as","sendTransferMessage")]
-    // public bool SendTransferMessage_HookMethod(params object[] ObjectMessage)
-    // {
-    //     Console.ForegroundColor = ConsoleColor.Yellow; // 发送用黄色
-    //     Console.WriteLine("--- [TransferServer >>> SEND] ---");
-    //     Console.WriteLine(JsonConvert.SerializeObject(ObjectMessage));
-    //     Console.WriteLine("--------------------------\n");
-    //     return sendTransferMessage(ObjectMessage);
-    // }
-    //
-    // [OriginalMethod]
-    // private bool processReceiveTransferMessage(ushort messageId, byte[] messageData)
-    // {
-    //     return true;
-    // }
-    //
-    // [HookMethod("WPFLauncher.Network.TransService.ace","b","processReceiveTransferMessage")]
-    // private bool processReceiveTransferMessage_HookMethod(ushort messageId, byte[] messageData)
-    // {
-    //     Console.ForegroundColor = ConsoleColor.Cyan;
-    //     Console.WriteLine("--- [TransferServer <<< RECV] ---");
-    //     string hexString = BitConverter.ToString(messageData).Replace("-", " ");
-    //     Console.WriteLine($"Message ID: {messageId}");
-    //     Console.WriteLine($"Data (Hex): {hexString}");
-    //     Console.WriteLine("--------------------------\n");
-    //     return processReceiveTransferMessage(messageId, messageData);
-    // }
-    //
-    //  [OriginalMethod]
-    //  public void handleReceiveLauncherMessage(ushort messageId, byte[] messageData)
-    //  {
-    //  }
-    //  
-    //  [HookMethod("WPFLauncher.Network.acb","b","handleReceiveLauncherMessage")]
-    //  public void handleReceiveLauncherMessage_HookMethod(ushort messageId, byte[] messageData)
-    //  {
-    //      Console.ForegroundColor = ConsoleColor.Cyan;
-    //      Console.WriteLine("--- [Launcher <<< RECV] ---");
-    //      string hexString = BitConverter.ToString(messageData).Replace("-", " ");
-    //      Console.WriteLine($"Message ID: {messageId}");
-    //      Console.WriteLine($"Data (Hex): {hexString}");
-    //      Console.WriteLine("--------------------------\n");
-    //      handleReceiveLauncherMessage(messageId, messageData);
-    //  }
-    //  [OriginalMethod]
-    //  private void SendLauncherMessage(byte[] messageData)
-    //  {
-    //  }
-    //  
-    //  [HookMethod("WPFLauncher.Model.ait","as","SendLauncherMessage")]
-    //  private void SendLauncherMessage_HookMethod(byte[] messageData)
-    //  {
-    //      Console.ForegroundColor = ConsoleColor.Cyan;
-    //      Console.WriteLine("--- [Launcher <<< SEND] ---");
-    //      string hexString = BitConverter.ToString(messageData).Replace("-", " ");
-    //      Console.WriteLine($"Data (Hex): {hexString}");
-    //      Console.WriteLine("--------------------------\n");
-    //      SendLauncherMessage(messageData);
-    //  }
+     [HookMethod("WPFLauncher.Network.acb","b","handleReceiveLauncherMessage")]
+     public void handleReceiveLauncherMessage_HookMethod(ushort messageId, byte[] messageData)
+     {
+         WpfConfig.DefaultLogger.Debug("--- [Launcher <<< RECV] ---");
+         string hexString = BitConverter.ToString(messageData).Replace("-", " ");
+         WpfConfig.DefaultLogger.Debug($"Message ID: {messageId}");
+         WpfConfig.DefaultLogger.Debug($"Data (Hex): {hexString}");
+         WpfConfig.DefaultLogger.Debug("--------------------------\n");
+         handleReceiveLauncherMessage(messageId, messageData);
+     }
+     [OriginalMethod]
+     private void SendLauncherMessage(byte[] messageData)
+     {
+     }
+     
+     [HookMethod("WPFLauncher.Model.ait","as","SendLauncherMessage")]
+     private void SendLauncherMessage_HookMethod(byte[] messageData)
+     {
+         WpfConfig.DefaultLogger.Debug("--- [Launcher <<< SEND] ---");
+         string hexString = BitConverter.ToString(messageData).Replace("-", " ");
+         WpfConfig.DefaultLogger.Debug($"Data (Hex): {hexString}");
+         WpfConfig.DefaultLogger.Debug("--------------------------\n");
+         SendLauncherMessage(messageData);
+     }
 }

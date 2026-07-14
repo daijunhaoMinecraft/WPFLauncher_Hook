@@ -13,7 +13,7 @@ public class SolveJavaMemoryLimit : IMethodHook
     {
         if (targetInstance == null)
         {
-            Console.WriteLine("错误：未找到 SysSetting 实例。");
+            WpfConfig.DefaultLogger.Info("错误：未找到 SysSetting 实例。");
             return;
         }
 
@@ -21,7 +21,7 @@ public class SolveJavaMemoryLimit : IMethodHook
         Type type = targetInstance.GetType();
 
         // 确认类型名称是否匹配（可选，用于调试）
-        // Console.WriteLine($"Target Type: {type.FullName}");
+        // WpfConfig.DefaultLogger.Info($"Target Type: {type.FullName}");
 
         // 2. 定义 BindingFlags：非公开 (NonPublic) + 实例 (Instance)
         const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
@@ -32,7 +32,7 @@ public class SolveJavaMemoryLimit : IMethodHook
             FieldInfo fieldHs = type.GetField("hs", flags);
             if (fieldHs == null)
             {
-                Console.WriteLine("错误：未找到字段 'hs'，可能混淆后的名称已改变。");
+                WpfConfig.DefaultLogger.Error("未找到字段 'hs'，可能混淆后的名称已改变。");
                 return;
             }
 
@@ -40,7 +40,7 @@ public class SolveJavaMemoryLimit : IMethodHook
             FieldInfo fieldHt = type.GetField("ht", flags);
             if (fieldHt == null)
             {
-                Console.WriteLine("错误：未找到字段 'ht'，可能混淆后的名称已改变。");
+                WpfConfig.DefaultLogger.Error("未找到字段 'ht'，可能混淆后的名称已改变。");
                 return;
             }
 
@@ -51,12 +51,12 @@ public class SolveJavaMemoryLimit : IMethodHook
             fieldHs.SetValue(targetInstance, newHsValue);
             fieldHt.SetValue(targetInstance, newHtValue);
 
-            Console.WriteLine($"成功修改内存设置：MinMemoryLimit={newHsValue}, MaxMemoryLimit={newHtValue}");
+            WpfConfig.DefaultLogger.Info($"成功修改内存设置：MinMemoryLimit={newHsValue}, MaxMemoryLimit={newHtValue}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"发生异常：{ex.Message}");
-            Console.WriteLine(ex.StackTrace);
+            WpfConfig.DefaultLogger.Error($"发生异常：{ex.Message}");
+            WpfConfig.DefaultLogger.Error(ex.StackTrace);
         }
     }
     

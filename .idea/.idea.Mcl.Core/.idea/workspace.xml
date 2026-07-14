@@ -11,52 +11,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MuteBanSystem.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/NeteaseProtocol/X19Http.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Tools/x19Crypt.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/AccountManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/AccountManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/AuthenticationFix.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/BypassForbidden.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/BypassForbidden.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/BypassUpdate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/BypassUpdate.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ChangeIPForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ChangeIPForm.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/DisableClearProcess.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Get_Netease_Error.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ChatConnectionPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ChatConnectionPacket.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/InitHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginFix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LobbyGameList.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LobbyGameList.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MinecraftPath.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MinecraftPath.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Mods.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Mods.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ModsInject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ModsInject.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MpayLoginAccount.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MpayLoginAccount.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MpayPhoneLogin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MpayPhoneLogin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Mpay_Log.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Mpay_Log.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/NeteaseUpdateurl.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/No_GameUpdate_1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/DisableCppUpdate.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/No_MuteBan.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/No_SaveWorldEncrypt.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/No_SaveWorldEncrypt.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Online_ResID.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LobbyGameList.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/OptimizeDeleteFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/OptimizeDeleteFile.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Password_String.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Password_String.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/PhoneVerifyForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/PhoneVerifyForm.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/RandomMac.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/RandomMac.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Random_Disk.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Random_Disk.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/Recv_Pocket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ChatConnectionPacket.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/RoomInfoWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/RoomInfoWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/NoRealname.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/NoRealname.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/NoRealname_2.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/NoRealname_2.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ProcessCreateWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ProcessCreateWindow.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/RoomManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/RoomManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/SolveHyt.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/SolveHyt.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/SensitiveWordDetection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/SensitiveWordDetection.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/SolveJavaMemoryLimit.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/SolveJavaMemoryLimit.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/UnlockAllMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/UnlockAllMode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/VapeDetect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/VapeDetect.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/WebRTCEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/WebRTCEx.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/WebSocket_WebRtc.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/WebSocket_WebRtc.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/directoryEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/directoryEvent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/disableCPPLow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/disableCPPLow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Settings/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Settings/ConfigManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/DebugPrint.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/ExitRoom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/ExitRoom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/Function.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/HttpHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/HttpHelper.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/Logger.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/Tool.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/X19Http.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/X19Http.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/WpfConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/WebHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/WebHelper.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
@@ -93,6 +70,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/06/b8fc4df3/atm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/83/55fcc051/tb.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/a3/6f799a29/ta.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0e981363b3064832854cd299011e5bd0702200/74/3b3bbb0a/ait.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/WPFLauncherLib/Main.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -254,23 +232,7 @@
       <workItem from="1783776561935" duration="909000" />
       <workItem from="1783783838025" duration="6411000" />
       <workItem from="1783823788969" duration="757000" />
-      <workItem from="1783943717799" duration="7098000" />
-    </task>
-    <task id="LOCAL-00010" summary="修复版本更新显示404报错问题">
-      <option name="closed" value="true" />
-      <created>1765006269001</created>
-      <option name="number" value="00010" />
-      <option name="presentableId" value="LOCAL-00010" />
-      <option name="project" value="LOCAL" />
-      <updated>1765006269001</updated>
-    </task>
-    <task id="LOCAL-00011" summary="修复Left退出房间的逻辑(自动关闭窗口)/优化房间信息窗口显示避免多个窗口">
-      <option name="closed" value="true" />
-      <created>1765802997365</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1765802997366</updated>
+      <workItem from="1783943717799" duration="14235000" />
     </task>
     <task id="LOCAL-00012" summary="新增功能:禁用联机大厅退出房间二次提示(可禁用/启用)&#10;修复联机大厅启动游戏步骤中内存溢出问题">
       <option name="closed" value="true" />
@@ -648,7 +610,23 @@
       <option name="project" value="LOCAL" />
       <updated>1783946804223</updated>
     </task>
-    <option name="localTasksCounter" value="59" />
+    <task id="LOCAL-00059" summary="端正性的重命名了一些文件">
+      <option name="closed" value="true" />
+      <created>1783951558923</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1783951558923</updated>
+    </task>
+    <task id="LOCAL-00060" summary="修复登录问题">
+      <option name="closed" value="true" />
+      <created>1783951723420</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1783951723420</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -669,8 +647,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="update image" />
-    <MESSAGE value="修复问题:&#10; - 无法终止基岩版客户端进程&#10;新增内容:&#10; - 新增配置: 大小限制(小于此大小即为小文件, 只使用单线程下载, 单位MB)" />
     <MESSAGE value="适配版本: 1.15.21.52607" />
     <MESSAGE value="适配版本: 1.15.22.54976" />
     <MESSAGE value="(Windows 7 Bedrock Problem)去除问题: &quot;与房主游戏版本不同，请刷新房间列表！&quot;&#10;用户可通过&quot;启动&quot;按钮去进行启动一些版本过低的游戏,就像这样:&#10;![This](https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/image/PixPin_2026-04-22_22-03-10.png)" />
@@ -694,7 +670,9 @@
     <MESSAGE value="调整命名空间" />
     <MESSAGE value="修复DLL没有Init的问题(清理代码执行的时候自动删到了namespace)" />
     <MESSAGE value="再次调整命名空间" />
-    <option name="LAST_COMMIT_MESSAGE" value="再次调整命名空间" />
+    <MESSAGE value="端正性的重命名了一些文件" />
+    <MESSAGE value="修复登录问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复登录问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

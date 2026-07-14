@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager;
 using WPFLauncher.Network;
 using WPFLauncher.Network.TransService;
+using WPFLauncher.Util;
 using Application = System.Windows.Application;
 
 namespace Mcl.Core.Dotnetdetour.HookList
@@ -23,15 +24,15 @@ namespace Mcl.Core.Dotnetdetour.HookList
     {
         public class ModuleId
         {
-            public static byte HandleLogin = 1;
-            public static byte Chat = 5;
-            public static byte FriendLogout = 6;
-            public static byte Unkown1 = 16;
-            public static byte FriendStatus = 39;
-            public static byte ClientStatus = 128;
-            public static byte NetworkService = 144;
-            public static byte LobbyGameRoomManager = 40;
-            public static byte FriendRelation = 27;
+            public static readonly byte HandleLogin = 1;
+            public static readonly byte Chat = 5;
+            public static readonly byte FriendLogout = 6;
+            public static readonly byte Unkown1 = 16;
+            public static readonly byte FriendStatus = 39;
+            public static readonly byte ClientStatus = 128;
+            public static readonly byte NetworkService = 144;
+            public static readonly byte LobbyGameRoomManager = 40;
+            public static readonly byte FriendRelation = 27;
         }
         
         [OriginalMethod]
@@ -40,7 +41,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         }
 
         [CompilerGenerated]
-        [HookMethod("WPFLauncher.Network.abu", "b", "Pocket_Info")]
+        [HookMethod("WPFLauncher.Network.abu", "b", "ProcessPacket")]
         public static void ProcessPacketHook(abx packet)
         {
             // message.a: jsonMessage
@@ -53,112 +54,125 @@ namespace Mcl.Core.Dotnetdetour.HookList
             byte commandId = packet.c;
             ushort sequenceId = packet.e;
             WpfConfig.DefaultLogger.Info($"[ChatConnection] Received a message: {message} , moduleId: {moduleId} , commandId: {commandId} , sequence Number: {sequenceId}");
+            JObject jsonMessage = new JObject();
+            
+            try
+            {
+                jsonMessage = JObject.Parse(message);
+            }
+            catch (Exception) { }
+            
             if (string.IsNullOrEmpty(message))
             {
                 return;
             }
+
+            ProcessPacket(packet);
+            
             Task.Run(async () =>
             {
+                // 使用并行任务处理不同类型的消息
+                var processingTasks = new List<Task>();
+                
                 try
                 {
+                    // 处理联机大厅相关事件
                     if (moduleId == ModuleId.LobbyGameRoomManager)
                     {
-                        // 处理联机大厅相关事件
+                        if (commandId == 1)
+                        {
+                            processingTasks.Add(Task.Run(() => HandleGameStatus(jsonMessage)));
+                        }
+
+                        if (commandId == 2)
+                        {
+                            processingTasks.Add(Task.Run(() => HandlePlayerOperation(jsonMessage)));
+                        }
+                        
                         if (commandId == 3 && WpfConfig.RoomInfo != null)
                         {
                             WpfConfig.DefaultLogger.Warn("你已被房主踢出房间");
                             if (WpfConfig.IsStartWebSocket)
                             {
-                                await Task.Run(() => WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Recv_Pocket", status = "kick", data = "[]" })));
+                                await Task.Run(() => WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "ChatConnectionPacket", status = "kick", data = message })));
                             }
                             WpfConfig.DefaultLogger.Info("正在重新加入房间...");
                             while (true)
                             {
-                                JObject Get_RoomEnter_Info = JObject.Parse(X19Http.Post("/online-lobby-room-enter",
+                                JObject joinRoomResponse = JObject.Parse(X19Http.Post("/online-lobby-room-enter",
                                     JsonConvert.SerializeObject(new
                                     {
                                         room_id = WpfConfig.RoomInfo.entity.entity_id, password = WpfConfig.Password,
                                         check_visibilily = true
                                     })));
-                                if (Get_RoomEnter_Info["code"].ToObject<int>() == 0)
+                                if (joinRoomResponse["code"].ToObject<int>() == 0)
                                 {
                                     WpfConfig.DefaultLogger.Info("成功加入房间!");
                                     break;
                                 }
-                                else if (Get_RoomEnter_Info["code"].ToObject<int>() == 12022)
+                                else if (joinRoomResponse["code"].ToObject<int>() == 12022)
                                 {
-                                    WpfConfig.DefaultLogger.Error($"加入房间失败:{Get_RoomEnter_Info["message"]},等待0.8秒后再次加入房间");
+                                    WpfConfig.DefaultLogger.Error($"加入房间失败:{joinRoomResponse["message"]},等待0.8秒后再次加入房间");
                                     Thread.Sleep(200);
                                 }
                                 else
                                 {
-                                    WpfConfig.DefaultLogger.Info($"加入房间失败:{Get_RoomEnter_Info["message"]}");
+                                    WpfConfig.DefaultLogger.Info($"加入房间失败:{joinRoomResponse["message"]}");
                                     break;
                                 }
                             }
                         }
+
+                        if (commandId == 4)
+                        {
+                            processingTasks.Add(Task.Run(() => HandleRoomInfoChange(jsonMessage)));
+                        }
+                        
+                        if (commandId == 5)
+                        {
+                            WpfConfig.DefaultLogger.Info($"联机大厅云存档备份Id: {jsonMessage["back_id"].ToString()} , 是否成功: {jsonMessage["success"].ToObject<bool>()}");
+                        }
+                    }
+                    
+                    else if (moduleId == ModuleId.FriendLogout)
+                    {
+                        if (commandId == 1)
+                        {
+                            processingTasks.Add(Task.Run(() => HandlePlayerStatus(jsonMessage)));
+                        }
+                        if (commandId == 7)
+                        {
+                            processingTasks.Add(Task.Run(() => HandleFriendsList(jsonMessage)));
+                        }
                     }
 
-                    JObject jsonMessage;
-                    try
+                    else if (moduleId == ModuleId.FriendStatus)
                     {
-                        jsonMessage = JObject.Parse(message);
-                    }
-                    catch (JsonReaderException)
-                    {
-                        return;
+                        if (commandId == 16)
+                        {
+                            // processingTasks.Add(Task.Run(() => HandleOnlinePcpe(jsonMessage)));
+                            processingTasks.Add(Task.Run(() => HandleStatusJson(jsonMessage)));
+                        }
+
+                        if (commandId == 17)
+                        {
+                            processingTasks.Add(Task.Run(() => HandlePlayerComment(jsonMessage)));
+                        }
                     }
 
-                    // 使用并行任务处理不同类型的消息
-                    var processingTasks = new List<Task>();
-
-                    // 处理游戏状态变化
-                    if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("game_status"))
+                    else if (moduleId == ModuleId.Chat)
                     {
-                        processingTasks.Add(Task.Run(() => HandleGameStatus(jsonMessage)));
-                    }
-                    // 处理玩家进出
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("op"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandlePlayerOperation(jsonMessage)));
-                    }
-                    // 处理房间信息变化
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("entity_id") || ((IDictionary<string, JToken>)jsonMessage).ContainsKey("slogan"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandleRoomInfoChange(jsonMessage)));
-                    }
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("friends"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandleFriendsList(jsonMessage)));
-                    }
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("status") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("sn") && 
-                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("hint"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandlePlayerStatus(jsonMessage)));
-                    }
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("extra_data") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("red_dot_type"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandleRedDot(jsonMessage)));
-                    }
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("online_pcpe") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("status_json") && 
-                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandleOnlinePcpe(jsonMessage)));
-                    }
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("status_json") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandleStatusJson(jsonMessage)));
-                    }
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("comment") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("message") && 
-                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("fid"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandlePlayerComment(jsonMessage)));
-                    }
-                    else if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("tgt") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("msgtp") && 
-                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("uid") && ((IDictionary<string, JToken>)jsonMessage).ContainsKey("words") && 
-                            ((IDictionary<string, JToken>)jsonMessage).ContainsKey("time"))
-                    {
-                        processingTasks.Add(Task.Run(() => HandlePlayerChat(jsonMessage)));
+                        if (commandId == 1)
+                        {
+                            if (message.Contains("player_chatver_id") && message.Contains("err"))
+                            {
+                                WpfConfig.Get_Recv_String_ChatResult = message;
+                            }
+                            else
+                            {
+                                processingTasks.Add(Task.Run(() => HandlePlayerChat(jsonMessage)));
+                            }
+                        }
                     }
                     else
                     {
@@ -167,7 +181,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                             WpfConfig.DefaultLogger.Debug($"接收到未分类的数据包: {message}");
                             if (WpfConfig.IsStartWebSocket)
                             {
-                                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Recv_Pocket", data = jsonMessage }));
+                                WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "ChatConnectionPacket", data = jsonMessage }));
                             }
                         }));
                     }
@@ -183,18 +197,11 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         {
                             WpfConfig.RecvList.Add(jsonMessage);
                         }
-                        
-                        if (((IDictionary<string, JToken>)jsonMessage).ContainsKey("player_chatver_id") || ((IDictionary<string, JToken>)jsonMessage).ContainsKey("err"))
-                        {
-                            WpfConfig.Get_Recv_String_ChatResult = message;
-                        }
                     }
                     catch (Exception ex)
                     {
                         WpfConfig.DefaultLogger.Error($"更新接收列表失败: {ex.Message}");
                     }
-
-                    await Task.Run(() => ProcessPacket(packet));
                 }
                 catch (Exception e)
                 {
@@ -218,36 +225,13 @@ namespace Mcl.Core.Dotnetdetour.HookList
             //time = 发送时间
             // 处理玩家聊天
             string tgt = jsonData["tgt"].ToObject<string>();
-            string msgtp = jsonData["msgtp"].ToObject<string>();
-            switch (msgtp)
-            {
-                case "0":
-                    msgtp = "正常消息";
-                    break;
-                case "1":
-                    msgtp = "系统消息";
-                    break;
-                case "2":
-                    msgtp = "玩家加入房间";
-                    break;
-                case "3":
-                    msgtp = "玩家离开房间";
-                    break;
-                case "4":
-                    msgtp = "玩家被踢出房间";
-                    break;
-                case "5":
-                    msgtp = "玩家权限变更";
-                    break;
-            }
             string uid = jsonData["uid"].ToObject<string>();
             string words = jsonData["words"].ToObject<string>();
             JObject playerInfo = X19Http.GetPlayerInfo(uid);
             string playerName = playerInfo["entity"]["name"].ToObject<string>();
             JObject tgtPlayerInfo = X19Http.GetPlayerInfo(tgt);
             string tgtPlayerName = tgtPlayerInfo["entity"]["name"].ToObject<string>();
-            string time = X19Tools.unix_timestamp_to(jsonData["time"].ToObject<long>());
-            WpfConfig.DefaultLogger.Info($"玩家聊天内容: {words} 目标: {tgt} 类型: {msgtp} UID: {uid} 玩家名: {playerName} 目标玩家名: {tgtPlayerName} 时间: {time}");
+            WpfConfig.DefaultLogger.Info($"<{playerName}(UserId: {uid})>: {words} => {tgtPlayerName}(UserId: {tgt})");
         }
 
         private static void HandlePlayerComment(JObject jsonData)
@@ -317,16 +301,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 WpfConfig.DefaultLogger.Info($"在线PCPE: {stringOnlinePcpe} UID:{uid} 玩家名: {playerName}");
             }
-        }
-
-        private static void HandleRedDot(JObject jsonData)
-        {
-            //{"extra_data":{"activity_name":"S3","week_num":2,"quest_id":"q100_login_1"},"red_dot_type":1}
-            // 处理活动
-            string activityName = jsonData["extra_data"]["activity_name"].ToObject<string>();
-            int weekNum = jsonData["extra_data"]["week_num"].ToObject<int>();
-            string questId = jsonData["extra_data"]["quest_id"].ToObject<string>();
-            WpfConfig.DefaultLogger.Info($"活动名称: {activityName} 周数: {weekNum} 任务ID: {questId}");
         }
 
         private static void HandlePlayerStatus(JObject jsonData)
@@ -405,7 +379,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 {
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                     { 
-                        type = "Recv_Pocket", 
+                        type = "ChatConnectionPacket", 
                         status = gameStatus == 1 ? "online" : "offline", 
                         data = jsonData,
                         game_status = gameStatus,
@@ -494,7 +468,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     {
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                         { 
-                            type = "Recv_Pocket", 
+                            type = "ChatConnectionPacket", 
                             status = "join", 
                             playerName = playerInfo["entity"]["name"],
                             userId = userId,
@@ -541,7 +515,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 {
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                     { 
-                        type = "Recv_Pocket", 
+                        type = "ChatConnectionPacket", 
                         status = "leave", 
                         playerName = playerName,
                         userId = userId,
@@ -580,7 +554,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     {
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                         { 
-                            type = "Recv_Pocket", 
+                            type = "ChatConnectionPacket", 
                             status = "kick", 
                             userId = userId,
                             currentPlayers = WpfConfig.RoomInfo.entity.fids,
@@ -628,7 +602,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     {
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                         { 
-                            type = "Recv_Pocket", 
+                            type = "ChatConnectionPacket", 
                             status = "join", 
                             playerName = playerInfo["entity"]["name"],
                             userId = userId,
@@ -749,7 +723,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         {
                             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                             { 
-                                type = "Recv_Pocket", 
+                                type = "ChatConnectionPacket", 
                                 status = "kick", 
                                 playerName = playerName,
                                 reason = reason
@@ -836,7 +810,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 {
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     {
-                        type = "Recv_Pocket",
+                        type = "ChatConnectionPacket",
                         status = "room_update",
                         roomInfo = newRoomInfo,
                         currentPlayers = WpfConfig.RoomInfo.entity.fids,

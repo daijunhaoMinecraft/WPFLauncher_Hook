@@ -17,10 +17,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		{
 			if (WpfConfig.IsDebug)
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine("[RealName]json: " + json.ToString());
-				Console.ForegroundColor = ConsoleColor.White;
-			}
+								Console.WriteLine("[RealName]json: " + json.ToString());
+							}
 			No_RealName("{\"methodId\":\"getRealnameStatus\",\"status\":3}");
 		}
 	}

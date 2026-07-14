@@ -15,12 +15,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "VapeDetect", IsBypass = true}));
             }
-            if (WpfConfig.IsDebug)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("[Vape]Vape检测成功绕过!");
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            WpfConfig.DefaultLogger.Info("Vape检测成功绕过!");
             return new Tuple<string, string>("", "");
         }
     }

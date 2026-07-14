@@ -115,8 +115,7 @@ public static class WebSocketHelper
     //         //                                 default: consoleColor = ConsoleColor.White; break;
     //         //                             }
     //         //                             
-    //         //                             Console.ForegroundColor = consoleColor;
-    //         //                             DebugPrint.LogDebug_NoColorSelect($"[WebSocket] {logMsg}");
+    //         //                                 //         //                             DebugPrint.LogDebug_NoColorSelect($"[WebSocket] {logMsg}");
     //         //                             Console.ResetColor();
     //         //                             
     //         //                             Send(JsonConvert.SerializeObject(new { type = "console", status = "success", message = "日志已记录" }));

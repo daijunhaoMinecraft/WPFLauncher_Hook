@@ -107,8 +107,7 @@ public class InitHook : IMethodHook
             if (!Directory.Exists(modsInjectPath))
             {
 	            Directory.CreateDirectory(modsInjectPath);
-            }
-            Console.ForegroundColor = ConsoleColor.Green;
+            } 
             WpfConfig.DefaultLogger.Info($"[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
             WpfConfig.DefaultLogger.Info($"[ModsInject] {modsInjectPath}");
             Console.ResetColor();
@@ -320,9 +319,8 @@ public class InitHook : IMethodHook
     {
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine("\u2588\u2588\u2557    \u2588\u2588\u2557\u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2557\u2588\u2588\u2557  \u2588\u2588\u2557 \u2588\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2557 \u2588\u2588\u2557  \u2588\u2588\u2557\n\u2588\u2588\u2551    \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2550\u255d\u2588\u2588\u2551  \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2554\u2550\u2550\u2550\u2588\u2588\u2557\u2588\u2588\u2551 \u2588\u2588\u2554\u255d\n\u2588\u2588\u2551 \u2588\u2557 \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2588\u2588\u2588\u2557  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2588\u2588\u2588\u2554\u255d \n\u2588\u2588\u2551\u2588\u2588\u2588\u2557\u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2550\u2550\u255d \u2588\u2588\u2554\u2550\u2550\u255d  \u2588\u2588\u2554\u2550\u2550\u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2551   \u2588\u2588\u2551\u2588\u2588\u2554\u2550\u2588\u2588\u2557 \n\u255a\u2588\u2588\u2588\u2554\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551     \u2588\u2588\u2551     \u2588\u2588\u2551  \u2588\u2588\u2551\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u255a\u2588\u2588\u2588\u2588\u2588\u2588\u2554\u255d\u2588\u2588\u2551  \u2588\u2588\u2557\n \u255a\u2550\u2550\u255d\u255a\u2550\u2550\u255d \u255a\u2550\u255d     \u255a\u2550\u255d     \u255a\u2550\u255d  \u255a\u2550\u255d \u255a\u2550\u2550\u2550\u2550\u2550\u255d  \u255a\u2550\u2550\u2550\u2550\u2550\u255d \u255a\u2550\u255d  \u255a\u2550\u255d\n                                                            ");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("[INFO]控制台输出成功启动!");
         Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine("[INFO]控制台输出成功启动!");
         Console.WriteLine($"[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\n当前Hook版本:{WpfConfig.Version}\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao");
         try
         {
@@ -335,8 +333,9 @@ public class InitHook : IMethodHook
         }
         catch (Exception e)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"[ERROR] 获取公告失败:{e} \n {e.StackTrace}");
         }
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.ResetColor();
     }
 }

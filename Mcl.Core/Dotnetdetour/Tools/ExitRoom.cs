@@ -34,16 +34,12 @@ public class ExitRoom // 退出此前进入过的房间 By Daijunhao
                 Console.WriteLine($"[AutoExit] 退出房间返回:{Regex.Escape(sExitRoomResult)}");
                 if (JObject.Parse(sExitRoomResult)["code"].ToObject<int>() == 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("[AutoExit] 退出房间成功!");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
+                                        Console.WriteLine("[AutoExit] 退出房间成功!");
+                                    }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[AutoExit] 退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    return false;
+                                        Console.WriteLine($"[AutoExit] 退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");
+                                        return false;
                 }
 
                 return true;

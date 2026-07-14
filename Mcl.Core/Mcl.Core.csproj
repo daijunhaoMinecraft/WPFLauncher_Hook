@@ -100,9 +100,7 @@
     <Compile Include="Dotnetdetour\Tools\4399Login.cs" />
     <Compile Include="Dotnetdetour\Tools\AESHelper.cs" />
     <Compile Include="Dotnetdetour\Tools\ByteArrayExtensions.cs" />
-    <Compile Include="Dotnetdetour\Tools\DebugPrint.cs" />
     <Compile Include="Dotnetdetour\Tools\ExitRoom.cs" />
-    <Compile Include="Dotnetdetour\Tools\Function.cs" />
     <Compile Include="Dotnetdetour\Tools\HtmlResource.cs" />
     <Compile Include="Dotnetdetour\Tools\HttpHelper.cs" />
     <Compile Include="Dotnetdetour\Tools\IpConfigManager.cs" />

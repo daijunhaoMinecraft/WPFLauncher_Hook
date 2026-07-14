@@ -23,8 +23,7 @@ public class BypassUpdate : IMethodHook
         
         Version latestVersion = updateInit.g();
         Version currectVersion = updateInit.f();
-        Console.ForegroundColor = ConsoleColor.Cyan;
-        WpfConfig.DefaultLogger.Info("[WPFLauncherUpdateInfo]更新情况:");
+                WpfConfig.DefaultLogger.Info("[WPFLauncherUpdateInfo]更新情况:");
         WpfConfig.DefaultLogger.Info($" - 当前版本:{currectVersion}");
         WpfConfig.DefaultLogger.Info($" - 最新版本:{latestVersion}");
         string text = string.Format("{0}{1}.{2}.{3}.txt", new object[]
@@ -70,7 +69,6 @@ public class BypassUpdate : IMethodHook
         {
             WpfConfig.DefaultLogger.Info("当前版本已是最新版本");
         }
-        Console.ForegroundColor = ConsoleColor.White;
-        return false;
+                return false;
     }
 }

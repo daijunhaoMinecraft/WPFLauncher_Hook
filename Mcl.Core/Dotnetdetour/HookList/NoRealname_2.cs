@@ -18,9 +18,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		{
 			if (WpfConfig.IsDebug)
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				DebugPrint.LogDebug_NoColorSelect("[MpayLogin]code_onCompactViewClosed: " + code.ToString());
-				Console.ForegroundColor = ConsoleColor.White;
+				WpfConfig.DefaultLogger.Info("[MpayLogin]code_onCompactViewClosed: " + code.ToString());
 			}
 			No_RealName(3);
 		}

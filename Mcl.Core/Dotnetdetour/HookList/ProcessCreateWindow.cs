@@ -336,9 +336,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     });
                     window.ShowDialog();
                 });
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                DebugPrint.LogDebug_NoColorSelect($"[SelectBedrock]选择的基岩版:{FileName}");
-                Console.ForegroundColor = ConsoleColor.White;
+                WpfConfig.DefaultLogger.Info($"[SelectBedrock]选择的基岩版:{FileName}");
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { Type = "StartBedrockGame", SelectBedrockExePath = FileName }));
             }
 
@@ -364,8 +362,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             // aqq.EnableRaisingEvents = true;
             // aqq.Exited += (sender, e) =>
             // {
-            //     Console.ForegroundColor = ConsoleColor.Yellow;
-            //     DebugPrint.LogDebug_NoColorSelect($"\n[进程] 进程 {FileName} 已退出");
+            //                 //     DebugPrint.LogDebug_NoColorSelect($"\n[进程] 进程 {FileName} 已退出");
             // };
 
             // 使用多线程启动游戏
@@ -373,9 +370,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 try
                 {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    DebugPrint.LogDebug_NoColorSelect($"[进程] 正在后台线程启动游戏: {FileName}");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    WpfConfig.DefaultLogger.Info($"[进程] 正在后台线程启动游戏: {FileName}");
                     
                     // 在后台线程中启动游戏
                     WPFLauncher.Manager.aqr.Instance.c(aqq);
@@ -383,10 +378,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 catch (Exception ex)
                 {
                     // 异常处理
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    DebugPrint.LogDebug_NoColorSelect($"[进程] 启动游戏时发生错误: {ex.Message}");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    
+                    WpfConfig.DefaultLogger.Error($"[进程] 启动游戏时发生错误: {ex.Message}");
+
                     // 通知UI线程显示错误信息
                     Application.Current.Dispatcher.Invoke(() =>
                     {
@@ -523,8 +516,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 result.EnableRaisingEvents = true;
                 result.Exited += (sender, e) =>
                 {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"\n[进程] 进程 {gwa} 已退出");
+                                        Console.WriteLine($"\n[进程] 进程 {gwa} 已退出");
                 };
                 
                 // 使用多线程处理游戏启动后的操作
@@ -532,18 +524,14 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 {
                     try
                     {
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine($"[进程] 正在后台线程处理启动进程: {gwa}");
-                        Console.ForegroundColor = ConsoleColor.White;
-                        
+                                                Console.WriteLine($"[进程] 正在后台线程处理启动进程: {gwa}");
+                                                
                         // 这里可以添加额外的启动后处理逻辑
                     }
                     catch (Exception ex)
                     {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"[进程] 处理启动进程时发生错误: {ex.Message}");
-                        Console.ForegroundColor = ConsoleColor.White;
-                    }
+                                                Console.WriteLine($"[进程] 处理启动进程时发生错误: {ex.Message}");
+                                            }
                 });
             }
             
