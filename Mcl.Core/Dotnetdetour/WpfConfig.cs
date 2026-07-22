@@ -13,7 +13,7 @@ namespace Mcl.Core.Dotnetdetour
 {
     public class WpfConfig
     {
-        public static string Version = "4.0.8-Public-Beta6";
+        public static string Version = "4.0.8-Public-Beta7";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
@@ -29,7 +29,6 @@ namespace Mcl.Core.Dotnetdetour
         public static JArray RecvList = new JArray();
         public static bool EnableRoomBlacklist = false;
         public static List<string> RoomBlacklist = new List<string>();
-        //public static bool EnableRegexBlacklist = false;
         public static List<string> RegexBlacklist = new List<string>();
         public static int MaxRoomCount = 16;
         public static bool IsLogin = false;

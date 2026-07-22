@@ -105,6 +105,29 @@ namespace Mcl.Core.Network
 					callback(netResponse, netRequestAsyncHandle);
 					return netRequestAsyncHandle;
 				}
+				
+				if (uri.ToString().EndsWith("/authentication-otp") || uri.ToString().EndsWith("/authentication/update"))
+				{
+					string decryptString = X19Crypt.DecryptX19Body(netResponse.RawBytes);
+					JObject authResult = JObject.Parse(decryptString);
+					WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {decryptString}");
+					if (authResult["code"].ToObject<int>() == 0)
+					{
+						X19Crypt.Token = authResult["entity"]["token"].ToString();
+						X19Crypt.UserId = authResult["entity"]["entity_id"].ToString();
+						string UserDetailResult = X19Http.Post("/user-detail", "");
+						WpfConfig.DefaultLogger.Info($"Login Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}, userDetail: {UserDetailResult}");
+					}
+					else if (authResult["code"].ToObject<int>() == 29)
+					{
+						JObject detailsObj = JObject.Parse(authResult["details"].ToString());
+						WpfConfig.DefaultLogger.Error($"因 {detailsObj["ban_msg"]} 您的账号被禁止登录游戏至 {X19Tools.unix_timestamp_to(detailsObj["ban_to_ts"].ToObject<long>())}，{authResult["message"].ToString()}!");
+					}
+					else
+					{
+						WpfConfig.DefaultLogger.Error($"Auth Failed: {decryptString}");
+					}
+				}
 			}
 			catch (Exception e)
 			{
@@ -753,7 +776,7 @@ namespace Mcl.Core.Network
 				netResponse = this.Execute(request, name, new Func<IHttp, string, HttpResponse>(NetClient.DoExecuteAsPost));
 			}
 			
-			if (uri.ToString().EndsWith("/authentication-otp"))
+			if (uri.ToString().EndsWith("/authentication-otp") || uri.ToString().EndsWith("/authentication/update"))
 			{
 				string decryptString = X19Crypt.DecryptX19Body(netResponse.RawBytes);
 				JObject authResult = JObject.Parse(decryptString);

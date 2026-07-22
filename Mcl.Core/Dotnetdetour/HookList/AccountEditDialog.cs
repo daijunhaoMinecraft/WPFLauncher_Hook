@@ -15,9 +15,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
         private TextBox passwordTextBox;
         private TextBox phoneTextBox;
         private TextBox notesTextBox;
-        private Button fetch4399AltButton;
-        private Button apiKeyButton;
-        private LinkLabel apiKeyTipLabel;
         private Button saveButton;
         private Button cancelButton;
         private Label nameLabel;
@@ -217,46 +214,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 UseSystemPasswordChar = true
             };
             _4399Panel.Controls.Add(passwordTextBox);
-
-            fetch4399AltButton = new Button
-            {
-                Text = "获取小号",
-                Location = new Point(65, 60),
-                Size = new Size(100, 28),
-                BackColor = ThemeColor,
-                ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
-            };
-            fetch4399AltButton.FlatAppearance.BorderSize = 0;
-            fetch4399AltButton.Click += OnFetch4399AltClick;
-            _4399Panel.Controls.Add(fetch4399AltButton);
-
-            apiKeyButton = new Button
-            {
-                Text = "设置ApiKey",
-                Location = new Point(175, 60),
-                Size = new Size(100, 28),
-                BackColor = Color.FromArgb(230, 230, 230),
-                ForeColor = Color.Black,
-                FlatStyle = FlatStyle.Flat
-            };
-            apiKeyButton.FlatAppearance.BorderSize = 0;
-            apiKeyButton.Click += (s, e) => PromptAndSave4399AltApiKey(true);
-            _4399Panel.Controls.Add(apiKeyButton);
-
-            apiKeyTipLabel = new LinkLabel
-            {
-                Text = "ApiKey获取: " + _4399AltApi.ProfileUrl,
-                Location = new Point(65, 92),
-                Size = new Size(inputWidth - 65, 20),
-                LinkArea = new LinkArea("ApiKey获取: ".Length, _4399AltApi.ProfileUrl.Length),
-                LinkColor = Color.FromArgb(0, 102, 204),
-                ActiveLinkColor = Color.FromArgb(0, 80, 180),
-                VisitedLinkColor = Color.FromArgb(0, 102, 204),
-                Font = new Font("Microsoft YaHei", 8F, FontStyle.Regular)
-            };
-            apiKeyTipLabel.LinkClicked += OnApiKeyProfileLinkClicked;
-            _4399Panel.Controls.Add(apiKeyTipLabel);
 
             this.Controls.Add(_4399Panel);
 
@@ -488,103 +445,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
             this.DialogResult = DialogResult.OK;
             this.Close();
-        }
-
-        private async void OnFetch4399AltClick(object sender, EventArgs e)
-        {
-            errorLabel.Text = "";
-            errorLabel.ForeColor = Color.FromArgb(209, 52, 56);
-            if (!Ensure4399AltApiKey())
-            {
-                return;
-            }
-
-            string oldText = fetch4399AltButton.Text;
-            fetch4399AltButton.Enabled = false;
-            fetch4399AltButton.Text = "获取中...";
-
-            try
-            {
-                var result = await _4399AltApi.FetchAltAsync();
-                if (!result.Success)
-                {
-                    errorLabel.Text = "获取小号失败: " + result.ErrorMessage;
-                    if (string.Equals(result.ErrorMessage, "Invalid api key", StringComparison.OrdinalIgnoreCase))
-                    {
-                        PromptAndSave4399AltApiKey(true);
-                    }
-                    return;
-                }
-
-                usernameTextBox.Text = result.Username;
-                passwordTextBox.Text = result.Password;
-                if (string.IsNullOrWhiteSpace(nameTextBox.Text))
-                {
-                    nameTextBox.Text = AccountManager.GetAvailableName("4399小号-" + result.Username, OriginalName);
-                }
-                if (string.IsNullOrWhiteSpace(notesTextBox.Text))
-                {
-                    notesTextBox.Text = "通过4399小号API获取";
-                }
-                errorLabel.ForeColor = Color.FromArgb(0, 128, 0);
-                errorLabel.Text = "已获取4399小号，请保存账号";
-            }
-            catch (Exception ex)
-            {
-                errorLabel.Text = "获取小号失败: " + ex.Message;
-            }
-            finally
-            {
-                fetch4399AltButton.Enabled = true;
-                fetch4399AltButton.Text = oldText;
-            }
-        }
-
-        private bool Ensure4399AltApiKey()
-        {
-            if (!string.IsNullOrWhiteSpace(_4399AltApi.LoadApiKey()))
-            {
-                return true;
-            }
-            return PromptAndSave4399AltApiKey(false);
-        }
-
-        private void OnApiKeyProfileLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            if (!_4399AltApi.OpenProfilePage(out string errorMessage))
-            {
-                errorLabel.ForeColor = Color.FromArgb(209, 52, 56);
-                errorLabel.Text = "打开页面失败: " + errorMessage;
-            }
-        }
-
-        private bool PromptAndSave4399AltApiKey(bool showEmptyMessage)
-        {
-            string current = _4399AltApi.LoadApiKey();
-            using (var dialog = new _4399AltApiKeyDialog(current))
-            {
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                {
-                    if (showEmptyMessage)
-                    {
-                        errorLabel.Text = "未保存ApiKey";
-                    }
-                    return false;
-                }
-
-                try
-                {
-                    _4399AltApi.SaveApiKey(dialog.ApiKey);
-                    errorLabel.ForeColor = Color.FromArgb(0, 128, 0);
-                    errorLabel.Text = "ApiKey已保存";
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    errorLabel.Text = "保存ApiKey失败: " + ex.Message;
-                    return false;
-                }
-            }
         }
     }
 }

@@ -14,15 +14,5 @@
     "C:\\Users\\Administrator\\.nuget\\packages\\system.security.cryptography.primitives\\4.3.0\\system.security.cryptography.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\Administrator\\.nuget\\packages\\system.security.cryptography.x509certificates\\4.3.0\\system.security.cryptography.x509certificates.4.3.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Error occurred while getting package vulnerability data: 不知道这样的主机。 (nuget.azure.cn:443)",
-      "projectPath": "G:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
-      "warningLevel": 1,
-      "filePath": "G:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }

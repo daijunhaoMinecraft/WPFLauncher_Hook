@@ -10,7 +10,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
         private ListView accountListView;
         private Button loginButton;
         private Button addButton;
-        private Button fetch4399AltButton;
         private Button editButton;
         private Button deleteButton;
         private Button manualButton;
@@ -139,12 +138,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
             addButton = CreateButton("添加账号", btnLeft, 98, btnWidth, btnHeight, false);
             addButton.Click += OnAddClick;
             this.Controls.Add(addButton);
-
-            fetch4399AltButton = CreateButton("获取4399小号", btnLeft, 140, btnWidth, btnHeight, false);
-            fetch4399AltButton.BackColor = Color.FromArgb(90, 150, 210);
-            fetch4399AltButton.ForeColor = Color.White;
-            fetch4399AltButton.Click += OnFetch4399AltClick;
-            this.Controls.Add(fetch4399AltButton);
 
             editButton = CreateButton("编辑账号", btnLeft, 182, btnWidth, btnHeight, false);
             editButton.Click += OnEditClick;
@@ -351,61 +344,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 SelectAccountByName(dialog.Account.Name);
             }
         }
-
-        private async void OnFetch4399AltClick(object sender, EventArgs e)
-        {
-            if (!Ensure4399AltApiKey())
-            {
-                return;
-            }
-
-            string oldText = fetch4399AltButton.Text;
-            fetch4399AltButton.Enabled = false;
-            fetch4399AltButton.Text = "获取中...";
-
-            try
-            {
-                var result = await _4399AltApi.FetchAltAsync();
-                if (!result.Success)
-                {
-                    MessageBox.Show(
-                        "获取4399小号失败: " + result.ErrorMessage,
-                        "4399小号",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-
-                    if (string.Equals(result.ErrorMessage, "Invalid api key", StringComparison.OrdinalIgnoreCase))
-                    {
-                        PromptAndSave4399AltApiKey();
-                    }
-                    return;
-                }
-
-                var account = new AccountInfo
-                {
-                    Name = AccountManager.GetAvailableName("4399小号-" + result.Username),
-                    Type = AccountType._4399,
-                    Username = result.Username,
-                    Password = result.Password,
-                    Notes = "通过4399小号API获取"
-                };
-                AccountManager.Add(account);
-                RefreshAccountList();
-                SelectAccountByName(account.Name);
-
-                MessageBox.Show(
-                    "已获取并保存4399小号: " + result.Username,
-                    "4399小号",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            finally
-            {
-                fetch4399AltButton.Enabled = true;
-                fetch4399AltButton.Text = oldText;
-            }
-        }
-
+        
         private void OnEditClick(object sender, EventArgs e)
         {
             if (accountListView.SelectedItems.Count == 0) return;
@@ -458,42 +397,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     item.Selected = true;
                     item.EnsureVisible();
                     break;
-                }
-            }
-        }
-
-        private bool Ensure4399AltApiKey()
-        {
-            if (!string.IsNullOrWhiteSpace(_4399AltApi.LoadApiKey()))
-            {
-                return true;
-            }
-            return PromptAndSave4399AltApiKey();
-        }
-
-        private bool PromptAndSave4399AltApiKey()
-        {
-            string current = _4399AltApi.LoadApiKey();
-            using (var dialog = new _4399AltApiKeyDialog(current))
-            {
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                {
-                    return false;
-                }
-
-                try
-                {
-                    _4399AltApi.SaveApiKey(dialog.ApiKey);
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        "保存ApiKey失败: " + ex.Message,
-                        "4399小号",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning);
-                    return false;
                 }
             }
         }

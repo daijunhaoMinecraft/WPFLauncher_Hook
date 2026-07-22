@@ -36,8 +36,6 @@
     <Compile Include="Dotnetdetour\HookList\ExitPop.cs" />
     <Compile Include="Dotnetdetour\HookList\FixErr.cs" />
     <Compile Include="Dotnetdetour\HookList\FixFriendShow.cs" />
-    <Compile Include="Dotnetdetour\HookList\4399AltApi.cs" />
-    <Compile Include="Dotnetdetour\HookList\4399AltApiKeyDialog.cs" />
     <Compile Include="Dotnetdetour\HookList\AccountEditDialog.cs" />
     <Compile Include="Dotnetdetour\HookList\AccountInfo.cs" />
     <Compile Include="Dotnetdetour\HookList\AccountManager.cs" />
