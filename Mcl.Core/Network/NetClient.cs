@@ -106,27 +106,25 @@ namespace Mcl.Core.Network
 					return netRequestAsyncHandle;
 				}
 				
-				if (uri.ToString().EndsWith("/authentication-otp") || uri.ToString().EndsWith("/authentication/update"))
+				if (uri.ToString().EndsWith("/authentication/update"))
 				{
-					string decryptString = X19Crypt.DecryptX19Body(netResponse.RawBytes);
-					JObject authResult = JObject.Parse(decryptString);
-					WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {decryptString}");
+					string decryptRequest = X19Crypt.DecryptX19Body(body);
+					string authenticationUpdateResult = X19Http.Post("/authentication/update", decryptRequest,
+						requestType: X19Http.RequestType.Encrypt);
+					
+					JObject authResult = JObject.Parse(authenticationUpdateResult);
+					WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {authenticationUpdateResult}");
 					if (authResult["code"].ToObject<int>() == 0)
 					{
 						X19Crypt.Token = authResult["entity"]["token"].ToString();
 						X19Crypt.UserId = authResult["entity"]["entity_id"].ToString();
-						string UserDetailResult = X19Http.Post("/user-detail", "");
-						WpfConfig.DefaultLogger.Info($"Login Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}, userDetail: {UserDetailResult}");
+						WpfConfig.DefaultLogger.Info($"Update Authentication Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}");
 					}
-					else if (authResult["code"].ToObject<int>() == 29)
-					{
-						JObject detailsObj = JObject.Parse(authResult["details"].ToString());
-						WpfConfig.DefaultLogger.Error($"因 {detailsObj["ban_msg"]} 您的账号被禁止登录游戏至 {X19Tools.unix_timestamp_to(detailsObj["ban_to_ts"].ToObject<long>())}，{authResult["message"].ToString()}!");
-					}
-					else
-					{
-						WpfConfig.DefaultLogger.Error($"Auth Failed: {decryptString}");
-					}
+
+					netResponse.RawBytes = X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(authenticationUpdateResult));
+					netResponse.Content = authenticationUpdateResult;
+					callback(netResponse, netRequestAsyncHandle);
+					return netRequestAsyncHandle;
 				}
 			}
 			catch (Exception e)

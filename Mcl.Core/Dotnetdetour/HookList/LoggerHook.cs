@@ -35,13 +35,65 @@ public class LoggerHook : IMethodHook
         ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget("console")
         {
             // 照搬原代码的 Layout
-            Layout = "${date:format=HH\\:mm\\:ss.fff} | ${level} | ${stacktrace} | ${message} | ${exception:format=tostring}"
+            Layout = "${date:format=HH\\:mm\\:ss.fff} | ${level} | ${stacktrace} | ${message} | ${exception:format=tostring}",
+            
+            // 关闭默认颜色规则，完全使用我们自定义的规则
+            UseDefaultRowHighlightingRules = false 
         };
+
+        // --- 开始添加自定义颜色规则 (高优先级的写在前面) ---
+
+        // Fatal: 致命错误 -> 白字，暗红背景 (极度醒目)
+        consoleTarget.RowHighlightingRules.Add(new ConsoleRowHighlightingRule()
+        {
+            Condition = "level == LogLevel.Fatal",
+            ForegroundColor = ConsoleOutputColor.White,
+            BackgroundColor = ConsoleOutputColor.DarkRed
+        });
+
+        // Error: 错误 -> 红字 (醒目)
+        consoleTarget.RowHighlightingRules.Add(new ConsoleRowHighlightingRule()
+        {
+            Condition = "level == LogLevel.Error",
+            ForegroundColor = ConsoleOutputColor.Red
+        });
+
+        // Warn: 警告 -> 黄字 (警示)
+        consoleTarget.RowHighlightingRules.Add(new ConsoleRowHighlightingRule()
+        {
+            Condition = "level == LogLevel.Warn",
+            ForegroundColor = ConsoleOutputColor.Yellow
+        });
+
+        // Info: 正常信息 -> 绿字 (代表一切正常，如果觉得绿色太亮可以改成 ConsoleOutputColor.White)
+        consoleTarget.RowHighlightingRules.Add(new ConsoleRowHighlightingRule()
+        {
+            Condition = "level == LogLevel.Info",
+            ForegroundColor = ConsoleOutputColor.Green 
+        });
+
+        // Debug: 调试信息 -> 深青色 (区分于普通信息，且不过于抢眼)
+        consoleTarget.RowHighlightingRules.Add(new ConsoleRowHighlightingRule()
+        {
+            Condition = "level == LogLevel.Debug",
+            ForegroundColor = ConsoleOutputColor.DarkCyan
+        });
+
+        // Trace: 追踪信息 -> 深灰色 (最低优先级，视觉弱化)
+        consoleTarget.RowHighlightingRules.Add(new ConsoleRowHighlightingRule()
+        {
+            Condition = "level == LogLevel.Trace",
+            ForegroundColor = ConsoleOutputColor.DarkGray
+        });
+
+        // --- 颜色规则添加结束 ---
+
         config.AddTarget(consoleTarget);
+        // 这里你原本写的是 Debug 级别以上输出到控制台
         config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, consoleTarget));
 
         // === 2. 检查开关，决定是否输出到本地文件夹 ===
-        if (WpfConfig.IsLogOutputFolder)
+        if (WpfConfig.IsLogOutputFolder) // 假设 WpfConfig 是你的配置类
         {
             FileTarget fileTarget = new FileTarget("logFile");
             
@@ -49,7 +101,6 @@ public class LoggerHook : IMethodHook
             string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
             
             // 保持原版的按日期分文件夹、按时间命名文件的格式
-            // 注意：NLog 的字符串模板需要原样保留
             fileTarget.FileName = Path.Combine(logDirectory, "${shortdate}", "${cached:${longdate:format=yyyy-MM-dd HH\\:mm\\:ss.fff}:cached=true}.log");
             
             // 照搬原代码的日志内容 Layout
@@ -60,8 +111,7 @@ public class LoggerHook : IMethodHook
         }
 
         // === 3. 生效配置 ===
-        // 直接将新的 config 赋值给 LogManager。
-        // 这会丢弃原版配置中的网易目标目录 (tb.j) 和上传器 (uploader/tc)。
+        // 直接将新的 config 赋值给 LogManager
         LogManager.Configuration = config;
     }
 }

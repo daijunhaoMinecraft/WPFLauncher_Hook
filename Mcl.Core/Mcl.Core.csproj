@@ -65,6 +65,7 @@
     <Compile Include="Dotnetdetour\HookList\RandomMac.cs" />
     <Compile Include="Dotnetdetour\HookList\Random_Disk.cs" />
     <Compile Include="Dotnetdetour\HookList\ChatConnectionPacket.cs" />
+    <Compile Include="Dotnetdetour\HookList\RebuildX19Crypto.cs" />
     <Compile Include="Dotnetdetour\HookList\RoomInfoWindow.cs" />
     <Compile Include="Dotnetdetour\HookList\RoomManager.cs" />
     <Compile Include="Dotnetdetour\HookList\SensitiveWordDetection.cs" />
