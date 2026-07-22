@@ -764,6 +764,14 @@ namespace Mcl.Core.Network
 				decryptBody["sauth_json"] =  sauthJson;
 				SetRequestBody(request, X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(decryptBody.ToString())));
 			}
+			
+			if (uri.ToString().EndsWith("game-play-v2/start"))
+			{
+				WpfConfig.DefaultLogger.Info($"用户启动了游戏");
+				string result = "{\n   \"code\" : 0,\n   \"details\" : \"\",\n   \"entity\" : {\n      \"anti_addiction_info\" : {\n         \"current_online_time_sum\" : 0,\n         \"msg\" : \"\",\n         \"online_time_left\" : 0,\n         \"online_time_limit\" : 0,\n         \"online_time_sum\" : 0,\n         \"status\" : 0\n      },\n      \"is_anti_addiction\" : false,\n      \"record\" : null\n   },\n   \"message\" : \"正常返回\"\n}";
+				netResponse.Content = result;
+				return netResponse;
+			}
 
 			if (method - Method.POST > 1 && method != Method.PATCH)
 			{
