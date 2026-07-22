@@ -13,7 +13,7 @@ namespace Mcl.Core.Dotnetdetour
 {
     public class WpfConfig
     {
-        public static string Version = "4.0.8-Public-Beta7";
+        public static string Version = "4.0.8-Public-Beta8";
         public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
         public static string Default_HttpAddress = "http://127.0.0.1:4600/";
         public static int HttpPort = 4600;
@@ -56,6 +56,12 @@ namespace Mcl.Core.Dotnetdetour
         public static bool IsWindowTopMost = true;
         public static bool EnableModsInject = false;
         public static bool IsLogOutputFolder = true;
+        
+        // custom Settings
+        public static bool EnableCustomBedrockSelect = false;
+        public static bool EnableCustomAccountLogin = false;
+        public static bool MpayUnless = false;
+        
 
         public static bool KeepOffDeleteLastResourcepacks = false;
         public static bool KeepOffDeleteLastConfig = false;

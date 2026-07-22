@@ -51,47 +51,47 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				WpfConfig.DefaultLogger.Info("[MpayLogin]返回代码: " + code.ToString());
 			}
 
-			if (code == 1)
-			{
-				//玩家取消登录 — 显示多账号管理界面
-				MessageBoxResult messageBoxResult = uz.q("是否使用多账号登录?", "", "多账号管理", "取消", "");
-				if (messageBoxResult == MessageBoxResult.OK)
-				{
-					// 打开多账号管理器
-					var accountForm = new AccountSelectForm();
-					accountForm.ShowDialog();
-
-					if (accountForm.Action == AccountSelectForm.LoginAction.UseSelected && accountForm.SelectedAccount != null)
-					{
-						// 使用选中的已保存账号
-						LoginWithSavedAccountInMpay(accountForm.SelectedAccount);
-					}
-					else if (accountForm.Action == AccountSelectForm.LoginAction.ManualInput)
-					{
-						// 手动输入（兼容旧流程）
-						DoManualCookieInput();
-					}
-					else
-					{
-						// 使用原号登录或取消
-						No_RealName(1);
-					}
-				}
-				else
-				{
-					No_RealName(1);
-				}
-
-				if (WpfConfig.IsLogin)
-				{
-					No_RealName(0);
-				}
-				else
-				{
-					No_RealName(1);
-				}
-			}
-			No_RealName(0);
+			// if (code == 1)
+			// {
+			// 	//玩家取消登录 — 显示多账号管理界面
+			// 	MessageBoxResult messageBoxResult = uz.q("是否使用多账号登录?", "", "多账号管理", "取消", "");
+			// 	if (messageBoxResult == MessageBoxResult.OK)
+			// 	{
+			// 		// 打开多账号管理器
+			// 		var accountForm = new AccountSelectForm();
+			// 		accountForm.ShowDialog();
+			//
+			// 		if (accountForm.Action == AccountSelectForm.LoginAction.UseSelected && accountForm.SelectedAccount != null)
+			// 		{
+			// 			// 使用选中的已保存账号
+			// 			LoginWithSavedAccountInMpay(accountForm.SelectedAccount);
+			// 		}
+			// 		else if (accountForm.Action == AccountSelectForm.LoginAction.ManualInput)
+			// 		{
+			// 			// 手动输入（兼容旧流程）
+			// 			DoManualCookieInput();
+			// 		}
+			// 		else
+			// 		{
+			// 			// 使用原号登录或取消
+			// 			No_RealName(1);
+			// 		}
+			// 	}
+			// 	else
+			// 	{
+			// 		No_RealName(1);
+			// 	}
+			//
+			// 	if (WpfConfig.IsLogin)
+			// 	{
+			// 		No_RealName(0);
+			// 	}
+			// 	else
+			// 	{
+			// 		No_RealName(1);
+			// 	}
+			// }
+			No_RealName(code);
 		}
 
 		/// <summary>

@@ -35,7 +35,7 @@ public class ExitRoom // 退出此前进入过的房间 By Daijunhao
                 if (JObject.Parse(sExitRoomResult)["code"].ToObject<int>() == 0)
                 {
                                         Console.WriteLine("[AutoExit] 退出房间成功!");
-                                    }
+                }
                 else
                 {
                                         Console.WriteLine($"[AutoExit] 退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");

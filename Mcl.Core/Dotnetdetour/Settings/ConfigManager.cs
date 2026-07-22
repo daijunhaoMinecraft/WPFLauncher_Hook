@@ -36,6 +36,11 @@ namespace Mcl.Core.Dotnetdetour.Settings
             new ConfigEntry { Key = "KeepOffDeleteLastConfig", Description = "阻止网易删除config文件夹", FieldType = typeof(bool), Category = "Java启动设置" },
             new ConfigEntry { Key = "KeepOffDeleteLastShaderPacks", Description = "阻止网易删除shaderpacks文件夹", FieldType = typeof(bool), Category = "Java启动设置" },
             
+            // 自定义设置
+            new ConfigEntry { Key = "EnableCustomBedrockSelect", Description = "自由选择基岩版客户端", FieldType = typeof(bool), Category = "自定义设置" },
+            new ConfigEntry { Key = "EnableCustomAccountLogin", Description = "选择使用Sauth/4399账号登录", FieldType = typeof(bool), Category = "自定义设置" },
+            new ConfigEntry { Key = "MpayUnless", Description = "不使用Mpay登录(将会调用账号管理器窗口登录)", FieldType = typeof(bool), Category = "自定义设置" },
+
             
             // 联机大厅设置
             new ConfigEntry { Key = "MaxRoomCount", Description = "最大房间数量", FieldType = typeof(int), Category = "联机大厅设置" },

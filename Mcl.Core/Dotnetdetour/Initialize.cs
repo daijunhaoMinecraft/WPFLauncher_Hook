@@ -69,6 +69,7 @@ public static class HookBootstrapper
             }
         }
         WpfConfig.DefaultLogger.Info("通过, 正在退出程序...");
+        Environment.Exit(0);
     }
         
     // 2. 拦截事件的执行逻辑

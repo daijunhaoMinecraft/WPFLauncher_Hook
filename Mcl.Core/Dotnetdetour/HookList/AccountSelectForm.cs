@@ -37,13 +37,14 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             UseSelected,
             UseOriginal,
-            ManualInput
+            ManualInput,
+            Exit
         }
 
         public AccountSelectForm()
         {
             _accounts = AccountManager.GetAllSorted();
-            Action = LoginAction.UseOriginal;
+            Action = LoginAction.Exit;
             InitializeComponent();
             RefreshAccountList();
         }

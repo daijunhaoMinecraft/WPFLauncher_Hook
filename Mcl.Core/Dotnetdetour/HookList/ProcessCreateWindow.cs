@@ -319,23 +319,27 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         Thread.Sleep(100);
                     }
                 }
-                // 显示基岩版路径选择窗口
-                Application.Current.Dispatcher.Invoke(() =>
+
+                if (WpfConfig.EnableCustomBedrockSelect)
                 {
-                    var window = new BedrockPathWindow_Select(selectedPath =>
+                    // 显示基岩版路径选择窗口
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        if (!string.IsNullOrEmpty(selectedPath))
+                        var window = new BedrockPathWindow_Select(selectedPath =>
                         {
-                            FileName = Path.Combine(selectedPath, "Minecraft.Windows.exe");
-                            WorkDirectory = selectedPath;
-                            // if (WpfConfig.IsDecryptMod)
-                            // {
-                            //     DecryptModStep(Args);
-                            // }
-                        }
+                            if (!string.IsNullOrEmpty(selectedPath))
+                            {
+                                FileName = Path.Combine(selectedPath, "Minecraft.Windows.exe");
+                                WorkDirectory = selectedPath;
+                                // if (WpfConfig.IsDecryptMod)
+                                // {
+                                //     DecryptModStep(Args);
+                                // }
+                            }
+                        });
+                        window.ShowDialog();
                     });
-                    window.ShowDialog();
-                });
+                }
                 WpfConfig.DefaultLogger.Info($"[SelectBedrock]选择的基岩版:{FileName}");
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { Type = "StartBedrockGame", SelectBedrockExePath = FileName }));
             }

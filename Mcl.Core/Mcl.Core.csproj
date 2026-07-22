@@ -43,6 +43,7 @@
     <Compile Include="Dotnetdetour\HookList\LoggerHook.cs" />
     <Compile Include="Dotnetdetour\HookList\LoginFix.cs" />
     <Compile Include="Dotnetdetour\HookList\InitHook.cs" />
+    <Compile Include="Dotnetdetour\HookList\LoginWithoutMpay.cs" />
     <Compile Include="Dotnetdetour\HookList\MinecraftPath.cs" />
     <Compile Include="Dotnetdetour\HookList\Mods.cs" />
     <Compile Include="Dotnetdetour\HookList\ModsInject.cs" />

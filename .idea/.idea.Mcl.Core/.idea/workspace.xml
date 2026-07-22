@@ -11,19 +11,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginWithoutMpay.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/4399AltApi.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/4399AltApiKeyDialog.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/AccountEditDialog.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/AccountEditDialog.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/AccountSelectForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/AccountSelectForm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/InitHook.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginFix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MpayLoginAccount.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/MpayLoginAccount.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ProcessCreateWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/ProcessCreateWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Settings/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Settings/ConfigManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/ExitRoom.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Tools/ExitRoom.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/WpfConfig.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/project.nuget.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
@@ -60,6 +61,9 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/83/55fcc051/tb.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/a3/6f799a29/ta.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0e981363b3064832854cd299011e5bd0702200/74/3b3bbb0a/ait.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/42/5e9c5674/apm.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/58/4c247c0a/SauthJsonEntity.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginWithoutMpay.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/OptizimeRandomNickName.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/WPFLauncherLib/Main.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" root0="FORCE_HIGHLIGHTING" />
@@ -224,15 +228,7 @@
       <workItem from="1783823788969" duration="757000" />
       <workItem from="1783943717799" duration="14956000" />
       <workItem from="1783999040150" duration="994000" />
-      <workItem from="1784694206293" duration="361000" />
-    </task>
-    <task id="LOCAL-00015" summary="小版本号更新">
-      <option name="closed" value="true" />
-      <created>1767007768343</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1767007768343</updated>
+      <workItem from="1784694206293" duration="7460000" />
     </task>
     <task id="LOCAL-00016" summary="适配版本 1.15.14.37766&#10;不兼容向下版本">
       <option name="closed" value="true" />
@@ -618,7 +614,15 @@
       <option name="project" value="LOCAL" />
       <updated>1783999880163</updated>
     </task>
-    <option name="localTasksCounter" value="64" />
+    <task id="LOCAL-00064" summary="修复账号长时间状态下出现部分功能需要重新登录的问题, 移除4399小号自动获取">
+      <option name="closed" value="true" />
+      <created>1784694823769</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1784694823769</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -639,7 +643,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复:&#10; - 网易因在最新版本启动路径转向 &quot;DownloadPath&quot;/temp/temp.config 导致无法正常使用自定义 IP 功能&#10; - 绕过基岩版更新一些问题(在设置处增加用户可自定义基岩版路径)" />
     <MESSAGE value="修复了组网模式不可用问题(症状表现为一个包发送失败), 获取公告设置3秒超时防止进入游戏慢" />
     <MESSAGE value="[花费2元巨款测试DeepseeV4Pro性能写的]增加了窗口保持置顶按钮, 增加了多账号切换功能, 将手机号登录正式写进Hook里面" />
     <MESSAGE value="修复4399无法登录问题" />
@@ -664,7 +667,8 @@
     <MESSAGE value="修复了一些问题" />
     <MESSAGE value="Update" />
     <MESSAGE value="优化: 网易我的世界随机名称, 使用PE的网易在线随机名称, 而非一堆重复使用过的名称导致很难随机到名称" />
-    <option name="LAST_COMMIT_MESSAGE" value="优化: 网易我的世界随机名称, 使用PE的网易在线随机名称, 而非一堆重复使用过的名称导致很难随机到名称" />
+    <MESSAGE value="修复账号长时间状态下出现部分功能需要重新登录的问题, 移除4399小号自动获取" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复账号长时间状态下出现部分功能需要重新登录的问题, 移除4399小号自动获取" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

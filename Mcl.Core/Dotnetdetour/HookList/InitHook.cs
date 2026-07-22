@@ -6,13 +6,19 @@ using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Mcl.Core.Dotnetdetour.Settings;
 using Mcl.Core.Dotnetdetour.Tools;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WPFLauncher.Common;
+using WPFLauncher.Manager;
+using WPFLauncher.Sdk.MPay;
 using WPFLauncher.Util;
 
 namespace Mcl.Core.Dotnetdetour.HookList;
@@ -31,13 +37,13 @@ public class InitHook : IMethodHook
 	private static extern uint GetConsoleOutputCP();
 
 	[OriginalMethod]
-	public void InitChannel()
-	{
-	}
+    public void InitMpay(Action<int> startAction)
+    {
+    }
 
 	
-    [HookMethod("WPFLauncher.Manager.PCChannel.asx", "f", "InitChannel")]
-    public void InitChannelHook()
+    [HookMethod("WPFLauncher.Manager.arf", "a", "InitMpay")]
+    public void InitMpayHook(Action<int> startAction)
     {
         try
         {
@@ -116,8 +122,7 @@ public class InitHook : IMethodHook
 
         // 3. 应用运行逻辑
         ApplyRuntimeSettings();
-        
-        InitChannel();
+        InitMpay(startAction);
     }
     
     // --- 工具函数 (保持不变) ---

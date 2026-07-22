@@ -19,7 +19,7 @@ using MessageBox = System.Windows.MessageBox;
 namespace Mcl.Core.Dotnetdetour.HookList
 {
 	// Token: 0x02000017 RID: 23
-	internal class LoginFix : IMethodHook
+	public class LoginFix : IMethodHook
 	{
 		[OriginalMethod]
 		public static void f(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue = null)
@@ -30,40 +30,47 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Network.Launcher.acp", "g", "g")]
 		public static async Task g(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
 		{
-			MessageBoxResult messageBoxResult;
-			if (WpfConfig.CookieLoginWithoutMpay)
+			if (WpfConfig.EnableCustomAccountLogin && !WpfConfig.MpayUnless)
 			{
-				messageBoxResult = MessageBoxResult.Cancel;
-			}
-			else
-			{
-				messageBoxResult = uz.q("是否使用Cookie登录?", "", "多账号管理", "使用原号登录", "");
-			}
-			if (messageBoxResult == MessageBoxResult.OK)
-			{
-				// 多账号管理器
-				var accountForm = new AccountSelectForm();
-				accountForm.ShowDialog();
-
-				if (accountForm.Action == AccountSelectForm.LoginAction.UseSelected && accountForm.SelectedAccount != null)
+				MessageBoxResult messageBoxResult;
+				if (WpfConfig.CookieLoginWithoutMpay)
 				{
-					// 使用选中的已保存账号
-					LoginWithSavedAccount(accountForm.SelectedAccount, hud, hue);
-				}
-				else if (accountForm.Action == AccountSelectForm.LoginAction.ManualInput)
-				{
-					// 手动输入（兼容旧流程）
-					DoManualLogin(hud, hue);
+					messageBoxResult = MessageBoxResult.Cancel;
 				}
 				else
 				{
-					// 使用原号登录
+					messageBoxResult = uz.q("是否使用Cookie登录?", "", "多账号管理", "使用原号登录", "");
+				}
+				if (messageBoxResult == MessageBoxResult.OK)
+				{
+					// 多账号管理器
+					var accountForm = new AccountSelectForm();
+					accountForm.ShowDialog();
+
+					if (accountForm.Action == AccountSelectForm.LoginAction.UseSelected && accountForm.SelectedAccount != null)
+					{
+						// 使用选中的已保存账号
+						LoginWithSavedAccount(accountForm.SelectedAccount, hud, hue);
+					}
+					else if (accountForm.Action == AccountSelectForm.LoginAction.ManualInput)
+					{
+						// 手动输入（兼容旧流程）
+						DoManualLogin(hud, hue);
+					}
+					else
+					{
+						// 使用原号登录
+						LoginWithOriginal(hud, hue);
+					}
+				}
+				else if (messageBoxResult == MessageBoxResult.None)
+				{
 					LoginWithOriginal(hud, hue);
 				}
-			}
-			else if (messageBoxResult == MessageBoxResult.None)
-			{
-				LoginWithOriginal(hud, hue);
+				else
+				{
+					LoginWithOriginal(hud, hue);
+				}
 			}
 			else
 			{
