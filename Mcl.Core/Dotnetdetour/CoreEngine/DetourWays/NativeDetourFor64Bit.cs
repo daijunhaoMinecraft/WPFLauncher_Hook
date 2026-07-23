@@ -1,0 +1,38 @@
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using Mcl.Core.Dotnetdetour.CoreEngine.Base;
+
+namespace Mcl.Core.Dotnetdetour.CoreEngine.DetourWays;
+
+public unsafe class NativeDetourFor64Bit : NativeDetourFor32Bit
+{
+    private readonly byte[] jmp_inst =
+    {
+        0x50, //push rax
+        0x48, 0xB8, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, //mov rax,target_addr
+        0x50, //push rax
+        0x48, 0x8B, 0x44, 0x24, 0x08, //mov rax,qword ptr ss:[rsp+8]
+        0xC2, 0x08, 0x00 //ret 8
+    };
+
+    protected override void MakePlacholderMethodCallPointsToRawMethod(MethodBase method)
+    {
+        uint oldProtect;
+        var needSize = LDasm.SizeofMin5Byte(rawMethodPtr);
+        var src_instr = new byte[needSize];
+        for (var i = 0; i < needSize; i++) src_instr[i] = rawMethodPtr[i];
+        fixed (byte* p = &jmp_inst[3])
+        {
+            *(ulong*)p = (ulong)(rawMethodPtr + needSize);
+        }
+
+        var totalLength = src_instr.Length + jmp_inst.Length;
+        var ptr = Marshal.AllocHGlobal(totalLength);
+        Marshal.Copy(src_instr, 0, ptr, src_instr.Length);
+        Marshal.Copy(jmp_inst, 0, ptr + src_instr.Length, jmp_inst.Length);
+        NativeAPI.VirtualProtect(ptr, (uint)totalLength, Protection.PAGE_EXECUTE_READWRITE, out oldProtect);
+        RuntimeHelpers.PrepareMethod(method.MethodHandle);
+        *(ulong*)((uint*)method.MethodHandle.Value.ToPointer() + 2) = (ulong)ptr;
+    }
+}

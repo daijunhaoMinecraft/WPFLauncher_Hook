@@ -1,203 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <ProjectGuid>{8E75B70D-7262-44F9-98CE-B4BDBE1A1826}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Mcl.Core</RootNamespace>
-    <AssemblyName>Mcl.Core</AssemblyName>
-    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <FileAlignment>512</FileAlignment>
-    <TargetFramework>net48</TargetFramework>
-    <PlatformTarget>x86</PlatformTarget>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <EnableDefaultItems>False</EnableDefaultItems>
-  </PropertyGroup>
-  <PropertyGroup />
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <Prefer32bit>true</Prefer32bit>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Dotnetdetour\AssemblyUtil.cs" />
-    <Compile Include="Dotnetdetour\DestAndOri.cs" />
-    <Compile Include="Dotnetdetour\DetourFactory.cs" />
-    <Compile Include="Dotnetdetour\DetourWays\NativeDetourFor32Bit.cs" />
-    <Compile Include="Dotnetdetour\DetourWays\NativeDetourFor64Bit.cs" />
-    <Compile Include="Dotnetdetour\Extensions\TypeExtensions.cs" />
-    <Compile Include="Dotnetdetour\HookList\BypassForbidden.cs" />
-    <Compile Include="Dotnetdetour\HookList\BypassUpdate.cs" />
-    <Compile Include="Dotnetdetour\HookList\ChangeIPForm.cs" />
-    <Compile Include="Dotnetdetour\HookList\DirectoryEvent.cs" />
-    <Compile Include="Dotnetdetour\HookList\disableCPPLow.cs" />
-    <Compile Include="Dotnetdetour\HookList\DownloadEvent.cs" />
-    <Compile Include="Dotnetdetour\HookList\EnableBrowseRightClick.cs" />
-    <Compile Include="Dotnetdetour\HookList\ExitPop.cs" />
-    <Compile Include="Dotnetdetour\HookList\FixErr.cs" />
-    <Compile Include="Dotnetdetour\HookList\FixFriendShow.cs" />
-    <Compile Include="Dotnetdetour\HookList\AccountEditDialog.cs" />
-    <Compile Include="Dotnetdetour\HookList\AccountInfo.cs" />
-    <Compile Include="Dotnetdetour\HookList\AccountManager.cs" />
-    <Compile Include="Dotnetdetour\HookList\AccountSelectForm.cs" />
-    <Compile Include="Dotnetdetour\HookList\LoggerHook.cs" />
-    <Compile Include="Dotnetdetour\HookList\LoginFix.cs" />
-    <Compile Include="Dotnetdetour\HookList\InitHook.cs" />
-    <Compile Include="Dotnetdetour\HookList\LoginWithoutMpay.cs" />
-    <Compile Include="Dotnetdetour\HookList\MinecraftPath.cs" />
-    <Compile Include="Dotnetdetour\HookList\Mods.cs" />
-    <Compile Include="Dotnetdetour\HookList\ModsInject.cs" />
-    <Compile Include="Dotnetdetour\HookList\Mpay_Log.cs" />
-    <Compile Include="Dotnetdetour\HookList\NoRealname.cs" />
-    <Compile Include="Dotnetdetour\HookList\MpayLoginAccount.cs" />
-    <Compile Include="Dotnetdetour\HookList\MpayPhoneLogin.cs" />
-    <Compile Include="Dotnetdetour\HookList\OptimizeDeleteFile.cs" />
-    <Compile Include="Dotnetdetour\HookList\OptizimeRandomNickName.cs" />
-    <Compile Include="Dotnetdetour\HookList\PhoneVerifyForm.cs" />
-    <Compile Include="Dotnetdetour\HookList\NoRealname_2.cs" />
-    <Compile Include="Dotnetdetour\HookList\DisableCppUpdate.cs" />
-    <Compile Include="Dotnetdetour\HookList\MuteBanSystem.cs" />
-    <Compile Include="Dotnetdetour\HookList\No_SaveWorldEncrypt.cs" />
-    <Compile Include="Dotnetdetour\HookList\LobbyGameList.cs" />
-    <Compile Include="Dotnetdetour\HookList\Password_String.cs" />
-    <Compile Include="Dotnetdetour\HookList\Password_String_1.cs" />
-    <Compile Include="Dotnetdetour\HookList\ProcessCreateWindow.cs" />
-    <Compile Include="Dotnetdetour\HookList\RandomMac.cs" />
-    <Compile Include="Dotnetdetour\HookList\Random_Disk.cs" />
-    <Compile Include="Dotnetdetour\HookList\ChatConnectionPacket.cs" />
-    <Compile Include="Dotnetdetour\HookList\RebuildX19Crypto.cs" />
-    <Compile Include="Dotnetdetour\HookList\RoomInfoWindow.cs" />
-    <Compile Include="Dotnetdetour\HookList\RoomManager.cs" />
-    <Compile Include="Dotnetdetour\HookList\SensitiveWordDetection.cs" />
-    <Compile Include="Dotnetdetour\HookList\SolveHyt.cs" />
-    <Compile Include="Dotnetdetour\HookList\SolveJavaMemoryLimit.cs" />
-    <Compile Include="Dotnetdetour\HookList\TargetConst.cs" />
-    <Compile Include="Dotnetdetour\HookList\UnlockAllMode.cs" />
-    <Compile Include="Dotnetdetour\HookList\VapeDetect.cs" />
-    <Compile Include="Dotnetdetour\HookList\WebRTCEx.cs" />
-    <Compile Include="Dotnetdetour\HookList\WebSocket_WebRtc.cs" />
-    <Compile Include="Dotnetdetour\HookList\BypassFever.cs" />
-    <Compile Include="Dotnetdetour\HookMethodAttribute.cs" />
-    <Compile Include="Dotnetdetour\IDetour.cs" />
-    <Compile Include="Dotnetdetour\IMethodHook.cs" />
-    <Compile Include="Dotnetdetour\IMethodHookWithSet.cs" />
-    <Compile Include="Dotnetdetour\IMethodMonitor.cs" />
-    <Compile Include="Dotnetdetour\Initialize.cs" />
-    <Compile Include="Dotnetdetour\LDasm.cs" />
-    <Compile Include="Dotnetdetour\MethodHook.cs" />
-    <Compile Include="Dotnetdetour\Model\FriendStatus.cs" />
-    <Compile Include="Dotnetdetour\Model\LanGamePlayerInfo.cs" />
-    <Compile Include="Dotnetdetour\Model\TransferStruct.cs" />
-    <Compile Include="Dotnetdetour\MonitorAttribute.cs" />
-    <Compile Include="Dotnetdetour\NativeAPI.cs" />
-    <Compile Include="Dotnetdetour\NonPublicParameterTypeAttribute.cs" />
-    <Compile Include="Dotnetdetour\OriginalAttribute.cs" />
-    <Compile Include="Dotnetdetour\OriginalMethodAttribute.cs" />
-    <Compile Include="Dotnetdetour\Protection.cs" />
-    <Compile Include="Dotnetdetour\RelocatedMethodAttribute.cs" />
-    <Compile Include="Dotnetdetour\RememberTypeAttribute.cs" />
-    <Compile Include="Dotnetdetour\Settings\ConfigManager.cs" />
-    <Compile Include="Dotnetdetour\ShadowMethodAttribute.cs" />
-    <Compile Include="Dotnetdetour\Tools\4399Login.cs" />
-    <Compile Include="Dotnetdetour\Tools\AESHelper.cs" />
-    <Compile Include="Dotnetdetour\Tools\ByteArrayExtensions.cs" />
-    <Compile Include="Dotnetdetour\Tools\ExitRoom.cs" />
-    <Compile Include="Dotnetdetour\Tools\HtmlResource.cs" />
-    <Compile Include="Dotnetdetour\Tools\HttpHelper.cs" />
-    <Compile Include="Dotnetdetour\Tools\IpConfigManager.cs" />
-    <Compile Include="Dotnetdetour\Tools\LocalProxyListener.cs" />
-    <Compile Include="Dotnetdetour\Tools\MemoryUtils.cs" />
-    <Compile Include="Dotnetdetour\Tools\Network\WintunNetworkModule.cs" />
-    <Compile Include="Dotnetdetour\Tools\Ocr.cs" />
-    <Compile Include="Dotnetdetour\Tools\PacketDeserializer.cs" />
-    <Compile Include="Dotnetdetour\Tools\RandomName.cs" />
-    <Compile Include="Dotnetdetour\Tools\SauthJsonRandomGenerator.cs" />
-    <Compile Include="Dotnetdetour\Tools\StringExtensions.cs" />
-    <Compile Include="Dotnetdetour\Tools\UnifiedSession.cs" />
-    <Compile Include="Dotnetdetour\Tools\WebHelper.cs" />
-    <Compile Include="Dotnetdetour\Tools\X19Http.cs" />
-    <Compile Include="Dotnetdetour\Var\WebRtcVar.cs" />
-    <Compile Include="Dotnetdetour\Window\ClientSelectPort.cs" />
-    <Compile Include="Dotnetdetour\Window\ForwarderControlPanel.cs" />
-    <Compile Include="Dotnetdetour\Window\NetworkMonitorForm.cs" />
-    <Compile Include="Dotnetdetour\Window\SelectIp.cs" />
-    <Compile Include="Dotnetdetour\Window\ServerPanel.cs" />
-    <Compile Include="Dotnetdetour\Window\ServerSelectPort.cs" />
-    <Compile Include="Dotnetdetour\WpfConfig.cs" />
-    <Compile Include="Extensions\CollectionExtensions.cs" />
-    <Compile Include="Extensions\MiscExtensions.cs" />
-    <Compile Include="Extensions\ResponseStatusExtensions.cs" />
-    <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="NeteaseProtocol\X19Http.cs" />
-    <Compile Include="Network\DataFormat.cs" />
-    <Compile Include="Network\FileParameter.cs" />
-    <Compile Include="Network\Http.cs" />
-    <Compile Include="Network\HttpCookie.cs" />
-    <Compile Include="Network\HttpFile.cs" />
-    <Compile Include="Network\HttpHeader.cs" />
-    <Compile Include="Network\HttpMethod.cs" />
-    <Compile Include="Network\HttpParameter.cs" />
-    <Compile Include="Network\HttpResponse.cs" />
-    <Compile Include="Network\Interface\IHttp.cs" />
-    <Compile Include="Network\Interface\IHttpFactory.cs" />
-    <Compile Include="Network\Interface\IHttpResponse.cs" />
-    <Compile Include="Network\Interface\INetClient.cs" />
-    <Compile Include="Network\Interface\INetRequest.cs" />
-    <Compile Include="Network\Interface\INetResponse.2.cs" />
-    <Compile Include="Network\Interface\INetResponse.cs" />
-    <Compile Include="Network\Interface\SimpleFactory.cs" />
-    <Compile Include="Network\Method.cs" />
-    <Compile Include="Network\NetClient.cs" />
-    <Compile Include="Network\NetRequest.cs" />
-    <Compile Include="Network\NetRequestAsyncHandle.cs" />
-    <Compile Include="Network\NetResponse.2.cs" />
-    <Compile Include="Network\NetResponse.cs" />
-    <Compile Include="Network\NetResponseBase.cs" />
-    <Compile Include="Network\NetResponseCookie.cs" />
-    <Compile Include="Network\Parameter.cs" />
-    <Compile Include="Network\ParameterType.cs" />
-    <Compile Include="Network\ResponseStatus.cs" />
-    <Compile Include="Network\TimeOutState.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\x19Crypt.cs" />
-    <Compile Include="Utils\AppMutexHelper.cs" />
-    <Compile Include="Utils\RegistryHelper.cs" />
-    <Compile Include="Utils\RegKey.cs" />
-    <Compile Include="Utils\Util\FileVersionHelper.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="CefSharp">
-      <HintPath>E:\MCLauncher\CefSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>E:\MCLauncher\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog">
-      <HintPath>E:\MCLauncher\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
-    <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-    <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="websocket-sharp">
-      <HintPath>E:\MCLauncher\websocket-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="WPFControls">
-      <HintPath>E:\MCLauncher\WPFControls.dll</HintPath>
-    </Reference>
-    <Reference Include="WPFLauncher">
-      <HintPath>..\..\..\..\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Dotnetdetour\HTML\RoomManage.html" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Management" Version="10.0.0-preview.7.25380.108" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-  </ItemGroup>
+    <PropertyGroup>
+        <ProjectGuid>{8E75B70D-7262-44F9-98CE-B4BDBE1A1826}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <RootNamespace>Mcl.Core</RootNamespace>
+        <AssemblyName>Mcl.Core</AssemblyName>
+        <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+        <FileAlignment>512</FileAlignment>
+        <TargetFramework>net48</TargetFramework>
+        <PlatformTarget>x86</PlatformTarget>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <LangVersion>latest</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup>
+        <EnableDefaultItems>False</EnableDefaultItems>
+    </PropertyGroup>
+    <PropertyGroup/>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <Prefer32bit>true</Prefer32bit>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\HookMethodAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\MonitorAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\NonPublicParameterTypeAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\OriginalAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\OriginalMethodAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\RelocatedMethodAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\RememberTypeAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Attributes\ShadowMethodAttribute.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Base\AssemblyUtil.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Base\DestAndOri.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Base\DetourFactory.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Base\LDasm.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Base\MethodHook.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Base\NativeAPI.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Base\Protection.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\DetourWays\NativeDetourFor32Bit.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\DetourWays\NativeDetourFor64Bit.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IDetour.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IMethodHook.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IMethodHookWithSet.cs"/>
+        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IMethodMonitor.cs"/>
+        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\BypassFever.cs"/>
+        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\BypassForbidden.cs"/>
+        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\BypassUpdate.cs"/>
+        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\disableCPPLow.cs"/>
+        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\DisableCppUpdate.cs"/>
+        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\VapeDetect.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\AccountInfo.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\AccountManager.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\LoginFix.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\MpayLoginAccount.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\Password_String.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\Password_String_1.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\RebuildX19Crypto.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\SauthJsonRandomGenerator.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Providers\4399Login.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Providers\LoginWithoutMpay.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Providers\MpayPhoneLogin.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\MinecraftPath.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\Mods.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\ModsInject.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\No_SaveWorldEncrypt.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\OptimizeDeleteFile.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\SolveHyt.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\SolveJavaMemoryLimit.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\UnlockAllMode.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\AccountEditDialog.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\AccountSelectForm.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\ChangeIPForm.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\directoryEvent.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\DownloadEvent.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\EnableBrowseRightClick.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\ExitPop.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\FixErr.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\FixFriendShow.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\InitHook.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\LoggerHook.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\Mpay_Log.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\MuteBanSystem.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\OptimizationShow.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\PhoneVerifyForm.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\ProcessCreateWindow.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\RoomInfoWindow.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\SensitiveWordDetection.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\TargetConst.cs"/>
+        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\NoRealname.cs"/>
+        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\NoRealname_2.cs"/>
+        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\OptizimeRandomNickName.cs"/>
+        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\RandomMac.cs"/>
+        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\RandomName.cs"/>
+        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\Random_Disk.cs"/>
+        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\ChatConnectionPacket.cs"/>
+        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\LobbyGameList.cs"/>
+        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\RoomManager.cs"/>
+        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WebRTCEx.cs"/>
+        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WebSocket_WebRtc.cs"/>
+        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WintunNetworkModule.cs"/>
+        <Compile Include="Dotnetdetour\Initialize.cs" />
+        <Compile Include="Dotnetdetour\Models\Config\ConfigManager.cs"/>
+        <Compile Include="Dotnetdetour\Models\Config\WpfConfig.cs"/>
+        <Compile Include="Dotnetdetour\Models\Entities\FriendStatus.cs"/>
+        <Compile Include="Dotnetdetour\Models\Entities\LanGamePlayerInfo.cs"/>
+        <Compile Include="Dotnetdetour\Models\Entities\TransferStruct.cs"/>
+        <Compile Include="Dotnetdetour\Models\Globals\WebRtcVar.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\ClientSelectPort.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\NetworkMonitorForm.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\SelectIp.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\ServerPanel.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\ServerSelectPort.cs"/>
+        <Compile Include="Dotnetdetour\UI\WebAssets\HtmlResource.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Common\MemoryUtils.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Common\Ocr.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Common\StringExtensions.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Common\TypeExtensions.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Crypto\AESHelper.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\ExitRoom.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\HttpHelper.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\IpConfigManager.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\LocalProxyListener.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\PacketDeserializer.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\UnifiedSession.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\WebHelper.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Network\X19Http.cs"/>
+        <Compile Include="Extensions\CollectionExtensions.cs"/>
+        <Compile Include="Extensions\MiscExtensions.cs"/>
+        <Compile Include="Extensions\ResponseStatusExtensions.cs"/>
+        <Compile Include="Extensions\StringExtensions.cs"/>
+        <Compile Include="NeteaseProtocol\X19Http.cs"/>
+        <Compile Include="Network\DataFormat.cs"/>
+        <Compile Include="Network\FileParameter.cs"/>
+        <Compile Include="Network\Http.cs"/>
+        <Compile Include="Network\HttpCookie.cs"/>
+        <Compile Include="Network\HttpFile.cs"/>
+        <Compile Include="Network\HttpHeader.cs"/>
+        <Compile Include="Network\HttpMethod.cs"/>
+        <Compile Include="Network\HttpParameter.cs"/>
+        <Compile Include="Network\HttpResponse.cs"/>
+        <Compile Include="Network\Interface\IHttp.cs"/>
+        <Compile Include="Network\Interface\IHttpFactory.cs"/>
+        <Compile Include="Network\Interface\IHttpResponse.cs"/>
+        <Compile Include="Network\Interface\INetClient.cs"/>
+        <Compile Include="Network\Interface\INetRequest.cs"/>
+        <Compile Include="Network\Interface\INetResponse.2.cs"/>
+        <Compile Include="Network\Interface\INetResponse.cs"/>
+        <Compile Include="Network\Interface\SimpleFactory.cs"/>
+        <Compile Include="Network\Method.cs"/>
+        <Compile Include="Network\NetClient.cs"/>
+        <Compile Include="Network\NetRequest.cs"/>
+        <Compile Include="Network\NetRequestAsyncHandle.cs"/>
+        <Compile Include="Network\NetResponse.2.cs"/>
+        <Compile Include="Network\NetResponse.cs"/>
+        <Compile Include="Network\NetResponseBase.cs"/>
+        <Compile Include="Network\NetResponseCookie.cs"/>
+        <Compile Include="Network\Parameter.cs"/>
+        <Compile Include="Network\ParameterType.cs"/>
+        <Compile Include="Network\ResponseStatus.cs"/>
+        <Compile Include="Network\TimeOutState.cs"/>
+        <Compile Include="Properties\AssemblyInfo.cs"/>
+        <Compile Include="Tools\x19Crypt.cs"/>
+        <Compile Include="Utils\AppMutexHelper.cs"/>
+        <Compile Include="Utils\RegistryHelper.cs"/>
+        <Compile Include="Utils\RegKey.cs"/>
+        <Compile Include="Utils\Util\FileVersionHelper.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="CefSharp">
+            <HintPath>E:\MCLauncher\CefSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp"/>
+        <Reference Include="Microsoft.VisualBasic"/>
+        <Reference Include="Newtonsoft.Json">
+            <HintPath>E:\MCLauncher\Newtonsoft.Json.dll</HintPath>
+        </Reference>
+        <Reference Include="NLog">
+            <HintPath>E:\MCLauncher\NLog.dll</HintPath>
+        </Reference>
+        <Reference Include="System.Core"/>
+        <Reference Include="System.Web"/>
+        <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>
+        <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>
+        <Reference Include="System.Windows.Forms"/>
+        <Reference Include="websocket-sharp">
+            <HintPath>E:\MCLauncher\websocket-sharp.dll</HintPath>
+        </Reference>
+        <Reference Include="WindowsBase"/>
+        <Reference Include="WPFControls">
+            <HintPath>E:\MCLauncher\WPFControls.dll</HintPath>
+        </Reference>
+        <Reference Include="WPFLauncher">
+            <HintPath>..\..\..\..\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>
+        </Reference>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Management" Version="10.0.0-preview.7.25380.108"/>
+        <PackageReference Include="System.Net.Http" Version="4.3.4"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Dotnetdetour\UI\Dialogs\"/>
+        <Folder Include="Dotnetdetour\UI\Windows\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="Dotnetdetour\UI\WebAssets\RoomManage.html"/>
+    </ItemGroup>
 </Project>
