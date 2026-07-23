@@ -18,7 +18,6 @@ internal class LobbyGameList : IMethodHook
 
     [CompilerGenerated]
     [HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "d", "GetLobbyGameList")]
-    // Token: 0x060045FE RID: 17918 RVA: 0x000ED080 File Offset: 0x000EB280
     public static void GetLobbyGameListHook(string resId, int jni, int jnj,
         Action<EntityListResponse<LobbyGameRoomEntity>> response)
     {

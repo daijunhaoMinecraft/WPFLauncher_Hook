@@ -352,14 +352,7 @@ public class ProcessCreateWindow : IMethodHook
             Type = StartType
         };
         if (!string.IsNullOrEmpty(WorkDirectory)) aqq.StartInfo.WorkingDirectory = WorkDirectory;
-
-        // 添加进程退出事件处理，防止突然关闭CMD窗口
-        // aqq.EnableRaisingEvents = true;
-        // aqq.Exited += (sender, e) =>
-        // {
-        //                 //     DebugPrint.LogDebug_NoColorSelect($"\n[进程] 进程 {FileName} 已退出");
-        // };
-
+        
         // 使用多线程启动游戏
         Task.Run(() =>
         {
@@ -385,114 +378,6 @@ public class ProcessCreateWindow : IMethodHook
 
         return aqq;
     }
-
-    // private void StartReceiving()
-    // {
-    //     if (_isReceiving || _webSocket == null) return;
-    //     DebugPrint.LogDebug_NoColorSelect("[StartGame] 开始接收消息");
-    //     _isReceiving = true;
-    //     var buffer = new byte[4096];
-    //     
-    //     Task.Run(async () =>
-    //     {
-    //         try
-    //         {
-    //             while (_webSocket.State == WebSocketState.Open && !_cancellationTokenSource.Token.IsCancellationRequested)
-    //             {
-    //                 DebugPrint.LogDebug_NoColorSelect("[StartGame] 开始接收消息");
-    //                 var result = new ArraySegment<byte>(buffer);
-    //                 WebSocketReceiveResult receiveResult = await _webSocket.ReceiveAsync(result, _cancellationTokenSource.Token);
-    //                 DebugPrint.LogDebug_NoColorSelect("[StartGame] 已接收消息");
-    //                 if (receiveResult.MessageType == WebSocketMessageType.Close)
-    //                 {
-    //                     Console.WriteLine("[WebSocket] 连接已关闭");
-    //                     break;
-    //                 }
-    //
-    //                 var message = Encoding.UTF8.GetString(buffer, 0, receiveResult.Count);
-    //                 Console.WriteLine("[StartGame] 已处理消息");
-    //                 HandleWebSocketMessage(message);
-    //             }
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             Console.WriteLine($"[WebSocket] 接收消息时发生错误: {ex.Message}");
-    //         }
-    //         finally
-    //         {
-    //             _isReceiving = false;
-    //         }
-    //     });
-    // }
-    //
-    // private void HandleWebSocketMessage(string message)
-    // {
-    //     JObject message_json = JObject.Parse(message);
-    //     string MessageType = message_json["type"].ToString();
-    //     Console.WriteLine("[StartGame] 已处理消息,内容为:" + message);
-    //     switch (MessageType)
-    //     {
-    //         case "ChangeCpp":
-    //             Console.WriteLine("[WebSocket] 已接收并处理配置更新");
-    //             CppConfigContent.world_info.resource_packs = CppConfigContent.world_info.resource_packs.Concat(message_json["resource_packs"].ToObject<List<string>>()).Distinct().ToList();
-    //             Console.WriteLine("[WebSocket] 已更新资源包");
-    //             CppConfigContent.world_info.behavior_packs = CppConfigContent.world_info.behavior_packs.Concat(message_json["behavior_packs"].ToObject<List<string>>()).Distinct().ToList(); 
-    //             Console.WriteLine("[WebSocket] 已更新行为包");
-    //             CppConfigContent.web_server_url = message_json["web_server_url"].ToString();
-    //             Console.WriteLine("[WebSocket] 已接收并处理配置更新");
-    //             //保存CppConfig
-    //             File.WriteAllText(CppConfigPath, JsonConvert.SerializeObject(CppConfigContent));
-    //             Console.WriteLine("[WebSocket] 已保存CppConfig");
-    //             // 处理完消息后关闭连接
-    //             CloseWebSocket();
-    //             break;
-    //     }
-    // }
-    //
-    // public static void SendWebSocketMessage(string message)
-    // {
-    //     if (_webSocket?.State != WebSocketState.Open)
-    //     {
-    //         Console.WriteLine("[WebSocket] 无法发送消息：连接未建立或已关闭");
-    //         return;
-    //     }
-    //
-    //     try
-    //     {
-    //         var messageBytes = Encoding.UTF8.GetBytes(message);
-    //         var messageSegment = new ArraySegment<byte>(messageBytes);
-    //         _webSocket.SendAsync(messageSegment, WebSocketMessageType.Text, true, CancellationToken.None).Wait();
-    //         Console.WriteLine($"[WebSocket] 发送消息: {message}");
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine($"[WebSocket] 发送消息时发生错误: {ex.Message}");
-    //     }
-    // }
-    //
-    // public static void CloseWebSocket()
-    // {
-    //     if (_webSocket != null)
-    //     {
-    //         try
-    //         {
-    //             _cancellationTokenSource.Cancel();
-    //             if (_webSocket.State == WebSocketState.Open)
-    //             {
-    //                 _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client closing", CancellationToken.None).Wait();
-    //             }
-    //             _webSocket.Dispose();
-    //             _webSocket = null;
-    //             _isReceiving = false;
-    //             Console.WriteLine("[WebSocket] 连接已关闭");
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             Console.WriteLine($"[WebSocket] 关闭连接时发生错误: {ex.Message}");
-    //         }
-    //     }
-    // }
-
     [OriginalMethod]
     public static aqq a_original(string gwa, string gwb, EventHandler gwc, aqk gwd, string gwe = null, bool gwf = false,
         Action<string> gwg = null)

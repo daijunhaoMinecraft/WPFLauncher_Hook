@@ -7,7 +7,7 @@ using WPFLauncher.Network.CppTransfer;
 
 namespace Mcl.Core.Dotnetdetour.Features.AntiCheatBypass;
 
-public class disableCPPLow : IMethodHook
+public class DisableCppLow : IMethodHook
 {
     [OriginalMethod]
     public static ama ProcessVersionOriginal(GetRoomListPost.RoomEntity roomEntity)

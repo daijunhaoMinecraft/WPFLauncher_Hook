@@ -9,13 +9,13 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 internal class Mpay_Log : IMethodHook
 {
     [OriginalMethod]
-    protected void Mpay_Log_Show(string log)
+    protected void OnLog(string log)
     {
     }
 
     [CompilerGenerated]
-    [HookMethod("WPFLauncher.Unisdk.nz", "onLog", "Mpay_Log_Show")]
-    protected void onLog(string log)
+    [HookMethod(TargetConst.Mpay, "onLog", "OnLog")]
+    protected void OnLogHook(string log)
     {
         if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info(log);
     }

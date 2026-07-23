@@ -15,15 +15,15 @@ namespace Mcl.Core.Dotnetdetour.Features.AntiCheatBypass;
 public class BypassUpdate : IMethodHook
 {
     [OriginalMethod]
-    public bool bypassWPFLauncherUpdate_original()
+    public bool WpfLauncherUpdate()
     {
         return true;
     }
 
-    [HookMethod("WPFLauncher.Update.xw", "h", "bypassWPFLauncherUpdate_original")]
-    public bool BypassWPFLauncherUpdate()
+    [HookMethod("WPFLauncher.Update.xw", "h", "WpfLauncherUpdate")]
+    public bool WpfLauncherUpdateHook()
     {
-        var result = bypassWPFLauncherUpdate_original();
+        var result = WpfLauncherUpdate();
         var updateInit = new xw();
 
         var latestVersion = updateInit.g();

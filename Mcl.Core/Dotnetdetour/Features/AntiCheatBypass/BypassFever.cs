@@ -6,16 +6,9 @@ namespace Mcl.Core.Dotnetdetour.Features.AntiCheatBypass;
 
 internal class BypassFever : IMethodHook
 {
-    [DllImport("kernel32.dll")]
-    private static extern bool AllocConsole();
-
-    [OriginalMethod]
-    public static void X19_Fever_bypass()
-    {
-    }
-
-    [HookMethod("WPFLauncher.Manager.apm", "aj", "X19_Fever_bypass")]
-    public bool Fever_False()
+    public const string ClassName = "WPFLauncher.Manager.apm";
+    [HookMethod(ClassName, "aj", null)]
+    public bool EnabledFever()
     {
         return false;
     }

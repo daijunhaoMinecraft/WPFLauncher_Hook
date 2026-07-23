@@ -8,4 +8,6 @@ public class TargetConst
     public const string JavaMaxMemorySet = "g";
 
     public const string LanGameManager = "WPFLauncher.Manager.LanGame.atm";
+
+    public const string Mpay = "WPFLauncher.Unisdk.nz";
 }
