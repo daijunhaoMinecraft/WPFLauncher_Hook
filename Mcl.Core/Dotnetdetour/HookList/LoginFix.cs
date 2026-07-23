@@ -222,21 +222,9 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		/// </summary>
 		private static void DoManualLogin(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
 		{
-			string text3 = "cookies.txt";
-			string filePath = Path.Combine(Environment.CurrentDirectory, text3);
 			string text = "";
 			bool loginby4399 = false;
-			if (File.Exists(filePath))
-			{
-				text = File.ReadAllText(filePath);
-			}
-			string text4 = "4399.txt";
-			string filePath2 = Path.Combine(Environment.CurrentDirectory, text4);
 			string text2 = "";
-			if (File.Exists(filePath2))
-			{
-				text2 = File.ReadAllText(filePath2);
-			}
 			if (uz.r("请选择cookie登录或4399登录", string.Empty, "cookie", "4399", "") == MessageBoxResult.Yes)
 			{
 				text = Interaction.InputBox("请输入Cookies \n如果原号登陆请输入off或者空", "Cookies", text, -1, -1);
@@ -307,7 +295,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				if (!(text2 == "off") && !(text2 == ""))
 				{
 					WpfConfig.DefaultLogger.Info("4399:" + text2);
-					File.WriteAllText(filePath2, text2);
 					LoginWithCookieData(text9, hue);
 				}
 				else
@@ -319,7 +306,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
 			else if (!(text == "off") && !(text == ""))
 			{
 				WpfConfig.DefaultLogger.Info("cookies:" + text);
-				File.WriteAllText(filePath, text);
 				LoginWithCookieData(text9, hue);
 			}
 			else

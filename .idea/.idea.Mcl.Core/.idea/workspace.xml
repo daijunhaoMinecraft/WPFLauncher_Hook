@@ -10,7 +10,12 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/InitHook.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/HookList/LoginFix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -212,14 +217,8 @@
       <workItem from="1783999040150" duration="994000" />
       <workItem from="1784694206293" duration="8031000" />
       <workItem from="1784710111977" duration="2665000" />
-    </task>
-    <task id="LOCAL-00018" summary="更新内容:支持无网易邮箱账号登录(如4399小号Cookies/网易手机号登录)">
-      <option name="closed" value="true" />
-      <created>1767427827558</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1767427827559</updated>
+      <workItem from="1784713622024" duration="1238000" />
+      <workItem from="1784797468846" duration="804000" />
     </task>
     <task id="LOCAL-00019" summary="update PhoneLogin.md">
       <option name="closed" value="true" />
@@ -605,7 +604,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784712352144</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="去除防沉迷相关提示">
+      <option name="closed" value="true" />
+      <created>1784714694462</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1784714694462</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -626,7 +633,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复4399无法登录问题" />
     <MESSAGE value="[Beta1] 新增模组注入功能" />
     <MESSAGE value="[Beta2] 修复基岩版本地联机房间状态显示问题 Issue #30" />
     <MESSAGE value="修正README的错误地方, 添加一些调试信息" />
@@ -651,7 +657,8 @@
     <MESSAGE value="修复账号长时间状态下出现部分功能需要重新登录的问题, 移除4399小号自动获取" />
     <MESSAGE value="模块化设计(将自定义基岩版客户端/使用小号登录等)改成配置启动(用户需手动勾选相应配置方可使用功能), 支持不使用Mpay直接到账号管理器登录(也就是不使用网易自带的邮箱登录窗口)同样启用方式在配置中" />
     <MESSAGE value="重新修复Authentication更新部分的问题, 优化NLog控制台颜色输出, 使用纯 C# 层替代大部分 WPFLauncher x19 算法的调用" />
-    <option name="LAST_COMMIT_MESSAGE" value="重新修复Authentication更新部分的问题, 优化NLog控制台颜色输出, 使用纯 C# 层替代大部分 WPFLauncher x19 算法的调用" />
+    <MESSAGE value="去除防沉迷相关提示" />
+    <option name="LAST_COMMIT_MESSAGE" value="去除防沉迷相关提示" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

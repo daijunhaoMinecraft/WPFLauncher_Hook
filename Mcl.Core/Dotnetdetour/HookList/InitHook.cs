@@ -96,14 +96,17 @@ public class InitHook : IMethodHook
         WpfConfig.ReadRoomBlacklist(); // 原有的特殊读取逻辑
 
         // 2. 交互逻辑
-        if (File.Exists("config.json"))
+        if (!File.Exists("ApplyConfig") || !File.Exists("config.json"))
         {
-            var res = uz.q("检测到配置文件，是否直接加载运行?", "启动选择", "直接加载", "进入设置", "");
-            if (res != MessageBoxResult.OK) ShowConfigWindow();
-        }
-        else
-        {
-            ShowConfigWindow();
+            if (File.Exists("config.json"))
+            {
+                var res = uz.q("检测到配置文件，是否直接加载运行?", "启动选择", "直接加载", "进入设置", "");
+                if (res != MessageBoxResult.OK) ShowConfigWindow();
+            }
+            else
+            {
+                ShowConfigWindow();
+            }
         }
 
         // 如果启用了模组注入，打开 ModsInject 文件夹并提示
@@ -119,7 +122,7 @@ public class InitHook : IMethodHook
             Console.ResetColor();
             System.Diagnostics.Process.Start("explorer.exe", modsInjectPath);
         }
-
+        
         // 3. 应用运行逻辑
         ApplyRuntimeSettings();
         InitMpay(startAction);
