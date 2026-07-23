@@ -11,23 +11,17 @@ namespace Mcl.Core.Dotnetdetour.Window
         private Label modeLabel;
         private Label statusLabel;
         private Label portLabel;
-        // private Label bytesLabel;
         private Button stopButton;
-        // private Timer updateTimer;
         private bool isClosing = false;
-        // private long lastBytes = 0;
-        // private DateTime lastUpdate = DateTime.Now;
 
         public ForwarderControlPanel()
         {
             InitializeComponent();
             LoadSettings();
-            // StartStatusUpdate();
         }
 
         private void InitializeComponent()
         {
-            // 基础窗口设置
             this.Text = "转发控制台";
             this.Size = new Size(380, 280);
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -99,20 +93,6 @@ namespace Mcl.Core.Dotnetdetour.Window
                 Size = new Size(100, 20)
             };
 
-            // // 流量统计
-            // Label bytesTitle = new Label
-            // {
-            //     Text = "转发流量:",
-            //     Location = new Point(20, 125),
-            //     Size = new Size(70, 20)
-            // };
-            // bytesLabel = new Label
-            // {
-            //     Text = "0 B",
-            //     Location = new Point(100, 125),
-            //     Size = new Size(200, 20)
-            // };
-
             // 分隔线
             Label separator = new Label
             {
@@ -132,19 +112,6 @@ namespace Mcl.Core.Dotnetdetour.Window
             };
             stopButton.Click += StopButton_Click;
 
-            // 日志/信息区域（只读文本框）
-            // TextBox infoBox = new TextBox
-            // {
-            //     Location = new Point(20, 225),
-            //     Size = new Size(320, 40),
-            //     Multiline = true,
-            //     ReadOnly = true,
-            //     BackColor = SystemColors.Control,
-            //     BorderStyle = BorderStyle.FixedSingle,
-            //     Text = "提示: 关闭此窗口不会停止转发服务",
-            //     Font = new Font(SystemFonts.DefaultFont.FontFamily, 8)
-            // };
-
             // 添加控件
             this.Controls.AddRange(new Control[]
             {
@@ -156,7 +123,6 @@ namespace Mcl.Core.Dotnetdetour.Window
                 // bytesTitle, bytesLabel,
                 separator,
                 stopButton,
-                // infoBox
             });
 
             this.FormClosing += ForwarderControlPanel_FormClosing;
@@ -166,45 +132,6 @@ namespace Mcl.Core.Dotnetdetour.Window
         {
             modeLabel.Text = WebRtcVar.Mode.ToString() ?? "Unknown";
             portLabel.Text = WebRtcVar.Port > 0 ? WebRtcVar.Port.ToString() : "未设置";
-        }
-
-        // private void StartStatusUpdate()
-        // {
-        //     updateTimer = new Timer { Interval = 1000 };
-        //     updateTimer.Tick += (s, e) => UpdateStatus();
-        //     updateTimer.Start();
-        // }
-
-        // private void UpdateStatus()
-        // {
-        //     try
-        //     {
-        //         // 更新模式（可能动态变化）
-        //         if (WebRtcVar.Mode != null)
-        //             modeLabel.Text = WebRtcVar.Mode.ToString();
-        //
-        //         // 计算速率（如果有字节统计）
-        //         long currentBytes = WebRtcVar.TotalBytesTransferred; // 假设有这个变量
-        //         double seconds = (DateTime.Now - lastUpdate).TotalSeconds;
-        //         if (seconds > 0 && currentBytes != lastBytes)
-        //         {
-        //             long bytesDiff = currentBytes - lastBytes;
-        //             double speed = bytesDiff / seconds;
-        //             bytesLabel.Text = FormatBytes(currentBytes) + 
-        //                 " (" + FormatBytes((long)speed) + "/s)";
-        //             lastBytes = currentBytes;
-        //             lastUpdate = DateTime.Now;
-        //         }
-        //     }
-        //     catch { /* 忽略更新错误 */ }
-        // }
-
-        private string FormatBytes(long bytes)
-        {
-            if (bytes < 1024) return bytes + " B";
-            if (bytes < 1024 * 1024) return (bytes / 1024.0).ToString("F1") + " KB";
-            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024.0 * 1024)).ToString("F1") + " MB";
-            return (bytes / (1024.0 * 1024 * 1024)).ToString("F2") + " GB";
         }
 
         private void StopButton_Click(object sender, EventArgs e)
@@ -224,10 +151,6 @@ namespace Mcl.Core.Dotnetdetour.Window
                 stopButton.Text = "停止中...";
                 statusLabel.Text = "正在停止...";
                 statusLabel.ForeColor = Color.Orange;
-
-                // 执行停止
-                // WebRtcVar.AitFunction.aya.t();
-                // WebRtcVar.ExitRoomFunction();
 
                 statusLabel.Text = "已停止";
                 statusLabel.ForeColor = Color.Red;
@@ -257,24 +180,13 @@ namespace Mcl.Core.Dotnetdetour.Window
         {
             if (isClosing) return;
             isClosing = true;
-            // 执行停止
             WebRtcVar.LanGameManager.aya.@as(new object[] { 516, WebRtcVar.LanGameManager.HostID });
             WebRtcVar.LanGameManager.aya.d(atl.f);
             Console.WriteLine("停止转发");
-
-            // updateTimer?.Stop();
-            // updateTimer?.Dispose();
-
-            // 注意：这里只停止计时器，不停止转发服务
-            // 转发服务在点击"停止转发"按钮时才停止
         }
 
         protected override void Dispose(bool disposing)
         {
-            // if (disposing)
-            // {
-            //     updateTimer?.Dispose();
-            // }
             base.Dispose(disposing);
         }
     }

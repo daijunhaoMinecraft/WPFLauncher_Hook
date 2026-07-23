@@ -12,104 +12,88 @@ namespace Mcl.Core.NeteaseProtocol;
 
 public class X19Http
 {
+    private static readonly HttpClient Client = new HttpClient();
+    private static readonly Random Rng = new Random();
+
+    private static readonly char[] TraceChars =
+    {
+        'a', 'b', 'd', 'c', 'e', 'f', 'g', 'h', 'i', 'j',
+        'k', 'l', 'm', 'n', 'p', 'r', 'q', 's', 't', 'u',
+        'v', 'w', 'z', 'y', 'x', '0', '1', '2', '3', '4',
+        '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+        'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'Q',
+        'P', 'R', 'T', 'S', 'V', 'U', 'W', 'X', 'Y', 'Z'
+    };
+
     public enum RequestType
     {
         Common,
         Encrypt
     }
 
-    public static string GenerateString(int length)
+    public static string GenerateTraceId(int length = 32)
     {
-        var array = new[]
-        {
-            'a', 'b', 'd', 'c', 'e', 'f', 'g', 'h', 'i', 'j',
-            'k', 'l', 'm', 'n', 'p', 'r', 'q', 's', 't', 'u',
-            'v', 'w', 'z', 'y', 'x', '0', '1', '2', '3', '4',
-            '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
-            'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'Q',
-            'P', 'R', 'T', 'S', 'V', 'U', 'W', 'X', 'Y', 'Z'
-        };
-        var stringBuilder = new StringBuilder();
-        var random = new Random(DateTime.Now.Millisecond);
-        for (var i = 0; i < length; i++) stringBuilder.Append(array[random.Next(0, array.Length)].ToString());
-        return stringBuilder.ToString();
+        var sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++)
+            sb.Append(TraceChars[Rng.Next(TraceChars.Length)]);
+        return sb.ToString();
     }
 
     public static string Post(string path, string body, string baseUrl = "",
         RequestType requestType = RequestType.Common)
     {
-        var requestAddress = new Uri("http://baidu.com");
-        if (!path.StartsWith("/")) path.Insert(0, "/");
-        if (string.IsNullOrEmpty(baseUrl))
-        {
-            requestAddress = new Uri(WpfConfig.ServerList["ApiGatewayUrl"] + path);
-        }
-        else
-        {
-            if (baseUrl.EndsWith("/")) baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
-            requestAddress = new Uri(baseUrl + path);
-        }
-
-        var http = new HttpClient();
-        http.DefaultRequestHeaders.Clear();
-        http.DefaultRequestHeaders.Add("user-id", X19Crypt.UserId);
-        http.DefaultRequestHeaders.Add("user-token", X19Crypt.ComputeDynamicToken(path, body));
-        http.DefaultRequestHeaders.Add("X_TRACE_ID", GenerateString(32));
-        if (requestType == RequestType.Common)
-        {
-            var content = new StringContent(body);
-            var responseData = http.PostAsync(requestAddress, content).Result;
-            var result = responseData.Content.ReadAsStringAsync().Result;
-            return result;
-        }
-
-        if (requestType == RequestType.Encrypt)
-        {
-            var content = new ByteArrayContent(X19Crypt.HttpEncrypt(Encoding.UTF7.GetBytes(body)));
-            var responseData = http.PostAsync(requestAddress, content).Result;
-            var encryptResult = responseData.Content.ReadAsByteArrayAsync().Result;
-            var result = X19Crypt.DecryptX19Body(encryptResult);
-            return result;
-        }
-
-        return "";
+        var uri = BuildUri(path, body, baseUrl);
+        return ExecuteRequest(uri, path, body, requestType, isGet: false);
     }
 
     public static string Get(string path, string baseUrl = "", RequestType requestType = RequestType.Common)
     {
-        var requestAddress = new Uri("http://baidu.com");
-        if (!path.StartsWith("/")) path.Insert(0, "/");
+        var uri = BuildUri(path, "", baseUrl);
+        return ExecuteRequest(uri, path, "", requestType, isGet: true);
+    }
+
+    private static Uri BuildUri(string path, string body, string baseUrl)
+    {
+        if (!path.StartsWith("/"))
+            path = "/" + path;
+
         if (string.IsNullOrEmpty(baseUrl))
+            return new Uri(WpfConfig.ServerList["ApiGatewayUrl"] + path);
+
+        if (baseUrl.EndsWith("/"))
+            baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
+
+        return new Uri(baseUrl + path);
+    }
+
+    private static string ExecuteRequest(Uri uri, string path, string body,
+        RequestType requestType, bool isGet)
+    {
+        var request = new HttpRequestMessage(isGet ? HttpMethod.Get : HttpMethod.Post, uri);
+        request.Headers.Clear();
+        request.Headers.Add("user-id", X19Crypt.UserId);
+        request.Headers.Add("user-token", X19Crypt.ComputeDynamicToken(path, body));
+        request.Headers.Add("X_TRACE_ID", GenerateTraceId());
+
+        if (!isGet && requestType == RequestType.Common)
         {
-            requestAddress = new Uri(WpfConfig.ServerList["ApiGatewayUrl"].ToString());
+            request.Content = new StringContent(body);
         }
-        else
+        else if (!isGet && requestType == RequestType.Encrypt)
         {
-            if (baseUrl.EndsWith("/")) baseUrl = baseUrl.Substring(0, baseUrl.Length - 1);
-            requestAddress = new Uri(baseUrl + path);
+            var encrypted = X19Crypt.HttpEncrypt(Encoding.UTF7.GetBytes(body));
+            request.Content = new ByteArrayContent(encrypted);
         }
 
-        var http = new HttpClient();
-        http.DefaultRequestHeaders.Clear();
-        http.DefaultRequestHeaders.Add("user-id", X19Crypt.UserId);
-        http.DefaultRequestHeaders.Add("user-token", X19Crypt.ComputeDynamicToken(path, ""));
-        http.DefaultRequestHeaders.Add("X_TRACE_ID", GenerateString(32));
-        if (requestType == RequestType.Common)
-        {
-            var responseData = http.GetAsync(requestAddress).Result;
-            var result = responseData.Content.ReadAsStringAsync().Result;
-            return result;
-        }
+        var response = Client.SendAsync(request).Result;
 
         if (requestType == RequestType.Encrypt)
         {
-            var responseData = http.GetAsync(requestAddress).Result;
-            var encryptResult = responseData.Content.ReadAsByteArrayAsync().Result;
-            var result = X19Crypt.DecryptX19Body(encryptResult);
-            return result;
+            var encryptedBytes = response.Content.ReadAsByteArrayAsync().Result;
+            return X19Crypt.DecryptX19Body(encryptedBytes);
         }
 
-        return "";
+        return response.Content.ReadAsStringAsync().Result;
     }
 
     public static JObject GetPlayerInfo(string uid)

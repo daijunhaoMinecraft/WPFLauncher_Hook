@@ -51,7 +51,7 @@
         <Compile Include="Dotnetdetour\Features\Authentication\Core\AccountManager.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Core\LoginFix.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Core\MpayLoginAccount.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\PasswordString.cs" />
+        <Compile Include="Dotnetdetour\Features\Authentication\Core\PasswordFix.cs" />
         <Compile Include="Dotnetdetour\Features\Authentication\Core\RebuildX19Crypto.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Core\SauthJsonRandomGenerator.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\4399Login.cs"/>
@@ -65,8 +65,8 @@
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveHyt.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveJavaMemoryLimit.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\UnlockAllMode.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\AccountEditDialog.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\AccountSelectForm.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\AccountEditDialog.cs"/>
+        <Compile Include="Dotnetdetour\UI\Controls\AccountSelectForm.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\ChangeIPForm.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\directoryEvent.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\DownloadEvent.cs"/>
@@ -112,6 +112,7 @@
         <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs"/>
         <Compile Include="Dotnetdetour\Utilities\Common\MemoryUtils.cs"/>
         <Compile Include="Dotnetdetour\Utilities\Common\Ocr.cs"/>
+        <Compile Include="Dotnetdetour\Utilities\Common\SauthParser.cs"/>
         <Compile Include="Dotnetdetour\Utilities\Common\StringExtensions.cs"/>
         <Compile Include="Dotnetdetour\Utilities\Common\TypeExtensions.cs"/>
         <Compile Include="Dotnetdetour\Utilities\Crypto\AESHelper.cs"/>

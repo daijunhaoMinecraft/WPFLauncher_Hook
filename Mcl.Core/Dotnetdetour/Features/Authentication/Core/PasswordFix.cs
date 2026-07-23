@@ -5,7 +5,7 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 
 //解决密码只能是纯数字问题(特别是联机大厅密码设置)
-internal class PasswordString : IMethodHook
+internal class PasswordFix : IMethodHook
 {
     [HookMethod("WPFLauncher.ViewModel.LobbyGame.jo", "c", null)]
     public static bool CanUseThisPasswordHook(string password)

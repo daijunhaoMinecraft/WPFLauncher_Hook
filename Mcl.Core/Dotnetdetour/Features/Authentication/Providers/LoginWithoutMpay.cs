@@ -2,17 +2,15 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Dotnetdetour.Utilities.Common;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WPFLauncher.Common;
 using WPFLauncher.Manager;
 using WPFLauncher.Manager.Configuration;
@@ -142,97 +140,33 @@ public class LoginWithoutMpay : IMethodHook
 
     public static void LoginWithSaved(AccountInfo acc)
     {
-        var text9 = "";
+        var sauthJson = "";
 
         if (acc.Type == AccountType._4399)
         {
-            try
+            sauthJson = SauthParser.ExtractFrom4399Login($"{acc.Username}----{acc.Password}");
+            if (string.IsNullOrEmpty(sauthJson))
             {
-                var loginResult = Task.Run(() =>
-                    _4399.LoginAsync(acc.Username, acc.Password)).Result;
-                if (loginResult.Success)
-                {
-                    text9 = JObject.Parse(loginResult.SauthJson)["sauth_json"].ToString();
-                    // text9 = loginResult.SauthJson;
-                    WpfConfig.DefaultLogger.Info("4399:" + acc.Username);
-                }
-                else
-                {
-                    uz.n("4399登录失败: " + (loginResult.ErrorMessage ?? "未知错误"));
-                    return;
-                }
-            }
-            catch (Exception ex)
-            {
-                WpfConfig.DefaultLogger.Error($"4399账号转换失败，切换为原号登录: \n{ex}");
+                uz.n("4399登录失败");
                 return;
             }
         }
         else if (acc.Type == AccountType.Phone)
         {
-            // 手机号登录 — 先检查是否有缓存的 Cookie
-            if (!string.IsNullOrEmpty(acc.CookieData) && acc.CookieData.Contains("\"sauth_json\""))
-                // 有缓存的 sauth_json，尝试直接使用
-                try
-                {
-                    text9 = JObject.Parse(acc.CookieData)["sauth_json"].ToString();
-                    WpfConfig.DefaultLogger.Info($"[Phone] 使用缓存凭证 {acc.PhoneNumber}");
-                }
-                catch
-                {
-                    text9 = null;
-                }
-
-            if (string.IsNullOrEmpty(text9))
+            sauthJson = SauthParser.ExtractFromPhoneAccount(acc);
+            if (string.IsNullOrEmpty(sauthJson))
             {
-                // 需要完整手机号登录流程
-                WpfConfig.DefaultLogger.Info($"[Phone] 开始手机号登录: {acc.PhoneNumber}");
-                var sauthJson = MpayPhoneLogin.FullLoginFlow(acc.PhoneNumber, acc.DeviceId);
-
-                if (string.IsNullOrEmpty(sauthJson))
-                {
-                    WpfConfig.DefaultLogger.Error("手机号登录失败，切换为原号登录");
-                    return;
-                }
-
-                // 缓存 sauth_json 到账号
-                acc.CookieData = sauthJson;
-                acc.DeviceId = MpayPhoneLogin.GetOrRegisterDevice(acc.DeviceId);
-                AccountManager.Update(acc.Name, acc);
-
-                try
-                {
-                    text9 = JObject.Parse(sauthJson)["sauth_json"].ToString();
-                }
-                catch
-                {
-                    text9 = sauthJson;
-                }
+                WpfConfig.DefaultLogger.Error("手机号登录失败，切换为原号登录");
+                return;
             }
         }
         else // Cookie
         {
-            var cookieData = acc.CookieData;
-            if (cookieData.StartsWith("{"))
-                try
-                {
-                    if (cookieData.Contains("\"sauth_json\":"))
-                        text9 = JObject.Parse(cookieData)["sauth_json"].ToString();
-                    else
-                        text9 = cookieData;
-                }
-                catch (Exception)
-                {
-                    if (cookieData.Contains("sauth_json"))
-                        text9 = new Regex("\\\"sauth_json\\\":\\\"(.*?)\\\"}\\\"}").Match(cookieData).Groups[1].Value +
-                                "\"}";
-                }
-
-            if (string.IsNullOrEmpty(text9)) text9 = cookieData;
-            WpfConfig.DefaultLogger.Info("cookies:" + cookieData);
+            sauthJson = SauthParser.ExtractFromCookie(acc.CookieData);
+            WpfConfig.DefaultLogger.Info("cookies:" + acc.CookieData);
         }
 
-        if (string.IsNullOrEmpty(text9))
+        if (string.IsNullOrEmpty(sauthJson))
         {
             WpfConfig.DefaultLogger.Error("账号凭证有误，切换为原号登录");
             return;
@@ -240,9 +174,9 @@ public class LoginWithoutMpay : IMethodHook
 
         if (WpfConfig.IsStartWebSocket)
             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
-                { type = "Login", cookie = new { sauth_json = text9 } }));
-        WpfConfig.DefaultLogger.Info($"SauthJson: {JsonConvert.SerializeObject(new { sauth_json = text9 })}");
-        InjectMpayCookie(text9);
+                { type = "Login", cookie = new { sauth_json = sauthJson } }));
+        WpfConfig.DefaultLogger.Info($"SauthJson: {JsonConvert.SerializeObject(new { sauth_json = sauthJson })}");
+        InjectMpayCookie(sauthJson);
         WpfConfig.IsLogin = true;
     }
 
@@ -307,20 +241,7 @@ public class LoginWithoutMpay : IMethodHook
         WpfConfig.DefaultLogger.Info("cookies:" + cookie);
         File.WriteAllText(filePath, cookie);
 
-        // 尝试解析 sauth_json
-        var sauthContent = cookie;
-        if (cookie.StartsWith("{"))
-            try
-            {
-                if (cookie.Contains("\"sauth_json\":")) sauthContent = JObject.Parse(cookie)["sauth_json"].ToString();
-            }
-            catch (Exception)
-            {
-                if (cookie.Contains("sauth_json"))
-                    sauthContent = new Regex("\\\"sauth_json\\\":\\\"(.*?)\\\"}\\\"}").Match(cookie).Groups[1].Value +
-                                   "\"}";
-            }
-
+        var sauthContent = SauthParser.ExtractFromCookie(cookie);
         InjectMpayCookie(sauthContent);
     }
 }

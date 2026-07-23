@@ -23,7 +23,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         private Panel normalPanel;
         private Panel upstreamPanel;
 
-        private readonly Color ThemeColor = Color.FromArgb(0, 120, 215);
+        private readonly Color ThemeColor = Color.FromArgb(0, 110, 210);
         private readonly Font MainFont = new Font("Microsoft YaHei", 9F, FontStyle.Regular);
         private readonly Font BoldFont = new Font("Microsoft YaHei", 9F, FontStyle.Bold);
 
@@ -46,18 +46,15 @@ namespace Mcl.Core.Dotnetdetour.HookList
         private void InitializeComponent()
         {
             this.Text = "手机号验证";
-            this.Size = new Size(450, _smsResult.Status == SmsStatus.UpstreamRequired ? 380 : 280);
-            this.BackColor = Color.FromArgb(243, 243, 243);
+            this.Size = new Size(450, _smsResult.Status == SmsStatus.UpstreamRequired ? 350 : 275);
+            this.BackColor = Color.FromArgb(245, 247, 250);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Font = MainFont;
 
-            int y = 15;
-            int labelWidth = 80;
-            int inputLeft = 95;
-            int inputWidth = 320;
+            int y = 20;
 
             // Title
             titleLabel = new Label
@@ -90,12 +87,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
             if (_smsResult.Status == SmsStatus.UpstreamRequired)
             {
                 BuildUpstreamPanel(y);
-                y += 150;
+                y += 145;
             }
             else
             {
                 BuildNormalPanel(y);
-                y += 100;
+                y += 95;
             }
 
             // Error label
@@ -108,7 +105,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             };
             this.Controls.Add(errorLabel);
 
-            y += 42;
+            y += 38;
 
             // Buttons
             int btnWidth = 90;
@@ -170,7 +167,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             normalPanel = new Panel
             {
                 Location = new Point(0, startY),
-                Size = new Size(this.ClientSize.Width, 80)
+                Size = new Size(this.ClientSize.Width, 65)
             };
 
             instructionLabel = new Label
@@ -185,8 +182,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
             codeTextBox = new TextBox
             {
-                Location = new Point(15, 24),
-                Size = new Size(200, 25),
+                Location = new Point(15, 22),
+                Size = new Size(240, 28),
                 Font = new Font("Microsoft YaHei", 11F),
                 MaxLength = 10,
                 TextAlign = HorizontalAlignment.Center
@@ -220,15 +217,15 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
             upstreamLabel = new Label
             {
-                Text = "⚠ 触发上行短信验证\n\n"
-                     + $"请使用手机 {_phoneNumber} 发送短信:\n"
+                Text = "[!] 触发上行短信验证\n\n"
+                     + $"请使用手机号 {_phoneNumber} 发送短信:\n"
                      + $"内容: {_smsResult.UpstreamContent}\n"
                      + $"发送至: {_smsResult.UpstreamNumber}\n\n"
                      + "发送完成后，请点击下方按钮检查验证状态",
                 Location = new Point(15, 0),
                 Size = new Size(400, 120),
                 Font = new Font("Microsoft YaHei", 8.5F),
-                ForeColor = Color.FromArgb(180, 100, 0)
+                ForeColor = Color.FromArgb(60, 60, 60)
             };
             upstreamPanel.Controls.Add(upstreamLabel);
 

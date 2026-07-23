@@ -18,7 +18,7 @@ public class PhoneVerifyForm : Form
     private readonly Font BoldFont = new("Microsoft YaHei", 9F, FontStyle.Bold);
     private readonly Font MainFont = new("Microsoft YaHei", 9F, FontStyle.Regular);
 
-    private readonly Color ThemeColor = Color.FromArgb(0, 120, 215);
+    private readonly Color ThemeColor = Color.FromArgb(0, 110, 210);
     private Button cancelButton;
     private TextBox codeTextBox;
     private Label errorLabel;
@@ -48,7 +48,7 @@ public class PhoneVerifyForm : Form
     {
         Text = "手机号验证";
         Size = new Size(450, _smsResult.Status == SmsStatus.UpstreamRequired ? 380 : 280);
-        BackColor = Color.FromArgb(243, 243, 243);
+        BackColor = Color.FromArgb(245, 247, 250);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterScreen;
         MaximizeBox = false;
@@ -224,7 +224,7 @@ public class PhoneVerifyForm : Form
 
         upstreamLabel = new Label
         {
-            Text = "⚠ 触发上行短信验证\n\n"
+            Text = "[!] 触发上行短信验证\n\n"
                    + $"请使用手机 {_phoneNumber} 发送短信:\n"
                    + $"内容: {_smsResult.UpstreamContent}\n"
                    + $"发送至: {_smsResult.UpstreamNumber}\n\n"
