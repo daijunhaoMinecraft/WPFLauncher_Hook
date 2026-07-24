@@ -15,14 +15,53 @@ using WPFLauncher.Util;
 
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 
+public static class CookieValidator
+{
+    public static bool ValidateSauth(string cookieData, out string error)
+    {
+        error = "";
+        if (string.IsNullOrWhiteSpace(cookieData))
+        {
+            error = "Cookie 不能为空";
+            return false;
+        }
+
+        try
+        {
+            var root = JObject.Parse(cookieData);
+            var sauthToken = root["sauth_json"];
+            
+            if (sauthToken == null)
+            {
+                error = "JSON 中未找到 'sauth_json' 字段。";
+                return false;
+            }
+            if (sauthToken.Type != JTokenType.String)
+            {
+                error = "'sauth_json' 的值必须是包含 JSON 结构的字符串类型。";
+                return false;
+            }
+
+            JObject.Parse(sauthToken.ToString()); 
+            return true;
+        }
+        catch (JsonReaderException)
+        {
+            error = "格式错误：提供的不是有效的 JSON 字符串。";
+            return false;
+        }
+        catch (Exception ex)
+        {
+            error = $"校验异常: {ex.Message}";
+            return false;
+        }
+    }
+}
+
 public static class AuthIntegrationService
 {
     private static readonly Random _random = new();
 
-    /// <summary>
-    /// 统一处理登录界面的呼出和后续逻辑
-    /// 返回值: sauth_json (如果用户选择原版登录，则返回 null)
-    /// </summary>
     public static string RequestUserLogin(bool allowOriginal = true)
     {
         while (true)
@@ -57,9 +96,6 @@ public static class AuthIntegrationService
         }
     }
 
-    /// <summary>
-    /// 根据不同账号类型解析出终极 SauthJson
-    /// </summary>
     public static string ExtractSauth(AccountInfo acc)
     {
         try
@@ -68,6 +104,7 @@ public static class AuthIntegrationService
             {
                 AccountType.Cookie => SauthParser.ExtractFromCookie(acc.CookieData) ?? acc.CookieData,
                 AccountType.Phone => SauthParser.ExtractFromPhoneAccount(acc),
+                AccountType.Email => MpayLogin.EmailLoginFlow(acc.Username, acc.Password),
                 AccountType._4399 => Parse4399Account(acc),
                 _ => null
             };
@@ -86,19 +123,14 @@ public static class AuthIntegrationService
 
         try
         {
-            // 尝试提取嵌套的 sauth_json
             var jsonObj = JObject.Parse(rawResult);
-            if (jsonObj["sauth_json"] != null)
-                return jsonObj["sauth_json"].ToString();
+            if (jsonObj["sauth_json"] != null) return jsonObj["sauth_json"].ToString();
         }
         catch { /* ignore parse error, return raw */ }
         
         return rawResult;
     }
 
-    /// <summary>
-    /// 统一执行反射注入 MPay Cookie 逻辑
-    /// </summary>
     public static void InjectMpayCookie(string sauthContent)
     {
         try

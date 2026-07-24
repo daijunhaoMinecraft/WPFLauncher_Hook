@@ -13,7 +13,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "4.0.8-Public-Beta9";
+    public static string Version = "4.0.8-Public-Beta10";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -62,7 +62,7 @@ public class WpfConfig
     // custom Settings
     public static bool EnableCustomBedrockSelect = false;
     public static bool EnableCustomAccountLogin = false;
-    public static bool MpayUnless = false;
+    public static bool MpayUnless = true;
 
 
     public static bool KeepOffDeleteLastResourcepacks = false;

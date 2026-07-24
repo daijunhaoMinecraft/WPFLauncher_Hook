@@ -11,30 +11,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/MpayLogin.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Core/UITheme.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountEditorForm.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountSelectionForm.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/CaptchaForm.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/ManualLoginForm.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/PhoneVerifyForm.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dotnetdetour/Features/Authentication/Providers/MpayPhoneLogin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Dotnetdetour/Features/Authentication/Providers/MpayPhoneLogin.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/AccountInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/AccountInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/AccountManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/AccountManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/LoginFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/LoginFix.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/MpayLoginAccount.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/MpayLoginAccount.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/4399Login.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/4399Login.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/RebuildX19Crypto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/RebuildX19Crypto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/MpayPhoneLogin.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/PhoneVerifyForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/PhoneVerifyForm.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/AccountEditDialog.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/AccountSelectForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Common/Ocr.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Common/SauthParser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Common/SauthParser.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/MpayLogin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/MpayLogin.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/OptimizeDeleteFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/OptimizeDeleteFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/PhoneVerifyForm.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/ProcessCreateWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/ProcessCreateWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountEditorForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountEditorForm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountSelectionForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountSelectionForm.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/ManualLoginForm.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/ManualLoginForm.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
@@ -246,15 +239,9 @@
       <workItem from="1784797468846" duration="1028000" />
       <workItem from="1784798520088" duration="12972000" />
       <workItem from="1784861933690" duration="3186000" />
-      <workItem from="1784865131653" duration="555000" />
-    </task>
-    <task id="LOCAL-00025" summary="主要更新:&#10; - 配置部分大改动(之前写的太夸张了写一个新功能配置需要修改10多个地方才能同步)&#10; - 修改了网易Java内存分配问题(不限制最大内存/最优内存优化)">
-      <option name="closed" value="true" />
-      <created>1772633220720</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1772633220720</updated>
+      <workItem from="1784865131653" duration="3730000" />
+      <workItem from="1784869319296" duration="3861000" />
+      <workItem from="1784880050503" duration="4979000" />
     </task>
     <task id="LOCAL-00026" summary="修复 Issue # 17 的问题&#10;新增异地组网功能(需服务端和客户端都前往设置开启&quot;使用组网模式&quot;功能)&#10;请注意:&#10; - 组网模式目前处于测试阶段,因此功能不稳定(目前仅支持一个服务端和一个客户端, 因为服务端和客户端的ip分配我还没写好)&#10; - 组网模式需要wintun.dll的支持(将wintun.dll放入MCLauncher根目录下, 此文件可在github中Mcl.Core.dll所在的文件夹找到(实在找不到的GitHub上面或许有个搜索工具,试着搜索wintun.dll(当前项目搜索)))">
       <option name="closed" value="true" />
@@ -640,7 +627,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784862176339</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="重构工程_1">
+      <option name="closed" value="true" />
+      <created>1784865703307</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1784865703307</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -661,7 +656,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="[未实验] 采纳建议: #34" />
     <MESSAGE value="优化Hook初始化方式, 添加日志输出到文件夹功能, 去除网易我的世界基岩版自动转向 MinecraftBENeteasePath 文件夹问题, 再次修复无法自定义网易我的世界启动器服务器问题: #38" />
     <MESSAGE value="更新版本号以发布正式版本" />
     <MESSAGE value="新增: 4399小号自动获取(4399.nekoinsi.de), 4399登录验证码自动识别(需在网易我的世界启动器的目录下添加WmCode.dll, OcrProxy.dll, ocr.dll)" />
@@ -686,7 +680,8 @@
     <MESSAGE value="重构阶段1" />
     <MESSAGE value="update" />
     <MESSAGE value="update namespace" />
-    <option name="LAST_COMMIT_MESSAGE" value="update namespace" />
+    <MESSAGE value="重构工程_1" />
+    <option name="LAST_COMMIT_MESSAGE" value="重构工程_1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

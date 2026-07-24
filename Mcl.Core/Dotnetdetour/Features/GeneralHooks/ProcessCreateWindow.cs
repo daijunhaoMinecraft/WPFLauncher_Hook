@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
@@ -306,6 +307,7 @@ public class ProcessCreateWindow : IMethodHook
     [HookMethod("WPFLauncher.Manager.aqr", "t", "ProcssStartOriginal")]
     public aqq ProcssStart(string FileName, string Args, aqo StartType, string WorkDirectory = null)
     {
+        // FileName = FileName.Replace("javaw.exe", "java.exe");
         // 检查是否是基岩版启动
         if (FileName.Contains("Minecraft.Windows.exe"))
         {
@@ -404,8 +406,6 @@ public class ProcessCreateWindow : IMethodHook
                 try
                 {
                     Console.WriteLine($"[进程] 正在后台线程处理启动进程: {gwa}");
-
-                    // 这里可以添加额外的启动后处理逻辑
                 }
                 catch (Exception ex)
                 {
@@ -415,5 +415,18 @@ public class ProcessCreateWindow : IMethodHook
         }
 
         return result;
+    }
+    
+    [OriginalMethod]
+    internal void OutputProcess(object unk, DataReceivedEventArgs receivedData)
+    {
+    }
+
+    
+    [HookMethod("WPFLauncher.Util.wb.a", "a", "OutputProcess")]
+    internal void OutputProcessHook(object unk, DataReceivedEventArgs receivedData)
+    {
+        Console.WriteLine(receivedData.Data);
+        OutputProcess(unk, receivedData);
     }
 }

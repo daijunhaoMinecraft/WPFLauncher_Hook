@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Mcl.Core.Dotnetdetour.Features.Authentication.Core;
+using Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 using Mcl.Core.Dotnetdetour.UI.Core;
 
 namespace Mcl.Core.Dotnetdetour.UI.Forms;
@@ -12,12 +13,13 @@ public class ManualLoginForm : Form
     private TextBox _input1, _input2;
     private Label _label1, _label2;
     private CheckBox _showPassCheck;
-    
+
     public AccountInfo GeneratedAccount { get; private set; }
 
     public ManualLoginForm()
     {
-        UITheme.ApplyModernForm(this, "手动输入账号 (一次性)", 450, 400);
+        // 增高到 360，避免底部按钮太靠下
+        UITheme.ApplyModernForm(this, "手动输入账号 (一次性)", 400, 360);
         InitializeComponent();
     }
 
@@ -30,7 +32,7 @@ public class ManualLoginForm : Form
         Controls.Add(typeLabel);
 
         _typeCombo = new ComboBox { Location = new Point(20, 90), Size = new Size(340, 25), DropDownStyle = ComboBoxStyle.DropDownList };
-        _typeCombo.Items.AddRange(new string[] { "Cookie 登录", "4399 账号密码", "手机号验证码" });
+        _typeCombo.Items.AddRange(new string[] { "Cookie 登录", "4399 账号密码", "手机号验证码", "网易邮箱密码" });
         _typeCombo.SelectedIndex = 0;
         _typeCombo.SelectedIndexChanged += OnTypeChanged;
         Controls.Add(_typeCombo);
@@ -49,7 +51,7 @@ public class ManualLoginForm : Form
         _showPassCheck.CheckedChanged += (s, e) => _input2.UseSystemPasswordChar = !_showPassCheck.Checked;
         Controls.Add(_showPassCheck);
 
-        // 将原来的按钮 Y 坐标由 260 改为 300，避免拥挤：
+        // 按钮整体下移到 300
         var loginBtn = new ModernButton { Text = "登录", Location = new Point(190, 300), IsPrimary = true };
         loginBtn.Click += OnLoginClick;
         var cancelBtn = new ModernButton { Text = "取消", Location = new Point(300, 300) };
@@ -64,23 +66,25 @@ public class ManualLoginForm : Form
     private void OnTypeChanged(object sender, EventArgs e)
     {
         _input1.Text = _input2.Text = "";
+        
         if (_typeCombo.SelectedIndex == 0) // Cookie
         {
             _label1.Text = "Cookie 数据:";
             _label2.Visible = _input2.Visible = false;
+            _showPassCheck.Visible = false;
         }
-        else if (_typeCombo.SelectedIndex == 1) // 4399
+        else if (_typeCombo.SelectedIndex == 1 || _typeCombo.SelectedIndex == 3) // 4399 或 邮箱
         {
-            _label1.Text = "用户名:";
+            _label1.Text = _typeCombo.SelectedIndex == 3 ? "邮箱账号:" : "用户名:";
             _label2.Text = "密码:";
             _label2.Visible = _input2.Visible = true;
             _showPassCheck.Visible = true;
         }
         else // Phone
         {
-            _showPassCheck.Visible = false;
             _label1.Text = "手机号:";
             _label2.Visible = _input2.Visible = false;
+            _showPassCheck.Visible = false;
         }
     }
 
@@ -90,7 +94,8 @@ public class ManualLoginForm : Form
         
         if (_typeCombo.SelectedIndex == 0)
         {
-            if (!AccountInfo.CookieValidator.ValidateSauth(_input1.Text, out string err))
+            if (string.IsNullOrWhiteSpace(_input1.Text)) return;
+            if (!CookieValidator.ValidateSauth(_input1.Text, out string err))
             {
                 MessageBox.Show(err, "Cookie 格式错误", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -98,10 +103,10 @@ public class ManualLoginForm : Form
             GeneratedAccount.Type = AccountType.Cookie;
             GeneratedAccount.CookieData = _input1.Text;
         }
-        else if (_typeCombo.SelectedIndex == 1)
+        else if (_typeCombo.SelectedIndex == 1 || _typeCombo.SelectedIndex == 3)
         {
             if (string.IsNullOrWhiteSpace(_input1.Text) || string.IsNullOrWhiteSpace(_input2.Text)) return;
-            GeneratedAccount.Type = AccountType._4399;
+            GeneratedAccount.Type = _typeCombo.SelectedIndex == 3 ? AccountType.Email : AccountType._4399;
             GeneratedAccount.Username = _input1.Text;
             GeneratedAccount.Password = _input2.Text;
         }

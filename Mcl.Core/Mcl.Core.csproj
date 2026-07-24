@@ -78,7 +78,6 @@
         <Compile Include="Dotnetdetour\Features\GeneralHooks\Mpay_Log.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\MuteBanSystem.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\OptimizationShow.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\PhoneVerifyForm.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\ProcessCreateWindow.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\RoomInfoWindow.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\SensitiveWordDetection.cs"/>

@@ -29,13 +29,11 @@ public class AccountSelectionForm : Form
 
     private void InitializeComponent()
     {
-        // 顶部 Header
         var headerPanel = new Panel { Dock = DockStyle.Top, Height = 60, BackColor = UITheme.Surface };
         var titleLabel = new Label { Text = "选择登录账号", Font = UITheme.TitleFont, ForeColor = UITheme.PrimaryBlue, Location = new Point(20, 18), AutoSize = true };
         headerPanel.Controls.Add(titleLabel);
         Controls.Add(headerPanel);
 
-        // 左侧列表
         _accountListView = new ListView
         {
             Location = new Point(20, 80),
@@ -54,7 +52,6 @@ public class AccountSelectionForm : Form
         _accountListView.DoubleClick += (s, e) => PerformLogin();
         Controls.Add(_accountListView);
 
-        // 详情面板
         var detailPanel = new Panel { Location = new Point(20, 375), Size = new Size(460, 75), BackColor = UITheme.Surface, BorderStyle = BorderStyle.FixedSingle };
         _detailTitle = new Label { Location = new Point(10, 10), Size = new Size(440, 20), Font = UITheme.BoldFont, Text = "选择一个账号查看详情" };
         _detailContent = new Label { Location = new Point(10, 35), Size = new Size(440, 35), ForeColor = UITheme.TextSecondary, Text = "暂无详细信息" };
@@ -62,7 +59,6 @@ public class AccountSelectionForm : Form
         detailPanel.Controls.Add(_detailContent);
         Controls.Add(detailPanel);
 
-        // 右侧按钮组
         int btnX = 500;
         int btnWidth = 160;
 
@@ -101,7 +97,8 @@ public class AccountSelectionForm : Form
         foreach (var acc in _accounts)
         {
             var item = new ListViewItem(acc.Name);
-            item.SubItems.Add(acc.TypeDisplay);
+            // 修复: 使用我们定义的中文名称，避免显示出 _4399 这种枚举字面量
+            item.SubItems.Add(acc.TypeDisplay); 
             item.SubItems.Add(acc.Notes ?? "");
             item.Tag = acc;
             _accountListView.Items.Add(item);
@@ -116,10 +113,14 @@ public class AccountSelectionForm : Form
         if (hasSelection)
         {
             var acc = (AccountInfo)_accountListView.SelectedItems[0].Tag;
-            _detailTitle.Text = $"{acc.Name} [{acc.Type}]";
-            _detailContent.Text = acc.Type == AccountType.Cookie ? "类型: Cookie 数据" : 
-                                  acc.Type == AccountType.Phone ? $"手机号: {acc.PhoneNumber}" : 
-                                  $"账号: {acc.Username}";
+            _detailTitle.Text = $"{acc.Name} [{acc.TypeDisplay}]";
+            _detailContent.Text = acc.Type switch 
+            {
+                AccountType.Cookie => "类型: Cookie 数据",
+                AccountType.Phone => $"手机号: {acc.PhoneNumber}",
+                AccountType.Email => $"邮箱账号: {acc.Username}",
+                _ => $"账号: {acc.Username}"
+            };
         }
         else
         {

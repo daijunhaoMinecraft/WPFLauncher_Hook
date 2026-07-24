@@ -10,10 +10,11 @@ public class RebuildX19Crypto : IMethodHook
 {
     // 重构 X19 相关算法
     public const string ClassName = "WPFLauncher.Util.ss";
-
+    
     [HookMethod(ClassName, "b")]
     public static byte[] HttpEncrypt(string path, string body, out string key)
     {
+        // HttpEncrypt(path, body, out key);
         var result = X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(body));
         var x19Key = X19Crypt.PickKey(result[result.Length - 1]);
         key = Encoding.UTF8.GetString(x19Key);
@@ -43,13 +44,10 @@ public class RebuildX19Crypto : IMethodHook
     }
 
 
-    [HookMethod(ClassName, "d")]
+    [HookMethod(ClassName, "d", "ParseResponseLogin")]
     public static string ParseResponseLoginHook(byte[] encryptBody, out string key)
     {
-        ParseResponseLogin(encryptBody, out key);
-        var result = X19Crypt.DecryptX19Body(encryptBody);
-        var x19Key = X19Crypt.PickKey(encryptBody[encryptBody.Length - 1]);
-        key = Encoding.UTF8.GetString(x19Key);
+        var result = ParseResponseLogin(encryptBody, out key);
         if (WpfConfig.IsDebug)
             WpfConfig.DefaultLogger.Info(
                 $"ParseResponseLogin: EncryptBodyCount: {encryptBody.Length}, DecryptBody: {result}, EncryptKey: {key}");
@@ -63,7 +61,7 @@ public class RebuildX19Crypto : IMethodHook
         if (WpfConfig.IsDebug)
             WpfConfig.DefaultLogger.Info(
                 $"DynamicToken: Body: {body}, Path: {path}, UserToken: {result}, UserId: {X19Crypt.UserId}");
-
+    
         return result;
     }
 

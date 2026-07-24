@@ -57,6 +57,24 @@ public class LoginWithoutMpay : IMethodHook
     [HookMethod("WPFLauncher.Manager.PCChannel.asx", "a")]
     public bool IsNeteaseChannel() => true;
 
+    [OriginalMethod]
+    public string InitChannel()
+    {
+        return "";
+    }
+    
+    // 解决启动Java版游戏崩溃问题
+    [HookMethod("WPFLauncher.Manager.arf", "b")]
+    public string InitChannelHook()
+    {
+        if (WpfConfig.MpayUnless)
+        {
+            return "netease";
+        }
+
+        return InitChannel();
+    }
+
     [HookMethod("WPFLauncher.Manager.arf", "i")]
     public bool CanLogin() => true;
 }
