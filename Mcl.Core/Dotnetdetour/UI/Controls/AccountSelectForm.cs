@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Mcl.Core.Dotnetdetour.Features.Authentication.Core;
+using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
 
-namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
+namespace Mcl.Core.Dotnetdetour.UI.Controls;
 
 public class AccountSelectForm : Form
 {

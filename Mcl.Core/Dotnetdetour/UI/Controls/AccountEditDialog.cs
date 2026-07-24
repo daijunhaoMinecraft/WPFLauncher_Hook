@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 
-namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
+namespace Mcl.Core.Dotnetdetour.UI.Controls;
 
 public class AccountEditDialog : Form
 {
