@@ -55,8 +55,9 @@
         <Compile Include="Dotnetdetour\Features\Authentication\Core\RebuildX19Crypto.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Core\SauthJsonRandomGenerator.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\4399Login.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Providers\AuthIntegrationService.cs" />
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\LoginWithoutMpay.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Providers\MpayPhoneLogin.cs"/>
+        <Compile Include="Dotnetdetour\Features\Authentication\Providers\MpayLogin.cs" />
         <Compile Include="Dotnetdetour\Features\GameTweaks\MinecraftPath.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\Mods.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\ModsInject.cs"/>
@@ -65,8 +66,6 @@
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveHyt.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveJavaMemoryLimit.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\UnlockAllMode.cs"/>
-        <Compile Include="Dotnetdetour\UI\Controls\AccountEditDialog.cs"/>
-        <Compile Include="Dotnetdetour\UI\Controls\AccountSelectForm.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\ChangeIPForm.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\directoryEvent.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\DownloadEvent.cs"/>
@@ -108,84 +107,89 @@
         <Compile Include="Dotnetdetour\UI\Controls\SelectIp.cs"/>
         <Compile Include="Dotnetdetour\UI\Controls\ServerPanel.cs"/>
         <Compile Include="Dotnetdetour\UI\Controls\ServerSelectPort.cs"/>
-        <Compile Include="Dotnetdetour\UI\WebAssets\HtmlResource.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Common\MemoryUtils.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Common\Ocr.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Common\SauthParser.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Common\StringExtensions.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Common\TypeExtensions.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Crypto\AESHelper.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\ExitRoom.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\HttpHelper.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\IpConfigManager.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\LocalProxyListener.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\PacketDeserializer.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\UnifiedSession.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\WebHelper.cs"/>
-        <Compile Include="Dotnetdetour\Utilities\Network\X19Http.cs"/>
-        <Compile Include="Extensions\CollectionExtensions.cs"/>
-        <Compile Include="Extensions\MiscExtensions.cs"/>
-        <Compile Include="Extensions\ResponseStatusExtensions.cs"/>
-        <Compile Include="Extensions\StringExtensions.cs"/>
-        <Compile Include="NeteaseProtocol\X19Http.cs"/>
-        <Compile Include="Network\DataFormat.cs"/>
-        <Compile Include="Network\FileParameter.cs"/>
-        <Compile Include="Network\Http.cs"/>
-        <Compile Include="Network\HttpCookie.cs"/>
-        <Compile Include="Network\HttpFile.cs"/>
-        <Compile Include="Network\HttpHeader.cs"/>
-        <Compile Include="Network\HttpMethod.cs"/>
-        <Compile Include="Network\HttpParameter.cs"/>
-        <Compile Include="Network\HttpResponse.cs"/>
-        <Compile Include="Network\Interface\IHttp.cs"/>
-        <Compile Include="Network\Interface\IHttpFactory.cs"/>
-        <Compile Include="Network\Interface\IHttpResponse.cs"/>
-        <Compile Include="Network\Interface\INetClient.cs"/>
-        <Compile Include="Network\Interface\INetRequest.cs"/>
-        <Compile Include="Network\Interface\INetResponse.2.cs"/>
-        <Compile Include="Network\Interface\INetResponse.cs"/>
-        <Compile Include="Network\Interface\SimpleFactory.cs"/>
-        <Compile Include="Network\Method.cs"/>
-        <Compile Include="Network\NetClient.cs"/>
-        <Compile Include="Network\NetRequest.cs"/>
-        <Compile Include="Network\NetRequestAsyncHandle.cs"/>
-        <Compile Include="Network\NetResponse.2.cs"/>
-        <Compile Include="Network\NetResponse.cs"/>
-        <Compile Include="Network\NetResponseBase.cs"/>
-        <Compile Include="Network\NetResponseCookie.cs"/>
-        <Compile Include="Network\Parameter.cs"/>
-        <Compile Include="Network\ParameterType.cs"/>
-        <Compile Include="Network\ResponseStatus.cs"/>
-        <Compile Include="Network\TimeOutState.cs"/>
-        <Compile Include="Properties\AssemblyInfo.cs"/>
-        <Compile Include="Tools\x19Crypt.cs"/>
-        <Compile Include="Utils\AppMutexHelper.cs"/>
-        <Compile Include="Utils\RegistryHelper.cs"/>
-        <Compile Include="Utils\RegKey.cs"/>
-        <Compile Include="Utils\Util\FileVersionHelper.cs"/>
+        <Compile Include="Dotnetdetour\UI\Core\UITheme.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\AccountEditorForm.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\AccountSelectionForm.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\CaptchaForm.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\ManualLoginForm.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\PhoneVerifyForm.cs" />
+        <Compile Include="Dotnetdetour\UI\WebAssets\HtmlResource.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Common\MemoryUtils.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Common\SauthParser.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Common\StringExtensions.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Common\TypeExtensions.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Crypto\AESHelper.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\ExitRoom.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\HttpHelper.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\IpConfigManager.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\LocalProxyListener.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\PacketDeserializer.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\UnifiedSession.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\WebHelper.cs" />
+        <Compile Include="Dotnetdetour\Utilities\Network\X19Http.cs" />
+        <Compile Include="Extensions\CollectionExtensions.cs" />
+        <Compile Include="Extensions\MiscExtensions.cs" />
+        <Compile Include="Extensions\ResponseStatusExtensions.cs" />
+        <Compile Include="Extensions\StringExtensions.cs" />
+        <Compile Include="NeteaseProtocol\X19Http.cs" />
+        <Compile Include="Network\DataFormat.cs" />
+        <Compile Include="Network\FileParameter.cs" />
+        <Compile Include="Network\Http.cs" />
+        <Compile Include="Network\HttpCookie.cs" />
+        <Compile Include="Network\HttpFile.cs" />
+        <Compile Include="Network\HttpHeader.cs" />
+        <Compile Include="Network\HttpMethod.cs" />
+        <Compile Include="Network\HttpParameter.cs" />
+        <Compile Include="Network\HttpResponse.cs" />
+        <Compile Include="Network\Interface\IHttp.cs" />
+        <Compile Include="Network\Interface\IHttpFactory.cs" />
+        <Compile Include="Network\Interface\IHttpResponse.cs" />
+        <Compile Include="Network\Interface\INetClient.cs" />
+        <Compile Include="Network\Interface\INetRequest.cs" />
+        <Compile Include="Network\Interface\INetResponse.2.cs" />
+        <Compile Include="Network\Interface\INetResponse.cs" />
+        <Compile Include="Network\Interface\SimpleFactory.cs" />
+        <Compile Include="Network\Method.cs" />
+        <Compile Include="Network\NetClient.cs" />
+        <Compile Include="Network\NetRequest.cs" />
+        <Compile Include="Network\NetRequestAsyncHandle.cs" />
+        <Compile Include="Network\NetResponse.2.cs" />
+        <Compile Include="Network\NetResponse.cs" />
+        <Compile Include="Network\NetResponseBase.cs" />
+        <Compile Include="Network\NetResponseCookie.cs" />
+        <Compile Include="Network\Parameter.cs" />
+        <Compile Include="Network\ParameterType.cs" />
+        <Compile Include="Network\ResponseStatus.cs" />
+        <Compile Include="Network\TimeOutState.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Tools\x19Crypt.cs" />
+        <Compile Include="Utils\AppMutexHelper.cs" />
+        <Compile Include="Utils\RegistryHelper.cs" />
+        <Compile Include="Utils\RegKey.cs" />
+        <Compile Include="Utils\Util\FileVersionHelper.cs" />
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CefSharp">
             <HintPath>E:\MCLauncher\CefSharp.dll</HintPath>
         </Reference>
-        <Reference Include="Microsoft.CSharp"/>
-        <Reference Include="Microsoft.VisualBasic"/>
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="Microsoft.VisualBasic" />
         <Reference Include="Newtonsoft.Json">
             <HintPath>E:\MCLauncher\Newtonsoft.Json.dll</HintPath>
         </Reference>
         <Reference Include="NLog">
             <HintPath>E:\MCLauncher\NLog.dll</HintPath>
         </Reference>
-        <Reference Include="System.Core"/>
-        <Reference Include="System.Web"/>
-        <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>
-        <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"/>
-        <Reference Include="System.Windows.Forms"/>
+        <Reference Include="System.Core" />
+        <Reference Include="System.Web" />
+        <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+        <Reference Include="System.Windows.Forms" />
         <Reference Include="websocket-sharp">
             <HintPath>E:\MCLauncher\websocket-sharp.dll</HintPath>
         </Reference>
-        <Reference Include="WindowsBase"/>
+        <Reference Include="WindowsBase" />
         <Reference Include="WPFControls">
             <HintPath>E:\MCLauncher\WPFControls.dll</HintPath>
         </Reference>
@@ -194,11 +198,11 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="System.Management" Version="10.0.0-preview.7.25380.108"/>
-        <PackageReference Include="System.Net.Http" Version="4.3.4"/>
+        <PackageReference Include="System.Management" Version="10.0.0-preview.7.25380.108" />
+        <PackageReference Include="System.Net.Http" Version="4.3.4" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Dotnetdetour\UI\Dialogs\"/>
+        <Folder Include="Dotnetdetour\UI\Dialogs\" />
         <Folder Include="Dotnetdetour\UI\Windows\"/>
     </ItemGroup>
     <ItemGroup>

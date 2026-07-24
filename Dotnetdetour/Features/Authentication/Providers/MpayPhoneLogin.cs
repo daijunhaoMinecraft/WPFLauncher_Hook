@@ -79,7 +79,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 var cache = new JObject
                 {
                     ["unique_id"] = uniqueId,
-                    ["device_id"] = deviceId
+                    ["device_id"] = deviceId,
+                    ["device_key"] = deviceKey
                 };
                 File.WriteAllText(path, cache.ToString(Formatting.None));
             }

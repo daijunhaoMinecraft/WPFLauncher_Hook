@@ -90,12 +90,12 @@ namespace Mcl.Core.Dotnetdetour.Utilities.Common
             if (logInfo)
                 WpfConfig.DefaultLogger.Info($"[Phone] 开始手机号登录: {account.PhoneNumber}");
 
-            string result = MpayPhoneLogin.FullLoginFlow(account.PhoneNumber, account.DeviceId);
+            string result = MpayLogin.FullLoginFlow(account.PhoneNumber, account.DeviceId);
             if (string.IsNullOrEmpty(result))
                 return null;
 
             account.CookieData = result;
-            account.DeviceId = MpayPhoneLogin.GetOrRegisterDevice(account.DeviceId);
+            account.DeviceId = MpayLogin.GetOrRegisterDevice(account.DeviceId);
             AccountManager.Update(account.Name, account);
 
             try { return JObject.Parse(result)["sauth_json"].ToString(); }

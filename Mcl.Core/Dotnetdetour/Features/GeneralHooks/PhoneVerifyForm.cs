@@ -267,7 +267,7 @@ public class PhoneVerifyForm : Form
         // 在后台线程执行验证，避免 UI 卡死
         Task.Run(() =>
         {
-            var result = MpayPhoneLogin.VerifySms(_phoneNumber, code, upContent);
+            var result = MpayLogin.VerifySms(_phoneNumber, code, upContent);
             return result;
         }).ContinueWith(task =>
         {
@@ -305,7 +305,7 @@ public class PhoneVerifyForm : Form
         retrySmsButton.Enabled = false;
         retrySmsButton.Text = "发送中...";
 
-        Task.Run(() => { return MpayPhoneLogin.SendSms(_phoneNumber); }).ContinueWith(task =>
+        Task.Run(() => { return MpayLogin.SendSms(_phoneNumber); }).ContinueWith(task =>
         {
             BeginInvoke(new Action(() =>
             {
