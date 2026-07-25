@@ -94,12 +94,6 @@ public static class HookBootstrapper
     [ModuleInitializer]
     internal static void InitializeOnLoad()
     {
-        // 1. 初始化更新器后台逻辑
-        Mcl.Core.Updater.UpdateManager.Initialize();
-
-        // 2. 启动托盘菜单注入器（包含设置和更新两个按钮）
-        TrayMenuInjector.Start();
-        
         AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
         if (!File.Exists("DisableConsole"))
@@ -130,6 +124,9 @@ public static class HookBootstrapper
             // 注册控制台事件处理器
             SetConsoleCtrlHandler(_consoleHandler, true);
         }
+
+        Mcl.Core.Updater.UpdateManager.Initialize();
+        TrayMenuInjector.Start();
 
         MethodHook.InstallTypes(new[] { typeof(InitHook) });
     }

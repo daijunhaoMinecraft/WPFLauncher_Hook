@@ -6,6 +6,7 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using WPFLauncher.Common;
 using WPFLauncher.Manager;
+using WPFLauncher.Manager.PCChannel;
 
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 
@@ -28,7 +29,6 @@ public class LoginWithoutMpay : IMethodHook
             {
                 AuthIntegrationService.InjectMpayCookie(sauthJson);
             }
-            InitMpay(title, mpayPath, initFinishAction, uniSdkUrl);
             azf<apm>.Instance.CanChannelLogin = true;
         }
         else
@@ -67,27 +67,30 @@ public class LoginWithoutMpay : IMethodHook
     }
     
     // 解决启动Java版游戏崩溃问题
-    [HookMethod("WPFLauncher.Manager.arf", "b")]
+    [HookMethod("WPFLauncher.Manager.arf", "b", "InitChannel")]
     public string InitChannelHook()
     {
-        if (WpfConfig.MpayUnless)
+        if (File.Exists("4399pc.data"))
         {
-            if (File.Exists("PC4399_WPFLauncher.exe"))
-            {
-                return "allysdk.4399pc";
-            }
-
-            if (File.Exists("a50sdk"))
-            {
-                return "a50_sdk_cn";
-            }
-
-            return "netease";
+            Console.WriteLine("选择渠道服: 4399");
+            return "4399pc";
         }
 
-        return InitChannel();
+        if (File.Exists("native_a50_cn.data"))
+        {
+            Console.WriteLine("选择渠道服: a50sdk");
+            return "a50_sdk_cn";
+        }
+        Console.WriteLine("选择渠道服: netease");
+        return "netease";
     }
 
     [HookMethod("WPFLauncher.Manager.arf", "i")]
     public bool CanLogin() => true;
+
+    [HookMethod("WPFLauncher.Update.xw", "b", null)]
+    public bool ComparePath(string path1, string path2)
+    {
+        return true;
+    }
 }
