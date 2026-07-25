@@ -11,15 +11,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Updater/UpdateManager.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Tray/TrayMenuInjector.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Updater/UpdateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Updater/UpdateManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
@@ -235,22 +232,8 @@
       <workItem from="1784869319296" duration="3861000" />
       <workItem from="1784880050503" duration="5479000" />
       <workItem from="1784974116834" duration="4452000" />
-    </task>
-    <task id="LOCAL-00027" summary="修复网易我的世界启动器自身问题: 好友后在线启动器仍然显示离线问题&#10;没错网易写的就是这么离谱&#10;主要出现在: 当自己上线了,而好友之后上线,然后出现自己这边显示好友没有在线的问题">
-      <option name="closed" value="true" />
-      <created>1772882591990</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1772882591990</updated>
-    </task>
-    <task id="LOCAL-00028" summary="推送新版本: 4.0.3-DLL-Public">
-      <option name="closed" value="true" />
-      <created>1773060703369</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1773060703369</updated>
+      <workItem from="1784978663246" duration="1574000" />
+      <workItem from="1784985896004" duration="901000" />
     </task>
     <task id="LOCAL-00029" summary="更新构建方法">
       <option name="closed" value="true" />
@@ -628,7 +611,23 @@
       <option name="project" value="LOCAL" />
       <updated>1784885307183</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="发布正式版">
+      <option name="closed" value="true" />
+      <created>1784978718736</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1784978718736</updated>
+    </task>
+    <task id="LOCAL-00077" summary="更新截图">
+      <option name="closed" value="true" />
+      <created>1784979012785</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1784979012785</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -649,8 +648,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="更新版本号以发布正式版本" />
-    <MESSAGE value="新增: 4399小号自动获取(4399.nekoinsi.de), 4399登录验证码自动识别(需在网易我的世界启动器的目录下添加WmCode.dll, OcrProxy.dll, ocr.dll)" />
     <MESSAGE value="修复部分4399账号无法购买物品问题, 增加退出事件(修复因关闭不当造成的联机大厅无法进入房间问题)" />
     <MESSAGE value="更好最终版本, 更新内容: 禁用网易更新, 发布完Release后项目直接Archive仓库了" />
     <MESSAGE value="更新版本号, 保留启动器更新, 支持阻止Java启动时材质包/光影/配置删除的拦截(需在config中配置)" />
@@ -674,7 +671,9 @@
     <MESSAGE value="update namespace" />
     <MESSAGE value="重构工程_1" />
     <MESSAGE value="优化/美化账号管理界面, 修复问题: 1. 不使用Mpay登录时启动布吉岛闪退 2. 进入布吉岛显示认证失败 #45 新增: 账号管理器支持登录网易邮箱, 因此默认设置直接是不使用 Mpay 登录" />
-    <option name="LAST_COMMIT_MESSAGE" value="优化/美化账号管理界面, 修复问题: 1. 不使用Mpay登录时启动布吉岛闪退 2. 进入布吉岛显示认证失败 #45 新增: 账号管理器支持登录网易邮箱, 因此默认设置直接是不使用 Mpay 登录" />
+    <MESSAGE value="发布正式版" />
+    <MESSAGE value="更新截图" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新截图" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

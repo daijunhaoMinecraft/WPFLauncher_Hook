@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
@@ -26,6 +28,7 @@ public class LoginWithoutMpay : IMethodHook
             {
                 AuthIntegrationService.InjectMpayCookie(sauthJson);
             }
+            InitMpay(title, mpayPath, initFinishAction, uniSdkUrl);
             azf<apm>.Instance.CanChannelLogin = true;
         }
         else
@@ -69,6 +72,16 @@ public class LoginWithoutMpay : IMethodHook
     {
         if (WpfConfig.MpayUnless)
         {
+            if (File.Exists("PC4399_WPFLauncher.exe"))
+            {
+                return "allysdk.4399pc";
+            }
+
+            if (File.Exists("a50sdk"))
+            {
+                return "a50_sdk_cn";
+            }
+
             return "netease";
         }
 

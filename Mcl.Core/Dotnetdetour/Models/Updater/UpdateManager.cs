@@ -266,23 +266,49 @@ namespace Mcl.Core.Updater
                 }
                 else
                 {
-                    // Release 版逻辑
+                    // ==========================================
+                    // Release
+                    // ==========================================
                     string apiUrl = $"https://api.github.com/repos/{RepoOwner}/{RepoName}/releases/latest";
                     string releaseJson = await _httpClient.GetStringAsync(apiUrl);
                     JObject releaseInfo = JObject.Parse(releaseJson);
                     
+                    // 获取基本信息
                     string remoteVersion = releaseInfo["tag_name"].ToString();
-                    string localVersion = "v1.0.0"; 
-
-                    if (remoteVersion == localVersion) return;
-
                     string releaseNotes = releaseInfo["body"].ToString();
                     string releaseUrl = releaseInfo["html_url"].ToString();
-                    string downloadUrl = releaseInfo["assets"][0]["browser_download_url"].ToString();
-
-                    if (ShowUpdatePromptUI(remoteVersion, releaseNotes, releaseUrl))
+                    
+                    // 获取附件 (Asset) 节点
+                    JToken asset = releaseInfo["assets"][0];
+                    string downloadUrl = asset["browser_download_url"].ToString();
+                    
+                    string remoteDigest = asset["digest"]?.ToString();
+                    string remoteHash = "";
+                    if (!string.IsNullOrEmpty(remoteDigest) && remoteDigest.StartsWith("sha256:"))
                     {
-                        await PerformDownloadAndRestartAsync(downloadUrl, "Mcl.Core.dll");
+                        remoteHash = remoteDigest.Substring(7).ToLowerInvariant();
+                    }
+
+                    string localFile = "Mcl.Core.dll";
+
+                    // 本地比对逻辑
+                    if (File.Exists(localFile) && !string.IsNullOrEmpty(remoteHash))
+                    {
+                        string localHash = CalculateFileSHA256(localFile);
+                        
+                        // 如果 Hash 完美一致，说明不需要更新
+                        if (localHash == remoteHash)
+                        {
+                            Console.WriteLine("[Updater] 当前已经是最新 Release 版。");
+                            return; 
+                        }
+                    }
+
+                    // Hash 不一致（或本地文件不存在），弹窗询问用户
+                    if (ShowUpdatePromptUI(remoteVersion + " (稳定版)", releaseNotes, releaseUrl))
+                    {
+                        // 用户同意后才开始下载
+                        await PerformDownloadAndRestartAsync(downloadUrl, localFile);
                     }
                 }
             }
@@ -331,6 +357,19 @@ namespace Mcl.Core.Updater
             Buffer.BlockCopy(headerBytes, 0, store, 0, headerBytes.Length);
             Buffer.BlockCopy(fileBytes, 0, store, headerBytes.Length, fileBytes.Length);
             using (SHA1 sha1 = SHA1.Create()) return BitConverter.ToString(sha1.ComputeHash(store)).Replace("-", "").ToLower();
+        }
+        
+        // 计算标准的 SHA256 Hash (用于 Release 版比对)
+        private static string CalculateFileSHA256(string filePath)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                using (FileStream fileStream = File.OpenRead(filePath))
+                {
+                    byte[] hash = sha256.ComputeHash(fileStream);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
         }
 
         private static void CleanupOldFiles()

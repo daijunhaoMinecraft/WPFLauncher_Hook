@@ -62,7 +62,7 @@ public class WpfConfig
     // custom Settings
     public static bool EnableCustomBedrockSelect = false;
     public static bool EnableCustomAccountLogin = false;
-    public static bool MpayUnless = true;
+    public static bool MpayUnless = false;
 
 
     public static bool KeepOffDeleteLastResourcepacks = false;
