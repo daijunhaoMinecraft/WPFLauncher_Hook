@@ -15,6 +15,6 @@ internal class PasswordFix : IMethodHook
     [HookMethod("WPFLauncher.Manager.AntiIndulgence.aro", "h", "No_Password_Number")]
     public static string CanUseThisPasswordHook(string password, string moduleName = "密码")
     {
-        return password;
+        return "";
     }
 }

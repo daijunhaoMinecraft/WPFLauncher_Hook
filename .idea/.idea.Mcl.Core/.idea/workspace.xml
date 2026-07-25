@@ -10,15 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -233,15 +225,7 @@
       <workItem from="1784880050503" duration="5479000" />
       <workItem from="1784974116834" duration="4452000" />
       <workItem from="1784978663246" duration="1574000" />
-      <workItem from="1784985896004" duration="6658000" />
-    </task>
-    <task id="LOCAL-00030" summary="更新构建方法_1">
-      <option name="closed" value="true" />
-      <created>1774007006524</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1774007006524</updated>
+      <workItem from="1784985896004" duration="6733000" />
     </task>
     <task id="LOCAL-00031" summary="更新版本: 4.0.4-Public&#10;支持多线程下载游戏文件!">
       <option name="closed" value="true" />
@@ -627,7 +611,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784987124634</updated>
     </task>
-    <option name="localTasksCounter" value="79" />
+    <task id="LOCAL-00079" summary="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等">
+      <option name="closed" value="true" />
+      <created>1784993484833</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1784993484833</updated>
+    </task>
+    <option name="localTasksCounter" value="80" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -648,7 +640,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="更好最终版本, 更新内容: 禁用网易更新, 发布完Release后项目直接Archive仓库了" />
     <MESSAGE value="更新版本号, 保留启动器更新, 支持阻止Java启动时材质包/光影/配置删除的拦截(需在config中配置)" />
     <MESSAGE value="调整命名空间" />
     <MESSAGE value="修复DLL没有Init的问题(清理代码执行的时候自动删到了namespace)" />
@@ -673,7 +664,8 @@
     <MESSAGE value="发布正式版" />
     <MESSAGE value="更新截图" />
     <MESSAGE value="修复渠道服登录问题, 默认配置更改为使用 Mpay 登录" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复渠道服登录问题, 默认配置更改为使用 Mpay 登录" />
+    <MESSAGE value="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
