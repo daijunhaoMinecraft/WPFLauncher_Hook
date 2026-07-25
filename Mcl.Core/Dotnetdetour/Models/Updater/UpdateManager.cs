@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing; // 必须的，用于 WinForms 的 Size 和 Point
 using System.IO;
+using System.Linq;
 using System.Net.Http; // 引入 HttpClient
 using System.Security.Cryptography;
 using System.Security.Principal;
@@ -278,33 +279,43 @@ namespace Mcl.Core.Updater
                     string releaseNotes = releaseInfo["body"].ToString();
                     string releaseUrl = releaseInfo["html_url"].ToString();
                     
-                    // 获取附件 (Asset) 节点
-                    JToken asset = releaseInfo["assets"][0];
-                    string downloadUrl = asset["browser_download_url"].ToString();
-                    
-                    string remoteDigest = asset["digest"]?.ToString();
+                    // 1. 遍历 assets 查找指定名称的附件节点
+                    JToken assets = releaseInfo["assets"];
+                    JToken targetAsset = assets?.FirstOrDefault(a => a["name"]?.ToString().Equals("Mcl.Core.dll", StringComparison.OrdinalIgnoreCase) == true);
+
+                    // 容错处理：如果 Release 中未找到目标文件
+                    if (targetAsset == null)
+                    {
+                        Console.WriteLine("[Updater] 错误：未在 Release 附件列表中找到 Mcl.Core.dll");
+                        return;
+                    }
+
+                    // 2. 提取下载链接与远程 Hash
+                    string downloadUrl = targetAsset["browser_download_url"]?.ToString();
+                    string remoteDigest = targetAsset["digest"]?.ToString();
                     string remoteHash = "";
-                    if (!string.IsNullOrEmpty(remoteDigest) && remoteDigest.StartsWith("sha256:"))
+
+                    if (!string.IsNullOrEmpty(remoteDigest) && remoteDigest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase))
                     {
                         remoteHash = remoteDigest.Substring(7).ToLowerInvariant();
                     }
 
                     string localFile = "Mcl.Core.dll";
 
-                    // 本地比对逻辑
+                    // 3. 本地比对逻辑
                     if (File.Exists(localFile) && !string.IsNullOrEmpty(remoteHash))
                     {
                         string localHash = CalculateFileSHA256(localFile);
-                        
+    
                         // 如果 Hash 完美一致，说明不需要更新
-                        if (localHash == remoteHash)
+                        if (localHash.Equals(remoteHash, StringComparison.OrdinalIgnoreCase))
                         {
                             Console.WriteLine("[Updater] 当前已经是最新 Release 版。");
                             return; 
                         }
                     }
 
-                    // Hash 不一致（或本地文件不存在），弹窗询问用户
+                    // 4. Hash 不一致（或本地文件不存在），弹窗询问用户
                     if (ShowUpdatePromptUI(remoteVersion + " (稳定版)", releaseNotes, releaseUrl))
                     {
                         // 用户同意后才开始下载
