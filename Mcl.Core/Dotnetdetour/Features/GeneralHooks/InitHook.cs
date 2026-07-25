@@ -23,6 +23,9 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 
 public class InitHook : IMethodHook
 {
+    private static SimpleHttpServer _runningServer = null;
+    private static int _currentServerPort = -1;
+    
     // 导入 AllocConsole 函数
     [DllImport("kernel32.dll", SetLastError = true)]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -146,7 +149,7 @@ public class InitHook : IMethodHook
         }
     }
 
-    private static void ShowConfigWindow()
+    public static void ShowConfigWindow()
     {
         var win = new System.Windows.Window
         {
@@ -300,17 +303,6 @@ public class InitHook : IMethodHook
             if (!error)
             {
                 ConfigManager.Save();
-
-                // 如果启用了模组注入，打开 ModsInject 文件夹并提示
-                if (WpfConfig.EnableModsInject)
-                {
-                    var modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
-                    if (!Directory.Exists(modsInjectPath)) Directory.CreateDirectory(modsInjectPath);
-                    WpfConfig.DefaultLogger.Info("[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-                    WpfConfig.DefaultLogger.Info($"[ModsInject] {modsInjectPath}");
-                    Process.Start("explorer.exe", modsInjectPath);
-                }
-
                 win.Close();
             }
         };
@@ -326,20 +318,77 @@ public class InitHook : IMethodHook
 
     private static void ApplyRuntimeSettings()
     {
-        // 这里放你原本在 Save 按钮里的那些初始化逻辑
+        // ==========================================
+        // Web服务器 生命周期管理
+        // ==========================================
         if (WpfConfig.IsStartWebSocket)
         {
-            WpfConfig.Default_HttpAddress = $"http://127.0.0.1:{WpfConfig.HttpPort}/";
-            var server = new SimpleHttpServer();
-            Task.Run(() => server.Start(WpfConfig.Default_HttpAddress));
-            WpfConfig.DefaultLogger.Info($"[Web] 服务器已启动: {WpfConfig.Default_HttpAddress}");
+            // 如果服务器还没启，或者端口发生了改变，才需要重新启动
+            if (_runningServer == null || _currentServerPort != WpfConfig.HttpPort)
+            {
+                // 如果存在旧服务器，先把它关掉释放端口
+                if (_runningServer != null)
+                {
+                    try
+                    {
+                        _runningServer.Stop();
+                        WpfConfig.DefaultLogger.Info($"[Web] 旧服务器已关闭 (端口: {_currentServerPort})");
+                    }
+                    catch (Exception ex)
+                    {
+                        WpfConfig.DefaultLogger.Error($"[Web] 关闭旧服务器失败: {ex.Message}");
+                    }
+                }
+
+                // 启动新服务器
+                WpfConfig.Default_HttpAddress = $"http://127.0.0.1:{WpfConfig.HttpPort}/";
+                _runningServer = new SimpleHttpServer();
+                _currentServerPort = WpfConfig.HttpPort; // 记录最新端口
+
+                Task.Run(() => _runningServer.Start(WpfConfig.Default_HttpAddress));
+                WpfConfig.DefaultLogger.Info($"[Web] 服务器已启动: {WpfConfig.Default_HttpAddress}");
+            }
+        }
+        else
+        {
+            // 如果用户在设置里关闭了服务器，但后台还在运行，则立刻关闭它
+            if (_runningServer != null)
+            {
+                try
+                {
+                    _runningServer.Stop(); 
+                    WpfConfig.DefaultLogger.Info($"[Web] 服务器已被用户关闭");
+                }
+                catch (Exception ex)
+                {
+                    WpfConfig.DefaultLogger.Error($"[Web] 关闭服务器失败: {ex.Message}");
+                }
+                finally
+                {
+                    // 清空状态
+                    _runningServer = null;
+                    _currentServerPort = -1;
+                }
+            }
         }
 
+        // ==========================================
         // Mac 地址逻辑
+        // ==========================================
         WpfConfig.Mac_Addr = Get_MacAddr();
         WpfConfig.Random_Mac_Addr = ConvertToOriginalFormat(GenerateRandomMacAddress());
-
-        // ... 其余逻辑保持不变 ...
+        
+        // ==========================================
+        // 模组注入逻辑
+        // ==========================================
+        if (WpfConfig.EnableModsInject)
+        {
+            var modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
+            if (!Directory.Exists(modsInjectPath)) Directory.CreateDirectory(modsInjectPath);
+            WpfConfig.DefaultLogger.Info("[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
+            WpfConfig.DefaultLogger.Info($"[ModsInject] {modsInjectPath}");
+            Process.Start("explorer.exe", modsInjectPath);
+        }
     }
 
     private static void PrintStatus()

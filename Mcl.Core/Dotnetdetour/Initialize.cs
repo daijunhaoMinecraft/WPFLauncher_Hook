@@ -6,7 +6,9 @@ using System.Text.RegularExpressions;
 using Mcl.Core.Dotnetdetour.CoreEngine.Base;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Dotnetdetour.UI.Tray;
 using Mcl.Core.NeteaseProtocol;
+using Mcl.Core.Updater;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -92,6 +94,12 @@ public static class HookBootstrapper
     [ModuleInitializer]
     internal static void InitializeOnLoad()
     {
+        // 1. 初始化更新器后台逻辑
+        Mcl.Core.Updater.UpdateManager.Initialize();
+
+        // 2. 启动托盘菜单注入器（包含设置和更新两个按钮）
+        TrayMenuInjector.Start();
+        
         AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
         if (!File.Exists("DisableConsole"))
