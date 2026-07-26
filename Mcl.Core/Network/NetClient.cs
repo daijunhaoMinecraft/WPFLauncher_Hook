@@ -158,8 +158,7 @@ public class NetClient : INetClient
             if (uri.ToString().EndsWith("/authentication/update"))
             {
                 var decryptRequest = X19Crypt.DecryptX19Body(body);
-                var authenticationUpdateResult = X19Http.Post("/authentication/update", decryptRequest,
-                    requestType: X19Http.RequestType.Encrypt);
+                var authenticationUpdateResult = X19Http.Post("/authentication/update", decryptRequest, WpfConfig.ServerList["CoreServerUrl"].ToString(), X19Http.RequestType.Encrypt);
 
                 var authResult = JObject.Parse(authenticationUpdateResult);
                 WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {authenticationUpdateResult}");

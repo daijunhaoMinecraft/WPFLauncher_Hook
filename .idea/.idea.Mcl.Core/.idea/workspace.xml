@@ -10,7 +10,15 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Tray/TrayMenuInjector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Tray/TrayMenuInjector.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -226,22 +234,8 @@
       <workItem from="1784974116834" duration="4452000" />
       <workItem from="1784978663246" duration="1574000" />
       <workItem from="1784985896004" duration="6733000" />
-    </task>
-    <task id="LOCAL-00031" summary="更新版本: 4.0.4-Public&#10;支持多线程下载游戏文件!">
-      <option name="closed" value="true" />
-      <created>1774066428286</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1774066428286</updated>
-    </task>
-    <task id="LOCAL-00032" summary="update Release Image">
-      <option name="closed" value="true" />
-      <created>1774066881599</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1774066881599</updated>
+      <workItem from="1784993909486" duration="708000" />
+      <workItem from="1785065366633" duration="1922000" />
     </task>
     <task id="LOCAL-00033" summary="update image">
       <option name="closed" value="true" />
@@ -619,7 +613,23 @@
       <option name="project" value="LOCAL" />
       <updated>1784993484833</updated>
     </task>
-    <option name="localTasksCounter" value="80" />
+    <task id="LOCAL-00080" summary="修复联机大厅无法输入密码问题">
+      <option name="closed" value="true" />
+      <created>1784994075232</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1784994075233</updated>
+    </task>
+    <task id="LOCAL-00081" summary="修复更新列表中assets顺序可能会乱问题">
+      <option name="closed" value="true" />
+      <created>1784994393055</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1784994393055</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -640,8 +650,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="更新版本号, 保留启动器更新, 支持阻止Java启动时材质包/光影/配置删除的拦截(需在config中配置)" />
-    <MESSAGE value="调整命名空间" />
     <MESSAGE value="修复DLL没有Init的问题(清理代码执行的时候自动删到了namespace)" />
     <MESSAGE value="再次调整命名空间" />
     <MESSAGE value="端正性的重命名了一些文件" />
@@ -665,7 +673,9 @@
     <MESSAGE value="更新截图" />
     <MESSAGE value="修复渠道服登录问题, 默认配置更改为使用 Mpay 登录" />
     <MESSAGE value="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等" />
+    <MESSAGE value="修复联机大厅无法输入密码问题" />
+    <MESSAGE value="修复更新列表中assets顺序可能会乱问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复更新列表中assets顺序可能会乱问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -81,7 +81,7 @@ public class X19Http
         }
         else if (!isGet && requestType == RequestType.Encrypt)
         {
-            var encrypted = X19Crypt.HttpEncrypt(Encoding.UTF7.GetBytes(body));
+            var encrypted = X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(body));
             request.Content = new ByteArrayContent(encrypted);
         }
 

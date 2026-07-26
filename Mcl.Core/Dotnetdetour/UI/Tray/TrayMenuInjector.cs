@@ -4,7 +4,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
+using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Network.Interface;
+using Mcl.Core.Tools;
 using Mcl.Core.Updater;
+using Newtonsoft.Json;
+using WPFLauncher.Common;
+using WPFLauncher.Manager.Configuration;
+using WPFLauncher.Network.Launcher;
+using WPFLauncher.Network.Protocol;
 
 namespace Mcl.Core.Dotnetdetour.UI.Tray
 {
@@ -71,7 +79,7 @@ namespace Mcl.Core.Dotnetdetour.UI.Tray
                                             contextMenu.Items.Insert(1, updateMenu);
                                             contextMenu.Items.Insert(2, new Separator { Margin = new Thickness(0, 2, 0, 2) });
                                             
-                                            Console.WriteLine("[UI] 成功复刻宿主样式并注入托盘菜单！");
+                                            WpfConfig.DefaultLogger.Info("[UI] 成功复刻宿主样式并注入托盘菜单！");
                                         }
 
                                         isInjected = true; 
