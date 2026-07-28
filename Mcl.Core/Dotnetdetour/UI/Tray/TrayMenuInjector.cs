@@ -63,6 +63,8 @@ namespace Mcl.Core.Dotnetdetour.UI.Tray
                                                 e.Handled = true; // 拦截事件，防止主程序捣乱
                                                 contextMenu.IsOpen = false; // 手动关闭右键菜单
                                                 InitHook.ShowConfigWindow();
+                                                // 3. 应用运行逻辑
+                                                InitHook.ApplyRuntimeSettings();
                                             };
 
                                             // 2. 更新检查按钮

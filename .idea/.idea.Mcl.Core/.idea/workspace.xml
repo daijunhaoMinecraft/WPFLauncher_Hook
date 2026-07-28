@@ -11,13 +11,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/RecoveryDeleteVersion.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/OptimizeDeleteFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/OptimizeDeleteFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/directoryEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/DirectoryEvent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/WebRTCEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/WebRTCEx.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Globals/WebRtcVar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Globals/WebRtcVar.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Tray/TrayMenuInjector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Tray/TrayMenuInjector.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +66,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/58/4c247c0a/SauthJsonEntity.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/bc/2aeb30a6/asx.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/RecoveryDeleteVersion.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Core/UITheme.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/CaptchaForm.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/PhoneVerifyForm.cs" root0="FORCE_HIGHLIGHTING" />
@@ -235,15 +247,8 @@
       <workItem from="1784978663246" duration="1574000" />
       <workItem from="1784985896004" duration="6733000" />
       <workItem from="1784993909486" duration="708000" />
-      <workItem from="1785065366633" duration="1922000" />
-    </task>
-    <task id="LOCAL-00033" summary="update image">
-      <option name="closed" value="true" />
-      <created>1774066892182</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1774066892182</updated>
+      <workItem from="1785065366633" duration="2436000" />
+      <workItem from="1785210106963" duration="6527000" />
     </task>
     <task id="LOCAL-00034" summary="update image">
       <option name="closed" value="true" />
@@ -629,7 +634,15 @@
       <option name="project" value="LOCAL" />
       <updated>1784994393055</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="修复了长时间账号登录自动失效问题">
+      <option name="closed" value="true" />
+      <created>1785067555183</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1785067555183</updated>
+    </task>
+    <option name="localTasksCounter" value="83" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -650,7 +663,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复DLL没有Init的问题(清理代码执行的时候自动删到了namespace)" />
     <MESSAGE value="再次调整命名空间" />
     <MESSAGE value="端正性的重命名了一些文件" />
     <MESSAGE value="修复登录问题" />
@@ -675,7 +687,8 @@
     <MESSAGE value="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等" />
     <MESSAGE value="修复联机大厅无法输入密码问题" />
     <MESSAGE value="修复更新列表中assets顺序可能会乱问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复更新列表中assets顺序可能会乱问题" />
+    <MESSAGE value="修复了长时间账号登录自动失效问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复了长时间账号登录自动失效问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

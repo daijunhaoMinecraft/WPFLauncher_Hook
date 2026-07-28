@@ -290,7 +290,10 @@ git clone https://github.com/daijunhaoMinecraft/WPFLauncher_Hook.git
 
 最后测试能否编译即可
 
-
+## 补充说明
+在启动器目录下创建一些文件会禁用一些功能
+ - 创建"DisableConsole"文件来禁用控制台
+ - 创建"ApplyConfig"文件来自动使用上次的配置
 
 ## Star History
 

@@ -82,7 +82,8 @@ public static class ConfigManager
         new ConfigEntry
             { Key = "AlwaysSaveWorld", Description = "保存房间提醒", FieldType = typeof(bool), Category = "联机大厅设置" },
 
-        new ConfigEntry { Key = "UseNetworkMode", Description = "使用组网模式", FieldType = typeof(bool), Category = "本地联机" },
+        new ConfigEntry { Key = "AllowFrp", Description = "允许内网穿透", FieldType = typeof(bool), Category = "本地联机" },
+        new ConfigEntry { Key = "UseNetworkMode", Description = "使用组网模式(需开启允许内网穿透)", FieldType = typeof(bool), Category = "本地联机" },
 
         // 模组与高级
         new ConfigEntry

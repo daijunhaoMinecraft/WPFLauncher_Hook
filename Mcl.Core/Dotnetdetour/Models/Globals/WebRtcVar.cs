@@ -58,7 +58,7 @@ public class WebRtcVar
 {
     public static string Ip = "127.0.0.1";
     public static int Port = 25565;
-    public static bool Enable;
+    public static bool Enable = false;
     public static ForwardMode Mode = ForwardMode.None;
 
     public static object CmInstance = null;

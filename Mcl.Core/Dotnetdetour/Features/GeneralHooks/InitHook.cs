@@ -104,18 +104,6 @@ public class InitHook : IMethodHook
                 ShowConfigWindow();
             }
         }
-
-        // 如果启用了模组注入，打开 ModsInject 文件夹并提示
-        if (WpfConfig.EnableModsInject)
-        {
-            var modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
-            if (!Directory.Exists(modsInjectPath)) Directory.CreateDirectory(modsInjectPath);
-            WpfConfig.DefaultLogger.Info("[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-            WpfConfig.DefaultLogger.Info($"[ModsInject] {modsInjectPath}");
-            Console.ResetColor();
-            Process.Start("explorer.exe", modsInjectPath);
-        }
-
         // 3. 应用运行逻辑
         ApplyRuntimeSettings();
         InitMpay(startAction);
@@ -316,7 +304,7 @@ public class InitHook : IMethodHook
         win.ShowDialog();
     }
 
-    private static void ApplyRuntimeSettings()
+    public static void ApplyRuntimeSettings()
     {
         // ==========================================
         // Web服务器 生命周期管理

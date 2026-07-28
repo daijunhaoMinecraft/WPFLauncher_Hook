@@ -63,11 +63,12 @@
         <Compile Include="Dotnetdetour\Features\GameTweaks\ModsInject.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\No_SaveWorldEncrypt.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\OptimizeDeleteFile.cs"/>
+        <Compile Include="Dotnetdetour\Features\GameTweaks\RecoveryDeleteVersion.cs" />
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveHyt.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveJavaMemoryLimit.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\UnlockAllMode.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\ChangeIPForm.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\directoryEvent.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\DirectoryEvent.cs" />
         <Compile Include="Dotnetdetour\Features\GeneralHooks\DownloadEvent.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\EnableBrowseRightClick.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\ExitPop.cs"/>

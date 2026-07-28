@@ -34,194 +34,198 @@ public class WebRtcEx : IMethodHook
     [HookMethod(TargetConst.JavaProcess, TargetConst.JavaStartTarget, "RunGameOriginal")]
     private int RunGame()
     {
-        if (WebRtcVar.LanGameManager != null) WpfConfig.DefaultLogger.Info(WebRtcVar.LanGameManager.ae());
-        try
+        if (WpfConfig.AllowFrp)
         {
-            if (WpfConfig.UseNetworkMode)
+            if (WebRtcVar.LanGameManager != null) WpfConfig.DefaultLogger.Info(WebRtcVar.LanGameManager.ae());
+            try
             {
-                // 辅助函数：获取用户 IP
-                string GetUserVirtualIp()
+                if (WpfConfig.UseNetworkMode)
                 {
-                    using (var ipForm = new SelectIp())
+                    // 辅助函数：获取用户 IP
+                    string GetUserVirtualIp()
                     {
-                        if (ipForm.ShowDialog() == DialogResult.OK) return ipForm.SelectedIp;
-                        return null;
+                        using (var ipForm = new SelectIp())
+                        {
+                            if (ipForm.ShowDialog() == DialogResult.OK) return ipForm.SelectedIp;
+                            return null;
+                        }
                     }
-                }
 
-                void ShowMonitorAsync()
-                {
-                    var monitorThread = new Thread(() =>
+                    void ShowMonitorAsync()
                     {
-                        try
-                        {
-                            // 1. 先创建局部变量，确保实例创建成功
-                            var tempForm = new NetworkMonitorForm();
-
-                            if (tempForm == null)
-                            {
-                                WpfConfig.DefaultLogger.Error("窗体实例化失败！");
-                                return;
-                            }
-
-                            // 2. 赋值给全局静态变量
-                            WebRtcVar.NetworkMonitor = tempForm;
-
-                            // 3. 运行这个局部实例
-                            Application.Run(tempForm);
-                        }
-                        catch (Exception ex)
-                        {
-                            WpfConfig.DefaultLogger.Error($"[监控窗体错误] {ex}");
-                        }
-                    });
-
-                    monitorThread.SetApartmentState(ApartmentState.STA);
-                    monitorThread.IsBackground = true;
-                    monitorThread.Start();
-                }
-
-                if (WebRtcVar.Mode == ForwardMode.Client)
-                {
-                    var res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否");
-                    if (res == MessageBoxResult.OK)
-                    {
-                        WebRtcVar.Enable = true;
-                        WebRtcVar.PlayerList.Clear();
-                        WebSocket_WebRtc.SendData(WebRtcVar.TargetPeerId, GetPlayerListProto.MagicHandshake.ToArray());
-                        while (WebRtcVar.PlayerList.Count == 0)
-                        {
-                            Thread.Sleep(1000);
-                            WpfConfig.DefaultLogger.Info("等待玩家列表获取成功...");
-                        }
-
-                        WpfConfig.DefaultLogger.Info($"成功获取到 {WebRtcVar.PlayerList.Count} 个玩家。");
-                        var clientIp = GetUserVirtualIp();
-
-                        if (string.IsNullOrEmpty(clientIp))
-                        {
-                            WpfConfig.DefaultLogger.Warn("用户未配置 IP，启动中止。");
-                            return -1;
-                        }
-
-                        WpfConfig.DefaultLogger.Info($"[客户端] 正在启动虚拟网卡 ({clientIp})...");
-
-                        // 启动 Wintun (后台运行)
-                        Task.Run(() =>
+                        var monitorThread = new Thread(() =>
                         {
                             try
                             {
-                                WintunRouterService.Instance.Start(clientIp);
+                                // 1. 先创建局部变量，确保实例创建成功
+                                var tempForm = new NetworkMonitorForm();
+
+                                if (tempForm == null)
+                                {
+                                    WpfConfig.DefaultLogger.Error("窗体实例化失败！");
+                                    return;
+                                }
+
+                                // 2. 赋值给全局静态变量
+                                WebRtcVar.NetworkMonitor = tempForm;
+
+                                // 3. 运行这个局部实例
+                                Application.Run(tempForm);
                             }
                             catch (Exception ex)
                             {
-                                WpfConfig.DefaultLogger.Error($"启动失败: {ex.Message}");
-                                // 这里可能需要通知 UI 层报错
+                                WpfConfig.DefaultLogger.Error($"[监控窗体错误] {ex}");
                             }
                         });
 
-                        WebRtcVar.Enable = true;
-                        WpfConfig.DefaultLogger.Info($"客户端已启动。IP: {clientIp}");
-
-                        // [关键修改] 启动后立即打开监控窗口
-                        // Task.Run((() => ShowMonitor()));
-                        ShowMonitorAsync();
-
-                        return 0;
+                        monitorThread.SetApartmentState(ApartmentState.STA);
+                        monitorThread.IsBackground = true;
+                        monitorThread.Start();
                     }
-                }
-                else if (WebRtcVar.Mode == ForwardMode.Server)
-                {
-                    var res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否");
-                    if (res == MessageBoxResult.OK)
+
+                    if (WebRtcVar.Mode == ForwardMode.Client)
                     {
-                        WebRtcVar.Mode = ForwardMode.Server;
-
-                        var serverIp = GetUserVirtualIp();
-                        if (string.IsNullOrEmpty(serverIp))
+                        var res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否");
+                        if (res == MessageBoxResult.OK)
                         {
-                            WpfConfig.DefaultLogger.Warn("用户未配置 IP，启动中止。");
-                            return -1;
+                            WebRtcVar.Enable = true;
+                            WebRtcVar.PlayerList.Clear();
+                            WebSocket_WebRtc.SendData(WebRtcVar.TargetPeerId, GetPlayerListProto.MagicHandshake.ToArray());
+                            while (WebRtcVar.PlayerList.Count == 0)
+                            {
+                                Thread.Sleep(1000);
+                                WpfConfig.DefaultLogger.Info("等待玩家列表获取成功...");
+                            }
+
+                            WpfConfig.DefaultLogger.Info($"成功获取到 {WebRtcVar.PlayerList.Count} 个玩家。");
+                            var clientIp = GetUserVirtualIp();
+
+                            if (string.IsNullOrEmpty(clientIp))
+                            {
+                                WpfConfig.DefaultLogger.Warn("用户未配置 IP，启动中止。");
+                                return -1;
+                            }
+
+                            WpfConfig.DefaultLogger.Info($"[客户端] 正在启动虚拟网卡 ({clientIp})...");
+
+                            // 启动 Wintun (后台运行)
+                            Task.Run(() =>
+                            {
+                                try
+                                {
+                                    WintunRouterService.Instance.Start(clientIp);
+                                }
+                                catch (Exception ex)
+                                {
+                                    WpfConfig.DefaultLogger.Error($"启动失败: {ex.Message}");
+                                    // 这里可能需要通知 UI 层报错
+                                }
+                            });
+
+                            WebRtcVar.Enable = true;
+                            WpfConfig.DefaultLogger.Info($"客户端已启动。IP: {clientIp}");
+
+                            // [关键修改] 启动后立即打开监控窗口
+                            // Task.Run((() => ShowMonitor()));
+                            ShowMonitorAsync();
+
+                            return 0;
                         }
+                    }
+                    else if (WebRtcVar.Mode == ForwardMode.Server)
+                    {
+                        var res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否");
+                        if (res == MessageBoxResult.OK)
+                        {
+                            WebRtcVar.Mode = ForwardMode.Server;
 
-                        if (WebRtcVar.LanGameManager == null)
-                            WpfConfig.DefaultLogger.Warn("房间管理实例 为 Null");
-                        else if (WebRtcVar.LanGameManager.aya == null) WpfConfig.DefaultLogger.Warn("发包函数为Null");
+                            var serverIp = GetUserVirtualIp();
+                            if (string.IsNullOrEmpty(serverIp))
+                            {
+                                WpfConfig.DefaultLogger.Warn("用户未配置 IP，启动中止。");
+                                return -1;
+                            }
 
-                        // 执行游戏逻辑
-                        CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager, RoomVisibleStatus.OPEN);
-                        CallShowRoomManageReflection();
+                            if (WebRtcVar.LanGameManager == null)
+                                WpfConfig.DefaultLogger.Warn("房间管理实例 为 Null");
+                            else if (WebRtcVar.LanGameManager.aya == null) WpfConfig.DefaultLogger.Warn("发包函数为Null");
 
-                        WpfConfig.DefaultLogger.Info($"[服务端] 正在启动虚拟网卡 ({serverIp})...");
+                            // 执行游戏逻辑
+                            CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager, RoomVisibleStatus.OPEN);
+                            CallShowRoomManageReflection();
 
-                        // 启动 Wintun
-                        WintunRouterService.Instance.Start(serverIp);
+                            WpfConfig.DefaultLogger.Info($"[服务端] 正在启动虚拟网卡 ({serverIp})...");
 
-                        WebRtcVar.Enable = true;
-                        WpfConfig.DefaultLogger.Info($"服务端已启动。IP: {serverIp}");
+                            // 启动 Wintun
+                            WintunRouterService.Instance.Start(serverIp);
 
-                        // [关键修改] 启动后立即打开监控窗口
-                        ShowMonitorAsync();
+                            WebRtcVar.Enable = true;
+                            WpfConfig.DefaultLogger.Info($"服务端已启动。IP: {serverIp}");
 
-                        return 0;
+                            // [关键修改] 启动后立即打开监控窗口
+                            ShowMonitorAsync();
+
+                            return 0;
+                        }
                     }
                 }
+                else
+                {
+                    if (WebRtcVar.Mode == ForwardMode.Client)
+                    {
+                        var res = uz.q("是否将数据转发到一个端口上(WebRtc->端口->玩家)", "", "是", "否");
+                        if (res == MessageBoxResult.OK)
+                        {
+                            using (var f = new ClientSelectPort())
+                            {
+                                f.ShowDialog();
+                            }
+
+                            WebRtcVar.InitForwarder();
+                            // 显式指定 System.Windows.Forms 避免和 WPF 冲突
+                            Task.Run(() => { Application.Run(new ForwarderControlPanel()); });
+                            return 0;
+                        }
+                    }
+                    else if (WebRtcVar.Mode == ForwardMode.Server)
+                    {
+                        var res = uz.q("是否启用端口转发功能(端口->WebRtc->玩家)", "", "是", "否");
+                        if (res == MessageBoxResult.OK)
+                        {
+                            WebRtcVar.Mode = ForwardMode.Server;
+                            using (var f = new ServerSelectPort())
+                            {
+                                f.ShowDialog();
+                            }
+
+                            if (WebRtcVar.LanGameManager == null)
+                                WpfConfig.DefaultLogger.Warn("房间管理实例 为 Null");
+                            else if (WebRtcVar.LanGameManager.aya == null) WpfConfig.DefaultLogger.Warn("发包函数为Null");
+                            CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager, RoomVisibleStatus.OPEN);
+                            CallShowRoomManageReflection();
+
+                            WebRtcVar.InitForwarder();
+                            return 0;
+                        }
+                    }
+                }
+
+                return RunGameOriginal();
             }
-            else
+            catch (AccessViolationException ave)
             {
-                if (WebRtcVar.Mode == ForwardMode.Client)
-                {
-                    var res = uz.q("是否将数据转发到一个端口上(WebRtc->端口->玩家)", "", "是", "否");
-                    if (res == MessageBoxResult.OK)
-                    {
-                        using (var f = new ClientSelectPort())
-                        {
-                            f.ShowDialog();
-                        }
-
-                        WebRtcVar.InitForwarder();
-                        // 显式指定 System.Windows.Forms 避免和 WPF 冲突
-                        Task.Run(() => { Application.Run(new ForwarderControlPanel()); });
-                        return 0;
-                    }
-                }
-                else if (WebRtcVar.Mode == ForwardMode.Server)
-                {
-                    var res = uz.q("是否启用端口转发功能(端口->WebRtc->玩家)", "", "是", "否");
-                    if (res == MessageBoxResult.OK)
-                    {
-                        WebRtcVar.Mode = ForwardMode.Server;
-                        using (var f = new ServerSelectPort())
-                        {
-                            f.ShowDialog();
-                        }
-
-                        if (WebRtcVar.LanGameManager == null)
-                            WpfConfig.DefaultLogger.Warn("房间管理实例 为 Null");
-                        else if (WebRtcVar.LanGameManager.aya == null) WpfConfig.DefaultLogger.Warn("发包函数为Null");
-                        CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager, RoomVisibleStatus.OPEN);
-                        CallShowRoomManageReflection();
-
-                        WebRtcVar.InitForwarder();
-                        return 0;
-                    }
-                }
+                WpfConfig.DefaultLogger.Error($"内存违规: {ave.Message}");
+                WpfConfig.DefaultLogger.Error($"StackTrace: {ave.StackTrace}");
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
 
-            return RunGameOriginal();
-        }
-        catch (AccessViolationException ave)
-        {
-            WpfConfig.DefaultLogger.Error($"内存违规: {ave.Message}");
-            WpfConfig.DefaultLogger.Error($"StackTrace: {ave.StackTrace}");
             return 0;
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-
-        return 0;
+        return RunGameOriginal();
     }
 
     /// <summary>

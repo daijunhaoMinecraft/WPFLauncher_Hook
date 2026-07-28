@@ -17,6 +17,7 @@ using Mcl.Core.Extensions;
 using Mcl.Core.NeteaseProtocol;
 using Mcl.Core.Network.Interface;
 using Mcl.Core.Tools;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Mcl.Core.Network;
@@ -511,6 +512,27 @@ public class NetClient : INetClient
             else
             {
                 WpfConfig.DefaultLogger.Error($"Auth Failed: {decryptString}");
+            }
+        }
+
+        if (uri.ToString().EndsWith("/game-auth-item-list/query/search-by-game"))
+        {
+            JObject jsonRequest = JObject.Parse(stringBody);
+            JObject jsonResponse = JObject.Parse(netResponse.Content);
+            if (jsonResponse["code"].ToObject<int>() == 13)
+            {
+                netResponse.Content = JsonConvert.SerializeObject(new
+                {
+                    code = 0,
+                    details = "",
+                    entity = new
+                    {
+                        game_type = jsonRequest["game_type"].Value<int>(),
+                        iid_list = Array.Empty<long>(),
+                        mc_version_id = jsonRequest["mc_version_id"].Value<int>()
+                    },
+                    message = "正常返回"
+                });
             }
         }
 

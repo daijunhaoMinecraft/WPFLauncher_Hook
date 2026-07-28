@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Permissions;
 using Mcl.Core.Dotnetdetour.Models.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,7 +14,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "4.0.8-DLL-Public-Fix1";
+    public static string Version = "4.0.9-DLL-Public";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -47,15 +48,13 @@ public class WpfConfig
     public static bool NoTwoExitMessage = true;
     public static int JoinFailRetry = 0;
     public static string JavaGamePath = string.Empty;
-
-    public static bool UseNetworkMode = false;
-
+    
     // threading Download Config
     public static int MaxThread = 8;
     public static bool IsDownloadMultiConfig = false;
     public static int LimitDownload = 30;
     public static string BedrockPath = tb.s;
-    public static bool IsWindowTopMost = true;
+    public static bool IsWindowTopMost = false;
     public static bool EnableModsInject = false;
     public static bool IsLogOutputFolder = true;
 
@@ -68,7 +67,11 @@ public class WpfConfig
     public static bool KeepOffDeleteLastResourcepacks = false;
     public static bool KeepOffDeleteLastConfig = false;
     public static bool KeepOffDeleteLastShaderPacks = false;
-
+    
+    // LanGame Settings
+    public static bool AllowFrp = false;
+    public static bool UseNetworkMode = false;
+    
     public static Logger DefaultLogger = LogManager.GetCurrentClassLogger();
 
     public static List<FriendStatus> ListFriendStatus = new();
