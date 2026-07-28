@@ -297,4 +297,10 @@ git clone https://github.com/daijunhaoMinecraft/WPFLauncher_Hook.git
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=daijunhaoMinecraft/WPFLauncher_Hook&type=Date)](https://www.star-history.com/#daijunhaoMinecraft/WPFLauncher_Hook&Date)
+<a href="https://www.star-history.com/?repos=daijunhaoMinecraft%2FWPFLauncher_Hook&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=daijunhaoMinecraft/WPFLauncher_Hook&type=date&theme=dark&legend=top-left&sealed_token=0kPWcnix3eaAa_bGzLaYiaOMQUv1YeCpl8czM1LV6W6nLdW9lc8LV95UFtD4Bz91fQbizQMayLPSPzeivkU_YkqHiQqbvHzpUPVxQTKAVVdIeP7gyoS11Ct31PSSY4CZw5IIQDUmLOH1yg4WDVt75GsRVr4sL-ReWdWKE1Yg2bbA7KZLNUzBtLqlg_I8" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=daijunhaoMinecraft/WPFLauncher_Hook&type=date&legend=top-left&sealed_token=0kPWcnix3eaAa_bGzLaYiaOMQUv1YeCpl8czM1LV6W6nLdW9lc8LV95UFtD4Bz91fQbizQMayLPSPzeivkU_YkqHiQqbvHzpUPVxQTKAVVdIeP7gyoS11Ct31PSSY4CZw5IIQDUmLOH1yg4WDVt75GsRVr4sL-ReWdWKE1Yg2bbA7KZLNUzBtLqlg_I8" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=daijunhaoMinecraft/WPFLauncher_Hook&type=date&legend=top-left&sealed_token=0kPWcnix3eaAa_bGzLaYiaOMQUv1YeCpl8czM1LV6W6nLdW9lc8LV95UFtD4Bz91fQbizQMayLPSPzeivkU_YkqHiQqbvHzpUPVxQTKAVVdIeP7gyoS11Ct31PSSY4CZw5IIQDUmLOH1yg4WDVt75GsRVr4sL-ReWdWKE1Yg2bbA7KZLNUzBtLqlg_I8" />
+ </picture>
+</a>
