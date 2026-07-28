@@ -30,9 +30,6 @@ public class RecoveryDeleteVersion : IMethodHook
         
         // 补充: 1.8.9 游戏文件还在, 但是 authlib 相关的验证mod文件不在了, 因此删除
         list.Remove(GameVersion.V_1_8_9);
-        
-        // 移除 x86 基岩版 版本
-        list.Remove(GameVersion.V_CPP);
         return list;
     }
 }
