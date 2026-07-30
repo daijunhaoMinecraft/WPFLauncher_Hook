@@ -10,28 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/AddCustomNetGameServer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Entity/NetGame.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Tools/X19SignHelper.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Tools/XxteaEncryption.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/RecoveryDeleteVersion.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/RecoveryDeleteVersion.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/SolveHyt.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/ProcessCreateWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/ProcessCreateWindow.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -256,15 +235,7 @@
       <workItem from="1785210106963" duration="6618000" />
       <workItem from="1785217405711" duration="1328000" />
       <workItem from="1785241664540" duration="872000" />
-      <workItem from="1785379586565" duration="9823000" />
-    </task>
-    <task id="LOCAL-00037" summary="适配版本: 1.15.22.54976">
-      <option name="closed" value="true" />
-      <created>1776773796732</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1776773796732</updated>
+      <workItem from="1785379586565" duration="9949000" />
     </task>
     <task id="LOCAL-00038" summary="(Windows 7 Bedrock Problem)去除问题: &quot;与房主游戏版本不同，请刷新房间列表！&quot;&#10;用户可通过&quot;启动&quot;按钮去进行启动一些版本过低的游戏,就像这样:&#10;![This](https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/image/PixPin_2026-04-22_22-03-10.png)">
       <option name="closed" value="true" />
@@ -650,7 +621,15 @@
       <option name="project" value="LOCAL" />
       <updated>1785241798116</updated>
     </task>
-    <option name="localTasksCounter" value="86" />
+    <task id="LOCAL-00086" summary="发布正式版">
+      <option name="closed" value="true" />
+      <created>1785389560270</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1785389560271</updated>
+    </task>
+    <option name="localTasksCounter" value="87" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -686,7 +665,6 @@
     <MESSAGE value="update namespace" />
     <MESSAGE value="重构工程_1" />
     <MESSAGE value="优化/美化账号管理界面, 修复问题: 1. 不使用Mpay登录时启动布吉岛闪退 2. 进入布吉岛显示认证失败 #45 新增: 账号管理器支持登录网易邮箱, 因此默认设置直接是不使用 Mpay 登录" />
-    <MESSAGE value="发布正式版" />
     <MESSAGE value="更新截图" />
     <MESSAGE value="修复渠道服登录问题, 默认配置更改为使用 Mpay 登录" />
     <MESSAGE value="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等" />
@@ -696,7 +674,8 @@
     <MESSAGE value="更新正式版" />
     <MESSAGE value="update release image" />
     <MESSAGE value="去除基岩版消失问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="去除基岩版消失问题" />
+    <MESSAGE value="发布正式版" />
+    <option name="LAST_COMMIT_MESSAGE" value="发布正式版" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
