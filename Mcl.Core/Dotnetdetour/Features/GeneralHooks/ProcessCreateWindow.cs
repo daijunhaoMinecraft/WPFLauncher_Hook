@@ -13,7 +13,9 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
+using Mcl.Core.Tools;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager;
 using WPFLauncher.Manager.Configuration.CppConfigure;
 using WPFLauncher.Util;
@@ -338,6 +340,24 @@ public class ProcessCreateWindow : IMethodHook
             WpfConfig.DefaultLogger.Info($"[SelectBedrock]选择的基岩版:{FileName}");
             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                 { Type = "StartBedrockGame", SelectBedrockExePath = FileName }));
+            if (WpfConfig.IsJoinCustomServer)
+            {
+                try
+                {
+                    string sCppGameConfigPath = Path.Combine(tb.n, "temp", "temp.config");
+                    WpfConfig.DefaultLogger.Info($"[CustomServer] CppGamePath: {sCppGameConfigPath}");
+                    string readEncryptConfig = File.ReadAllText(sCppGameConfigPath);
+                    JObject jsonConfig = JObject.Parse(X19SignHelper.Decrypt(readEncryptConfig));
+                    jsonConfig["room_info"]["item_ids"][0] = "4668698705152194374";
+                    File.WriteAllText(sCppGameConfigPath, JsonConvert.SerializeObject(jsonConfig));
+                    WpfConfig.DefaultLogger.Info("[CustomServer] Config Saved!");
+                }
+                catch (Exception e)
+                {
+                    WpfConfig.DefaultLogger.Error($"[CustomServer] Failed: {e}");
+                    throw;
+                }
+            }
         }
 
         var aqq = new aqq

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Permissions;
 using Mcl.Core.Dotnetdetour.Models.Entities;
+using Mcl.Core.Dotnetdetour.Models.Entity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -14,7 +15,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "4.0.9-DLL-Public";
+    public static string Version = "4.1.0-DLL-Public";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -75,6 +76,11 @@ public class WpfConfig
     public static Logger DefaultLogger = LogManager.GetCurrentClassLogger();
 
     public static List<FriendStatus> ListFriendStatus = new();
+    
+    // Custom Recent Server
+    public static List<Tuple<string, NetGameResponse>> CustomRecentList = new ();
+    public static bool IsJoinCustomServer = false;
+    public static bool ShowCustomServer = false;
 
     public static void WriteRoomBlacklist()
     {

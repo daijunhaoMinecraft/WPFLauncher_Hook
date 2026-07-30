@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour;
 using Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Dotnetdetour.Models.Entity;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.Extensions;
 using Mcl.Core.NeteaseProtocol;
@@ -151,6 +152,7 @@ public class NetClient : INetClient
                 WpfConfig.DefaultLogger.Info("用户关闭了游戏");
                 var result =
                     "{\"code\":0,\"message\":\"\\u6b63\\u5e38\\u8fd4\\u56de\",\"details\":\"\",\"entity\":null}";
+                WpfConfig.IsJoinCustomServer = false;
                 netResponse.Content = result;
                 callback(netResponse, netRequestAsyncHandle);
                 return netRequestAsyncHandle;
@@ -175,6 +177,20 @@ public class NetClient : INetClient
                 netResponse.Content = authenticationUpdateResult;
                 callback(netResponse, netRequestAsyncHandle);
                 return netRequestAsyncHandle;
+            }
+            
+            if (uri.ToString().EndsWith("/item-address/get"))
+            {
+                JObject queryJson = JObject.Parse(stringBody);
+                Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+                if (customResponse != null)
+                {
+                    netResponse.Content = $"{{\"code\":0,\"details\":\"\",\"entity\":{{\"announcement\":\"\",\"entity_id\":\"{queryJson["item_id"]}\",\"game_status\":0,\"in_whitelist\":false,\"ip\":\"{customResponse.Item2.NetGameEntity.Ip}\",\"isp_enable\":false,\"port\":{customResponse.Item2.NetGameEntity.Port.ToString()}}},\"message\":\"正常返回\"}}";
+                    callback(netResponse, netRequestAsyncHandle);
+                    WpfConfig.IsJoinCustomServer = true;
+                    return netRequestAsyncHandle;
+                }
+                WpfConfig.IsJoinCustomServer = false;
             }
         }
         catch (Exception e)
@@ -405,6 +421,7 @@ public class NetClient : INetClient
         var isServerListRequest = false;
         var uri = new Uri(new Uri(BaseUrl.ToString()), request.Resource);
         WpfConfig.DefaultLogger.Info($"[Request] url: {uri}");
+        // Console.WriteLine(new System.Diagnostics.StackTrace().ToString());
         if (request.Resource.EndsWith("/serverlist/release.json") ||
             uri.ToString().EndsWith("/serverlist/release.json"))
         {
@@ -483,6 +500,61 @@ public class NetClient : INetClient
                 "{\n   \"code\" : 0,\n   \"details\" : \"\",\n   \"entity\" : {\n      \"anti_addiction_info\" : {\n         \"current_online_time_sum\" : 0,\n         \"msg\" : \"\",\n         \"online_time_left\" : 0,\n         \"online_time_limit\" : 0,\n         \"online_time_sum\" : 0,\n         \"status\" : 0\n      },\n      \"is_anti_addiction\" : false,\n      \"record\" : null\n   },\n   \"message\" : \"正常返回\"\n}";
             netResponse.Content = result;
             return netResponse;
+        }
+
+        if (uri.ToString().EndsWith("/item/query/search-by-iid"))
+        {
+            JObject queryJson = JObject.Parse(stringBody);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            if (customResponse != null)
+            {
+                netResponse.Content = JsonConvert.SerializeObject(customResponse.Item2);
+                return netResponse;
+            }
+        }
+        
+        if (uri.ToString().EndsWith("/item-channel/query/search-by-item-channel"))
+        {
+            JObject queryJson = JObject.Parse(stringBody);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            if (customResponse != null)
+            {
+                netResponse.Content = $"{{\"code\":0,\"details\":\"\",\"entities\":[{{\"channel_id\":\"{queryJson["channel_id"].ToString()}\",\"entity_id\":\"2650669\",\"item_id\":\"{queryJson["item_id"].ToString()}\",\"title_image_url\":\"{customResponse.Item2.NetGameEntity.TitleImageUrl}\"}}],\"message\":\"正常返回\",\"total\":1}}";
+                return netResponse;
+            }
+        }
+        
+        if (uri.ToString().EndsWith("/item/user-is-purchase-item"))
+        {
+            JObject queryJson = JObject.Parse(stringBody);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            if (customResponse != null)
+            {
+                netResponse.Content = $"{{\"code\":0,\"message\":\"正常返回\",\"details\":\"\",\"entity\":{{\"entity_id\":\"{queryJson["item_id"].ToString()}\"}}}}";
+                return netResponse;
+            }
+        }
+        
+        if (uri.ToString().EndsWith("/game-server-info/get"))
+        {
+            JObject queryJson = JObject.Parse(stringBody);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["server_id"].ToString() == x.Item1);
+            if (customResponse != null)
+            {
+                netResponse.Content = $"{{\"code\":0,\"details\":\"\",\"entity\":{{\"entity_id\":\"{queryJson["server_id"]}\",\"online_count\":1}},\"message\":\"正常返回\"}}";
+                return netResponse;
+            }
+        }
+        
+        if (uri.ToString().EndsWith("/pe-game/load-pe-mcgame-res-infos"))
+        {
+            JObject queryJson = JObject.Parse(stringBody);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            if (customResponse != null)
+            {
+                netResponse.Content = "{\"code\":0,\"details\":\"\",\"entities\":[],\"message\":\"正常返回\"}";
+                return netResponse;
+            }
         }
 
         if (method - Method.POST > 1 && method != Method.PATCH)

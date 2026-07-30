@@ -17,7 +17,7 @@ public class RecoveryDeleteVersion : IMethodHook
         List<GameVersion> list = new List<GameVersion>((GameVersion[])values);
         return list;
     }
-    
+
     [HookMethod("WPFLauncher.ViewModel.Launcher.jz", "ar", null)]
     protected virtual List<GameVersion> GetVersionList()
     {

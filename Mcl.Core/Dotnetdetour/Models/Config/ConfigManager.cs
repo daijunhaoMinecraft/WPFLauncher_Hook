@@ -22,6 +22,7 @@ public static class ConfigManager
     public static readonly List<ConfigEntry> Registry = new()
     {
         // 基础设置
+        new ConfigEntry { Key = "ShowCustomServer", Description = "显示自定义服务器(如基岩版布吉岛等)", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry
         {
             Key = "IsBypassGameUpdate_Bedrock", Description = "绕过基岩版更新", FieldType = typeof(bool), Category = "基础设置"

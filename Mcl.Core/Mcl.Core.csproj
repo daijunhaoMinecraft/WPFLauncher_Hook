@@ -58,13 +58,13 @@
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\AuthIntegrationService.cs" />
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\LoginWithoutMpay.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\MpayLogin.cs" />
+        <Compile Include="Dotnetdetour\Features\GameTweaks\AddCustomNetGameServer.cs" />
         <Compile Include="Dotnetdetour\Features\GameTweaks\MinecraftPath.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\Mods.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\ModsInject.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\No_SaveWorldEncrypt.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\OptimizeDeleteFile.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\RecoveryDeleteVersion.cs" />
-        <Compile Include="Dotnetdetour\Features\GameTweaks\SolveHyt.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveJavaMemoryLimit.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\UnlockAllMode.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\ChangeIPForm.cs"/>
@@ -100,7 +100,8 @@
         <Compile Include="Dotnetdetour\Models\Entities\FriendStatus.cs"/>
         <Compile Include="Dotnetdetour\Models\Entities\LanGamePlayerInfo.cs"/>
         <Compile Include="Dotnetdetour\Models\Entities\TransferStruct.cs"/>
-        <Compile Include="Dotnetdetour\Models\Globals\WebRtcVar.cs"/>
+        <Compile Include="Dotnetdetour\Models\Entity\NetGame.cs" />
+        <Compile Include="Dotnetdetour\Models\Globals\WebRtcVar.cs" />
         <Compile Include="Dotnetdetour\Models\Updater\UpdateManager.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\ClientSelectPort.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.cs" />
@@ -166,6 +167,8 @@
         <Compile Include="Network\TimeOutState.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Tools\x19Crypt.cs" />
+        <Compile Include="Tools\X19SignHelper.cs" />
+        <Compile Include="Tools\XxteaEncryption.cs" />
         <Compile Include="Utils\AppMutexHelper.cs" />
         <Compile Include="Utils\RegistryHelper.cs" />
         <Compile Include="Utils\RegKey.cs" />

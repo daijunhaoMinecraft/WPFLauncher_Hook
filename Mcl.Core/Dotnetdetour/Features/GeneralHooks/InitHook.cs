@@ -15,7 +15,9 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Base;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Dotnetdetour.Models.Entity;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Util;
 
@@ -106,6 +108,7 @@ public class InitHook : IMethodHook
         }
         // 3. 应用运行逻辑
         ApplyRuntimeSettings();
+        
         InitMpay(startAction);
     }
 
@@ -303,7 +306,7 @@ public class InitHook : IMethodHook
         win.Content = mainGrid;
         win.ShowDialog();
     }
-
+    
     public static void ApplyRuntimeSettings()
     {
         // ==========================================
@@ -377,6 +380,15 @@ public class InitHook : IMethodHook
             WpfConfig.DefaultLogger.Info($"[ModsInject] {modsInjectPath}");
             Process.Start("explorer.exe", modsInjectPath);
         }
+
+        if (WpfConfig.ShowCustomServer)
+        {
+            _ = LoadRemoteServersAsync();
+        }
+        else
+        {
+            WpfConfig.CustomRecentList.Clear();
+        }
     }
 
     private static void PrintStatus()
@@ -405,5 +417,43 @@ public class InitHook : IMethodHook
         }
 
         Console.ResetColor();
+    }
+
+    public static async Task LoadRemoteServersAsync()
+    {
+        using (var client = new HttpClient())
+        {
+            try
+            {
+                string json = await client.GetStringAsync("https://raw.giteeusercontent.com/dai-junhao-123/app-config/raw/master/HookConfig/CustomServer.json");
+                
+                // 直接反序列化为 List<NetGameResponse>
+                var remoteList = JsonConvert.DeserializeObject<List<NetGameResponse>>(json);
+
+                if (remoteList != null)
+                {
+                    // 清空原有自定义列表（可选，按需决定）
+                    WpfConfig.CustomRecentList.Clear();
+
+                    foreach (var response in remoteList)
+                    {
+                        // 使用 entity_id 作为键，与 InitCustomServers 保持一致
+                        string key = response.NetGameEntity?.EntityId;
+                        if (!string.IsNullOrEmpty(key))
+                        {
+                            WpfConfig.CustomRecentList.Add(
+                                new Tuple<string, NetGameResponse>(key, response)
+                            );
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 失败时可回退到本地硬编码列表，保证程序继续运行
+                Console.WriteLine($"获取远程服务器列表失败：{ex.Message}");
+                // 如有需要，可调用 InitCustomServers() 作为备用
+            }
+        }
     }
 }
