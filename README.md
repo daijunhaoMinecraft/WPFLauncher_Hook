@@ -1,4 +1,4 @@
-# WPFLauncher Hook
+# MCLauncher Hook
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/未标题-5.png" width="700" alt="未标题-5.png (1791×815)"/></div>
 
