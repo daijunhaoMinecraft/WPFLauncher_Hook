@@ -1,7 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "targets": {
-    ".NETFramework,Version=v4.8": {
+    "net48": {
       "System.CodeDom/10.0.0-preview.7.25380.108": {
         "type": "package",
         "compile": {
@@ -632,7 +632,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    ".NETFramework,Version=v4.8": [
+    "net48": [
       "System.Management >= 10.0.0-preview.7.25380.108",
       "System.Net.Http >= 4.3.4"
     ]
@@ -668,6 +668,7 @@
       },
       "frameworks": {
         "net48": {
+          "framework": "net48",
           "targetAlias": "net48",
           "projectReferences": {}
         }
@@ -686,6 +687,7 @@
     },
     "frameworks": {
       "net48": {
+        "framework": "net48",
         "targetAlias": "net48",
         "dependencies": {
           "System.Management": {

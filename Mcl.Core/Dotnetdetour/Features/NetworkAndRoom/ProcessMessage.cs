@@ -17,7 +17,7 @@ using WPFLauncher.Manager;
 
 namespace Mcl.Core.Dotnetdetour.Features.NetworkAndRoom;
 
-public class WebSocket_WebRtc : IMethodHook
+public class ProcessMessage : IMethodHook
 {
     [OriginalMethod]
     private static void Original_p(object target, string peerId, IntPtr dataPtr, int dataSize)
@@ -567,7 +567,7 @@ public class WebSocket_WebRtc : IMethodHook
     }
 
     [HookMethod("WPFLauncher.Network.acb", "b", "handleReceiveLauncherMessage")]
-    public void handleReceiveLauncherMessage_HookMethod(ushort messageId, byte[] messageData)
+    public void HandleLauncherRecv(ushort messageId, byte[] messageData)
     {
         WpfConfig.DefaultLogger.Debug("--- [Launcher <<< RECV] ---");
         var hexString = BitConverter.ToString(messageData).Replace("-", " ");
@@ -583,7 +583,7 @@ public class WebSocket_WebRtc : IMethodHook
     }
 
     [HookMethod("WPFLauncher.Model.ait", "as", "SendLauncherMessage")]
-    private void SendLauncherMessage_HookMethod(byte[] messageData)
+    private void HandleLauncherSend(byte[] messageData)
     {
         WpfConfig.DefaultLogger.Debug("--- [Launcher <<< SEND] ---");
         var hexString = BitConverter.ToString(messageData).Replace("-", " ");

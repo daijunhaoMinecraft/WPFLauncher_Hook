@@ -73,7 +73,7 @@ public class WebRtcVar
 
     public static string TargetPeerId = "Any";
 
-    public static NetworkMonitorForm NetworkMonitor = new();
+    public static NetworkMonitorForm NetworkMonitor = null;
 
     public static ConcurrentDictionary<string, bool> PeerSupportMultiplex = new();
 

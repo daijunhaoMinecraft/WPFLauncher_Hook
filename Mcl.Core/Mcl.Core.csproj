@@ -79,7 +79,7 @@
         <Compile Include="Dotnetdetour\Features\GeneralHooks\Mpay_Log.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\MuteBanSystem.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\OptimizationShow.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\ProcessCreateWindow.cs"/>
+        <Compile Include="Dotnetdetour\Features\GeneralHooks\GameProcessHooks.cs" />
         <Compile Include="Dotnetdetour\Features\GeneralHooks\RoomInfoWindow.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\SensitiveWordDetection.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\TargetConst.cs"/>
@@ -92,7 +92,7 @@
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\LobbyGameList.cs"/>
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\RoomManager.cs"/>
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WebRTCEx.cs"/>
-        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WebSocket_WebRtc.cs"/>
+        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\ProcessMessage.cs" />
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WintunNetworkModule.cs"/>
         <Compile Include="Dotnetdetour\Initialize.cs" />
         <Compile Include="Dotnetdetour\Models\Config\ConfigManager.cs"/>

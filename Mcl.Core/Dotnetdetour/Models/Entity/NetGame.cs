@@ -9,7 +9,7 @@ public class NetGameResponse
     public int Code { get; set; } = 0;          // 默认 0
 
     [JsonProperty("details")]
-    public string Details { get; set; } = "";   // 空字符串
+    public string Details { get; set; } = "Hello Dream!";
 
     [JsonProperty("entity")]
     public NetGameEntity NetGameEntity { get; set; } = new NetGameEntity();
@@ -18,7 +18,7 @@ public class NetGameResponse
     public string Message { get; set; } = "正常返回";
 
     [JsonProperty("summary_md5")]
-    public string SummaryMd5 { get; set; } = "";
+    public string SummaryMd5 { get; set; } = "Hello Piggod!";
 }
 
 public class NetGameEntity
@@ -30,10 +30,10 @@ public class NetGameEntity
     public int BalanceGrade { get; set; } = 0;
 
     [JsonProperty("brief_summary")]
-    public string BriefSummary { get; set; } = "Hello Piggod!";
+    public string BriefSummary { get; set; } = "I want he ni pppppp ok coming coming";
 
     [JsonProperty("developer_name")]
-    public string DeveloperName { get; set; } = "开发者名称";
+    public string DeveloperName { get; set; } = "";
 
     [JsonProperty("download_num")]
     public int DownloadNum { get; set; } = 114514;

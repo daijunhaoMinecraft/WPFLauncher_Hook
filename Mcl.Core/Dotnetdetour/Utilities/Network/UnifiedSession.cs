@@ -170,7 +170,7 @@ public class UnifiedSession
                     if (_isNeteasePlayer)
                     {
                         // 回传给 WebRTC，带上 ConnId
-                        WebSocket_WebRtc.SendBack(data, PeerId, ConnId);
+                        ProcessMessage.SendBack(data, PeerId, ConnId);
                     }
                     else
                     {
@@ -184,7 +184,7 @@ public class UnifiedSession
                             if (compress != null) finalData = compress.a(data);
                         }
 
-                        WebSocket_WebRtc.SendData(PeerId, finalData);
+                        ProcessMessage.SendData(PeerId, finalData);
                     }
                 }
                 else
@@ -285,7 +285,7 @@ public class UnifiedSession
 
         // 【可选】通知对端连接断开（如需可取消注释）
         // WebSocket_WebRtc.SendBack(new byte[0], this.PeerId, this.ConnId);
-        WebSocket_WebRtc.SendClosePacket(PeerId, ConnId);
+        ProcessMessage.SendClosePacket(PeerId, ConnId);
 
         Log($"会话关闭完成: {PeerId}_{ConnId}");
     }

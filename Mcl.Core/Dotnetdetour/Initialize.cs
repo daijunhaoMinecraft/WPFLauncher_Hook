@@ -9,6 +9,7 @@ using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.UI.Tray;
 using Mcl.Core.NeteaseProtocol;
 using Mcl.Core.Updater;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,7 +22,7 @@ public sealed class ModuleInitializerAttribute : Attribute
 }
 
 // 2. 编写启动器类
-public static class HookBootstrapper
+public class HookBootstrapper
 {
     public delegate bool ConsoleCtrlDelegate(int ctrlType);
 
@@ -124,10 +125,18 @@ public static class HookBootstrapper
             // 注册控制台事件处理器
             SetConsoleCtrlHandler(_consoleHandler, true);
         }
+        
+        var dummyColor = System.Drawing.SystemColors.Window; 
+        var dummyFont = System.Drawing.SystemFonts.DefaultFont;
+        
+        Microsoft.Win32.SystemEvents.UserPreferenceChanged += DummyHandler;
+        Microsoft.Win32.SystemEvents.UserPreferenceChanged -= DummyHandler;
+
 
         Mcl.Core.Updater.UpdateManager.Initialize();
         TrayMenuInjector.Start();
 
         MethodHook.InstallTypes(new[] { typeof(InitHook) });
     }
+    private static void DummyHandler(object sender, UserPreferenceChangedEventArgs e) { }
 }

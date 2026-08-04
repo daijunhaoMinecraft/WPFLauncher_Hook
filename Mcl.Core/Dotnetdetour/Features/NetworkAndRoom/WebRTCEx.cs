@@ -90,7 +90,7 @@ public class WebRtcEx : IMethodHook
                         {
                             WebRtcVar.Enable = true;
                             WebRtcVar.PlayerList.Clear();
-                            WebSocket_WebRtc.SendData(WebRtcVar.TargetPeerId, GetPlayerListProto.MagicHandshake.ToArray());
+                            ProcessMessage.SendData(WebRtcVar.TargetPeerId, GetPlayerListProto.MagicHandshake.ToArray());
                             while (WebRtcVar.PlayerList.Count == 0)
                             {
                                 Thread.Sleep(1000);
