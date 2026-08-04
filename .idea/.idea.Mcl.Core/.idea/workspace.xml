@@ -10,29 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/ProcessCreateWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/GameProcessHooks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/WebRTCEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/WebRTCEx.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/WebSocket_WebRtc.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/ProcessMessage.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Entity/NetGame.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Entity/NetGame.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Globals/WebRtcVar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Globals/WebRtcVar.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Network/UnifiedSession.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Network/UnifiedSession.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/Mcl.Core.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/Mcl.Core.csproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/project.nuget.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -60,16 +38,6 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/06/b8fc4df3/atm.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/83/55fcc051/tb.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/08534503d1a94b0abf13ce3bc904a0f4702200/a3/6f799a29/ta.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/0e981363b3064832854cd299011e5bd0702200/74/3b3bbb0a/ait.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/42/5e9c5674/apm.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/52/c6f3215c/azf`1.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/58/4c247c0a/SauthJsonEntity.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/bc/2aeb30a6/asx.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/cf/16dbb978/NetGameEntity.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/89520504235a41e7a424f4e66c487d9b522790/76/06688d00/File.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/AddCustomNetGameServer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/RecoveryDeleteVersion.cs" root0="FORCE_HIGHLIGHTING" />
@@ -697,9 +665,9 @@
     <MESSAGE value="更新正式版" />
     <MESSAGE value="update release image" />
     <MESSAGE value="去除基岩版消失问题" />
-    <MESSAGE value="发布正式版" />
     <MESSAGE value="Release Image 4.1.0-DLL-Public" />
-    <option name="LAST_COMMIT_MESSAGE" value="Release Image 4.1.0-DLL-Public" />
+    <MESSAGE value="发布正式版" />
+    <option name="LAST_COMMIT_MESSAGE" value="发布正式版" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
