@@ -17,6 +17,7 @@ using Mcl.Core.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager;
+using WPFLauncher.SQLite;
 using WPFLauncher.Util;
 using Application = System.Windows.Application;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
@@ -279,9 +280,10 @@ public class GameProcessStartupHook : IMethodHook
         {
             HandleBedrockPreStart(ref fileName, ref workDirectory);
         }
-        else
+        
+        bool isJava = fileName.Contains("java.exe") || fileName.Contains("javaw.exe");
+        if (isJava)
         {
-            // Java 版：将无头 javaw 替换为带控制台的 java，用于弹窗防崩溃并显示日志
             fileName = fileName.Replace("javaw.exe", "java.exe");
         }
 
@@ -293,11 +295,11 @@ public class GameProcessStartupHook : IMethodHook
                 FileName = fileName,
                 Arguments = args,
                 UseShellExecute = false,        
-                // 基岩版开启重定向以截获日志；Java版关闭以防止网易DLL崩溃
-                RedirectStandardOutput = isBedrock, 
-                RedirectStandardError = isBedrock,  
-                // 基岩版不弹窗(后台)；Java版弹窗(显示独立黑底日志窗口)
-                CreateNoWindow = isBedrock
+                // Java版关闭以防止网易DLL崩溃
+                RedirectStandardOutput = !isJava, 
+                RedirectStandardError = !isJava,  
+                // Java版弹窗(显示独立黑底日志窗口)
+                CreateNoWindow = !isJava
             },
             Type = startType
         };
@@ -307,34 +309,47 @@ public class GameProcessStartupHook : IMethodHook
             processObj.StartInfo.WorkingDirectory = workDirectory;
         }
 
-        // ================== 进程注册 (必须同步执行) ==================
         // 绝对不能删，防止启动器通信时空引用崩溃
         aqr.Instance.c(processObj);
 
-        // ================== 基岩版专有后置处理 (绑定后台日志) ==================
-        if (isBedrock)
+        // 绑定标准输出与错误，同时正则清洗数据
+        processObj.OutputDataReceived += (sender, args) =>
         {
-            AttachBedrockLogger(processObj);
-        }
+            if (!string.IsNullOrEmpty(args.Data))
+                Console.WriteLine($"{AnsiColorRegex.Replace(args.Data, string.Empty)}");
+        };
+        processObj.ErrorDataReceived += (sender, args) =>
+        {
+            if (!string.IsNullOrEmpty(args.Data))
+                Console.WriteLine($"[StdErr] {AnsiColorRegex.Replace(args.Data, string.Empty)}");
+        };
 
-        WpfConfig.DefaultLogger.Info($"[进程] 拦截并重组启动参数完毕: {fileName}");
+        WpfConfig.DefaultLogger.Info($"[进程] 启动进程: {fileName}");
 
         return processObj;
     }
 
     [OriginalMethod]
-    public static aqq StartProcessOriginal(string executablePath, string arguments, EventHandler exitHandler, aqk startType, string workDir = null, bool redirectOutput = false, Action<string> outputCallback = null)
+    public static aqq StartProcessOriginal(string executablePath, string arguments, EventHandler exitHandler, aqo startType, string workDir = null, bool redirectOutput = false, Action<string> outputCallback = null)
     {
         return new aqq();
     }
 
-    [HookMethod("WPFLauncher.Util.vy", "a", "StartProcessOriginal")]
-    public static aqq StartProcess(string executablePath, string arguments, EventHandler exitHandler, aqk startType, string workDir = null, bool redirectOutput = false, Action<string> outputCallback = null)
+    [HookMethod("WPFLauncher.Util.wb", "a", "StartProcessOriginal")]
+    public static aqq StartProcess(string executablePath, string arguments, EventHandler exitHandler, aqo startType, string workDir = null, bool redirectOutput = false, Action<string> outputCallback = null)
     {
+        Action<string> outputCallbackHook = s =>
+        {
+            // Console.WriteLine(s);
+            if (outputCallback != null)
+            {
+                outputCallback(s);
+            }
+        };
         Console.WriteLine("[StartGame] 启动信息创建中...");
         
         // 调用原方法实际启动进程
-        var processResult = StartProcessOriginal(executablePath, arguments, exitHandler, startType, workDir, true, outputCallback);
+        var processResult = StartProcessOriginal(executablePath, arguments, exitHandler, startType, workDir, true, outputCallbackHook);
 
         if (processResult != null)
         {
@@ -406,12 +421,12 @@ public class GameProcessStartupHook : IMethodHook
         {
             string configPath = Path.Combine(tb.n, "temp", "temp.config");
             WpfConfig.DefaultLogger.Info($"[CustomServer] 正在修改 CppGamePath: {configPath}");
-            
+
             string readEncryptConfig = File.ReadAllText(configPath);
             JObject jsonConfig = JObject.Parse(X19SignHelper.Decrypt(readEncryptConfig));
-            
+
             jsonConfig["room_info"]["item_ids"][0] = "4668698705152194374";
-            
+
             File.WriteAllText(configPath, JsonConvert.SerializeObject(jsonConfig, Formatting.None));
             WpfConfig.DefaultLogger.Info("[CustomServer] 配置文件修改并保存成功！");
         }
@@ -421,50 +436,5 @@ public class GameProcessStartupHook : IMethodHook
             throw;
         }
     }
-
-    /// <summary>
-    /// 为基岩版绑定后台日志截取器并清理 ANSI 转义符
-    /// </summary>
-    private void AttachBedrockLogger(aqq processObj)
-    {
-        // 绑定标准输出与错误，同时正则清洗数据
-        processObj.OutputDataReceived += (sender, args) =>
-        {
-            if (!string.IsNullOrEmpty(args.Data))
-                Console.WriteLine($"[Bedrock-StdOut] {AnsiColorRegex.Replace(args.Data, string.Empty)}");
-        };
-        processObj.ErrorDataReceived += (sender, args) =>
-        {
-            if (!string.IsNullOrEmpty(args.Data))
-                Console.WriteLine($"[Bedrock-StdErr] {AnsiColorRegex.Replace(args.Data, string.Empty)}");
-        };
-
-        // 后台轮询等待进程被上层启动，挂载流读取
-        Task.Run(() =>
-        {
-            while (true)
-            {
-                try
-                {
-                    _ = processObj.Id; // 当未Start前调用Id会抛出异常
-                    break;
-                }
-                catch (InvalidOperationException)
-                {
-                    Thread.Sleep(50);
-                }
-                catch (Exception)
-                {
-                    return; // 进程对象已失效
-                }
-            }
-
-            try { processObj.BeginOutputReadLine(); } catch (InvalidOperationException) { }
-            try { processObj.BeginErrorReadLine(); } catch (InvalidOperationException) { }
-            
-            WpfConfig.DefaultLogger.Info("[进程] 基岩版日志后台流监听器挂载成功。");
-        });
-    }
-
     #endregion
 }

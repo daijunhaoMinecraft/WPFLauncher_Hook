@@ -578,12 +578,12 @@ public class ProcessMessage : IMethodHook
     }
 
     [OriginalMethod]
-    private void SendLauncherMessage(byte[] messageData)
+    public void SendLauncherMessage(byte[] messageData)
     {
     }
 
-    [HookMethod("WPFLauncher.Model.ait", "as", "SendLauncherMessage")]
-    private void HandleLauncherSend(byte[] messageData)
+    [HookMethod("WPFLauncher.Manager.LanGame.atk", "g", "SendLauncherMessage")]
+    public void HandleLauncherSend(byte[] messageData)
     {
         WpfConfig.DefaultLogger.Debug("--- [Launcher <<< SEND] ---");
         var hexString = BitConverter.ToString(messageData).Replace("-", " ");

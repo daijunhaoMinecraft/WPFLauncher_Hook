@@ -421,7 +421,6 @@ public class NetClient : INetClient
         var isServerListRequest = false;
         var uri = new Uri(new Uri(BaseUrl.ToString()), request.Resource);
         WpfConfig.DefaultLogger.Info($"[Request] url: {uri}");
-        // Console.WriteLine(new System.Diagnostics.StackTrace().ToString());
         if (request.Resource.EndsWith("/serverlist/release.json") ||
             uri.ToString().EndsWith("/serverlist/release.json"))
         {
@@ -470,9 +469,12 @@ public class NetClient : INetClient
 
         if (uri.ToString().EndsWith("pe-item/query/search-lobby-by-id-list"))
         {
-            WpfConfig.DefaultLogger.Info("拦截网易我的世界启动器联机大厅下载请求");
-            netResponse.Content = "{\"code\":0,\"details\":\"\",\"entities\":[],\"message\":\"正常返回\",\"total\":0}";
-            return netResponse;
+            if (WpfConfig.RoomInfo != null)
+            {
+                WpfConfig.DefaultLogger.Info("拦截网易我的世界启动器联机大厅下载请求");
+                netResponse.Content = "{\"code\":0,\"details\":\"\",\"entities\":[],\"message\":\"正常返回\",\"total\":0}";
+                return netResponse;
+            }
         }
 
         if (uri.ToString().EndsWith("/salog-new"))

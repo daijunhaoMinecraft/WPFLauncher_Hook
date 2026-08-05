@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
+using Mcl.Core.Dotnetdetour.Features.GameTweaks;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Globals;
@@ -24,6 +29,16 @@ namespace Mcl.Core.Dotnetdetour.Features.NetworkAndRoom;
 // WebRTC扩展: 国际服之间联机
 public class WebRtcEx : IMethodHook
 {
+    public static string ByteArrayToHexString(byte[] byteArray)
+    {
+        StringBuilder hex = new StringBuilder(byteArray.Length * 2);
+        foreach (byte b in byteArray)
+        {
+            hex.AppendFormat("{0:x2}", b);
+        }
+        return hex.ToString();
+    }
+    
     [OriginalMethod]
     private int RunGameOriginal()
     {
@@ -34,6 +49,7 @@ public class WebRtcEx : IMethodHook
     [HookMethod(TargetConst.JavaProcess, TargetConst.JavaStartTarget, "RunGameOriginal")]
     private int RunGame()
     {
+        bool originalStart = true;
         if (WpfConfig.AllowFrp)
         {
             if (WebRtcVar.LanGameManager != null) WpfConfig.DefaultLogger.Info(WebRtcVar.LanGameManager.ae());
@@ -88,6 +104,7 @@ public class WebRtcEx : IMethodHook
                         var res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否");
                         if (res == MessageBoxResult.OK)
                         {
+                            originalStart = false;
                             WebRtcVar.Enable = true;
                             WebRtcVar.PlayerList.Clear();
                             ProcessMessage.SendData(WebRtcVar.TargetPeerId, GetPlayerListProto.MagicHandshake.ToArray());
@@ -137,6 +154,7 @@ public class WebRtcEx : IMethodHook
                         var res = uz.q("是否使用组网功能(需管理员权限)", "", "是", "否");
                         if (res == MessageBoxResult.OK)
                         {
+                            originalStart = false;
                             WebRtcVar.Mode = ForwardMode.Server;
 
                             var serverIp = GetUserVirtualIp();
@@ -176,6 +194,7 @@ public class WebRtcEx : IMethodHook
                         var res = uz.q("是否将数据转发到一个端口上(WebRtc->端口->玩家)", "", "是", "否");
                         if (res == MessageBoxResult.OK)
                         {
+                            originalStart = false;
                             using (var f = new ClientSelectPort())
                             {
                                 f.ShowDialog();
@@ -192,6 +211,7 @@ public class WebRtcEx : IMethodHook
                         var res = uz.q("是否启用端口转发功能(端口->WebRtc->玩家)", "", "是", "否");
                         if (res == MessageBoxResult.OK)
                         {
+                            originalStart = false;
                             WebRtcVar.Mode = ForwardMode.Server;
                             using (var f = new ServerSelectPort())
                             {
@@ -209,8 +229,6 @@ public class WebRtcEx : IMethodHook
                         }
                     }
                 }
-
-                return RunGameOriginal();
             }
             catch (AccessViolationException ave)
             {
@@ -224,6 +242,42 @@ public class WebRtcEx : IMethodHook
             }
 
             return 0;
+        }
+        
+        if (WpfConfig.EnableModsInject)
+        {
+            var modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
+            var minecraftModsPath = Path.Combine(MinecraftPath.GetMinecraftPath(), "mods");
+
+            if (!Directory.Exists(minecraftModsPath))
+                Directory.CreateDirectory(minecraftModsPath);
+
+            var jarFiles = Directory.GetFiles(modsInjectPath, "*.jar");
+
+            using (var md5 = MD5.Create())
+            {
+                foreach (var jarFile in jarFiles)
+                {
+                    string originalFileName = Path.GetFileName(jarFile);
+                    byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(originalFileName));
+
+                    // 从哈希字节生成 long 型数值（只取前8字节，足够生成18位十进制数）
+                    long number = Math.Abs(BitConverter.ToInt64(hashBytes, 0));
+                    string numericId = number.ToString().PadLeft(18, '0');
+                    if (numericId.Length > 18)
+                        numericId = numericId.Substring(0, 18);
+
+                    // 版本号仍基于哈希生成（1~9）
+                    int ver1 = (Math.Abs(hashBytes[0]) % 9) + 1;
+                    int ver2 = (Math.Abs(hashBytes[1]) % 9) + 1;
+
+                    string newFileName = $"{numericId}@{ver1}@{ver2}.jar";
+                    string destinationPath = Path.Combine(minecraftModsPath, newFileName);
+
+                    File.Copy(jarFile, destinationPath, true);
+                    WpfConfig.DefaultLogger.Info($"成功复制模组: {originalFileName} (伪装名称: {newFileName}) 到 {minecraftModsPath}");
+                }
+            }
         }
         return RunGameOriginal();
     }

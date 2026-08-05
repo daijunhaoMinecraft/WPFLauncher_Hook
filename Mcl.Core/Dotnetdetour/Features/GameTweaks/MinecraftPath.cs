@@ -4,6 +4,7 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Utils;
+using WPFLauncher.Model;
 using WPFLauncher.Util;
 
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
@@ -17,7 +18,7 @@ public class MinecraftPath : IMethodHook
     }
 
     [HookMethod("WPFLauncher.Util.tb", "c", "ChangeMinecraftPath")]
-    public static string c()
+    public static string GetMinecraftPath(GameVersion version = GameVersion.NONE)
     {
         var MinecraftPath = ChangeMinecraftPath();
         var NowMinecraftPath = Path.Combine(new[] { tb.n, "Game", ".minecraft" });

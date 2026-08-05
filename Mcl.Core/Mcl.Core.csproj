@@ -61,7 +61,6 @@
         <Compile Include="Dotnetdetour\Features\GameTweaks\AddCustomNetGameServer.cs" />
         <Compile Include="Dotnetdetour\Features\GameTweaks\MinecraftPath.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\Mods.cs"/>
-        <Compile Include="Dotnetdetour\Features\GameTweaks\ModsInject.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\No_SaveWorldEncrypt.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\OptimizeDeleteFile.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\RecoveryDeleteVersion.cs" />

@@ -290,6 +290,16 @@ public class InitHook : IMethodHook
                 MessageBox.Show("请输入正确的基岩版路径!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 error = true;
             }
+            
+            try
+            {
+                WpfConfig.ServerListUri = new Uri(WpfConfig.ServerListUrl);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("请输入正确的网易服务器地址", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                error = true;
+            }
 
             if (!error)
             {
@@ -388,6 +398,15 @@ public class InitHook : IMethodHook
         else
         {
             WpfConfig.CustomRecentList.Clear();
+        }
+        
+        try
+        {
+            WpfConfig.ServerListUri = new Uri(WpfConfig.ServerListUrl);
+        }
+        catch (Exception)
+        {
+            WpfConfig.DefaultLogger.Error("错误的网易服务器地址, 将会改成默认地址");
         }
     }
 
