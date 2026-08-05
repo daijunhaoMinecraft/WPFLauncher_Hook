@@ -44,7 +44,8 @@ public class LoginFix : IMethodHook
             WebSocketHelper.SendToClient(wsPayload);
         }
 
-        WpfConfig.DefaultLogger.Info($"最终登录 SauthJson: {sauthJson}");
+        // WpfConfig.DefaultLogger.Info($"最终登录 SauthJson: {sauthJson}");
+        WpfConfig.DefaultLogger.Debug("SauthJson: " + JsonConvert.SerializeObject(new { sauth_json = sauthJson }));
         WpfConfig.IsLogin = true;
         
         f(sauthJson, hue);
