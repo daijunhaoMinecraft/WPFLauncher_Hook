@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -23,7 +24,7 @@ public static class MpayLogin
     private static readonly HttpClient _client;
     private static string _cachedDeviceId;
     private static string _cachedUniqueId;
-    private static string _cachedDeviceKey; // 网易分配的设备 AES 密钥
+    private static string _cachedDeviceKey;
 
     static MpayLogin()
     {
@@ -37,29 +38,27 @@ public static class MpayLogin
         try
         {
             var path = Path.Combine(Environment.CurrentDirectory, CACHE_FILE);
-            if (File.Exists(path))
-            {
-                var cache = JObject.Parse(File.ReadAllText(path));
-                _cachedDeviceId = cache["device_id"]?.ToString();
-                _cachedUniqueId = cache["unique_id"]?.ToString();
-                _cachedDeviceKey = cache["device_key"]?.ToString();
-            }
+            if (!File.Exists(path)) return;
+            
+            var cache = JObject.Parse(File.ReadAllText(path));
+            _cachedDeviceId = cache["device_id"]?.ToString();
+            _cachedUniqueId = cache["unique_id"]?.ToString();
+            _cachedDeviceKey = cache["device_key"]?.ToString();
         }
         catch { /* ignored */ }
     }
 
-    private static void SaveDeviceCache(string uniqueId, string deviceId, string deviceKey)
+    private static void SaveDeviceCache()
     {
         try
         {
-            var path = Path.Combine(Environment.CurrentDirectory, CACHE_FILE);
             var cache = new JObject
             {
-                ["unique_id"] = uniqueId,
-                ["device_id"] = deviceId,
-                ["device_key"] = deviceKey
+                ["unique_id"] = _cachedUniqueId,
+                ["device_id"] = _cachedDeviceId,
+                ["device_key"] = _cachedDeviceKey
             };
-            File.WriteAllText(path, cache.ToString(Formatting.None));
+            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, CACHE_FILE), cache.ToString(Formatting.None));
         }
         catch { /* ignored */ }
     }
@@ -70,70 +69,40 @@ public static class MpayLogin
         if (!string.IsNullOrEmpty(_cachedDeviceId) && !string.IsNullOrEmpty(_cachedDeviceKey)) return _cachedDeviceId;
 
         var uniqueId = Guid.NewGuid().ToString("N");
-        var formData = new Dictionary<string, string>(GetBaseParams())
-        {
-            ["unique_id"] = uniqueId, ["brand"] = "Microsoft", ["device_model"] = "pc_mode",
-            ["device_name"] = $"PC-{Guid.NewGuid().ToString("N").Substring(0, 6)}",
-            ["device_type"] = "Computer", ["init_urs_device"] = "0", ["mac"] = GenerateMac(),
-            ["resolution"] = "1920x1080", ["system_name"] = "windows", ["system_version"] = "10.0.22621"
-        };
+        var formData = GetBaseParams();
+        formData["unique_id"] = uniqueId;
+        formData["brand"] = "Microsoft";
+        formData["device_model"] = "pc_mode";
+        formData["device_name"] = $"PC-{Guid.NewGuid().ToString("N").Substring(0, 6)}";
+        formData["device_type"] = "Computer";
+        formData["init_urs_device"] = "0";
+        formData["mac"] = GenerateMac();
+        formData["resolution"] = "1920x1080";
+        formData["system_name"] = "windows";
+        formData["system_version"] = "10.0.22621";
 
         try
         {
-            var resp = _client.PostAsync($"{MPAY_HOST}/mpay/games/{PROJECT_ID}/devices", new FormUrlEncodedContent(formData)).Result;
+            var (isSuccess, responseStr) = PostRequest($"/mpay/games/{PROJECT_ID}/devices", formData);
 
-            // 处理非 200 状态码
-            if (resp.StatusCode != HttpStatusCode.OK)
+            // 此前失败的原因：网易注册成功可能会返回 201 Created，不能严格限定等于 200
+            if (!isSuccess)
             {
-                var responseStr = resp.Content.ReadAsStringAsync().Result;
-                try
-                {
-                    var responseJson = JObject.Parse(responseStr);
-                    int code = responseJson["code"]?.ToObject<int>() ?? 0;
-                    if (code == 1351)
-                    {
-                        string verifyUrl = responseJson["verify_url"]?.ToString();
-                        if (!string.IsNullOrEmpty(verifyUrl))
-                        {
-                            Clipboard.SetText(verifyUrl);
-                            try { System.Diagnostics.Process.Start(verifyUrl); } catch { }
-                        }
-                        string reason = responseJson["reason"]?.ToString() ?? "需要验证";
-                        MessageBox.Show(
-                            $"{reason}\n验证链接: {verifyUrl}\n链接已复制到剪贴板并已在浏览器中打开，验证完成后请重新操作。",
-                            "设备注册需要验证",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        // 其他错误码，解码后显示
-                        string decoded = System.Text.RegularExpressions.Regex.Unescape(responseStr);
-                        MessageBox.Show($"设备注册失败:\n{decoded}", "设备注册错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                catch
-                {
-                    // JSON 解析失败，同样解码后显示
-                    string decoded = System.Text.RegularExpressions.Regex.Unescape(responseStr);
-                    MessageBox.Show($"设备注册失败:\n{decoded}", "设备注册错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                return null; // 任何错误情况均返回 null
+                HandleApiError(responseStr, "设备注册");
+                return null;
             }
 
-            // 状态码 200，正常解析
-            var json = JObject.Parse(resp.Content.ReadAsStringAsync().Result);
-            _cachedDeviceId = json["device"]["id"].ToString();
-            _cachedDeviceKey = json["device"]["key"].ToString();
+            var json = JObject.Parse(responseStr);
+            _cachedDeviceId = json["device"]?["id"]?.ToString();
+            _cachedDeviceKey = json["device"]?["key"]?.ToString();
             _cachedUniqueId = uniqueId;
 
-            SaveDeviceCache(_cachedUniqueId, _cachedDeviceId, _cachedDeviceKey);
+            SaveDeviceCache();
             return _cachedDeviceId;
         }
         catch (Exception ex)
         {
             WpfConfig.DefaultLogger.Error($"设备注册失败: {ex.Message}");
-            // 发生网络异常等非业务错误时，也显示通用提示并返回 null
             MessageBox.Show($"设备注册发生异常: {ex.Message}", "设备注册错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return null;
         }
@@ -144,86 +113,33 @@ public static class MpayLogin
     {
         try
         {
-            // 确保设备和网易分配的 AES 密钥存在
-            GetOrRegisterDevice();
+            // 添加空检查。如果注册设备失败，中断流程
+            var devId = GetOrRegisterDevice();
+            if (string.IsNullOrEmpty(devId) || string.IsNullOrEmpty(_cachedDeviceKey)) return null;
 
-            string encodedEmail = Convert.ToBase64String(Encoding.UTF8.GetBytes(email));
-            
             var loginParams = new JObject
             {
                 ["username"] = email,
                 ["password"] = Md5Hash(password),
                 ["unique_id"] = _cachedUniqueId
             };
+
+            var formData = GetBaseParams();
+            formData["opt_fields"] = "nickname,avatar,realname_status,mobile_bind_status,mask_related_mobile,related_login_status";
+            formData["params"] = AesEncryptHex(loginParams.ToString(Formatting.None), _cachedDeviceKey);
+            formData["un"] = Base64Encode(email);
+
+            var url = $"/mpay/games/{PROJECT_ID}/devices/{_cachedDeviceId}/users";
+            var (isSuccess, responseStr) = PostRequest(url, formData);
             
-            string encryptedParams = AesEncryptHex(loginParams.ToString(Formatting.None), _cachedDeviceKey);
-
-            var formData = new Dictionary<string, string>(GetBaseParams())
+            if (!isSuccess)
             {
-                ["opt_fields"] = "nickname,avatar,realname_status,mobile_bind_status,mask_related_mobile,related_login_status",
-                ["params"] = encryptedParams,
-                ["un"] = encodedEmail
-            };
-
-            var url = $"{MPAY_HOST}/mpay/games/{PROJECT_ID}/devices/{_cachedDeviceId}/users";
-            var resp = _client.PostAsync(url, new FormUrlEncodedContent(formData)).Result;
-            
-            var responseStr = resp.Content.ReadAsStringAsync().Result;
-            if (resp.StatusCode != HttpStatusCode.OK)
-            {
-                try
-                {
-                    var responseJson = JObject.Parse(responseStr);
-                    int code = responseJson["code"]?.ToObject<int>() ?? 0;
-                    if (code == 1351)
-                    {
-                        string verifyUrl = responseJson["verify_url"]?.ToString();
-                        if (!string.IsNullOrEmpty(verifyUrl))
-                        {
-                            Clipboard.SetText(verifyUrl);
-                            try
-                            {
-                                System.Diagnostics.Process.Start(verifyUrl);
-                            }
-                            catch
-                            {
-                                // ignored
-                            }
-                        }
-
-                        string reason = responseJson["reason"]?.ToString() ?? "需要验证";
-                        MessageBox.Show(
-                            $"{reason}\n验证链接: {verifyUrl}\n链接已复制到剪贴板并已在浏览器中打开，验证完成后请重新登录。",
-                            "登录错误",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        string decoded = System.Text.RegularExpressions.Regex.Unescape(responseStr);
-                        MessageBox.Show($"邮箱登录失败:\n{decoded}", "登录错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-                catch (Exception)
-                {
-                    string decoded = System.Text.RegularExpressions.Regex.Unescape(responseStr);
-                    MessageBox.Show($"邮箱登录失败:\n{decoded}", "登录错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                HandleApiError(responseStr, "登录");
                 return null;
             }
 
             var user = JObject.Parse(responseStr)["user"];
-            if (user == null) return null;
-
-            var sauthDict = new Dictionary<string, string>
-            {
-                ["gameid"] = PROJECT_ID, ["login_channel"] = APP_CHANNEL, ["app_channel"] = APP_CHANNEL,
-                ["platform"] = "pc", ["sdkuid"] = user["id"].ToString(), ["sessionid"] = user["token"].ToString(),
-                ["sdk_version"] = "4.2.0", ["udid"] = Guid.NewGuid().ToString("N").ToUpper(), ["deviceid"] = _cachedDeviceId,
-                ["aim_info"] = "{\"aim\":\"127.0.0.1\",\"country\":\"CN\",\"tz\":\"+0800\",\"tzid\":\"\"}"
-            };
-
-            return JsonConvert.SerializeObject(sauthDict, Formatting.None);
+            return user == null ? null : GenerateSauthString(user["id"].ToString(), user["token"].ToString(), _cachedDeviceId);
         }
         catch (Exception ex)
         {
@@ -235,23 +151,28 @@ public static class MpayLogin
     // ----------------- 手机验证码登录 ----------------- //
     public static SmsResult SendSms(string phoneNumber, string deviceId = null)
     {
-        var formData = new Dictionary<string, string>(GetBaseParams())
-        {
-            ["device_id"] = deviceId ?? GetOrRegisterDevice(),
-            ["mobile"] = phoneNumber
-        };
+        var devId = deviceId ?? GetOrRegisterDevice();
+        if (string.IsNullOrEmpty(devId)) return new SmsResult { Status = SmsStatus.Failed, ErrorMessage = "设备获取失败，无法发送验证码" };
+
+        var formData = GetBaseParams();
+        formData["device_id"] = devId;
+        formData["mobile"] = phoneNumber;
 
         try
         {
-            var resp = _client.PostAsync($"{MPAY_HOST}/mpay/api/users/login/mobile/get_sms", new FormUrlEncodedContent(formData)).Result;
-            if (resp.StatusCode == HttpStatusCode.OK) return new SmsResult { Status = SmsStatus.Success };
+            var (isSuccess, responseStr) = PostRequest("/mpay/api/users/login/mobile/get_sms", formData);
+            if (isSuccess) return new SmsResult { Status = SmsStatus.Success };
 
-            var json = JObject.Parse(resp.Content.ReadAsStringAsync().Result);
+            var json = JObject.Parse(responseStr);
             if (json.Value<int>("code") == 1373)
             {
-                return new SmsResult { Status = SmsStatus.UpstreamRequired, UpstreamContent = json["reply_sms"]?["content"]?.ToString(), UpstreamNumber = json["reply_sms"]?["number"]?.ToString() };
+                return new SmsResult 
+                { 
+                    Status = SmsStatus.UpstreamRequired, 
+                    UpstreamContent = json["reply_sms"]?["content"]?.ToString(), 
+                    UpstreamNumber = json["reply_sms"]?["number"]?.ToString() 
+                };
             }
-
             return new SmsResult { Status = SmsStatus.Failed, ErrorMessage = json["reason"]?.ToString() };
         }
         catch (Exception ex) { return new SmsResult { Status = SmsStatus.Failed, ErrorMessage = ex.Message }; }
@@ -259,18 +180,21 @@ public static class MpayLogin
 
     public static VerifyResult VerifySms(string phoneNumber, string code = "", string upContent = "", string deviceId = null)
     {
-        var formData = new Dictionary<string, string>(GetBaseParams())
-        {
-            ["device_id"] = deviceId ?? GetOrRegisterDevice(), ["mobile"] = phoneNumber,
-            ["smscode"] = code ?? "", ["up_content"] = upContent ?? ""
-        };
+        var devId = deviceId ?? GetOrRegisterDevice();
+        if (string.IsNullOrEmpty(devId)) return new VerifyResult { Success = false, ErrorMessage = "设备获取失败" };
+
+        var formData = GetBaseParams();
+        formData["device_id"] = devId;
+        formData["mobile"] = phoneNumber;
+        formData["smscode"] = code ?? "";
+        formData["up_content"] = upContent ?? "";
 
         try
         {
-            var resp = _client.PostAsync($"{MPAY_HOST}/mpay/api/users/login/mobile/verify_sms", new FormUrlEncodedContent(formData)).Result;
-            var json = JObject.Parse(resp.Content.ReadAsStringAsync().Result);
+            var (isSuccess, responseStr) = PostRequest("/mpay/api/users/login/mobile/verify_sms", formData);
+            var json = JObject.Parse(responseStr);
             
-            return resp.StatusCode == HttpStatusCode.OK 
+            return isSuccess 
                 ? new VerifyResult { Success = true, Ticket = json["ticket"]?.ToString() }
                 : new VerifyResult { Success = false, ErrorMessage = json["reason"]?.ToString() };
         }
@@ -280,29 +204,24 @@ public static class MpayLogin
     public static string CompleteLogin(string phoneNumber, string ticket, string deviceId = null)
     {
         var devId = deviceId ?? GetOrRegisterDevice();
-        var formData = new Dictionary<string, string>(GetBaseParams())
-        {
-            ["device_id"] = devId, ["ticket"] = ticket,
-            ["opt_fields"] = "nickname,avatar,realname_status,mobile_bind_status,mask_related_mobile,related_login_status"
-        };
+        if (string.IsNullOrEmpty(devId)) return null;
+
+        var formData = GetBaseParams();
+        formData["device_id"] = devId;
+        formData["ticket"] = ticket;
+        formData["opt_fields"] = "nickname,avatar,realname_status,mobile_bind_status,mask_related_mobile,related_login_status";
 
         try
         {
-            var resp = _client.PostAsync($"{MPAY_HOST}/mpay/api/users/login/mobile/finish?un={Convert.ToBase64String(Encoding.UTF8.GetBytes(phoneNumber))}", new FormUrlEncodedContent(formData)).Result;
-            if (resp.StatusCode != HttpStatusCode.OK) return null;
+            var url = $"/mpay/api/users/login/mobile/finish?un={Base64Encode(phoneNumber)}";
+            var (isSuccess, responseStr) = PostRequest(url, formData);
+            if (!isSuccess) return null;
 
-            var user = JObject.Parse(resp.Content.ReadAsStringAsync().Result)["user"];
+            var user = JObject.Parse(responseStr)["user"];
             if (user == null) return null;
 
-            var sauthDict = new Dictionary<string, string>
-            {
-                ["gameid"] = PROJECT_ID, ["login_channel"] = APP_CHANNEL, ["app_channel"] = APP_CHANNEL,
-                ["platform"] = "pc", ["sdkuid"] = user["id"].ToString(), ["sessionid"] = user["token"].ToString(),
-                ["sdk_version"] = "4.2.0", ["udid"] = Guid.NewGuid().ToString("N").ToUpper(), ["deviceid"] = devId,
-                ["aim_info"] = "{\"aim\":\"127.0.0.1\",\"country\":\"CN\",\"tz\":\"+0800\",\"tzid\":\"\"}"
-            };
-
-            return new JObject { ["sauth_json"] = JsonConvert.SerializeObject(sauthDict, Formatting.None) }.ToString(Formatting.None);
+            var sauthStr = GenerateSauthString(user["id"].ToString(), user["token"].ToString(), devId);
+            return new JObject { ["sauth_json"] = sauthStr }.ToString(Formatting.None);
         }
         catch { return null; }
     }
@@ -310,8 +229,9 @@ public static class MpayLogin
     public static string FullLoginFlow(string phoneNumber, string deviceId = null)
     {
         var devId = GetOrRegisterDevice(deviceId);
-        var smsResult = SendSms(phoneNumber, devId);
+        if (string.IsNullOrEmpty(devId)) return null;
 
+        var smsResult = SendSms(phoneNumber, devId);
         if (smsResult.Status == SmsStatus.Failed) return null;
 
         using var verifyForm = new PhoneVerifyForm(phoneNumber, smsResult);
@@ -321,6 +241,50 @@ public static class MpayLogin
     }
 
     // ----------------- 加密与辅助工具 ----------------- //
+    private static (bool IsSuccess, string ResponseStr) PostRequest(string endpoint, Dictionary<string, string> data)
+    {
+        var resp = _client.PostAsync(MPAY_HOST + endpoint, new FormUrlEncodedContent(data)).GetAwaiter().GetResult();
+        var responseStr = resp.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        return (resp.IsSuccessStatusCode, responseStr); // 使用 IsSuccessStatusCode 更安全，包含所有的 2xx 请求。
+    }
+
+    private static void HandleApiError(string responseStr, string contextName)
+    {
+        try
+        {
+            var json = JObject.Parse(responseStr);
+            if (json["code"]?.ToObject<int>() == 1351)
+            {
+                var verifyUrl = json["verify_url"]?.ToString();
+                if (!string.IsNullOrEmpty(verifyUrl))
+                {
+                    Clipboard.SetText(verifyUrl);
+                    try { Process.Start(verifyUrl); } catch { }
+                }
+                var reason = json["reason"]?.ToString() ?? "需要验证";
+                MessageBox.Show($"{reason}\n验证链接: {verifyUrl}\n链接已复制到剪贴板并已在浏览器中打开，验证完成后请重新操作。", 
+                    $"{contextName}需要验证", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+        }
+        catch { /* 解析失败则回退到通用提示 */ }
+
+        string decoded = Regex.Unescape(responseStr);
+        MessageBox.Show($"{contextName}失败:\n{decoded}", $"{contextName}错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+    }
+
+    private static string GenerateSauthString(string userId, string token, string deviceId)
+    {
+        var sauthDict = new Dictionary<string, string>
+        {
+            ["gameid"] = PROJECT_ID, ["login_channel"] = APP_CHANNEL, ["app_channel"] = APP_CHANNEL,
+            ["platform"] = "pc", ["sdkuid"] = userId, ["sessionid"] = token,
+            ["sdk_version"] = "4.2.0", ["udid"] = Guid.NewGuid().ToString("N").ToUpper(), ["deviceid"] = deviceId,
+            ["aim_info"] = "{\"aim\":\"127.0.0.1\",\"country\":\"CN\",\"tz\":\"+0800\",\"tzid\":\"\"}"
+        };
+        return JsonConvert.SerializeObject(sauthDict, Formatting.None);
+    }
+
     private static Dictionary<string, string> GetBaseParams() => new()
     {
         ["app_channel"] = APP_CHANNEL, ["app_mode"] = "2", ["app_type"] = "games",
@@ -357,9 +321,10 @@ public static class MpayLogin
     private static string Md5Hash(string input)
     {
         using var md5 = MD5.Create();
-        byte[] hashBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
-        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        return BitConverter.ToString(md5.ComputeHash(Encoding.UTF8.GetBytes(input))).Replace("-", "").ToLower();
     }
+
+    private static string Base64Encode(string input) => Convert.ToBase64String(Encoding.UTF8.GetBytes(input));
 }
 
 public enum SmsStatus { Success, UpstreamRequired, Failed }
