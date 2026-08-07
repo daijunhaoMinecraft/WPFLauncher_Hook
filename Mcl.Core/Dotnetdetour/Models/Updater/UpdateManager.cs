@@ -32,7 +32,7 @@ namespace Mcl.Core.Updater
             public bool IsBuildChannel { get; set; } = true;
         }
 
-        private static UpdateConfig CurrentConfig = new UpdateConfig();
+        public static UpdateConfig CurrentConfig = new UpdateConfig();
 
         // 静态构造函数：初始化 HttpClient 的请求头
         static UpdateManager()
@@ -118,7 +118,7 @@ namespace Mcl.Core.Updater
             }
         }
 
-        private static void SaveConfig()
+        public static void SaveConfig()
         {
             string json = JsonConvert.SerializeObject(CurrentConfig, Formatting.Indented);
             File.WriteAllText(ConfigFileName, json);

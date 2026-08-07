@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using Mcl.Core.Dotnetdetour.CoreEngine.Base;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
-using Mcl.Core.Dotnetdetour.UI.Tray;
+using Mcl.Core.Dotnetdetour.UI.Injector;
 using Mcl.Core.NeteaseProtocol;
 using Mcl.Core.Updater;
 using Microsoft.Win32;
@@ -134,7 +134,7 @@ public class HookBootstrapper
 
 
         Mcl.Core.Updater.UpdateManager.Initialize();
-        TrayMenuInjector.Start();
+        SettingsInjector.Start();
 
         MethodHook.InstallTypes(new[] { typeof(InitHook) });
     }

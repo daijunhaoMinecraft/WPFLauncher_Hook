@@ -93,12 +93,13 @@
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WebRTCEx.cs"/>
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\ProcessMessage.cs" />
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WintunNetworkModule.cs"/>
+        <Compile Include="Dotnetdetour\Features\SettingsHook\MainSettingsHook.cs" />
         <Compile Include="Dotnetdetour\Initialize.cs" />
-        <Compile Include="Dotnetdetour\Models\Config\ConfigManager.cs"/>
-        <Compile Include="Dotnetdetour\Models\Config\WpfConfig.cs"/>
-        <Compile Include="Dotnetdetour\Models\Entities\FriendStatus.cs"/>
-        <Compile Include="Dotnetdetour\Models\Entities\LanGamePlayerInfo.cs"/>
-        <Compile Include="Dotnetdetour\Models\Entities\TransferStruct.cs"/>
+        <Compile Include="Dotnetdetour\Models\Config\ConfigManager.cs" />
+        <Compile Include="Dotnetdetour\Models\Config\WpfConfig.cs" />
+        <Compile Include="Dotnetdetour\Models\Entities\FriendStatus.cs" />
+        <Compile Include="Dotnetdetour\Models\Entities\LanGamePlayerInfo.cs" />
+        <Compile Include="Dotnetdetour\Models\Entities\TransferStruct.cs" />
         <Compile Include="Dotnetdetour\Models\Entity\NetGame.cs" />
         <Compile Include="Dotnetdetour\Models\Globals\WebRtcVar.cs" />
         <Compile Include="Dotnetdetour\Models\Updater\UpdateManager.cs" />
@@ -114,7 +115,7 @@
         <Compile Include="Dotnetdetour\UI\Forms\CaptchaForm.cs" />
         <Compile Include="Dotnetdetour\UI\Forms\ManualLoginForm.cs" />
         <Compile Include="Dotnetdetour\UI\Forms\PhoneVerifyForm.cs" />
-        <Compile Include="Dotnetdetour\UI\Tray\TrayMenuInjector.cs" />
+        <Compile Include="Dotnetdetour\UI\Injector\SettingsInjector.cs" />
         <Compile Include="Dotnetdetour\UI\WebAssets\HtmlResource.cs" />
         <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs" />
         <Compile Include="Dotnetdetour\Utilities\Common\MemoryUtils.cs" />
@@ -207,6 +208,7 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Dotnetdetour\UI\Dialogs\" />
+        <Folder Include="Dotnetdetour\UI\Tray\" />
         <Folder Include="Dotnetdetour\UI\Windows\"/>
     </ItemGroup>
     <ItemGroup>
