@@ -11,65 +11,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/BedrockPathSelectWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/BedrockPathSelectWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ClientSelectPortWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ClientSelectPortWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ForwarderControlPanel.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ForwarderControlPanel.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/NetworkMonitorWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/NetworkMonitorWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/SelectIpWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/SelectIpWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ServerPanelWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ServerPanelWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ServerSelectPortWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ServerSelectPortWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Core/ThreadHelperSTATask.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Dialogs/ChangeIPWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Dialogs/ChangeIPWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountEditorWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountEditorWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountSelectionWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountSelectionWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/CaptchaWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/CaptchaWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/ManualLoginWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/ManualLoginWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/PhoneVerifyWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/PhoneVerifyWindow.xaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/MpayLogin.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/MpayLogin.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/ChangeIPForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/GameProcessHooks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/GameProcessHooks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/WebRTCEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/WebRTCEx.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Globals/WebRtcVar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Globals/WebRtcVar.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ClientSelectPort.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ForwarderControlPanel.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/NetworkMonitorForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/SelectIp.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ServerPanel.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ServerSelectPort.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Core/UITheme.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountEditorForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/AccountSelectionForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/CaptchaForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/ManualLoginForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Forms/PhoneVerifyForm.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -713,7 +656,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="重新修复Authentication更新部分的问题, 优化NLog控制台颜色输出, 使用纯 C# 层替代大部分 WPFLauncher x19 算法的调用" />
     <MESSAGE value="去除防沉迷相关提示" />
     <MESSAGE value="提交代码的更改, 稍后重构项目结构" />
     <MESSAGE value="重构项目文件列表" />
@@ -738,7 +680,8 @@
     <MESSAGE value="Update Release Image" />
     <MESSAGE value="修复网易创建设备出现的问题" />
     <MESSAGE value="将设置等功能从托盘(Tray)移动到启动器中的设置" />
-    <option name="LAST_COMMIT_MESSAGE" value="将设置等功能从托盘(Tray)移动到启动器中的设置" />
+    <MESSAGE value="修改细节" />
+    <option name="LAST_COMMIT_MESSAGE" value="修改细节" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
