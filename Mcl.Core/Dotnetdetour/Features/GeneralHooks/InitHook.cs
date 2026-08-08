@@ -444,7 +444,7 @@ public class InitHook : IMethodHook
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("[INFO]控制台输出成功启动!");
         Console.WriteLine(
-            $"[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\n当前Hook版本:{WpfConfig.Version}\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao");
+            $"[WPFLauncherHook]成功Hook网易我的世界启动器,感谢使用\n当前Hook版本:{WpfConfig.Version}\ngithub链接:https://github.com/daijunhaoMinecraft/WPFLauncher_Hook\nBy:daijunhao (QQ: 3352133106)");
         try
         {
             var httpClient = new HttpClient();
