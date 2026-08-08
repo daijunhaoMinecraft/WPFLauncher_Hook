@@ -11,6 +11,8 @@
         <PlatformTarget>x86</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
+        <UseWPF>true</UseWPF>
+        <UseWindowsForms>true</UseWindowsForms>
     </PropertyGroup>
     <PropertyGroup>
         <EnableDefaultItems>False</EnableDefaultItems>
@@ -59,6 +61,8 @@
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\LoginWithoutMpay.cs"/>
         <Compile Include="Dotnetdetour\Features\Authentication\Providers\MpayLogin.cs" />
         <Compile Include="Dotnetdetour\Features\GameTweaks\AddCustomNetGameServer.cs" />
+        <Compile Include="Dotnetdetour\Features\GameTweaks\BedrockPathSelectWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\Features\GameTweaks\GameProcessHooks.cs" />
         <Compile Include="Dotnetdetour\Features\GameTweaks\MinecraftPath.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\Mods.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\No_SaveWorldEncrypt.cs"/>
@@ -66,7 +70,6 @@
         <Compile Include="Dotnetdetour\Features\GameTweaks\RecoveryDeleteVersion.cs" />
         <Compile Include="Dotnetdetour\Features\GameTweaks\SolveJavaMemoryLimit.cs"/>
         <Compile Include="Dotnetdetour\Features\GameTweaks\UnlockAllMode.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\ChangeIPForm.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\DirectoryEvent.cs" />
         <Compile Include="Dotnetdetour\Features\GeneralHooks\DownloadEvent.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\EnableBrowseRightClick.cs"/>
@@ -78,7 +81,6 @@
         <Compile Include="Dotnetdetour\Features\GeneralHooks\Mpay_Log.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\MuteBanSystem.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\OptimizationShow.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\GameProcessHooks.cs" />
         <Compile Include="Dotnetdetour\Features\GeneralHooks\RoomInfoWindow.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\SensitiveWordDetection.cs"/>
         <Compile Include="Dotnetdetour\Features\GeneralHooks\TargetConst.cs"/>
@@ -103,18 +105,19 @@
         <Compile Include="Dotnetdetour\Models\Entity\NetGame.cs" />
         <Compile Include="Dotnetdetour\Models\Globals\WebRtcVar.cs" />
         <Compile Include="Dotnetdetour\Models\Updater\UpdateManager.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ClientSelectPort.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\NetworkMonitorForm.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\SelectIp.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ServerPanel.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ServerSelectPort.cs" />
-        <Compile Include="Dotnetdetour\UI\Core\UITheme.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\AccountEditorForm.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\AccountSelectionForm.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\CaptchaForm.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\ManualLoginForm.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\PhoneVerifyForm.cs" />
+        <Compile Include="Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Controls\NetworkMonitorWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Controls\SelectIpWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Controls\ServerPanelWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Controls\ServerSelectPortWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Core\ThreadHelperSTATask.cs" />
+        <Compile Include="Dotnetdetour\UI\Dialogs\ChangeIPWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\AccountEditorWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\AccountSelectionWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\CaptchaWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\ManualLoginWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Forms\PhoneVerifyWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Injector\SettingsInjector.cs" />
         <Compile Include="Dotnetdetour\UI\WebAssets\HtmlResource.cs" />
         <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs" />
@@ -191,6 +194,7 @@
         <Reference Include="PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
         <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
         <Reference Include="System.Windows.Forms" />
+        <Reference Include="System.Xaml" />
         <Reference Include="websocket-sharp">
             <HintPath>E:\MCLauncher\websocket-sharp.dll</HintPath>
         </Reference>
@@ -207,11 +211,25 @@
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Dotnetdetour\UI\Dialogs\" />
         <Folder Include="Dotnetdetour\UI\Tray\" />
         <Folder Include="Dotnetdetour\UI\Windows\"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="Dotnetdetour\UI\WebAssets\RoomManage.html"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Page Include="Dotnetdetour\Features\GameTweaks\BedrockPathSelectWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml" />
+      <Page Include="Dotnetdetour\UI\Controls\NetworkMonitorWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Controls\SelectIpWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Controls\ServerPanelWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Controls\ServerSelectPortWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Dialogs\ChangeIPWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Forms\AccountEditorWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Forms\AccountSelectionWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Forms\CaptchaWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Forms\ManualLoginWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Forms\PhoneVerifyWindow.xaml" />
     </ItemGroup>
 </Project>

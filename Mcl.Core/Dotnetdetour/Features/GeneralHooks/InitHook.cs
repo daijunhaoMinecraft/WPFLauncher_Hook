@@ -280,25 +280,51 @@ public class InitHook : IMethodHook
             }
 
             var error = false;
+
+            // ================== 新增：验证自定义JVM参数 ==================
+            string customJvm = WpfConfig.CustomJVMArguments?.Trim();
+            if (!string.IsNullOrEmpty(customJvm))
+            {
+                // 1. 检查引号是否成对闭合
+                if (customJvm.Count(c => c == '"') % 2 != 0)
+                {
+                    MessageBox.Show("自定义JVM参数中的引号不闭合，请检查是否漏掉了双引号!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    error = true;
+                }
+                // 2. 检查格式是否正确 (JVM 参数一般必须以 - 开头)
+                else if (!customJvm.StartsWith("-"))
+                {
+                    MessageBox.Show("自定义JVM参数格式错误！合法的参数必须以 '-' 开头 (例如: -Xmx2G 或 -key value)", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    error = true;
+                }
+            }
+
             // 检查基岩版路径合法性
-            try
+            if (!error)
             {
-                Path.GetFullPath(WpfConfig.BedrockPath);
+                try
+                {
+                    Path.GetFullPath(WpfConfig.BedrockPath);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("请输入正确的基岩版路径!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    error = true;
+                }
             }
-            catch (Exception)
+    
+            // 检查网易服务器地址
+            if (!error)
             {
-                MessageBox.Show("请输入正确的基岩版路径!", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                error = true;
-            }
-            
-            try
-            {
-                WpfConfig.ServerListUri = new Uri(WpfConfig.ServerListUrl);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("请输入正确的网易服务器地址", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                error = true;
+                try
+                {
+                    WpfConfig.ServerListUri = new Uri(WpfConfig.ServerListUrl);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("请输入正确的网易服务器地址", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    error = true;
+                }
             }
 
             if (!error)

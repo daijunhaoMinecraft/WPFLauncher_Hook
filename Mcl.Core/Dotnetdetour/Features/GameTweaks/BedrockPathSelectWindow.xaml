@@ -1,0 +1,138 @@
+﻿<Window x:Class="Mcl.Core.Dotnetdetour.Features.GeneralHooks.BedrockPathSelectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="选择基岩版路径" Height="500" Width="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F3F3" FontFamily="Microsoft YaHei">
+
+    <Window.Resources>
+        <!-- WinUI3 输入框样式 -->
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="8,0,8,0"/>
+            <Setter Property="BorderBrush" Value="#E5E5E5"/>
+            <Setter Property="Background" Value="#FBFBFB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- WinUI3 按钮样式 -->
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Background" Value="#FDFDFD"/>
+            <Setter Property="BorderBrush" Value="#E5E5E5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#EBEBEB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 列表项 WinUI3 选中样式 -->
+        <Style TargetType="ListBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Margin" Value="4,2,4,2"/>
+            <Setter Property="Padding" Value="12,10,12,10"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#EAEAEA"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E6F2FA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 去除 ListBox 默认边框 -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部标题与置顶复选框 -->
+        <Grid Grid.Row="0" Margin="0,0,0,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="基岩版路径选择" FontSize="26" FontWeight="Bold" Foreground="#1A1A1A"/>
+            <CheckBox x:Name="TopMostCheck" Content="置顶窗口" Grid.Column="1" VerticalAlignment="Center" 
+                      Checked="OnTopMostChanged" Unchecked="OnTopMostChanged"/>
+        </Grid>
+
+        <!-- 路径选择区 -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,24">
+            <TextBlock Text="当前基岩版路径:" Foreground="#404040" FontWeight="SemiBold" Margin="0,0,0,8"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="PathTextBox" IsReadOnly="True" Height="36" Margin="0,0,12,0"/>
+                <Button Content="修改路径" Grid.Column="1" Width="100" Click="SelectButton_Click"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- 列表标题 -->
+        <TextBlock Grid.Row="2" Text="可用版本:" Foreground="#404040" FontWeight="SemiBold" Margin="0,0,0,8"/>
+
+        <!-- 列表区域 (白底圆角卡片包裹) -->
+        <Border Grid.Row="3" Background="White" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="8">
+            <ListBox x:Name="VersionListBox" Margin="4" SelectionChanged="VersionListBox_SelectionChanged">
+                <!-- XAML 数据绑定模板，取代了原先 C# 里的 CreateVersionCard -->
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" Foreground="#1A1A1A"/>
+                            <TextBlock Text="{Binding Path}" FontSize="12" Foreground="#606060" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
+</Window>

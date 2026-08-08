@@ -11,6 +11,7 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Dotnetdetour.UI.Core;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json;
@@ -356,12 +357,10 @@ Port: {config.CppGameCfg.room_info.port}
 
             if (WpfConfig.IsCustomIP)
             {
-                Dispatcher.CurrentDispatcher.BeginInvoke(() =>
+                ThreadHelperSTATask.Run(() =>
                 {
-                    using (var changeIPForm = new ChangeIPForm(config))
-                    {
-                        changeIPForm.ShowDialog();
-                    }
+                    var window = new ChangeIPWindow(config);
+                    window.ShowDialog();
                 });
             }
 

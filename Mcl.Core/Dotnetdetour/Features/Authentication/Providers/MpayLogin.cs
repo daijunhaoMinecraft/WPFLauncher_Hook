@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Dotnetdetour.UI.Core;
 using Mcl.Core.Dotnetdetour.UI.Forms;
 
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
@@ -234,10 +235,28 @@ public static class MpayLogin
         var smsResult = SendSms(phoneNumber, devId);
         if (smsResult.Status == SmsStatus.Failed) return null;
 
-        using var verifyForm = new PhoneVerifyForm(phoneNumber, smsResult);
-        if (verifyForm.ShowDialog() != DialogResult.OK || string.IsNullOrEmpty(verifyForm.Ticket)) return null;
+        // 跨线程捕获变量
+        bool dialogSuccess = false;
+        string ticket = null;
 
-        return CompleteLogin(phoneNumber, verifyForm.Ticket, devId);
+        // 使用我们提供的 STA 工具类安全地呼出 WPF 窗口
+        ThreadHelperSTATask.Run(() =>
+        {
+            var verifyWindow = new PhoneVerifyWindow(phoneNumber, smsResult);
+        
+            // ShowDialog 在 WPF 中返回 bool? 类型
+            if (verifyWindow.ShowDialog() == true)
+            {
+                dialogSuccess = true;
+                ticket = verifyWindow.Ticket;
+            }
+        });
+
+        // 检查弹窗的返回结果
+        if (!dialogSuccess || string.IsNullOrEmpty(ticket)) 
+            return null;
+
+        return CompleteLogin(phoneNumber, ticket, devId);
     }
 
     // ----------------- 加密与辅助工具 ----------------- //

@@ -15,7 +15,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "4.1.3-DLL-Public-Beta1";
+    public static string Version = "5.0.0-DLL-Public";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -64,7 +64,6 @@ public class WpfConfig
     public static bool EnableCustomAccountLogin = false;
     public static bool MpayUnless = false;
 
-
     public static bool KeepOffDeleteLastResourcepacks = false;
     public static bool KeepOffDeleteLastConfig = false;
     public static bool KeepOffDeleteLastShaderPacks = false;
@@ -72,6 +71,9 @@ public class WpfConfig
     // LanGame Settings
     public static bool AllowFrp = false;
     public static bool UseNetworkMode = false;
+    
+    // Java Settings
+    public static string CustomJVMArguments = string.Empty;
     
     public static Logger DefaultLogger = LogManager.GetCurrentClassLogger();
 

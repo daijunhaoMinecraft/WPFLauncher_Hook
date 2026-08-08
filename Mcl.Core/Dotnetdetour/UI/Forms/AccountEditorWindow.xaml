@@ -1,0 +1,224 @@
+﻿<Window x:Class="Mcl.Core.Dotnetdetour.UI.Forms.AccountEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="账号编辑" Height="550" Width="480"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F3F3" FontFamily="Microsoft YaHei">
+
+    <Window.Resources>
+        <!-- 1. WinUI3 输入框样式 -->
+        <Style TargetType="TextBox">
+            <!-- 统一设置上下左右内边距 -->
+            <Setter Property="Padding" Value="8,0,8,0"/>
+            <Setter Property="BorderBrush" Value="#E5E5E5"/>
+            <Setter Property="Background" Value="#FBFBFB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <!-- 注意：Padding 必须设置在 Border 上，绝不能设在 PART_ContentHost 的 Margin 上 -->
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="4" 
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="PasswordBox">
+            <Setter Property="Padding" Value="8,0,8,0"/>
+            <Setter Property="BorderBrush" Value="#E5E5E5"/>
+            <Setter Property="Background" Value="#FBFBFB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <!-- 同理，Padding 设置在外层 Border -->
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="4" 
+                                Padding="{TemplateBinding Padding}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 2. WinUI3 按钮样式 -->
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Background" Value="#FDFDFD"/>
+            <Setter Property="BorderBrush" Value="#E5E5E5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#EBEBEB"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 3. WinUI3 主按钮 (蓝色) 必须保留这个 Key！ -->
+        <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#005FB8"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.9"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 4. WinUI3 列表项选中样式 (解决没有选中效果的问题) -->
+        <Style TargetType="ListViewItem">
+            <!-- 增加左侧 Padding 让它往右挪一点 -->
+            <Setter Property="Padding" Value="6,4,4,4"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border x:Name="Bd" Background="Transparent" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#EAEAEA"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#E0EEFA"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- 表头样式 -->
+        <Style TargetType="GridViewColumnHeader">
+            <Setter Property="Background" Value="Transparent"/>
+            <!-- 减小左侧边距到 6 -->
+            <Setter Property="Padding" Value="6,8,8,8"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#606060"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <!-- 这个外层 Grid 负责固定底部按钮栏，其余内容可滚动 -->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 主要内容区，加入滚动条防止窗口过小导致内容被吃掉 -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto" Padding="24,24,24,10">
+            <StackPanel>
+                <TextBlock x:Name="TitleText" Text="添加账号" FontSize="26" FontWeight="Bold" Foreground="#1A1A1A" Margin="0,0,0,24"/>
+
+                <!-- 账号名称 -->
+                <TextBlock Text="账号名称" Foreground="#404040" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <TextBox x:Name="NameInput" Height="36" Margin="0,0,0,20"/>
+
+                <!-- 账号类型 -->
+                <TextBlock Text="账号类型" Foreground="#404040" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                    <RadioButton x:Name="RbCookie" Content="Cookie" Margin="0,0,20,0" Checked="OnTypeChanged" IsChecked="True"/>
+                    <RadioButton x:Name="Rb4399" Content="4399" Margin="0,0,20,0" Checked="OnTypeChanged"/>
+                    <RadioButton x:Name="RbPhone" Content="手机号" Margin="0,0,20,0" Checked="OnTypeChanged"/>
+                    <RadioButton x:Name="RbEmail" Content="网易邮箱" Checked="OnTypeChanged"/>
+                </StackPanel>
+
+                <!-- 动态卡片区域 -->
+                <Border Background="White" BorderBrush="#E5E5E5" BorderThickness="1" CornerRadius="8" Padding="16" Margin="0,0,0,20">
+                    <Grid>
+                        <!-- Cookie 输入区 -->
+                        <StackPanel x:Name="PanelCookie" Visibility="Visible">
+                            <TextBlock Text="Cookie 数据:" Foreground="#404040" Margin="0,0,0,8"/>
+                            <TextBox x:Name="CookieInput" Height="100" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top"/>
+                        </StackPanel>
+
+                        <!-- 账号密码区 -->
+                        <StackPanel x:Name="PanelUserPass" Visibility="Collapsed">
+                            <TextBlock x:Name="UserLabel" Text="用户名/邮箱:" Foreground="#404040" Margin="0,0,0,8"/>
+                            <TextBox x:Name="UserInput" Height="36" Margin="0,0,0,16"/>
+                            
+                            <TextBlock Text="密码:" Foreground="#404040" Margin="0,0,0,8"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <PasswordBox x:Name="PassInput" Height="36" Margin="0,0,12,0"/>
+                                <TextBox x:Name="PassInputVisible" Height="36" Margin="0,0,12,0" Visibility="Collapsed"/>
+                                <CheckBox x:Name="ShowPassCheck" Content="显示密码" Grid.Column="1" VerticalAlignment="Center" Checked="OnShowPassChanged" Unchecked="OnShowPassChanged"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- 手机号区 -->
+                        <StackPanel x:Name="PanelPhone" Visibility="Collapsed">
+                            <TextBlock Text="手机号:" Foreground="#404040" Margin="0,0,0,8"/>
+                            <TextBox x:Name="PhoneInput" Height="36"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 备注 -->
+                <TextBlock Text="备注 (可选)" Foreground="#404040" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                <TextBox x:Name="NotesInput" Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalContentAlignment="Top" Margin="0,0,0,10"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 底部吸附的按钮操作区 (模仿 Win11 的底部操作栏) -->
+        <Border Grid.Row="1" Background="#F3F3F3" BorderBrush="#E5E5E5" BorderThickness="0,1,0,0" Padding="24,16">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="取消" Width="100" Margin="0,0,12,0" Click="OnCancelClick"/>
+                <Button Content="保存" Width="100" Style="{StaticResource PrimaryButton}" Margin="0,0,0,0" Click="OnSaveClick"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

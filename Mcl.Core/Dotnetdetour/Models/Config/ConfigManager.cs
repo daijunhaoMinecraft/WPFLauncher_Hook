@@ -91,6 +91,9 @@ public static class ConfigManager
             { Key = "EnableModsInject", Description = "启用模组注入", FieldType = typeof(bool), Category = "高级功能" },
         new ConfigEntry
             { Key = "ServerListUrl", Description = "网易更新域名", FieldType = typeof(string), Category = "高级功能" },
+        new ConfigEntry
+            { Key = "CustomJVMArguments", Description = "[新手请留空]自定义JVM虚拟机参数(例: -Key Value -Key2...", FieldType = typeof(string), Category = "高级功能" },
+
 
         // Experiment
         new ConfigEntry
