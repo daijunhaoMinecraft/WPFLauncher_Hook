@@ -4,7 +4,7 @@
 library
 C#
 .cs
-G:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\
 Mcl.Core
 none
 false
@@ -13,7 +13,7 @@ TRACE;DEBUG;NETFRAMEWORK;NET48;NET30_OR_GREATER;NET35_OR_GREATER;NET40_OR_GREATE
 131840273136
 12099611383
 154505797812
-138445732286
+138-692861984
 Dotnetdetour\Features\GameTweaks\BedrockPathSelectWindow.xaml;Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml;Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml;Dotnetdetour\UI\Controls\NetworkMonitorWindow.xaml;Dotnetdetour\UI\Controls\SelectIpWindow.xaml;Dotnetdetour\UI\Controls\ServerPanelWindow.xaml;Dotnetdetour\UI\Controls\ServerSelectPortWindow.xaml;Dotnetdetour\UI\Dialogs\ChangeIPWindow.xaml;Dotnetdetour\UI\Forms\AccountEditorWindow.xaml;Dotnetdetour\UI\Forms\AccountSelectionWindow.xaml;Dotnetdetour\UI\Forms\CaptchaWindow.xaml;Dotnetdetour\UI\Forms\ManualLoginWindow.xaml;Dotnetdetour\UI\Forms\PhoneVerifyWindow.xaml;
 
 False

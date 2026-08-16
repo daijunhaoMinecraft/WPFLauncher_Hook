@@ -15,7 +15,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "5.0.0-DLL-Public";
+    public static string Version = "5.0.1-DLL-Public-Beta1";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -83,7 +83,12 @@ public class WpfConfig
     public static List<Tuple<string, NetGameResponse>> CustomRecentList = new ();
     public static bool IsJoinCustomServer = false;
     public static bool ShowCustomServer = false;
-
+    
+    // Filter
+    public static string LanGameNicknameFilterString = string.Empty;
+    public static List<string> LanGameNicknameFilter = new List<string>();
+    
+    
     public static void WriteRoomBlacklist()
     {
         var blacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");

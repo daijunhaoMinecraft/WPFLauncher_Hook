@@ -38,6 +38,9 @@ public static class ConfigManager
         new ConfigEntry
             { Key = "IsStartWebSocket", Description = "启用Web服务器", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry { Key = "HttpPort", Description = "Web服务器端口", FieldType = typeof(int), Category = "基础设置" },
+        
+        new ConfigEntry { Key = "LanGameNicknameFilterString", Description = "过滤本地联机玩家名称关键字(使用分号隔开, 例如: 生存;一服)", FieldType = typeof(string), Category = "过滤设置" },
+
 
         // Java启动设置
         new ConfigEntry

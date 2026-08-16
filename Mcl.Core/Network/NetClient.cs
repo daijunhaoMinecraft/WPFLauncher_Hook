@@ -20,6 +20,7 @@ using Mcl.Core.Network.Interface;
 using Mcl.Core.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WPFLauncher.Util;
 
 namespace Mcl.Core.Network;
 
@@ -608,6 +609,30 @@ public class NetClient : INetClient
                     message = "正常返回"
                 });
             }
+        }
+
+        if (uri.ToString().EndsWith("/room-related"))
+        {
+            JObject jsonResponse = JObject.Parse(netResponse.Content);
+            if (jsonResponse["code"].ToObject<int>() == 0)
+            {
+                // Filter Bad Room
+                var list = (JArray)jsonResponse["list"];
+                for (int i = list.Count - 1; i >= 0; i--)
+                {
+                    var roomInfo = list[i];
+                    try
+                    {
+                        JObject tipsJson = JObject.Parse(roomInfo["tips"].ToString());
+                        if (WpfConfig.LanGameNicknameFilter.FirstOrDefault(x => tipsJson["NickName"].ToString().Contains(x)) != null)
+                        {
+                            list.RemoveAt(i);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            netResponse.Content = jsonResponse.ToString();
         }
 
         if (isServerListRequest) WpfConfig.ServerList = JObject.Parse(netResponse.Content);

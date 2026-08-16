@@ -639,19 +639,19 @@
   },
   "packageFolders": {
     "C:\\Users\\Administrator\\.nuget\\packages\\": {},
-    "F:\\Application\\Visual Studio\\Shared\\NuGetPackages": {}
+    "E:\\Application\\Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "G:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
+      "projectUniqueName": "H:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
       "projectName": "Mcl.Core",
-      "projectPath": "G:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
+      "projectPath": "H:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "G:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\obj\\",
+      "outputPath": "H:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "F:\\Application\\Visual Studio\\Shared\\NuGetPackages"
+        "E:\\Application\\Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
         "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -683,7 +683,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "10.0.400"
     },
     "frameworks": {
       "net48": {
@@ -699,7 +699,7 @@
             "version": "[4.3.4, )"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

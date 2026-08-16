@@ -64,10 +64,6 @@ namespace Mcl.Core.Updater
             {
                 Task.Run(async () => await CheckUpdateLogicAsync());
             }
-            else
-            {
-                Console.WriteLine("[Updater] 用户已禁用更新。");
-            }
         }
 
         #region --- 权限与配置管理 ---

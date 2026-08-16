@@ -179,15 +179,15 @@
     </ItemGroup>
     <ItemGroup>
         <Reference Include="CefSharp">
-            <HintPath>E:\MCLauncher\CefSharp.dll</HintPath>
+          <HintPath>D:\Games\MCLauncher\CefSharp.dll</HintPath>
         </Reference>
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="Microsoft.VisualBasic" />
         <Reference Include="Newtonsoft.Json">
-            <HintPath>E:\MCLauncher\Newtonsoft.Json.dll</HintPath>
+          <HintPath>D:\Games\MCLauncher\Newtonsoft.Json.dll</HintPath>
         </Reference>
         <Reference Include="NLog">
-            <HintPath>E:\MCLauncher\NLog.dll</HintPath>
+          <HintPath>D:\Games\MCLauncher\NLog.dll</HintPath>
         </Reference>
         <Reference Include="System.Core" />
         <Reference Include="System.Web" />
@@ -196,11 +196,11 @@
         <Reference Include="System.Windows.Forms" />
         <Reference Include="System.Xaml" />
         <Reference Include="websocket-sharp">
-            <HintPath>E:\MCLauncher\websocket-sharp.dll</HintPath>
+          <HintPath>D:\Games\MCLauncher\websocket-sharp.dll</HintPath>
         </Reference>
         <Reference Include="WindowsBase" />
         <Reference Include="WPFControls">
-            <HintPath>E:\MCLauncher\WPFControls.dll</HintPath>
+          <HintPath>D:\Games\MCLauncher\WPFControls.dll</HintPath>
         </Reference>
         <Reference Include="WPFLauncher">
             <HintPath>..\..\..\..\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>

@@ -434,6 +434,20 @@ public class InitHook : IMethodHook
         {
             WpfConfig.DefaultLogger.Error("错误的网易服务器地址, 将会改成默认地址");
         }
+
+        if (string.IsNullOrWhiteSpace(WpfConfig.LanGameNicknameFilterString))
+        {
+            // 为空时直接给空列表，避免残留旧数据
+            WpfConfig.LanGameNicknameFilter = new List<string>();
+        }
+        else
+        {
+            WpfConfig.LanGameNicknameFilter = WpfConfig.LanGameNicknameFilterString
+                .Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries) // 去掉空字符串
+                .Select(s => s.Trim())                                      // 去掉首尾空格
+                .Where(s => !string.IsNullOrEmpty(s))                       // 再去掉纯空白项
+                .ToList();
+        }
     }
 
     private static void PrintStatus()
