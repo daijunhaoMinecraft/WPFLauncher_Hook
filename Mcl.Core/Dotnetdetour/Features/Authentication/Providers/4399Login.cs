@@ -22,7 +22,7 @@ internal class _4399
     private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36";
     private const string OAuth2BaseUrl = "https://ptlogin.4399.com/oauth2/";
     private const string RedirectUri = "https://m.4399api.com/openapi/oauth-callback.html?gamekey=44770&game_key=115716";
-    private const string SdkVersion = "3.12.2.503";
+    private const string SdkVersion = "3.18.0.682";
 
     public static int OcrMaxAttempts { get; set; } = 5;
 
@@ -48,10 +48,53 @@ internal class _4399
                 var oauthParams = await ParamsAsync();
                 var loginUrl = $"{OAuth2BaseUrl}loginAndAuthorize.do?channel=&sdk=op&sdk_version={SdkVersion}";
                 var form = BuildLoginForm(username, password, captchaResult.Text, captchaResult.CaptchaId, oauthParams);
-
+                
                 using var client = CreateHttpClient();
-                var httpResponse = await client.PostAsync(loginUrl, new FormUrlEncodedContent(form));
-                var responseBody = await httpResponse.Content.ReadAsStringAsync();
+                
+                // 获取 cookie
+                var getResponse = await client.GetAsync(oauthParams.OauthUrl);
+                getResponse.EnsureSuccessStatusCode();
+
+                var cookieParts = new List<string>();
+                if (getResponse.Headers.TryGetValues("Set-Cookie", out var setCookies))
+                {
+                    foreach (var setCookie in setCookies)
+                    {
+                        var cookieKeyValue = setCookie.Split(';')[0].Trim();
+                        if (!string.IsNullOrEmpty(cookieKeyValue))
+                        {
+                            cookieParts.Add(cookieKeyValue);
+                        }
+                    }
+                }
+
+                var cookieHeader = string.Join("; ", cookieParts);
+                
+                string responseBody;
+                HttpResponseMessage httpResponse;
+                while (true)
+                {
+                    // 正式请求
+                    var request = new HttpRequestMessage(HttpMethod.Post, loginUrl)
+                    {
+                        Content = new FormUrlEncodedContent(form)
+                    };
+
+                    if (!string.IsNullOrEmpty(cookieHeader))
+                    {
+                        request.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
+                    }
+                    httpResponse = await client.SendAsync(request);
+                    responseBody = await httpResponse.Content.ReadAsStringAsync();
+                    if (httpResponse.StatusCode == HttpStatusCode.Accepted)
+                    {
+                        WpfConfig.DefaultLogger.Error("触发 4399 服务器问题, 重试...");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
 
                 if (string.IsNullOrEmpty(responseBody))
                 {
@@ -135,7 +178,7 @@ internal class _4399
         {
             ClientId = q["client_id"] ?? "", State = q["state"] ?? "",
             RedirectUri = q["redirect_uri"] ?? "", D = q["_d"] ?? "",
-            BizId = q["bizId"] ?? "", Ref = q["ref"] ?? ""
+            BizId = q["bizId"] ?? "", Ref = q["ref"] ?? "", OauthUrl = oauthUrl
         };
     }
 
@@ -192,7 +235,11 @@ internal class _4399
         public CaptchaSolveResult(string text, string id, bool ocr) { Text = text; CaptchaId = id; UsedOcr = ocr; }
     }
 
-    private class OAuthParams { public string BizId, ClientId, D, RedirectUri, Ref, State; }
+    private class OAuthParams
+    {
+        public string BizId, ClientId, D, RedirectUri, Ref, State, OauthUrl;
+    }
+
     private class OAuthCallbackData { public string State, Uid; }
 
     public class LoginResult
