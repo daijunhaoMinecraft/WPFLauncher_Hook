@@ -10,10 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LoginBy4399/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/LoginBy4399/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -658,7 +655,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="update" />
     <MESSAGE value="update namespace" />
     <MESSAGE value="重构工程_1" />
     <MESSAGE value="优化/美化账号管理界面, 修复问题: 1. 不使用Mpay登录时启动布吉岛闪退 2. 进入布吉岛显示认证失败 #45 新增: 账号管理器支持登录网易邮箱, 因此默认设置直接是不使用 Mpay 登录" />
@@ -683,7 +679,8 @@
     <MESSAGE value="增加 Java 启动设置配置: 使用 java.exe 启动游戏而不是 javaw.exe" />
     <MESSAGE value="增加 Java 启动设置配置: 使用 java.exe 启动游戏而不是 javaw.exe #59" />
     <MESSAGE value="发布新版本" />
-    <option name="LAST_COMMIT_MESSAGE" value="发布新版本" />
+    <MESSAGE value="修复转换问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复转换问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
