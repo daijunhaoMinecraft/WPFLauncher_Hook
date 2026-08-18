@@ -10,12 +10,13 @@ using NLog;
 using WPFLauncher.Code;
 using WPFLauncher.Network.Protocol.LobbyGame;
 using WPFLauncher.Util;
+using WPFLauncher.View.UI;
 
 namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "5.0.1-DLL-Public-Beta3";
+    public static string Version = "5.0.1-DLL-Public";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -88,6 +89,7 @@ public class WpfConfig
     public static string LanGameNicknameFilterString = string.Empty;
     public static List<string> LanGameNicknameFilter = new List<string>();
     
+    public static CustomLoadingWindow LoginLoadingWindow = new();
     
     public static void WriteRoomBlacklist()
     {

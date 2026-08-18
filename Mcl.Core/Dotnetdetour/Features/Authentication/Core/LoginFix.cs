@@ -10,19 +10,20 @@ using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
+using WPFLauncher.View.UI;
 
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 
 public class LoginFix : IMethodHook
 {
     [OriginalMethod]
-    public static void f(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue = null) { }
+    public static void LoginOtp(string sauthJson, Action<EntityResponse<acl.Resposne>, Exception> callAction = null) { }
 
     [CompilerGenerated]
-    [HookMethod("WPFLauncher.Network.Launcher.acp", "g", "g")]
-    public static async Task g(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
+    [HookMethod("WPFLauncher.Network.Launcher.acp", "g", "LoginOtp")]
+    public static async Task LoginOtpHook(string sauthJson, Action<EntityResponse<acl.Resposne>, Exception> callAction)
     {
-        string sauthJsonToUse = hud;
+        string sauthJsonToUse = sauthJson;
 
         if (WpfConfig.EnableCustomAccountLogin && !WpfConfig.MpayUnless && !WpfConfig.CookieLoginWithoutMpay)
         {
@@ -33,10 +34,10 @@ public class LoginFix : IMethodHook
             }
         }
 
-        ExecuteFinalLogin(sauthJsonToUse, hue);
+        ExecuteFinalLogin(sauthJsonToUse, callAction);
     }
 
-    private static void ExecuteFinalLogin(string sauthJson, Action<EntityResponse<acl.Resposne>, Exception> hue)
+    private static void ExecuteFinalLogin(string sauthJson, Action<EntityResponse<acl.Resposne>, Exception> callAction)
     {
         if (WpfConfig.IsStartWebSocket)
         {
@@ -48,6 +49,6 @@ public class LoginFix : IMethodHook
         WpfConfig.DefaultLogger.Debug("SauthJson: " + JsonConvert.SerializeObject(new { sauth_json = sauthJson }));
         WpfConfig.IsLogin = true;
         
-        f(sauthJson, hue);
+        LoginOtp(sauthJson, callAction);
     }
 }

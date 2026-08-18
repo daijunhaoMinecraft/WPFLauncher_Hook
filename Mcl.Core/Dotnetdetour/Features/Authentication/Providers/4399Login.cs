@@ -70,10 +70,12 @@ internal class _4399
                 }
 
                 var cookieHeader = string.Join("; ", cookieParts);
-                
-                string responseBody;
-                HttpResponseMessage httpResponse;
-                while (true)
+
+                string responseBody = null;
+                HttpResponseMessage httpResponse = null;
+                const int maxRetries = 20;
+
+                for (int attempt = 0; attempt < maxRetries; attempt++)
                 {
                     // 正式请求
                     var request = new HttpRequestMessage(HttpMethod.Post, loginUrl)
@@ -85,16 +87,29 @@ internal class _4399
                     {
                         request.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
                     }
+
                     httpResponse = await client.SendAsync(request);
                     responseBody = await httpResponse.Content.ReadAsStringAsync();
+
                     if (httpResponse.StatusCode == HttpStatusCode.Accepted)
                     {
-                        WpfConfig.DefaultLogger.Error("触发 4399 服务器问题, 重试...");
+                        WpfConfig.DefaultLogger.Error($"触发 4399 服务器问题，第 {attempt + 1}/{maxRetries} 次重试...");
+
+                        // 如果不是最后一次尝试，等待 1 秒后继续
+                        if (attempt < maxRetries - 1)
+                        {
+                            await Task.Delay(1000);
+                        }
                     }
                     else
                     {
                         break;
                     }
+                }
+                
+                if (httpResponse?.StatusCode == HttpStatusCode.Accepted)
+                {
+                    WpfConfig.DefaultLogger.Error("已重试 20 次，仍然触发 4399 服务器问题，停止重试。");
                 }
 
                 if (string.IsNullOrEmpty(responseBody))
