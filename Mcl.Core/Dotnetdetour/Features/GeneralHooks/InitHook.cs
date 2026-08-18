@@ -448,6 +448,10 @@ public class InitHook : IMethodHook
                 .Where(s => !string.IsNullOrEmpty(s))                       // 再去掉纯空白项
                 .ToList();
         }
+        
+        // 获取 Minecraft 版本列表
+        HttpClient httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Clear();
     }
 
     private static void PrintStatus()

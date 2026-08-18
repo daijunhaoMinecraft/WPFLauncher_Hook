@@ -58,6 +58,11 @@ public static class ConfigManager
             Key = "KeepOffDeleteLastShaderPacks", Description = "阻止网易删除shaderpacks文件夹", FieldType = typeof(bool),
             Category = "Java启动设置"
         },
+        new ConfigEntry
+        {
+            Key = "UseJavaExe", Description = "使用 java.exe 启动游戏而不是 javaw.exe", FieldType = typeof(bool),
+            Category = "Java启动设置"
+        },
 
         // 自定义设置
         new ConfigEntry

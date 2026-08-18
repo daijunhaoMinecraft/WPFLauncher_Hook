@@ -57,8 +57,10 @@ public class GameProcessStartupHook : IMethodHook
         bool isJava = fileName.Contains("java.exe") || fileName.Contains("javaw.exe");
         if (isJava)
         {
-            fileName = fileName.Replace("javaw.exe", "java.exe");
-            
+            if (WpfConfig.UseJavaExe)
+            {
+                fileName = fileName.Replace("javaw.exe", "java.exe");
+            }
             // ================== 合并自定义JVM参数 ==================
             if (!string.IsNullOrWhiteSpace(WpfConfig.CustomJVMArguments))
             {

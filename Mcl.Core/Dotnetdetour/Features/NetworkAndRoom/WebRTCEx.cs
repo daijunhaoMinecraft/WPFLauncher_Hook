@@ -253,11 +253,6 @@ public class WebRtcEx : IMethodHook
                     Console.WriteLine(e);
                 }
             }
-            else
-            {
-                return RunGameOriginal();
-            }
-            return 0;
         }
         
         if (WpfConfig.EnableModsInject)

@@ -15,7 +15,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "5.0.1-DLL-Public-Beta2";
+    public static string Version = "5.0.1-DLL-Public-Beta3";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -74,9 +74,9 @@ public class WpfConfig
     
     // Java Settings
     public static string CustomJVMArguments = string.Empty;
+    public static bool UseJavaExe = false;
     
     public static Logger DefaultLogger = LogManager.GetCurrentClassLogger();
-
     public static List<FriendStatus> ListFriendStatus = new();
     
     // Custom Recent Server
