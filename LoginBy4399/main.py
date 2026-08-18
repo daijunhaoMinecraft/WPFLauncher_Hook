@@ -169,10 +169,8 @@ class BrowserFrame(wx.Frame):
                 allow_redirects=False
             )
 
-            # 这里为了更好的排版，对JSON进行格式化（indent=4）
-            parsed_sauth = json.loads(sauth_json)
             formatted_json = json.dumps(
-                {"sauth_json": parsed_sauth},
+                {"sauth_json": json.dumps(sauth)},
                 ensure_ascii=False
             )
 
@@ -187,8 +185,8 @@ class BrowserFrame(wx.Frame):
         """将响应内容注入到 WinUI 3 风格的网页中"""
         try:
             # 转义 JSON 字符串用于 JavaScript
-            escaped_json = response_json.replace('\\', '\\\\').replace("'", "\\'").replace('\n', '\\n').replace('\r',
-                                                                                                                '\\r')
+            # escaped_json = response_json.replace('\\', '\\\\').replace("'", "\\'").replace('\n', '\\n').replace('\r',
+            #                                                                                                     '\\r')
 
             html_content = f"""
             <!DOCTYPE html>
@@ -363,7 +361,7 @@ class BrowserFrame(wx.Frame):
                                 <span id="copyText">复制 JSON</span>
                             </button>
                         </div>
-                        <pre id="jsonContent">{escaped_json}</pre>
+                        <pre id="jsonContent">{response_json}</pre>
                     </div>
 
                     <div class="info-bar">
