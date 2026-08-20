@@ -137,3 +137,5 @@ H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\Sy
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.xml
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\NLog.xml
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.csproj.Up2Date
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Controls\ProcessLogWindow.baml
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Controls\ProcessLogWindow.g.cs

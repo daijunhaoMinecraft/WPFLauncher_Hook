@@ -108,6 +108,7 @@
         <Compile Include="Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\NetworkMonitorWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Controls\ProcessLogWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\SelectIpWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\ServerPanelWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\ServerSelectPortWindow.xaml.cs" />
@@ -222,6 +223,7 @@
       <Page Include="Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml" />
       <Page Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml" />
       <Page Include="Dotnetdetour\UI\Controls\NetworkMonitorWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Controls\ProcessLogWindow.xaml" />
       <Page Include="Dotnetdetour\UI\Controls\SelectIpWindow.xaml" />
       <Page Include="Dotnetdetour\UI\Controls\ServerPanelWindow.xaml" />
       <Page Include="Dotnetdetour\UI\Controls\ServerSelectPortWindow.xaml" />

@@ -4,31 +4,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Media;
-using System.Windows.Media.Effects;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
+using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager;
-using WPFLauncher.SQLite;
 using WPFLauncher.Util;
 using Application = System.Windows.Application;
-using HorizontalAlignment = System.Windows.HorizontalAlignment;
-using ListBox = System.Windows.Controls.ListBox;
-using MessageBox = System.Windows.MessageBox;
-using TextBox = System.Windows.Controls.TextBox;
 
 
-namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
+namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
 /// <summary>
 /// 核心游戏进程拦截与启动 Hook
@@ -69,7 +58,24 @@ public class GameProcessStartupHook : IMethodHook
             }
         }
 
-        // ================== 核心组装：根据版本分离配置 ==================
+        // ================== 判定是否属于需要创建 WPF 日志的白名单进程 ==================
+        string exeName = Path.GetFileName(fileName)?.ToLower() ?? "";
+        bool useWpfLog = (exeName == "java.exe" || 
+                         exeName == "javaw.exe" || 
+                         exeName == "minecraft.windows.exe") && WpfConfig.ShowLogInWpf;
+
+        ProcessLogWindow logWindow = null;
+        if (useWpfLog)
+        {
+            // 必须在主 Dispatcher 上创建窗口
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                logWindow = new ProcessLogWindow(Path.GetFileName(fileName));
+                logWindow.Show();
+            });
+        }
+
+        // ================== 核心组装 ==================
         var processObj = new aqq
         {
             StartInfo =
@@ -77,11 +83,11 @@ public class GameProcessStartupHook : IMethodHook
                 FileName = fileName,
                 Arguments = args,
                 UseShellExecute = false,        
-                // Java版关闭以防止网易DLL崩溃
-                RedirectStandardOutput = !isJava, 
-                RedirectStandardError = !isJava,  
-                // Java版弹窗(显示独立黑底日志窗口)
-                CreateNoWindow = !isJava
+                // 仅对白名单进程强制使用 WPF 界面隐藏黑框并重定向
+                // 对其他普通进程保留原有逻辑
+                RedirectStandardOutput = useWpfLog ? true : !isJava, 
+                RedirectStandardError  = useWpfLog ? true : !isJava,  
+                CreateNoWindow         = useWpfLog ? true : !isJava 
             },
             Type = startType
         };
@@ -94,17 +100,67 @@ public class GameProcessStartupHook : IMethodHook
         // 绝对不能删，防止启动器通信时空引用崩溃
         aqr.Instance.c(processObj);
 
-        // 绑定标准输出与错误，同时正则清洗数据
-        processObj.OutputDataReceived += (sender, args) =>
+        // ================== 绑定标准输出与错误 ==================
+        processObj.OutputDataReceived += (sender, outputArgs) =>
         {
-            if (!string.IsNullOrEmpty(args.Data))
-                Console.WriteLine($"{AnsiColorRegex.Replace(args.Data, string.Empty)}");
+            if (!string.IsNullOrEmpty(outputArgs.Data))
+            {
+                string cleanMsg = AnsiColorRegex.Replace(outputArgs.Data, string.Empty);
+                if (WpfConfig.ShowLogInConsole)
+                {
+                    Console.WriteLine(cleanMsg);
+                }
+                if (useWpfLog) logWindow?.AppendLog(cleanMsg, isError: false);
+            }
         };
-        processObj.ErrorDataReceived += (sender, args) =>
+        processObj.ErrorDataReceived += (sender, errorArgs) =>
         {
-            if (!string.IsNullOrEmpty(args.Data))
-                Console.WriteLine($"[StdErr] {AnsiColorRegex.Replace(args.Data, string.Empty)}");
+            if (!string.IsNullOrEmpty(errorArgs.Data))
+            {
+                string cleanMsg = AnsiColorRegex.Replace(errorArgs.Data, string.Empty);
+                if (WpfConfig.ShowLogInConsole)
+                {
+                    Console.WriteLine($"[StdErr] {cleanMsg}");
+                }
+                if (useWpfLog) logWindow?.AppendLog(cleanMsg, isError: true);
+            }
         };
+
+        // ================== 绑定进程退出与主动结束逻辑 ==================
+        if (useWpfLog)
+        {
+            processObj.EnableRaisingEvents = true; // 允许触发 Exited 事件
+            
+            // 绑定退出事件：向 WPF 窗口输出退出代码
+            processObj.Exited += (sender, e) =>
+            {
+                int exitCode = -1;
+                try { exitCode = processObj.ExitCode; } catch { } // 防止有些进程无法读取退出码
+                
+                logWindow?.OnProcessExited(exitCode);
+                Console.WriteLine($"\n[进程] 进程 {Path.GetFileName(fileName)} 已退出, 错误代码: {exitCode}");
+            };
+
+            // 设置关闭进程的方法委托到界面中
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                logWindow?.SetKillAction(() =>
+                {
+                    try
+                    {
+                        if (!processObj.HasExited)
+                        {
+                            processObj.Kill();
+                            WpfConfig.DefaultLogger.Info($"[进程] 已由用户手动强制结束进程: {fileName}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WpfConfig.DefaultLogger.Error($"[进程] 强制结束进程失败: {ex.Message}");
+                    }
+                });
+            });
+        }
 
         WpfConfig.DefaultLogger.Info($"[进程] 启动进程: {fileName}");
 

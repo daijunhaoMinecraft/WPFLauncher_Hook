@@ -33,6 +33,8 @@ public static class ConfigManager
         new ConfigEntry
             { Key = "IsWindowTopMost", Description = "窗口保持在最上层", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry { Key = "IsDebug", Description = "详细日志模式", FieldType = typeof(bool), Category = "基础设置" },
+        new ConfigEntry { Key = "ShowLogInConsole", Description = "显示游戏输出日志到控制台上", FieldType = typeof(bool), Category = "基础设置" },
+        new ConfigEntry { Key = "ShowLogInWpf", Description = "显示游戏输出日志到Wpf日志窗口上", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry
             { Key = "IsLogOutputFolder", Description = "启动器日志输出到文件夹", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry
