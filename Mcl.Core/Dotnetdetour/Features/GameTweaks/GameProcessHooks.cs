@@ -15,7 +15,8 @@ using Newtonsoft.Json.Linq;
 using WPFLauncher.Manager;
 using WPFLauncher.Util;
 using Application = System.Windows.Application;
-
+using System.Runtime.InteropServices;
+using System.Security.Principal;
 
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
@@ -24,6 +25,83 @@ namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 /// </summary>
 public class GameProcessStartupHook : IMethodHook
 {
+    #region 游戏前置内存优化核心逻辑
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    private struct PrivilegeToken
+    {
+        public int PrivilegeCount;
+        public long Luid;
+        public int Attributes;
+    }
+
+    [DllImport("ntdll.dll", SetLastError = true)]
+    private static extern uint NtSetSystemInformation(int SystemInformationClass, IntPtr SystemInformation, int SystemInformationLength);
+
+    [DllImport("advapi32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, ref long lpLuid);
+
+    [DllImport("advapi32.dll", SetLastError = true)]
+    private static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, ref PrivilegeToken NewState, int BufferLength, IntPtr PreviousState, IntPtr ReturnLength);
+
+    /// <summary>
+    /// 执行硬核内存清理
+    /// </summary>
+    private static void OptimizeMemoryBeforeLaunch()
+    {
+        try
+        {
+            WpfConfig.DefaultLogger.Info("[内存优化] 正在尝试释放系统物理内存...");
+
+            // 1. 获取当前进程令牌，并赋予操作内存列表的特权 (SeProfileSingleProcessPrivilege)
+            using (var identity = WindowsIdentity.GetCurrent(TokenAccessLevels.Query | TokenAccessLevels.AdjustPrivileges))
+            {
+                PrivilegeToken token = new PrivilegeToken { PrivilegeCount = 1, Attributes = 2 /* SE_PRIVILEGE_ENABLED */ };
+                long luid = 0;
+                
+                if (LookupPrivilegeValue(null, "SeProfileSingleProcessPrivilege", ref luid))
+                {
+                    token.Luid = luid;
+                    AdjustTokenPrivileges(identity.Token, false, ref token, Marshal.SizeOf(token), IntPtr.Zero, IntPtr.Zero);
+                }
+                else
+                {
+                    WpfConfig.DefaultLogger.Error($"[内存优化] 无法查找特权, 错误码: {Marshal.GetLastWin32Error()}");
+                    return;
+                }
+            }
+
+            // 2. 依次发送指令清理系统内存
+            // 指令 2: 清空工作集 | 指令 3: 刷新已修改页面 | 指令 4: 清空备用列表(缓存)
+            for (int command = 2; command <= 4; command++)
+            {
+                int cmd = command; // 必须使用局部变量固定指针
+                GCHandle handle = GCHandle.Alloc(cmd, GCHandleType.Pinned);
+                try
+                {
+                    // 80 代表 SystemMemoryListInformation
+                    uint result = NtSetSystemInformation(80, handle.AddrOfPinnedObject(), Marshal.SizeOf(cmd));
+                    if (result != 0)
+                    {
+                        WpfConfig.DefaultLogger.Info($"[内存优化] 指令 {command} 执行异常，NTSTATUS: {result}");
+                    }
+                }
+                finally
+                {
+                    handle.Free();
+                }
+            }
+
+            WpfConfig.DefaultLogger.Info("[内存优化] 内存释放完成！已为游戏腾出最大物理空间。");
+        }
+        catch (Exception ex)
+        {
+            WpfConfig.DefaultLogger.Error($"[内存优化] 执行失败: {ex.Message}");
+        }
+    }
+
+    #endregion
+    
     // 用于剔除控制台输出中的 ANSI 颜色转义字符 (例如 \e[38;2;255;135;0m)
     private static readonly Regex AnsiColorRegex = new(@"\x1B\[[0-9;]*[a-zA-Z]", RegexOptions.Compiled);
 
@@ -56,6 +134,12 @@ public class GameProcessStartupHook : IMethodHook
                 args = MergeMinecraftArgs(args, WpfConfig.CustomJVMArguments);
                 WpfConfig.DefaultLogger.Info($"[进程] 已注入自定义JVM参数");
             }
+        }
+
+        // ================== 游戏启动前：触发内存优化 ==================
+        if ((isJava || isBedrock) && WpfConfig.MemoryOptimize)
+        {
+            OptimizeMemoryBeforeLaunch(); 
         }
 
         // ================== 判定是否属于需要创建 WPF 日志的白名单进程 ==================

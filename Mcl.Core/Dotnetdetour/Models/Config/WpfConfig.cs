@@ -16,7 +16,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "5.0.1-DLL-Public-Beta1";
+    public static string Version = "5.0.1-DLL-Public-Beta2";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -50,6 +50,7 @@ public class WpfConfig
     public static bool NoTwoExitMessage = true;
     public static int JoinFailRetry = 0;
     public static string JavaGamePath = string.Empty;
+    public static bool MemoryOptimize = true;
     
     // threading Download Config
     public static int MaxThread = 8;
