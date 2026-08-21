@@ -165,7 +165,10 @@ public class NetClient : INetClient
                 var authenticationUpdateResult = X19Http.Post("/authentication/update", decryptRequest, WpfConfig.ServerList["CoreServerUrl"].ToString(), X19Http.RequestType.Encrypt);
 
                 var authResult = JObject.Parse(authenticationUpdateResult);
-                WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {authenticationUpdateResult}");
+                if (WpfConfig.ShowAccountInfo)
+                {
+                    WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {authenticationUpdateResult}");
+                }
                 if (authResult["code"].ToObject<int>() == 0)
                 {
                     X19Crypt.Token = authResult["entity"]["token"].ToString();
@@ -572,7 +575,10 @@ public class NetClient : INetClient
         {
             var decryptString = X19Crypt.DecryptX19Body(netResponse.RawBytes);
             var authResult = JObject.Parse(decryptString);
-            WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {decryptString}");
+            if (WpfConfig.ShowAccountInfo)
+            {
+                WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {decryptString}");
+            }
             if (authResult["code"].ToObject<int>() == 0)
             {
                 X19Crypt.Token = authResult["entity"]["token"].ToString();

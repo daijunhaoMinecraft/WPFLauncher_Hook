@@ -10,10 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -660,8 +657,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复渠道服登录问题, 默认配置更改为使用 Mpay 登录" />
-    <MESSAGE value="修复渠道服问题, 默认使用Mpay登录, 修复众多问题等等" />
     <MESSAGE value="修复联机大厅无法输入密码问题" />
     <MESSAGE value="修复更新列表中assets顺序可能会乱问题" />
     <MESSAGE value="修复了长时间账号登录自动失效问题" />
@@ -685,7 +680,9 @@
     <MESSAGE value="更新功能: PCL 内存优化, 在每次启动游戏(基岩版和Java版)执行一次内存优化, 若不想要则可在配置中关闭 &quot;游戏启动前进行内存优化&quot; 功能即可" />
     <MESSAGE value="发布正式版, 并修复了一个错误" />
     <MESSAGE value="update Image" />
-    <option name="LAST_COMMIT_MESSAGE" value="update Image" />
+    <MESSAGE value="Add Image" />
+    <MESSAGE value="Update Readme" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update Readme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
