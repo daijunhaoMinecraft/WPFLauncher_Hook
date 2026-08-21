@@ -657,7 +657,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复联机大厅无法输入密码问题" />
     <MESSAGE value="修复更新列表中assets顺序可能会乱问题" />
     <MESSAGE value="修复了长时间账号登录自动失效问题" />
     <MESSAGE value="更新正式版" />
@@ -682,7 +681,8 @@
     <MESSAGE value="update Image" />
     <MESSAGE value="Add Image" />
     <MESSAGE value="Update Readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update Readme" />
+    <MESSAGE value="继续优化" />
+    <option name="LAST_COMMIT_MESSAGE" value="继续优化" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
