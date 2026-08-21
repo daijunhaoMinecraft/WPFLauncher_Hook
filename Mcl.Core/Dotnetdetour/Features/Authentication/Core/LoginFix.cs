@@ -46,7 +46,10 @@ public class LoginFix : IMethodHook
         }
 
         // WpfConfig.DefaultLogger.Info($"最终登录 SauthJson: {sauthJson}");
-        WpfConfig.DefaultLogger.Debug("SauthJson: " + JsonConvert.SerializeObject(new { sauth_json = sauthJson }));
+        if (WpfConfig.ShowAccountInfo)
+        {
+            WpfConfig.DefaultLogger.Debug("SauthJson: " + JsonConvert.SerializeObject(new { sauth_json = sauthJson }));
+        }
         WpfConfig.IsLogin = true;
         
         LoginOtp(sauthJson, callAction);

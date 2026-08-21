@@ -23,6 +23,7 @@ public static class ConfigManager
     {
         // 基础设置
         new ConfigEntry { Key = "MemoryOptimize", Description = "游戏启动前进行内存优化", FieldType = typeof(bool), Category = "基础设置" },
+        new ConfigEntry { Key = "ShowAccountInfo", Description = "在控制台中显示账号敏感信息", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry { Key = "ShowCustomServer", Description = "显示自定义服务器(如基岩版布吉岛等)", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry
         {

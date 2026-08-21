@@ -114,6 +114,11 @@ public class GameProcessStartupHook : IMethodHook
     [HookMethod("WPFLauncher.Manager.aqr", "t", "ProcessStartOriginal")]
     public aqq ProcessStart(string fileName, string args, aqo startType, string workDirectory = null)
     {
+        if (!string.IsNullOrEmpty(fileName))
+        {
+            fileName = fileName.Replace("\"", ""); 
+        }
+        
         bool isBedrock = fileName.Contains("Minecraft.Windows.exe");
 
         if (isBedrock)

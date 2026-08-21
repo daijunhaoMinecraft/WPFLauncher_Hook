@@ -12,10 +12,10 @@
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/LoginBy4399/build.bat" beforeDir="false" afterPath="$PROJECT_DIR$/LoginBy4399/build.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/GameProcessHooks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/GameProcessHooks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/LoginFix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/LoginFix.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
@@ -667,7 +667,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="重构工程_1" />
     <MESSAGE value="优化/美化账号管理界面, 修复问题: 1. 不使用Mpay登录时启动布吉岛闪退 2. 进入布吉岛显示认证失败 #45 新增: 账号管理器支持登录网易邮箱, 因此默认设置直接是不使用 Mpay 登录" />
     <MESSAGE value="更新截图" />
     <MESSAGE value="修复渠道服登录问题, 默认配置更改为使用 Mpay 登录" />
@@ -692,7 +691,8 @@
     <MESSAGE value="修复转换问题" />
     <MESSAGE value="Update Release Image" />
     <MESSAGE value="新增配置选项: &quot;显示游戏输出日志到控制台上&quot;和&quot;显示游戏输出日志到Wpf日志窗口上&quot; #60" />
-    <option name="LAST_COMMIT_MESSAGE" value="新增配置选项: &quot;显示游戏输出日志到控制台上&quot;和&quot;显示游戏输出日志到Wpf日志窗口上&quot; #60" />
+    <MESSAGE value="更新功能: PCL 内存优化, 在每次启动游戏(基岩版和Java版)执行一次内存优化, 若不想要则可在配置中关闭 &quot;游戏启动前进行内存优化&quot; 功能即可" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新功能: PCL 内存优化, 在每次启动游戏(基岩版和Java版)执行一次内存优化, 若不想要则可在配置中关闭 &quot;游戏启动前进行内存优化&quot; 功能即可" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -490,7 +490,10 @@ public class NetClient : INetClient
         if (uri.ToString().EndsWith("/authentication-otp"))
         {
             var sauthJson = SauthJsonRandomGenerator.Generate();
-            Console.WriteLine($"sauth_json随机化(authentication-otp): {sauthJson}");
+            if (WpfConfig.ShowAccountInfo)
+            {
+                WpfConfig.DefaultLogger.Info($"sauth_json随机化(authentication-otp): {sauthJson}");
+            }
             var decryptBody = JObject.Parse(X19Crypt.DecryptX19Body(body));
             decryptBody["sauth_json"] = sauthJson;
             SetRequestBody(request, X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(decryptBody.ToString())));
@@ -575,8 +578,10 @@ public class NetClient : INetClient
                 X19Crypt.Token = authResult["entity"]["token"].ToString();
                 X19Crypt.UserId = authResult["entity"]["entity_id"].ToString();
                 var UserDetailResult = X19Http.Post("/user-detail", "");
-                WpfConfig.DefaultLogger.Info(
-                    $"Login Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}, userDetail: {UserDetailResult}");
+                if (WpfConfig.ShowAccountInfo)
+                {
+                    WpfConfig.DefaultLogger.Info($"Login Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}, userDetail: {UserDetailResult}");
+                }
             }
             else if (authResult["code"].ToObject<int>() == 29)
             {
