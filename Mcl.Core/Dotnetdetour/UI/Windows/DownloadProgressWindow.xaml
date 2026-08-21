@@ -1,0 +1,25 @@
+﻿<Window x:Class="Mcl.Core.Dotnetdetour.UI.Windows.DownloadProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="正在下载更新" Height="160" Width="420"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
+        Background="#FAFAFA" FontFamily="Segoe UI, Microsoft YaHei" Topmost="True"
+        Loaded="Window_Loaded">
+    
+    <Grid Margin="24">
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock x:Name="TxtStatus" Text="正在连接到下载服务器..." FontSize="14" FontWeight="SemiBold" Foreground="#1A1A1A" Margin="0,0,0,12"/>
+            
+            <!-- WinUI 风格的圆角进度条 -->
+            <ProgressBar x:Name="PbDownload" Height="22" Minimum="0" Maximum="100" BorderThickness="0" Background="#E5E5E5" Foreground="#005FB8">
+                <ProgressBar.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="4"/>
+                    </Style>
+                </ProgressBar.Resources>
+            </ProgressBar>
+            
+            <TextBlock x:Name="TxtSpeed" Text="请稍候..." FontSize="12" Foreground="#666666" Margin="0,8,0,0" HorizontalAlignment="Right"/>
+        </StackPanel>
+    </Grid>
+</Window>

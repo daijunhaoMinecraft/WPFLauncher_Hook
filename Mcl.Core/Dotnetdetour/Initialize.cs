@@ -156,7 +156,6 @@ namespace System.Runtime.CompilerServices
             
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += DummyHandler;
             Microsoft.Win32.SystemEvents.UserPreferenceChanged -= DummyHandler;
-
             Mcl.Core.Updater.UpdateManager.Initialize();
             SettingsInjector.Start();
 

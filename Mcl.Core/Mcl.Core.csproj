@@ -104,6 +104,7 @@
         <Compile Include="Dotnetdetour\Models\Entities\TransferStruct.cs" />
         <Compile Include="Dotnetdetour\Models\Entity\NetGame.cs" />
         <Compile Include="Dotnetdetour\Models\Globals\WebRtcVar.cs" />
+        <Compile Include="Dotnetdetour\Models\Updater\MarkdownWpfParser.cs" />
         <Compile Include="Dotnetdetour\Models\Updater\UpdateManager.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml.cs" />
@@ -121,6 +122,9 @@
         <Compile Include="Dotnetdetour\UI\Forms\PhoneVerifyWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\UI\Injector\SettingsInjector.cs" />
         <Compile Include="Dotnetdetour\UI\WebAssets\HtmlResource.cs" />
+        <Compile Include="Dotnetdetour\UI\Windows\DownloadProgressWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Windows\UpdateConfigWindow.xaml.cs" />
+        <Compile Include="Dotnetdetour\UI\Windows\UpdatePromptWindow.xaml.cs" />
         <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs" />
         <Compile Include="Dotnetdetour\Utilities\Common\MemoryUtils.cs" />
         <Compile Include="Dotnetdetour\Utilities\Common\SauthParser.cs" />
@@ -213,7 +217,6 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Dotnetdetour\UI\Tray\" />
-        <Folder Include="Dotnetdetour\UI\Windows\"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="Dotnetdetour\UI\WebAssets\RoomManage.html"/>
@@ -233,5 +236,8 @@
       <Page Include="Dotnetdetour\UI\Forms\CaptchaWindow.xaml" />
       <Page Include="Dotnetdetour\UI\Forms\ManualLoginWindow.xaml" />
       <Page Include="Dotnetdetour\UI\Forms\PhoneVerifyWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Windows\DownloadProgressWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Windows\UpdateConfigWindow.xaml" />
+      <Page Include="Dotnetdetour\UI\Windows\UpdatePromptWindow.xaml" />
     </ItemGroup>
 </Project>

@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing; // 必须的，用于 WinForms 的 Size 和 Point
 using System.IO;
 using System.Linq;
-using System.Net.Http; // 引入 HttpClient
+using System.Net.Http;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks; // 引入 Task
-using System.Windows.Forms; // 全局使用 WinForms 作为 UI 基础
+using System.Threading.Tasks;
+using System.Windows;
+using Mcl.Core.Dotnetdetour.UI.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -22,10 +22,8 @@ namespace Mcl.Core.Updater
         private const string BuildFilePath = "Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll";
         private const string ConfigFileName = "MclUpdateConfig.json";
 
-        // 全局单例 HttpClient (官方推荐的最佳实践，避免耗尽 Socket 端口)
-        private static readonly HttpClient _httpClient;
+        public static readonly HttpClient SharedHttpClient;
 
-        // 配置模型
         public class UpdateConfig
         {
             public bool DisableUpdate { get; set; } = false;
@@ -34,18 +32,15 @@ namespace Mcl.Core.Updater
 
         public static UpdateConfig CurrentConfig = new UpdateConfig();
 
-        // 静态构造函数：初始化 HttpClient 的请求头
         static UpdateManager()
         {
-            _httpClient = new HttpClient();
-            // 伪装成标准的 Windows Chrome 浏览器，防止 GitHub API 报 403 拦截
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36");
-            _httpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json"); // 指定 API V3
+            SharedHttpClient = new HttpClient();
+            SharedHttpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/114.0.0.0");
+            SharedHttpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
         }
 
         public static void Initialize()
         {
-            // 1. 检查管理员权限
             if (!CheckAdminPrivileges())
             {
                 RestartAsAdmin();
@@ -53,13 +48,9 @@ namespace Mcl.Core.Updater
                 return;
             }
 
-            // 2. 清理旧文件
             CleanupOldFiles();
-
-            // 3. 加载配置
             LoadOrInitConfig();
 
-            // 4. 如果没有禁用更新，则在后台使用 Task 异步检查更新
             if (!CurrentConfig.DisableUpdate)
             {
                 Task.Run(async () => await CheckUpdateLogicAsync());
@@ -77,21 +68,14 @@ namespace Mcl.Core.Updater
 
         private static void RestartAsAdmin()
         {
-            System.Windows.Forms.MessageBox.Show("插件更新和运行需要管理员权限！\n点击确定将尝试以管理员身份重新启动。", 
-                            "权限不足", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("插件更新和运行需要管理员权限！\n点击确定将尝试以管理员身份重新启动。", "权限不足", MessageBoxButton.OK, MessageBoxImage.Warning);
             try
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo
-                {
-                    FileName = "WPFLauncher.exe",
-                    UseShellExecute = true,
-                    Verb = "runas"
-                };
-                Process.Start(startInfo);
+                Process.Start(new ProcessStartInfo { FileName = "WPFLauncher.exe", UseShellExecute = true, Verb = "runas" });
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("提权失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("提权失败: " + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -110,213 +94,120 @@ namespace Mcl.Core.Updater
             }
             else
             {
-                ShowConfigUI();
+                RunWpfWindow(() => new UpdateConfigWindow(CurrentConfig.DisableUpdate, CurrentConfig.IsBuildChannel));
             }
         }
 
         public static void SaveConfig()
         {
-            string json = JsonConvert.SerializeObject(CurrentConfig, Formatting.Indented);
-            File.WriteAllText(ConfigFileName, json);
+            File.WriteAllText(ConfigFileName, JsonConvert.SerializeObject(CurrentConfig, Formatting.Indented));
         }
 
         #endregion
 
-        #region --- 纯C# WinForms UI (配置页 & 提示页) ---
+        #region --- WPF 窗口跨线程调度 ---
 
-        public static void ShowConfigUI()
+        private static void RunWpfWindow(Func<Window> windowFactory)
         {
-            if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
-            {
-                Thread uiThread = new Thread(ShowConfigUI) { IsBackground = true };
-                uiThread.SetApartmentState(ApartmentState.STA);
-                uiThread.Start();
-                uiThread.Join();
-                return;
-            }
-
-            Form form = new Form
-            {
-                Text = "Mcl.Core 初始配置",
-                Size = new Size(300, 220),
-                StartPosition = FormStartPosition.CenterScreen,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                MaximizeBox = false, MinimizeBox = false, TopMost = true
-            };
-
-            CheckBox chkDisable = new CheckBox
-            {
-                Text = "禁用更新检查", Location = new Point(20, 20), AutoSize = true,
-                Checked = CurrentConfig.DisableUpdate
-            };
-
-            Label lblChannel = new Label { Text = "选择更新渠道:", Location = new Point(20, 60), AutoSize = true };
-            ComboBox cmbChannel = new ComboBox
-            {
-                Location = new Point(120, 56), Size = new Size(120, 25),
-                DropDownStyle = ComboBoxStyle.DropDownList
-            };
-            cmbChannel.Items.AddRange(new object[] { "Build版 (开发)", "Release版 (稳定)" });
-            cmbChannel.SelectedIndex = CurrentConfig.IsBuildChannel ? 0 : 1;
-
-            Button btnSave = new Button { Text = "保存并继续", Location = new Point(80, 120), Size = new Size(120, 35) };
-            
-            form.Controls.AddRange(new System.Windows.Forms.Control[] { chkDisable, lblChannel, cmbChannel, btnSave });
-
-            btnSave.Click += (s, e) =>
-            {
-                CurrentConfig.DisableUpdate = chkDisable.Checked;
-                CurrentConfig.IsBuildChannel = cmbChannel.SelectedIndex == 0;
-                SaveConfig();
-                form.Close();
-            };
-
-            if (System.Windows.Forms.Application.MessageLoop)
-                form.ShowDialog();
-            else
-                System.Windows.Forms.Application.Run(form);
-        }
-
-        private static bool ShowUpdatePromptUI(string version, string message, string commitUrl)
-        {
-            bool userAgreed = false;
             Thread uiThread = new Thread(() =>
             {
-                Form form = new Form
-                {
-                    Text = "发现新版本", Size = new Size(400, 250),
-                    StartPosition = FormStartPosition.CenterScreen,
-                    FormBorderStyle = FormBorderStyle.FixedDialog,
-                    MaximizeBox = false, MinimizeBox = false, TopMost = true
-                };
+                // 确保有可用的 WPF Application 上下文
+                if (Application.Current == null)
+                    new Application();
 
-                Label lblInfo = new Label { Text = $"发现新版本：{version}\n是否立即更新？", Location = new Point(20, 20), AutoSize = true };
-                
-                TextBox txtMessage = new TextBox
-                {
-                    Text = message, Location = new Point(20, 60), Size = new Size(340, 60),
-                    Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical
-                };
-
-                LinkLabel lnkCommit = new LinkLabel { Text = "点击此处查看 GitHub 上的改动详情", Location = new Point(20, 130), AutoSize = true };
-                lnkCommit.LinkClicked += (s, e) => Process.Start(commitUrl);
-
-                Button btnYes = new Button { Text = "更新并重启", Location = new Point(60, 170), Size = new Size(100, 30) };
-                Button btnNo = new Button { Text = "暂不更新", Location = new Point(220, 170), Size = new Size(100, 30) };
-
-                btnYes.Click += (s, e) => { userAgreed = true; form.Close(); };
-                btnNo.Click += (s, e) => { userAgreed = false; form.Close(); };
-
-                form.Controls.AddRange(new System.Windows.Forms.Control[] { lblInfo, txtMessage, lnkCommit, btnYes, btnNo });
-                
-                if (System.Windows.Forms.Application.MessageLoop)
-                    form.ShowDialog();
-                else
-                    System.Windows.Forms.Application.Run(form);
+                Window win = windowFactory();
+                win.ShowDialog();
             });
-
-            uiThread.SetApartmentState(ApartmentState.STA);
+            uiThread.SetApartmentState(ApartmentState.STA); // 必须是 STA 才能显示 WPF UI
+            uiThread.IsBackground = true;
             uiThread.Start();
             uiThread.Join();
-            return userAgreed;
         }
 
         #endregion
 
-        #region --- 核心更新逻辑与 HttpClient ---
+        #region --- 核心更新逻辑 ---
 
-        // 使用 async/await 改造的更新检查逻辑
+        // 增加了一个带有代理重试机制的 API 请求包装器
+        private static async Task<string> GetGitHubApiJsonAsync(string url)
+        {
+            try
+            {
+                // 优先尝试直连 API
+                return await SharedHttpClient.GetStringAsync(url);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Updater] API直连失败，尝试使用代理: {ex.Message}");
+                // 如果被墙，使用镜像站中转 API 请求
+                return await SharedHttpClient.GetStringAsync($"https://gh-proxy.com/{url}");
+            }
+        }
+
         private static async Task CheckUpdateLogicAsync()
         {
             try
             {
                 if (CurrentConfig.IsBuildChannel)
                 {
-                    // 1. 获取文件 Hash 判断是否变化 (HttpClient GetStringAsync 会自动处理 UTF-8 编码)
-                    string fileApiUrl = $"https://api.github.com/repos/{RepoOwner}/{RepoName}/contents/{BuildFilePath}?ref=main";
-                    string fileJson = await _httpClient.GetStringAsync(fileApiUrl);
+                    string fileJson = await GetGitHubApiJsonAsync($"https://api.github.com/repos/{RepoOwner}/{RepoName}/contents/{BuildFilePath}?ref=main");
                     JObject fileInfo = JObject.Parse(fileJson);
-                    
                     string remoteSha = fileInfo["sha"].ToString();
                     string downloadUrl = fileInfo["download_url"].ToString();
-
                     string localFile = "Mcl.Core.dll";
-                    if (File.Exists(localFile) && CalculateGitBlobSha1(localFile) == remoteSha)
-                    {
-                        Console.WriteLine("[Updater] 当前已经是最新 Build 版。");
-                        return;
-                    }
-                    
-                    // 2. 获取该文件的最新 Commit 记录，获取更新日志 (不再乱码了)
-                    string commitApiUrl = $"https://api.github.com/repos/{RepoOwner}/{RepoName}/commits?path={BuildFilePath}&per_page=1";
-                    string commitJson = await _httpClient.GetStringAsync(commitApiUrl);
+
+                    if (File.Exists(localFile) && CalculateGitBlobSha1(localFile) == remoteSha) return;
+
+                    string commitJson = await GetGitHubApiJsonAsync($"https://api.github.com/repos/{RepoOwner}/{RepoName}/commits?path={BuildFilePath}&per_page=1");
                     JArray commitArray = JArray.Parse(commitJson);
-                    
                     string commitMessage = commitArray[0]["commit"]["message"].ToString();
                     string commitUrl = commitArray[0]["html_url"].ToString();
 
-                    // 3. 询问用户
-                    if (ShowUpdatePromptUI("Latest Build", commitMessage, commitUrl))
+                    bool agreed = false;
+                    int mirrorChoice = 0;
+                    RunWpfWindow(() => 
                     {
-                        await PerformDownloadAndRestartAsync(downloadUrl, localFile);
-                    }
+                        var win = new UpdatePromptWindow("Latest Build", commitMessage, commitUrl);
+                        win.Closed += (s, e) => { agreed = win.UserAgreed; mirrorChoice = win.SelectedMirrorIndex; };
+                        return win;
+                    });
+
+                    // 【核心修改】不再在后台静默下载，而是拉起独立下载进度窗口
+                    if (agreed) RunWpfWindow(() => new DownloadProgressWindow(downloadUrl, localFile, mirrorChoice));
                 }
                 else
                 {
-                    // ==========================================
-                    // Release
-                    // ==========================================
-                    string apiUrl = $"https://api.github.com/repos/{RepoOwner}/{RepoName}/releases/latest";
-                    string releaseJson = await _httpClient.GetStringAsync(apiUrl);
+                    string releaseJson = await GetGitHubApiJsonAsync($"https://api.github.com/repos/{RepoOwner}/{RepoName}/releases/latest");
                     JObject releaseInfo = JObject.Parse(releaseJson);
                     
-                    // 获取基本信息
                     string remoteVersion = releaseInfo["tag_name"].ToString();
                     string releaseNotes = releaseInfo["body"].ToString();
                     string releaseUrl = releaseInfo["html_url"].ToString();
                     
-                    // 1. 遍历 assets 查找指定名称的附件节点
-                    JToken assets = releaseInfo["assets"];
-                    JToken targetAsset = assets?.FirstOrDefault(a => a["name"]?.ToString().Equals("Mcl.Core.dll", StringComparison.OrdinalIgnoreCase) == true);
+                    JToken targetAsset = releaseInfo["assets"]?.FirstOrDefault(a => a["name"]?.ToString().Equals("Mcl.Core.dll", StringComparison.OrdinalIgnoreCase) == true);
+                    if (targetAsset == null) return;
 
-                    // 容错处理：如果 Release 中未找到目标文件
-                    if (targetAsset == null)
-                    {
-                        Console.WriteLine("[Updater] 错误：未在 Release 附件列表中找到 Mcl.Core.dll");
-                        return;
-                    }
-
-                    // 2. 提取下载链接与远程 Hash
                     string downloadUrl = targetAsset["browser_download_url"]?.ToString();
                     string remoteDigest = targetAsset["digest"]?.ToString();
-                    string remoteHash = "";
-
-                    if (!string.IsNullOrEmpty(remoteDigest) && remoteDigest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase))
-                    {
-                        remoteHash = remoteDigest.Substring(7).ToLowerInvariant();
-                    }
+                    string remoteHash = !string.IsNullOrEmpty(remoteDigest) && remoteDigest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase) ? remoteDigest.Substring(7).ToLowerInvariant() : "";
 
                     string localFile = "Mcl.Core.dll";
-
-                    // 3. 本地比对逻辑
                     if (File.Exists(localFile) && !string.IsNullOrEmpty(remoteHash))
                     {
-                        string localHash = CalculateFileSHA256(localFile);
-    
-                        // 如果 Hash 完美一致，说明不需要更新
-                        if (localHash.Equals(remoteHash, StringComparison.OrdinalIgnoreCase))
-                        {
-                            Console.WriteLine("[Updater] 当前已经是最新 Release 版。");
-                            return; 
-                        }
+                        if (CalculateFileSHA256(localFile).Equals(remoteHash, StringComparison.OrdinalIgnoreCase)) return;
                     }
 
-                    // 4. Hash 不一致（或本地文件不存在），弹窗询问用户
-                    if (ShowUpdatePromptUI(remoteVersion + " (稳定版)", releaseNotes, releaseUrl))
+                    bool agreed = false;
+                    int mirrorChoice = 0;
+                    RunWpfWindow(() => 
                     {
-                        // 用户同意后才开始下载
-                        await PerformDownloadAndRestartAsync(downloadUrl, localFile);
-                    }
+                        var win = new UpdatePromptWindow(remoteVersion, releaseNotes, releaseUrl);
+                        win.Closed += (s, e) => { agreed = win.UserAgreed; mirrorChoice = win.SelectedMirrorIndex; };
+                        return win;
+                    });
+
+                    // 【核心修改】不再在后台静默下载，而是拉起独立下载进度窗口
+                    if (agreed) RunWpfWindow(() => new DownloadProgressWindow(downloadUrl, localFile, mirrorChoice));
                 }
             }
             catch (Exception ex)
@@ -325,34 +216,67 @@ namespace Mcl.Core.Updater
             }
         }
 
-        // 使用 HttpClient 进行异步下载的逻辑
-        private static async Task PerformDownloadAndRestartAsync(string downloadUrl, string targetFileName)
+        private static async Task PerformDownloadAndRestartAsync(string originalDownloadUrl, string targetFileName, int mirrorChoice)
         {
-            Console.WriteLine("[Updater] 开始下载新版本...");
+            string[] downloadLines;
+
+            // 0:自动多线轮询 1:直连 2:gh-proxy 3:ghproxy.net
+            switch (mirrorChoice)
+            {
+                case 1: downloadLines = new[] { originalDownloadUrl }; break;
+                case 2: downloadLines = new[] { $"https://gh-proxy.com/{originalDownloadUrl}" }; break;
+                case 3: downloadLines = new[] { $"https://ghproxy.net/{originalDownloadUrl}" }; break;
+                default: 
+                    downloadLines = new[] {
+                        $"https://gh-proxy.com/{originalDownloadUrl}", 
+                        $"https://ghproxy.net/{originalDownloadUrl}",
+                        originalDownloadUrl
+                    }; 
+                    break;
+            }
+
+            bool downloadSuccess = false;
+            Exception lastException = null;
+
+            foreach (var downloadUrl in downloadLines)
+            {
+                try
+                {
+                    using (var response = await SharedHttpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        using (var fileStream = new FileStream(targetFileName + ".temp", FileMode.Create, FileAccess.Write, FileShare.None))
+                        {
+                            await response.Content.CopyToAsync(fileStream);
+                        }
+                    }
+                    downloadSuccess = true;
+                    break; // 只要有一条线路成功，直接跳出
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                }
+            }
+
+            if (!downloadSuccess)
+            {
+                MessageBox.Show($"更新包下载失败，所选线路无法连通，请重试或更换节点！\n错误信息: {lastException?.Message}", 
+                    "下载失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             try
             {
-                // 使用 HttpCompletionOption.ResponseHeadersRead 可以提高大文件下载的响应速度并节省内存
-                using (var response = await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead))
-                {
-                    response.EnsureSuccessStatusCode();
-
-                    using (var fileStream = new FileStream(targetFileName + ".temp", FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        await response.Content.CopyToAsync(fileStream);
-                    }
-                }
-
-                // 文件替换黑科技
                 if (File.Exists(targetFileName)) File.Move(targetFileName, targetFileName + ".old");
                 File.Move(targetFileName + ".temp", targetFileName);
 
-                Console.WriteLine("[Updater] 更新成功，正在重启 WPFLauncher.exe...");
                 Process.Start("WPFLauncher.exe");
                 Environment.Exit(0);
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("更新替换失败: " + ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("更新替换失败: " + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -366,15 +290,13 @@ namespace Mcl.Core.Updater
             using (SHA1 sha1 = SHA1.Create()) return BitConverter.ToString(sha1.ComputeHash(store)).Replace("-", "").ToLower();
         }
         
-        // 计算标准的 SHA256 Hash (用于 Release 版比对)
         private static string CalculateFileSHA256(string filePath)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
                 using (FileStream fileStream = File.OpenRead(filePath))
                 {
-                    byte[] hash = sha256.ComputeHash(fileStream);
-                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                    return BitConverter.ToString(sha256.ComputeHash(fileStream)).Replace("-", "").ToLowerInvariant();
                 }
             }
         }
