@@ -96,7 +96,9 @@
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WebRTCEx.cs"/>
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\ProcessMessage.cs" />
         <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WintunNetworkModule.cs"/>
+        <Compile Include="Dotnetdetour\Features\Optizime\CustomRequestHandler.cs" />
         <Compile Include="Dotnetdetour\Features\Optizime\LobbyGameSavesManager.cs" />
+        <Compile Include="Dotnetdetour\Features\Optizime\SkinShowerFix.cs" />
         <Compile Include="Dotnetdetour\Features\SettingsHook\MainSettingsHook.cs" />
         <Compile Include="Dotnetdetour\Initialize.cs" />
         <Compile Include="Dotnetdetour\Models\Config\ConfigManager.cs" />
@@ -192,8 +194,14 @@
         <Compile Include="Utils\Util\FileVersionHelper.cs" />
     </ItemGroup>
     <ItemGroup>
+        <Reference Include="3DTools">
+          <HintPath>D:\Games\MCLauncher\3DTools.dll</HintPath>
+        </Reference>
         <Reference Include="CefSharp">
           <HintPath>D:\Games\MCLauncher\CefSharp.dll</HintPath>
+        </Reference>
+        <Reference Include="CefSharp.Wpf">
+          <HintPath>D:\Games\MCLauncher\CefSharp.Wpf.dll</HintPath>
         </Reference>
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="Microsoft.VisualBasic" />
@@ -229,6 +237,7 @@
     </ItemGroup>
     <ItemGroup>
         <Content Include="Dotnetdetour\UI\WebAssets\RoomManage.html"/>
+        <EmbeddedResource Include="Resources\31.c5774a7b.chunk.js" />
     </ItemGroup>
     <ItemGroup>
       <Page Include="Dotnetdetour\Features\GameTweaks\BedrockPathSelectWindow.xaml" />

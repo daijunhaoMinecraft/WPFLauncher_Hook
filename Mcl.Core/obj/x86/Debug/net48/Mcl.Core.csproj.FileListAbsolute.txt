@@ -153,3 +153,10 @@ H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Do
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\InputDialogWindow.g.cs
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\LoadingDialogWindow.baml
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\LoadingDialogWindow.g.cs
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\3DTools.dll
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.Wpf.dll
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.Core.dll
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.Core.Runtime.dll
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.Wpf.xml
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.Core.xml
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\CefSharp.Core.Runtime.xml

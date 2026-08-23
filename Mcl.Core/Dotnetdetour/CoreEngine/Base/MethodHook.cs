@@ -296,7 +296,6 @@ public class MethodHook
     //     return null;
     // }
 
-    // Fix By Gemini AI
     private static MethodBase FindMethod(MethodBase[] methods, string name, MethodBase like, Assembly[] assemblies)
     {
         var likeParams = like.GetParameters();
@@ -322,19 +321,20 @@ public class MethodHook
                 var t1 = likeParams[i + offset]; // Hook方法的参数
                 var t2 = paramArr[i]; // 目标方法的参数
 
-                // 基础类型全名比对
-                if (t1.ParameterType.FullName != null && t2.ParameterType.FullName != null)
+                // --- 核心修改：支持 FullName 匹配 或者 父类/接口兼容 (IsAssignableFrom) ---
+                if (t1.ParameterType.FullName == t2.ParameterType.FullName || 
+                    t1.ParameterType.IsAssignableFrom(t2.ParameterType))
                 {
-                    if (t1.ParameterType.FullName == t2.ParameterType.FullName)
-                        continue; // 匹配成功，检查下一个
+                    continue; // 匹配成功，检查下一个
                 }
-                else if (t1.ParameterType.FullName == null && t2.ParameterType.FullName == null)
+
+                // 泛型参数通常 FullName 为空
+                if (t1.ParameterType.FullName == null && t2.ParameterType.FullName == null)
                 {
-                    // 泛型参数通常 FullName 为空
                     continue;
                 }
 
-                // --- 重要：恢复被你省略的 RememberTypeAttribute 逻辑 ---
+                // 处理 RememberTypeAttribute 逻辑
                 var rmtype = t1.GetCustomAttribute<RememberTypeAttribute>();
                 if (rmtype != null)
                 {
@@ -343,11 +343,10 @@ public class MethodHook
                     {
                         if (rmtype.TypeFullNameOrNull == t2.ParameterType.FullName) continue;
                         var type = TypeResolver(rmtype.TypeFullNameOrNull, assemblies);
-                        if (type == t2.ParameterType) continue;
+                        if (type == t2.ParameterType || (type != null && t1.ParameterType.IsAssignableFrom(type))) continue;
                     }
                 }
-                // -------------------------------------------------------
-
+                
                 goto next; // 类型不匹配，跳到下一个 MethodBase
             }
 
