@@ -4,6 +4,7 @@ using System.IO;
 using System.Security.Permissions;
 using Mcl.Core.Dotnetdetour.Models.Entities;
 using Mcl.Core.Dotnetdetour.Models.Entity;
+using Net.Nekocurit.Cipher;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
@@ -16,7 +17,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "5.0.3-DLL-Public-Beta1";
+    public static string Version = "5.0.3-DLL-Public-Beta3";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -96,6 +97,8 @@ public class WpfConfig
     
     public static bool ShowLogInConsole = false;
     public static bool ShowLogInWpf = false;
+    
+    public static Skip32Cipher PublicSkip32Cipher = new();
 
     
     public static CustomLoadingWindow LoginLoadingWindow = new();

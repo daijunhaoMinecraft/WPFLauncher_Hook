@@ -10,8 +10,10 @@ using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.UI.Injector;
 using Mcl.Core.NeteaseProtocol;
+using Mcl.Core.Tools;
 using Mcl.Core.Updater;
 using Microsoft.Win32;
+using Net.Nekocurit.Cipher;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

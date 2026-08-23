@@ -14,6 +14,7 @@ using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.UI.Core;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.NeteaseProtocol;
+using Mcl.Core.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Code;
@@ -98,6 +99,7 @@ internal class RoomManager : IMethodHook
 允许保存: {result.entity.allow_save}
 可见性: {visibilityDescription}
 房主ID: {result.entity.owner_id}
+房主 xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(result.entity.owner_id))))}
 房主名称: {ownerName}
 存档ID: {result.entity.save_id}
 存档大小: {result.entity.save_size} bytes
@@ -228,6 +230,7 @@ internal class RoomManager : IMethodHook
 允许保存: {Get_Room_Info.entity.allow_save}
 可见性: {visibilityDescription}
 房主ID: {Get_Room_Info.entity.owner_id}
+房主 xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(Get_Room_Info.entity.owner_id))))}
 房主名称: {ownerName}
 版本号: {Get_Room_Info.entity.version}
 游戏状态: {Get_Room_Info.entity.game_status}
@@ -429,7 +432,7 @@ Port: {config.CppGameCfg.room_info.port}
         {
             var Get_Member_Rank = GetMemberInfo.ident == 1 ? "房主" : "成员";
             string playerName = Get_Player_Info["entities"][sum]?["name"]?.ToString() ?? "未知";
-            string lineInfo = $"UID: {GetMemberInfo.member_id} | 名称: {playerName} | 权限: {Get_Member_Rank}";
+            string lineInfo = $"UID: {GetMemberInfo.member_id} | xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(GetMemberInfo.member_id)))} | 名称: {playerName} | 权限: {Get_Member_Rank}";
             
             loggerSb.AppendLine(lineInfo);
             

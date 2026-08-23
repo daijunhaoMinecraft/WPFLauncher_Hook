@@ -18,23 +18,16 @@ using Application = System.Windows.Application;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
+using Mcl.Core.Dotnetdetour.UI.Controls;
 
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
-/// <summary>
-/// 核心游戏进程拦截与启动 Hook
-/// </summary>
 public class GameProcessStartupHook : IMethodHook
 {
-    // 用于剔除控制台输出中的 ANSI 颜色转义字符
     private static readonly Regex AnsiColorRegex = new(@"\x1B\[[0-9;]*[a-zA-Z]", RegexOptions.Compiled);
-
-    // 【核心改进】使用 AsyncLocal 在调用链中传递上下文。
-    // 只要是 wb.a 调用的，不管中间经过多少 await 异步操作，该值都为 true
     private static readonly AsyncLocal<bool> _isInvokedByWbA = new AsyncLocal<bool>();
 
     #region Hook: WPFLauncher.Util.wb.a (外层调用)
-
     [OriginalMethod]
     public static aqq StartProcessOriginal(string executablePath, string arguments, EventHandler exitHandler, aqo startType, string workDir = null, bool redirectOutput = false, Action<string> outputCallback = null)
     {
@@ -44,9 +37,7 @@ public class GameProcessStartupHook : IMethodHook
     [HookMethod("WPFLauncher.Util.wb", "a", "StartProcessOriginal")]
     public static aqq StartProcess(string executablePath, string arguments, EventHandler exitHandler, aqo startType, string workDir = null, bool redirectOutput = false, Action<string> outputCallback = null)
     {
-        // 标记：当前作用域下的后续调用链，都是由 wb.a 触发的
         _isInvokedByWbA.Value = true;
-
         try
         {
             Action<string> outputCallbackHook = s =>
@@ -55,8 +46,6 @@ public class GameProcessStartupHook : IMethodHook
             };
             
             Console.WriteLine("[StartGame] 启动信息创建中...");
-            
-            // 调用原方法实际启动进程
             var processResult = StartProcessOriginal(executablePath, arguments, exitHandler, startType, workDir, true, outputCallbackHook);
 
             if (processResult != null)
@@ -64,20 +53,16 @@ public class GameProcessStartupHook : IMethodHook
                 processResult.EnableRaisingEvents = true;
                 processResult.Exited += (sender, e) => { Console.WriteLine($"\n[进程] 进程 {executablePath} 已退出"); };
             }
-
             return processResult;
         }
         finally
         {
-            // 退出时清除标记，避免污染其他独立线程池的调用
             _isInvokedByWbA.Value = false; 
         }
     }
-
     #endregion
 
     #region Hook: WPFLauncher.Manager.aqr.t (内层核心进程启动)
-
     [OriginalMethod]
     public aqq ProcessStartOriginal(string fileName, string args, aqo startType, string workDirectory = null)
     {
@@ -87,15 +72,17 @@ public class GameProcessStartupHook : IMethodHook
     [HookMethod("WPFLauncher.Manager.aqr", "t", "ProcessStartOriginal")]
     public aqq ProcessStart(string fileName, string args, aqo startType, string workDirectory = null)
     {
-        // 1. 文件路径预处理
         fileName = fileName?.Replace("\"", "") ?? string.Empty;
         bool isBedrock = fileName.Contains("Minecraft.Windows.exe");
         bool isJava = fileName.Contains("java.exe") || fileName.Contains("javaw.exe");
 
-        // 2. 基岩版及 Java 版特化处理
+        // 声明基岩版专属的路径变量，供退出回调使用
+        string bedrockTimestampFolder = null;
+        string bedrockErrorLogPath = null;
+
         if (isBedrock)
         {
-            HandleBedrockPreStart(ref fileName, ref workDirectory);
+            HandleBedrockPreStart(ref fileName, ref workDirectory, ref args, out bedrockTimestampFolder, out bedrockErrorLogPath);
         }
         else if (isJava)
         {
@@ -109,27 +96,17 @@ public class GameProcessStartupHook : IMethodHook
                 WpfConfig.DefaultLogger.Info($"[进程] 已注入自定义JVM参数");
             }
         }
-        
 
-        // =================================================================
-        // 3. 【核心判定逻辑重构】：
-        // 只要当前处于 wb.a 的调用链路内，且开启了 WPF 日志，就启用日志
-        // =================================================================
         bool useWpfLog = _isInvokedByWbA.Value && WpfConfig.ShowLogInWpf;
         
-        // 4. 游戏启动前：触发内存优化
-        if (_isInvokedByWbA.Value)
+        if (_isInvokedByWbA.Value && WpfConfig.MemoryOptimize)
         {
-            if (WpfConfig.MemoryOptimize)
-            {
-                OptimizeMemoryBeforeLaunch(); 
-            }
+            OptimizeMemoryBeforeLaunch(); 
         }
 
         ProcessLogWindow logWindow = null;
         if (useWpfLog)
         {
-            // 必须在主 Dispatcher 上创建窗口
             Application.Current.Dispatcher.Invoke(() =>
             {
                 logWindow = new ProcessLogWindow(Path.GetFileName(fileName));
@@ -137,7 +114,6 @@ public class GameProcessStartupHook : IMethodHook
             });
         }
 
-        // 5. 核心进程对象组装
         var processObj = new aqq
         {
             StartInfo =
@@ -157,10 +133,8 @@ public class GameProcessStartupHook : IMethodHook
             processObj.StartInfo.WorkingDirectory = workDirectory;
         }
 
-        // 绝对不能删，防止启动器通信时空引用崩溃
         aqr.Instance.c(processObj);
 
-        // 6. 绑定标准输出与错误
         processObj.OutputDataReceived += (sender, outputArgs) =>
         {
             if (!string.IsNullOrEmpty(outputArgs.Data))
@@ -180,8 +154,7 @@ public class GameProcessStartupHook : IMethodHook
             }
         };
 
-        // 7. 绑定进程退出与主动结束逻辑
-        if (useWpfLog)
+        if (useWpfLog || isBedrock)
         {
             processObj.EnableRaisingEvents = true; 
             
@@ -192,8 +165,45 @@ public class GameProcessStartupHook : IMethodHook
                 
                 logWindow?.OnProcessExited(exitCode);
                 Console.WriteLine($"\n[进程] 进程 {Path.GetFileName(fileName)} 已退出, 错误代码: {exitCode}");
-            };
 
+                // === 基岩版进程退出后，检查 error.log 并清理垃圾文件夹 ===
+                if (isBedrock && !string.IsNullOrEmpty(bedrockTimestampFolder))
+                {
+                    try
+                    {
+                        if (File.Exists(bedrockErrorLogPath))
+                        {
+                            string errorContent = File.ReadAllText(bedrockErrorLogPath).Trim();
+                            if (string.IsNullOrEmpty(errorContent))
+                            {
+                                // error.log 为空，直接干掉目录
+                                Directory.Delete(bedrockTimestampFolder, true);
+                            }
+                            else
+                            {
+                                // 有报错内容，打印到日志，不删除目录供排查
+                                WpfConfig.DefaultLogger.Error($"[基岩版进程] 检测到错误日志输出，已保留文件 {bedrockErrorLogPath}。\n错误详情:\n{errorContent}");
+                            }
+                        }
+                        else
+                        {
+                            // 连 error.log 都没有生成，直接干掉目录
+                            if (Directory.Exists(bedrockTimestampFolder))
+                            {
+                                Directory.Delete(bedrockTimestampFolder, true);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        WpfConfig.DefaultLogger.Error($"[基岩版进程] 清理临时文件夹失败: {ex.Message}");
+                    }
+                }
+            };
+        }
+
+        if (useWpfLog)
+        {
             Application.Current.Dispatcher.Invoke(() =>
             {
                 logWindow?.SetKillAction(() =>
@@ -217,18 +227,57 @@ public class GameProcessStartupHook : IMethodHook
         WpfConfig.DefaultLogger.Info($"[进程] 启动进程: {fileName}");
         return processObj;
     }
-
     #endregion
 
     [OriginalMethod]
-    internal void OutputProcess(object sender, DataReceivedEventArgs receivedData)
-    {
-    }
+    internal void OutputProcess(object sender, DataReceivedEventArgs receivedData) { }
 
     #region 私有辅助方法
 
-    private void HandleBedrockPreStart(ref string fileName, ref string workDirectory)
+    private void HandleBedrockPreStart(ref string fileName, ref string workDirectory, ref string args, out string timestampFolder, out string errorLogPath)
     {
+        timestampFolder = null;
+        errorLogPath = null;
+
+        // 1. 拦截解析 Args 并重建文件夹体系
+        var configMatch = Regex.Match(args, @"config=""([^""]+)""");
+        var errorlogMatch = Regex.Match(args, @"errorlog=""([^""]+)""");
+
+        if (configMatch.Success)
+        {
+            string originalConfigPath = configMatch.Groups[1].Value;
+            string tempBaseDir = Path.GetDirectoryName(originalConfigPath); // 获取到 temp 文件夹的路径
+            
+            // 构造新的以时间命名的文件夹 (屏蔽不支持字符 / :)
+            string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
+            timestampFolder = Path.Combine(tempBaseDir, timestamp);
+            Directory.CreateDirectory(timestampFolder);
+
+            // 分配新路径
+            string newConfigPath = Path.Combine(timestampFolder, "config.cppconfig");
+            errorLogPath = Path.Combine(timestampFolder, "error.log");
+
+            // 复制 config 文件到新位置并重命名
+            if (File.Exists(originalConfigPath))
+            {
+                File.Copy(originalConfigPath, newConfigPath, true);
+            }
+
+            // 替换 Args 里的路径为新路径
+            args = args.Replace(originalConfigPath, newConfigPath);
+            if (errorlogMatch.Success)
+            {
+                args = args.Replace(errorlogMatch.Groups[1].Value, errorLogPath);
+            }
+
+            // 针对这个新的 config 文件进行 Patch
+            if (WpfConfig.IsJoinCustomServer)
+            {
+                PatchCustomServerConfig(newConfigPath);
+            }
+        }
+
+        // 2. 选择基岩版 EXE 逻辑
         if (WpfConfig.EnableCustomBedrockSelect)
         {
             string tempFileName = fileName;
@@ -253,19 +302,22 @@ public class GameProcessStartupHook : IMethodHook
             
         WpfConfig.DefaultLogger.Info($"[SelectBedrock] 选择的基岩版: {fileName}");
         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { Type = "StartBedrockGame", SelectBedrockExePath = fileName }));
-            
-        if (WpfConfig.IsJoinCustomServer)
-        {
-            PatchCustomServerConfig();
-        }
     }
 
-    private void PatchCustomServerConfig()
+    /// <summary>
+    /// 更新为接收具体的 configPath
+    /// </summary>
+    private void PatchCustomServerConfig(string configPath)
     {
         try
         {
-            string configPath = Path.Combine(tb.n, "temp", "temp.config");
             WpfConfig.DefaultLogger.Info($"[CustomServer] 正在修改 CppGamePath: {configPath}");
+
+            if (!File.Exists(configPath))
+            {
+                WpfConfig.DefaultLogger.Error($"[CustomServer] 找不到配置文件: {configPath}");
+                return;
+            }
 
             string readEncryptConfig = File.ReadAllText(configPath);
             JObject jsonConfig = JObject.Parse(X19SignHelper.Decrypt(readEncryptConfig));
@@ -282,6 +334,8 @@ public class GameProcessStartupHook : IMethodHook
         }
     }
     
+    // ======== 下方的 MergeMinecraftArgs, SplitArgs, OptimizeMemoryBeforeLaunch 保持原样不作变动 ========
+
     private static string MergeMinecraftArgs(string originalArgs, string customArgs)
     {
         if (string.IsNullOrWhiteSpace(customArgs)) return originalArgs;
@@ -363,7 +417,6 @@ public class GameProcessStartupHook : IMethodHook
     #endregion
 
     #region 游戏前置内存优化核心逻辑
-
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     private struct PrivilegeToken
     {
@@ -429,6 +482,5 @@ public class GameProcessStartupHook : IMethodHook
             WpfConfig.DefaultLogger.Error($"[内存优化] 执行失败: {ex.Message}");
         }
     }
-
     #endregion
 }

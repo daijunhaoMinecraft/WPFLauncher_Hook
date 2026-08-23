@@ -14,6 +14,7 @@ using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Entities;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.NeteaseProtocol;
+using Mcl.Core.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Common;
@@ -124,7 +125,6 @@ internal class ChatConnectionPacket : IMethodHook
                 else if (moduleId == ModuleId.FriendStatus)
                 {
                     if (commandId == 16)
-                        // processingTasks.Add(Task.Run(() => HandleOnlinePcpe(jsonMessage)));
                         processingTasks.Add(Task.Run(() => HandleStatusJson(jsonMessage)));
 
                     if (commandId == 17) processingTasks.Add(Task.Run(() => HandlePlayerComment(jsonMessage)));
@@ -197,7 +197,7 @@ internal class ChatConnectionPacket : IMethodHook
         var playerName = playerInfo["entity"]["name"].ToObject<string>();
         var tgtPlayerInfo = X19Http.GetPlayerInfo(tgt);
         var tgtPlayerName = tgtPlayerInfo["entity"]["name"].ToObject<string>();
-        WpfConfig.DefaultLogger.Info($"<{playerName}(UserId: {uid})>: {words} => {tgtPlayerName}(UserId: {tgt})");
+        WpfConfig.DefaultLogger.Info($"<{playerName}(UserId: {uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))})>: {words} => {tgtPlayerName}(UserId: {tgt} Xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(tgt))))})");
     }
 
     private static void HandlePlayerComment(JObject jsonData)
@@ -207,7 +207,7 @@ internal class ChatConnectionPacket : IMethodHook
         var comment = jsonData["comment"].ToObject<string>();
         var message = jsonData["message"].ToObject<string>();
         var fid = jsonData["fid"].ToObject<string>();
-        WpfConfig.DefaultLogger.Info($"添加好友请求: {comment} 消息: {message} 好友ID: {fid}");
+        WpfConfig.DefaultLogger.Info($"添加好友请求: {comment} 消息: {message} 好友ID: {fid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(fid))))}");
     }
 
     private static void HandleStatusJson(JObject jsonData)
@@ -232,7 +232,7 @@ internal class ChatConnectionPacket : IMethodHook
                     var gameId = hintJson["game_id"]?.ToString() ?? "";
                     var hostId = hintJson["host_id"]?.ToString() ?? "";
                     WpfConfig.DefaultLogger.Info(
-                        $"状态: {statusString} 玩家名: {playerName} 游戏名: {gameName} 游戏类型: {gameType} 游戏ID: {gameId} 房主ID: {hostId}");
+                        $"状态: {statusString} 玩家名: {playerName} 游戏名: {gameName} 游戏类型: {gameType} 游戏ID: {gameId} 房主ID: {hostId} 房主 xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(hostId))))}");
                 }
                 catch
                 {
@@ -259,11 +259,11 @@ internal class ChatConnectionPacket : IMethodHook
             var status = statusJson["status"].ToObject<string>();
             var hint = statusJson["hint"].ToObject<string>();
             WpfConfig.DefaultLogger.Info(
-                $"在线PCPE: {stringOnlinePcpe} UID:{uid} 玩家名: {playerName} 状态: {status} 提示: {hint}");
+                $"在线PCPE: {stringOnlinePcpe} UID: {uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName} 状态: {status} 提示: {hint}");
         }
         else
         {
-            WpfConfig.DefaultLogger.Info($"在线PCPE: {stringOnlinePcpe} UID:{uid} 玩家名: {playerName}");
+            WpfConfig.DefaultLogger.Info($"在线PCPE: {stringOnlinePcpe} UID:{uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName}");
         }
     }
 
@@ -278,7 +278,7 @@ internal class ChatConnectionPacket : IMethodHook
         var hint = jsonData["hint"].ToObject<string>();
         var playerInfo = X19Http.GetPlayerInfo(uid);
         var playerName = playerInfo["entity"]["name"].ToObject<string>();
-        WpfConfig.DefaultLogger.Info($"玩家状态: {statusString} UID:{uid} 玩家名: {playerName} 提示: {hint}");
+        WpfConfig.DefaultLogger.Info($"玩家状态: {statusString} UID:{uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName} 提示: {hint}");
         var friendStatus = WpfConfig.ListFriendStatus.FirstOrDefault(x => x.UserId.ToString() == uid);
         if (friendStatus == null)
         {
@@ -306,7 +306,7 @@ internal class ChatConnectionPacket : IMethodHook
         {
             var uid = friend["uid"].ToObject<string>();
             var nickname = friend["nickname"].ToObject<string>();
-            WpfConfig.DefaultLogger.Info($"好友: {nickname} UID:{uid}");
+            WpfConfig.DefaultLogger.Info($"好友: {nickname} UID:{uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))}");
         }
     }
 
@@ -418,7 +418,7 @@ internal class ChatConnectionPacket : IMethodHook
             else
             {
                 var playerInfo = X19Http.GetPlayerInfo(userId);
-                WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间");
+                WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID: {userId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 加入了房间");
                 if (WpfConfig.IsStartWebSocket)
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     {
@@ -462,7 +462,7 @@ internal class ChatConnectionPacket : IMethodHook
                 }
             });
 
-            WpfConfig.DefaultLogger.Warn($"玩家 {playerName} UID:{userId} 退出了房间");
+            WpfConfig.DefaultLogger.Warn($"玩家 {playerName} UID: {userId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 退出了房间");
 
             if (WpfConfig.IsStartWebSocket)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
@@ -544,7 +544,7 @@ internal class ChatConnectionPacket : IMethodHook
                         "total": 1
                         }
                  */
-                WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间");
+                WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID: {userId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 加入了房间");
                 // 检查正则表达式黑名单
                 CheckRegexBlacklist(userId, playerInfo["entity"]["name"].ToString(), blacklistFilePath);
                 if (WpfConfig.IsStartWebSocket)
@@ -788,8 +788,8 @@ internal class ChatConnectionPacket : IMethodHook
             var newOwnerInfo = X19Http.GetPlayerInfo(newOwnerId);
 
             WpfConfig.DefaultLogger.Warn("当前房间内房主更改");
-            WpfConfig.DefaultLogger.Warn($"原房主的UID: {oldOwnerId}");
-            WpfConfig.DefaultLogger.Warn($"新房主的UID: {newOwnerId}");
+            WpfConfig.DefaultLogger.Warn($"原房主的UID: {oldOwnerId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(oldOwnerId))))}");
+            WpfConfig.DefaultLogger.Warn($"新房主的UID: {newOwnerId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(newOwnerId))))}");
             WpfConfig.DefaultLogger.Warn($"原房主的名称: {oldOwnerInfo["entity"]["name"]}");
             WpfConfig.DefaultLogger.Warn($"新房主的名称: {newOwnerInfo["entity"]["name"]}");
         }

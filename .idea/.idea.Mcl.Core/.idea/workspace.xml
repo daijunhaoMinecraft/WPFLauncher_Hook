@@ -11,23 +11,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Updater/MarkdownWpfParser.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/DownloadProgressWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/DownloadProgressWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdatePromptWindow.xaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdatePromptWindow.xaml.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Tools/Skip32Cipher.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Tools/UidHelper.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/GameProcessHooks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/GameProcessHooks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/ChatConnectionPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/ChatConnectionPacket.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Updater/UpdateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Updater/UpdateManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ProcessLogWindow.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ProcessLogWindow.xaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ProcessLogWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ProcessLogWindow.xaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/ProcessLogWindow.baml" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/ProcessLogWindow.baml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/ProcessLogWindow.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/ProcessLogWindow.g.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.g.resources" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.g.resources" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
@@ -84,6 +82,8 @@
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/DownloadProgressWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdatePromptWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Tools/Skip32Cipher.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Tools/UidHelper.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/WPFLauncherLib/Main.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/ProcessLogWindow.g.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Forms/AccountSelectionWindow.g.cs" root0="SKIP_HIGHLIGHTING" />
@@ -683,7 +683,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复更新列表中assets顺序可能会乱问题" />
     <MESSAGE value="修复了长时间账号登录自动失效问题" />
     <MESSAGE value="更新正式版" />
     <MESSAGE value="update release image" />
@@ -708,7 +707,8 @@
     <MESSAGE value="Update Readme" />
     <MESSAGE value="继续优化" />
     <MESSAGE value="Update Release Image" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update Release Image" />
+    <MESSAGE value="优化自动更新页面布局设计, 引入了镜像站, 修复了启动 java版我的世界 游戏会导致拉出两个 java 日志窗口问题 #61 #62 #63" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化自动更新页面布局设计, 引入了镜像站, 修复了启动 java版我的世界 游戏会导致拉出两个 java 日志窗口问题 #61 #62 #63" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
