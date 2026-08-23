@@ -42,9 +42,8 @@ public static class ConfigManager
         new ConfigEntry
             { Key = "IsStartWebSocket", Description = "启用Web服务器", FieldType = typeof(bool), Category = "基础设置" },
         new ConfigEntry { Key = "HttpPort", Description = "Web服务器端口", FieldType = typeof(int), Category = "基础设置" },
-        
+        new ConfigEntry { Key = "ShowWindowsNotify", Description = "聊天显示系统原生通知", FieldType = typeof(bool), Category = "美化" },
         new ConfigEntry { Key = "LanGameNicknameFilterString", Description = "过滤本地联机玩家名称关键字(使用分号隔开, 例如: 生存;一服)", FieldType = typeof(string), Category = "过滤设置" },
-
 
         // Java启动设置
         new ConfigEntry
@@ -71,6 +70,16 @@ public static class ConfigManager
         // 自定义设置
         new ConfigEntry
         {
+            Key = "AdvancedSavesManager", Description = "更高级的存档管理界面(支持多槽位)", FieldType = typeof(bool),
+            Category = "自定义设置"
+        },
+        new ConfigEntry
+        {
+            Key = "ShowRoomManagerWindow", Description = "显示房间信息查看窗口", FieldType = typeof(bool),
+            Category = "自定义设置"
+        },
+        new ConfigEntry
+        {
             Key = "EnableCustomBedrockSelect", Description = "自由选择基岩版客户端", FieldType = typeof(bool), Category = "自定义设置"
         },
         new ConfigEntry
@@ -92,9 +101,6 @@ public static class ConfigManager
             { Key = "NoTwoExitMessage", Description = "禁用退出二次确认", FieldType = typeof(bool), Category = "联机大厅设置" },
         new ConfigEntry
             { Key = "EnableRoomBlacklist", Description = "启用房间黑名单", FieldType = typeof(bool), Category = "联机大厅设置" },
-        new ConfigEntry
-            { Key = "AlwaysSaveWorld", Description = "保存房间提醒", FieldType = typeof(bool), Category = "联机大厅设置" },
-
         new ConfigEntry { Key = "AllowFrp", Description = "允许内网穿透", FieldType = typeof(bool), Category = "本地联机" },
         new ConfigEntry { Key = "UseNetworkMode", Description = "使用组网模式(需开启允许内网穿透)", FieldType = typeof(bool), Category = "本地联机" },
 

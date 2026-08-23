@@ -75,8 +75,12 @@ internal class RoomManager : IMethodHook
                         break;
                     }
                 }
-                var window = new RoomInfoWindow(result);
-                window.Show();
+
+                if (WpfConfig.ShowRoomManagerWindow)
+                {
+                    var window = new RoomInfoWindow(result);
+                    window.Show();
+                }
             });
 
             // 获取房主名称及可见性
@@ -206,8 +210,12 @@ internal class RoomManager : IMethodHook
                         break;
                     }
                 }
-                var window = new RoomInfoWindow(Get_Room_Info);
-                window.Show();
+
+                if (WpfConfig.ShowRoomManagerWindow)
+                {
+                    var window = new RoomInfoWindow(Get_Room_Info);
+                    window.Show();
+                }
             });
 
             var Get_Owner_Info = X19Http.GetPlayerInfo(Get_Room_Info.entity.owner_id);
@@ -586,58 +594,6 @@ Port: {config.CppGameCfg.room_info.port}
     [HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "Left", "LeftOriginal")]
     public static void Left(string roomId)
     {
-        if (WpfConfig.AlwaysSaveWorld && WpfConfig.RoomInfo != null && (WpfConfig.RoomInfo.entity.allow_save || WpfConfig.RoomInfo.entity.owner_id == azf<arg>.Instance.User.Id))
-        {
-            var messageBoxResult = uz.q("是否保存存档至云服务端?", "", "确定", "不保存");
-            if (messageBoxResult == MessageBoxResult.OK)
-            {
-                bool flag_End = false;
-                while (!flag_End)
-                {
-                    var Get_Backup_Return = JObject.Parse(X19Http.Post("/online-lobby-backup/create",
-                        JsonConvert.SerializeObject(new { backup_id = "1", name = "Server_Backup" })));
-
-                    int code = Get_Backup_Return["code"]?.ToObject<int>() ?? -1;
-
-                    if (code != 0)
-                    {
-                        string warnMsg = $"[Backup] 存档保存失败: {Get_Backup_Return["message"]}";
-                        WpfConfig.DefaultLogger.Warn(warnMsg);
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine(warnMsg);
-                        Console.ResetColor();
-
-                        if (code == 12023 || code == 12026)
-                        {
-                            Thread.Sleep(2000);
-                        }
-                        else
-                        {
-                            flag_End = true; // 无法挽回的错误，跳出循环
-                        }
-                    }
-                    else
-                    {
-                        string backupDetails = $@"
------------------[自动备份情况]-----------------
-存档名称: {Get_Backup_Return["entity"]?["name"]}
-ResID: {Get_Backup_Return["entity"]?["res_id"]}
-保存时间: {X19Tools.unix_timestamp_to(Get_Backup_Return["entity"]["timestamp"].ToObject<long>())}
-过期时间: {X19Tools.unix_timestamp_to(Get_Backup_Return["entity"]["expire_time"].ToObject<long>())}
-存档大小: {Get_Backup_Return["entity"]?["size"]} 字节
-返回值: {Get_Backup_Return["code"]}
-返回消息: {Get_Backup_Return["message"]}
-----------------------------------------------";
-                        WpfConfig.DefaultLogger.Info(backupDetails);
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine(backupDetails);
-                        Console.ResetColor();
-                        flag_End = true;
-                    }
-                }
-            }
-        }
-
         // 关闭RoomInfoWindow窗口
         Application.Current.Dispatcher.Invoke(() =>
         {

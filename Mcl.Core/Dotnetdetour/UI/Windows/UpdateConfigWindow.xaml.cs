@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Mcl.Core.Updater;
 
 namespace Mcl.Core.Dotnetdetour.UI.Windows

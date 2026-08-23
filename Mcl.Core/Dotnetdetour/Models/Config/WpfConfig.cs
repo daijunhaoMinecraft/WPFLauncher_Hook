@@ -17,7 +17,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public class WpfConfig
 {
-    public static string Version = "5.0.3-DLL-Public-Beta3";
+    public static string Version = "6.0.0-DLL-Public";
     public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string Default_HttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -36,7 +36,6 @@ public class WpfConfig
     public static List<string> RegexBlacklist = new();
     public static int MaxRoomCount = 16;
     public static bool IsLogin = false;
-    public static bool AlwaysSaveWorld = true;
 
     public static string ServerListUrl = "https://x19.update.netease.com/serverlist/release.json";
     public static Uri ServerListUri = new(ServerListUrl);
@@ -54,6 +53,9 @@ public class WpfConfig
     public static bool MemoryOptimize = false;
     public static bool ShowAccountInfo = false;
     
+    // 美化
+    public static bool ShowWindowsNotify = false;
+    
     // threading Download Config
     public static int MaxThread = 8;
     public static bool IsDownloadMultiConfig = false;
@@ -70,6 +72,8 @@ public class WpfConfig
     public static bool EnableCustomBedrockSelect = false;
     public static bool EnableCustomAccountLogin = false;
     public static bool MpayUnless = false;
+    public static bool AdvancedSavesManager = true;
+    public static bool ShowRoomManagerWindow = true;
 
     public static bool KeepOffDeleteLastResourcepacks = false;
     public static bool KeepOffDeleteLastConfig = false;

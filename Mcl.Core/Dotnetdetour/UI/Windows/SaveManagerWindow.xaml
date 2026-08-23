@@ -1,0 +1,204 @@
+﻿<Window x:Class="Mcl.Core.Dotnetdetour.UI.Windows.SaveManagerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="载入存档" Height="500" Width="700"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Loaded="Window_Loaded"
+        Closed="Window_Closed">
+    
+       <Window.Resources>
+        <!-- 小圆角按钮样式 (重命名/删除按钮用) -->
+        <Style x:Key="SmallRoundedBtn" TargetType="Button">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <!-- 利用 Border 的 CornerRadius 属性实现圆角 -->
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <!-- 顺便加上鼠标悬浮和点击的透明度动画效果，让它更像现代UI -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.8"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- 大圆角按钮样式 (底部取消/载入按钮用) -->
+        <Style x:Key="LargeRoundedBtn" TargetType="Button">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.8"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" Value="0.6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
+    <!-- 窗口主圆角背景 -->
+    <Border Background="#F9F9F9" CornerRadius="12" BorderBrush="#E5E5E5" BorderThickness="1">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.15" Direction="270"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="45"/> <!-- 标题栏 -->
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>  <!-- 列表区 -->
+                <RowDefinition Height="65"/> <!-- 底部按钮区 -->
+            </Grid.RowDefinitions>
+
+            <!-- 1. 自定义标题栏 -->
+            <Border Grid.Row="0" Background="#FFFFFF" CornerRadius="12,12,0,0" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid>
+                    <TextBlock Text="存档管理 (云端)" FontWeight="Bold" FontSize="16" Foreground="#333333" 
+                               VerticalAlignment="Center" Margin="20,0,0,0"/>
+                    <Button Content="✕" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0"
+                            Width="30" Height="30" Background="Transparent" BorderThickness="0" 
+                            FontSize="14" Cursor="Hand" Click="BtnClose_Click"/>
+                </Grid>
+            </Border>
+            <Border Grid.Row="0" VerticalAlignment="Bottom" Height="1" Background="#E5E5E5"/>
+            <!-- 🌟 新增：存储空间使用情况展示 -->
+            <Border Grid.Row="1" Background="#FDFDFD" BorderBrush="#E5E5E5" BorderThickness="0,0,0,1" Padding="20,12">
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <TextBlock Text="云端存储空间: " Foreground="#555555" FontSize="13"/>
+                        <!-- 绑定到后台的 StorageUsageText 属性 -->
+                        <TextBlock Text="{Binding StorageUsageText, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                   Foreground="#333333" FontSize="13" FontWeight="SemiBold"/>
+                    </StackPanel>
+        
+                    <!-- 容量进度条 -->
+                    <ProgressBar Value="{Binding StorageUsagePercentage, RelativeSource={RelativeSource AncestorType=Window}}" 
+                                 Height="6" Maximum="100" BorderThickness="0" Background="#EAEAEA" Foreground="#78A65A">
+                        <ProgressBar.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="3"/>
+                            </Style>
+                        </ProgressBar.Resources>
+                    </ProgressBar>
+                </StackPanel>
+            </Border>
+
+            <!-- 2. 存档列表区 (超级列表框替代品) -->
+            <ListView x:Name="SaveListView" Grid.Row="2" Margin="15" Background="Transparent" BorderThickness="0" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Margin" Value="0,0,0,10"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListViewItem">
+                                    <Border x:Name="ItemBorder" Background="#FFFFFF" CornerRadius="8" Padding="15"
+                                            BorderThickness="1" BorderBrush="#E5E5E5" Cursor="Hand">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.05"/>
+                                        </Border.Effect>
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#78A65A"/>
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="ItemBorder" Property="BorderBrush" Value="#78A65A"/>
+                                            <Setter TargetName="ItemBorder" Property="Background" Value="#F2F7EF"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- 存档详细信息 -->
+                            <StackPanel Grid.Column="0">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Foreground="#222222"/>
+                                    <Border Background="#E6F4EA" CornerRadius="4" Padding="5,2" Margin="10,0,0,0">
+                                        <TextBlock Text="{Binding BackupId, StringFormat='槽位 {0}'}" FontSize="12" Foreground="#1E8E3E"/>
+                                    </Border>
+                                </StackPanel>
+                                
+                                <UniformGrid Columns="2" Margin="0,0,0,5">
+                                    <TextBlock Text="{Binding SaveId, StringFormat='Save ID: {0}'}" FontSize="12" Foreground="#777777"/>
+                                    <TextBlock Text="{Binding ResId, StringFormat='Res ID: {0}'}" FontSize="12" Foreground="#777777"/>
+                                </UniformGrid>
+                                
+                                <UniformGrid Columns="2">
+                                    <TextBlock Text="{Binding SaveTime, StringFormat='保存时间: {0}'}" FontSize="12" Foreground="#777777"/>
+                                    <TextBlock Text="{Binding ExpireTime, StringFormat='过期时间: {0}'}" FontSize="12" Foreground="#D93025"/>
+                                </UniformGrid>
+                            </StackPanel>
+
+                            <!-- 操作按钮 (修改/删除) -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="重命名" Tag="{Binding BackupId}" Click="BtnRename_Click"
+                                        Margin="0,0,10,0" Padding="10,5" Background="#F1F3F4" BorderThickness="0"/>
+                                <Button Content="删除" Tag="{Binding BackupId}" Click="BtnDelete_Click"
+                                        Padding="10,5" Background="#FCE8E6" Foreground="#D93025" BorderThickness="0"/>
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <!-- 3. 底部按钮区 -->
+            <Border Grid.Row="3" Background="#FFFFFF" CornerRadius="0,0,12,12">
+                <Grid>
+                    <Border VerticalAlignment="Top" Height="1" Background="#E5E5E5"/>
+                    <Button Content="刷新列表" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="20,0,0,0"
+                            Width="90" Height="36" Background="#F1F3F4" Foreground="#333333" FontWeight="SemiBold"
+                            Click="BtnRefresh_Click" Style="{StaticResource LargeRoundedBtn}"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,20,0">
+                        <!-- 仿原图的棕色取消按钮，现代化处理 -->
+                        <Button Content="取消" Width="100" Height="36" Margin="0,0,15,0" 
+                                Background="#A67B5B" Foreground="White" BorderThickness="0"
+                                Click="BtnClose_Click" Cursor="Hand" FontWeight="SemiBold"/>
+                        <!-- 仿原图的绿色载入按钮，现代化处理 -->
+                        <Button Content="载入存档" Width="100" Height="36" 
+                                Background="#78A65A" Foreground="White" BorderThickness="0"
+                                Click="BtnLoad_Click" Cursor="Hand" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>

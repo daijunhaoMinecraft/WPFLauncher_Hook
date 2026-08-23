@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using Mcl.Core.Dotnetdetour.UI.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,7 +25,7 @@ namespace Mcl.Core.Updater
 
         public static readonly HttpClient SharedHttpClient;
 
-        public class UpdateConfig
+                public class UpdateConfig
         {
             public bool DisableUpdate { get; set; } = false;
             public bool IsBuildChannel { get; set; } = true;
@@ -39,7 +40,8 @@ namespace Mcl.Core.Updater
             SharedHttpClient.DefaultRequestHeaders.Add("Accept", "application/vnd.github.v3+json");
         }
 
-        public static void Initialize()
+        // 【修改点1】将 Initialize 改为异步方法，以便等待窗口关闭
+        public static async Task InitializeAsync()
         {
             if (!CheckAdminPrivileges())
             {
@@ -47,13 +49,15 @@ namespace Mcl.Core.Updater
                 Environment.Exit(0);
                 return;
             }
-
+            
             CleanupOldFiles();
-            LoadOrInitConfig();
+            
+            // 等待配置加载或配置窗口关闭
+            await LoadOrInitConfigAsync();
 
             if (!CurrentConfig.DisableUpdate)
             {
-                Task.Run(async () => await CheckUpdateLogicAsync());
+                await CheckUpdateLogicAsync();
             }
         }
 
@@ -79,7 +83,8 @@ namespace Mcl.Core.Updater
             }
         }
 
-        private static void LoadOrInitConfig()
+        // 【修改点2】改为异步方法
+        private static async Task LoadOrInitConfigAsync()
         {
             if (File.Exists("DisableUpdater"))
             {
@@ -94,7 +99,15 @@ namespace Mcl.Core.Updater
             }
             else
             {
-                RunWpfWindow(() => new UpdateConfigWindow(CurrentConfig.DisableUpdate, CurrentConfig.IsBuildChannel));
+                // await 挂起，直到配置窗口关闭才继续向下执行
+                await RunWpfWindowAsync(() => new UpdateConfigWindow(CurrentConfig.DisableUpdate, CurrentConfig.IsBuildChannel));
+                
+                // 窗口关闭后，重新读取刚保存的配置（假设 UpdateConfigWindow 里保存了文件）
+                if (File.Exists(ConfigFileName))
+                {
+                    string json = File.ReadAllText(ConfigFileName);
+                    CurrentConfig = JsonConvert.DeserializeObject<UpdateConfig>(json) ?? new UpdateConfig();
+                }
             }
         }
 
@@ -105,41 +118,75 @@ namespace Mcl.Core.Updater
 
         #endregion
 
-        #region --- WPF 窗口跨线程调度 ---
+        #region --- WPF 窗口跨线程调度 (核心重构区) ---
 
-        private static void RunWpfWindow(Func<Window> windowFactory)
+        // 【修改点3】重构：无返回值的 WPF 窗口异步等待
+        private static Task RunWpfWindowAsync(Func<Window> windowFactory)
         {
+            return RunWpfWindowAsync(windowFactory, win => true); // 复用下面的泛型方法
+        }
+
+        // 【修改点4】重构：有返回值的 WPF 窗口异步等待 (用于提取窗口内的属性)
+        private static Task<TResult> RunWpfWindowAsync<TWindow, TResult>(Func<TWindow> windowFactory, Func<TWindow, TResult> getResult) where TWindow : Window
+        {
+            var tcs = new TaskCompletionSource<TResult>();
+
             Thread uiThread = new Thread(() =>
             {
-                // 确保有可用的 WPF Application 上下文
-                if (Application.Current == null)
-                    new Application();
+                try
+                {
+                    System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.SoftwareOnly;
+                    
+                    if (Application.Current == null)
+                    {
+                        new Application() { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+                    }
 
-                Window win = windowFactory();
-                win.ShowDialog();
+                    TWindow win = windowFactory();
+                    
+                    // 当窗口关闭时，提取属性，结束消息循环，并让 Task 完成
+                    win.Closed += (s, e) =>
+                    {
+                        try
+                        {
+                            TResult result = getResult(win);
+                            tcs.TrySetResult(result);
+                        }
+                        finally
+                        {
+                            Dispatcher.ExitAllFrames(); // 退出当前线程的 WPF 消息循环
+                        }
+                    };
+
+                    win.Show();
+                    Dispatcher.Run(); // 启动标准的 WPF 消息循环，而不是 ShowDialog
+                }
+                catch (Exception ex)
+                {
+                    tcs.TrySetException(ex);
+                }
             });
-            uiThread.SetApartmentState(ApartmentState.STA); // 必须是 STA 才能显示 WPF UI
+
+            uiThread.SetApartmentState(ApartmentState.STA);
             uiThread.IsBackground = true;
             uiThread.Start();
-            uiThread.Join();
+
+            return tcs.Task;
         }
 
         #endregion
 
         #region --- 核心更新逻辑 ---
 
-        // 增加了一个带有代理重试机制的 API 请求包装器
         private static async Task<string> GetGitHubApiJsonAsync(string url)
         {
             try
             {
-                // 优先尝试直连 API
                 return await SharedHttpClient.GetStringAsync(url);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"[Updater] API直连失败，尝试使用代理: {ex.Message}");
-                // 如果被墙，使用镜像站中转 API 请求
                 return await SharedHttpClient.GetStringAsync($"https://gh-proxy.com/{url}");
             }
         }
@@ -163,17 +210,17 @@ namespace Mcl.Core.Updater
                     string commitMessage = commitArray[0]["commit"]["message"].ToString();
                     string commitUrl = commitArray[0]["html_url"].ToString();
 
-                    bool agreed = false;
-                    int mirrorChoice = 0;
-                    RunWpfWindow(() => 
-                    {
-                        var win = new UpdatePromptWindow("Latest Build", commitMessage, commitUrl);
-                        win.Closed += (s, e) => { agreed = win.UserAgreed; mirrorChoice = win.SelectedMirrorIndex; };
-                        return win;
-                    });
+                    // 【修改点5】使用带返回值的 RunWpfWindowAsync 优雅提取用户的选择
+                    var promptResult = await RunWpfWindowAsync(
+                        () => new UpdatePromptWindow("Latest Build", commitMessage, commitUrl),
+                        win => new { win.UserAgreed, win.SelectedMirrorIndex }
+                    );
 
-                    // 【核心修改】不再在后台静默下载，而是拉起独立下载进度窗口
-                    if (agreed) RunWpfWindow(() => new DownloadProgressWindow(downloadUrl, localFile, mirrorChoice));
+                    // 此时代码会等待窗口关闭后才会执行到这里，promptResult 绝对准确
+                    if (promptResult.UserAgreed) 
+                    {
+                        await RunWpfWindowAsync(() => new DownloadProgressWindow(downloadUrl, localFile, promptResult.SelectedMirrorIndex));
+                    }
                 }
                 else
                 {
@@ -197,17 +244,16 @@ namespace Mcl.Core.Updater
                         if (CalculateFileSHA256(localFile).Equals(remoteHash, StringComparison.OrdinalIgnoreCase)) return;
                     }
 
-                    bool agreed = false;
-                    int mirrorChoice = 0;
-                    RunWpfWindow(() => 
-                    {
-                        var win = new UpdatePromptWindow(remoteVersion, releaseNotes, releaseUrl);
-                        win.Closed += (s, e) => { agreed = win.UserAgreed; mirrorChoice = win.SelectedMirrorIndex; };
-                        return win;
-                    });
+                    // 【修改点6】同上，异步等待结果
+                    var promptResult = await RunWpfWindowAsync(
+                        () => new UpdatePromptWindow(remoteVersion, releaseNotes, releaseUrl),
+                        win => new { win.UserAgreed, win.SelectedMirrorIndex }
+                    );
 
-                    // 【核心修改】不再在后台静默下载，而是拉起独立下载进度窗口
-                    if (agreed) RunWpfWindow(() => new DownloadProgressWindow(downloadUrl, localFile, mirrorChoice));
+                    if (promptResult.UserAgreed) 
+                    {
+                        await RunWpfWindowAsync(() => new DownloadProgressWindow(downloadUrl, localFile, promptResult.SelectedMirrorIndex));
+                    }
                 }
             }
             catch (Exception ex)

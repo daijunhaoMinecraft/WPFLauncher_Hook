@@ -155,12 +155,10 @@ namespace System.Runtime.CompilerServices
             
             var dummyColor = System.Drawing.SystemColors.Window; 
             var dummyFont = System.Drawing.SystemFonts.DefaultFont;
-            
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += DummyHandler;
             Microsoft.Win32.SystemEvents.UserPreferenceChanged -= DummyHandler;
-            Mcl.Core.Updater.UpdateManager.Initialize();
+            Mcl.Core.Updater.UpdateManager.InitializeAsync();
             SettingsInjector.Start();
-
             MethodHook.InstallTypes(new[] { typeof(InitHook) });
         }
         

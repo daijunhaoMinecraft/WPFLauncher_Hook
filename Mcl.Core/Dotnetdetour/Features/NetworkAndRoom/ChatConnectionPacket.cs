@@ -27,6 +27,17 @@ namespace Mcl.Core.Dotnetdetour.Features.NetworkAndRoom;
 
 internal class ChatConnectionPacket : IMethodHook
 {
+    public static class BackupEventManager
+    {
+        // 定义备份完成事件 (参数: backupId, isSuccess)
+        public static event Action<int, bool> OnBackupCompleted;
+
+        public static void TriggerBackupCompleted(int backupId, bool isSuccess)
+        {
+            OnBackupCompleted?.Invoke(backupId, isSuccess);
+        }
+    }
+
     [OriginalMethod]
     public static void ProcessPacket(abx packet)
     {
@@ -112,8 +123,19 @@ internal class ChatConnectionPacket : IMethodHook
                     if (commandId == 4) processingTasks.Add(Task.Run(() => HandleRoomInfoChange(jsonMessage)));
 
                     if (commandId == 5)
-                        WpfConfig.DefaultLogger.Info(
-                            $"联机大厅云存档备份Id: {jsonMessage["back_id"]} , 是否成功: {jsonMessage["success"].ToObject<bool>()}");
+                    {
+                        // 注意：日志里是 "backup_id":"1"，你的原代码写成了 "back_id"，这里修正为 backup_id
+                        int backupId = jsonMessage["backup_id"].ToObject<int>();
+                        // success 可能是数字 1/0，也可能是 true/false，这里做个兼容判断
+                        bool isSuccess = jsonMessage["success"].Type == JTokenType.Integer 
+                            ? jsonMessage["success"].ToObject<int>() == 1 
+                            : jsonMessage["success"].ToObject<bool>();
+
+                        WpfConfig.DefaultLogger.Info($"联机大厅云存档备份Id: {backupId} , 是否成功: {isSuccess}");
+    
+                        // 触发全局事件
+                        BackupEventManager.TriggerBackupCompleted(backupId, isSuccess);
+                    }
                 }
 
                 else if (moduleId == ModuleId.FriendLogout)
@@ -405,10 +427,16 @@ internal class ChatConnectionPacket : IMethodHook
             // 更新RoomInfoWindow
             Application.Current.Dispatcher.Invoke(() =>
             {
-                var roomInfoWindow = GetRoomInfoWindow();
-                if (roomInfoWindow != null)
-                    //roomInfoWindow.HandlePlayerJoin(userId);
-                    roomInfoWindow.UpdatePlayersList(WpfConfig.RoomInfo.entity.fids);
+                // 更新RoomInfoWindow
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var roomInfoWindow = GetRoomInfoWindow();
+                    if (roomInfoWindow != null)
+                    {
+                        roomInfoWindow.HandlePlayerJoin(userId);
+                        roomInfoWindow.UpdatePlayersList(WpfConfig.RoomInfo.entity.fids);
+                    }
+                });
             });
 
             if (WpfConfig.EnableRoomBlacklist && WpfConfig.RoomInfo.entity.owner_id == azf<arg>.Instance.User.Id)

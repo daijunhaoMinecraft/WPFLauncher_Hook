@@ -145,3 +145,11 @@ H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Do
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\UpdatePromptWindow.g.cs
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\DownloadProgressWindow.baml
 H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\DownloadProgressWindow.g.cs
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveManagerWindow.baml
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveManagerWindow.g.cs
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveBackupWindow.baml
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveBackupWindow.g.cs
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\InputDialogWindow.baml
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\InputDialogWindow.g.cs
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\LoadingDialogWindow.baml
+H:\Code\Hook\MCLHookProject\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\LoadingDialogWindow.g.cs

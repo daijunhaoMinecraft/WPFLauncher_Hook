@@ -1562,13 +1562,6 @@ public class SimpleHttpServer
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/LeftRoom"))
                     {
-                        var enableAlwaysSaveWorld = false;
-                        if (WpfConfig.AlwaysSaveWorld)
-                        {
-                            WpfConfig.AlwaysSaveWorld = false;
-                            enableAlwaysSaveWorld = true;
-                        }
-
                         var lobbyGameRoomManagerView = azf<apn>.Instance.k<LobbyGameRoomManagerView>();
                         if (lobbyGameRoomManagerView != null)
                         {
@@ -1620,7 +1613,6 @@ public class SimpleHttpServer
                             }
                         }
 
-                        if (enableAlwaysSaveWorld) WpfConfig.AlwaysSaveWorld = true;
                         SendResponse = new { code = 0, message = "成功退出房间", details = "" };
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/settings"))
