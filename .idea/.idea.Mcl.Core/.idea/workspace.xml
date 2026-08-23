@@ -10,10 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -696,11 +693,11 @@
     <MESSAGE value="Add Image" />
     <MESSAGE value="Update Readme" />
     <MESSAGE value="继续优化" />
-    <MESSAGE value="Update Release Image" />
     <MESSAGE value="优化自动更新页面布局设计, 引入了镜像站, 修复了启动 java版我的世界 游戏会导致拉出两个 java 日志窗口问题 #61 #62 #63" />
     <MESSAGE value="去除停更提示" />
     <MESSAGE value="发布正式版" />
-    <option name="LAST_COMMIT_MESSAGE" value="发布正式版" />
+    <MESSAGE value="Update Release Image" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update Release Image" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
