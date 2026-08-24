@@ -11,21 +11,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Optizime/CustomRequestHandler.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Optizime/SkinShowerFix.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Resources/31.c5774a7b.chunk.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/CoreEngine/Base/MethodHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/CoreEngine/Base/MethodHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -690,7 +677,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="update release image" />
     <MESSAGE value="去除基岩版消失问题" />
     <MESSAGE value="Release Image 4.1.0-DLL-Public" />
     <MESSAGE value="修复 SauthJson 显示问题" />
@@ -715,7 +701,8 @@
     <MESSAGE value="发布正式版" />
     <MESSAGE value="Update Release Image" />
     <MESSAGE value="Update Image" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update Image" />
+    <MESSAGE value="修复网易我的世界启动器自带的皮肤渲染问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复网易我的世界启动器自带的皮肤渲染问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

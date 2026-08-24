@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using System.Threading; // 新增：用于线程安全的 Interlocked
 using System.Windows;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
@@ -14,6 +15,8 @@ namespace Mcl.Core.Dotnetdetour.Features.AntiCheatBypass;
 
 public class BypassUpdate : IMethodHook
 {
+    private static int _hasCheckedForUpdate = 0;
+
     [OriginalMethod]
     public bool WpfLauncherUpdate()
     {
@@ -23,6 +26,11 @@ public class BypassUpdate : IMethodHook
     [HookMethod("WPFLauncher.Update.xw", "h", "WpfLauncherUpdate")]
     public bool WpfLauncherUpdateHook()
     {
+        if (Interlocked.Exchange(ref _hasCheckedForUpdate, 1) == 1)
+        {
+            return false;
+        }
+
         var result = WpfLauncherUpdate();
         var updateInit = new xw();
 
@@ -34,6 +42,7 @@ public class BypassUpdate : IMethodHook
         var text = string.Format("{0}{1}.{2}.{3}.txt", "/MCUpdate_", latestVersion.Major, latestVersion.Minor,
             latestVersion.Build);
         WpfConfig.DefaultLogger.Info($"最新版更新日志: https://x19.update.netease.com{text}");
+        
         var NeedUpdate = latestVersion > currectVersion;
         if (NeedUpdate)
         {
@@ -57,9 +66,13 @@ public class BypassUpdate : IMethodHook
 
             var isUpdate = uz.q("检测到网易我的世界启动器新版本, 是否更新(请先备份网易我的世界启动器完整目录后再去更新防止hook失效)?\n更新内容:见Windows Console控制台", "",
                 "更新", "不更新");
-            if (isUpdate == MessageBoxResult.OK) return result;
+            
+            if (isUpdate == MessageBoxResult.OK) 
+            {
+                return result; // 用户同意更新，返回原方法的逻辑结果
+            }
 
-            return false;
+            return false; // 用户不同意更新，返回 false 阻止更新
         }
 
         WpfConfig.DefaultLogger.Info("当前版本已是最新版本");
