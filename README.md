@@ -4,6 +4,8 @@
 
 <p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
+[功能视频展示](https://www.bilibili.com/video/BV1nf8v6yEa5/?share_source=copy_web&vd_source=ebb0acddab3736d4e9fe0d98acc10c02)
+
 # 下载方式
 | 下载方式 | 描述                                                       |
 | --- |----------------------------------------------------------|
