@@ -2,6 +2,8 @@
 
 <div align="center"><img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/assets/未标题-5.png" width="700" alt="未标题-5.png (1791×815)"/></div>
 
+<br/>**2026/08/27 20:45:55 临时停止维护, 原因未知**
+
 <p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
 # 下载方式
