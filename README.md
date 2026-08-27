@@ -4,8 +4,6 @@
 
 <p align="center" style="color: #808080">更好的网易我的世界启动器</p>
 
-[功能视频展示](https://www.bilibili.com/video/BV1nf8v6yEa5/?share_source=copy_web&vd_source=ebb0acddab3736d4e9fe0d98acc10c02)
-
 # 下载方式
 | 下载方式 | 描述                                                       |
 | --- |----------------------------------------------------------|
@@ -20,9 +18,6 @@
 本项目使用 GPL 3 开源, 也就是说你可以发布你修改本项目后的文件, 需要开源(**不得以任何方式阻止玩家获取源代码,包括但不限于倒卖等行为**), 当然可以在你的项目贴上你的赞助地址, 只不过需要贴上项目引用的是[这个项目的开源地址](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook)与作者名称
 
 如遇到软件功能类bug/提交一些建议等建议你提交[Issues](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)同时提交功能的时候请确保这个功能可以被实现(推荐提交的是PR,作者实现不了功能的会直接关闭Issue)
-
-# 讨论群聊
-[QQ Group](https://qm.qq.com/q/3EiKyU7pDi)
 
 # 功能
 
