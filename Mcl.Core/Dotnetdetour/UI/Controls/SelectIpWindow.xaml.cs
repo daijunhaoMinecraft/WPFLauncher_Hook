@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -18,8 +18,8 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
         public SelectIpWindow()
         {
             InitializeComponent();
-            TopMostCheck.IsChecked = WpfConfig.IsWindowTopMost;
-            Topmost = WpfConfig.IsWindowTopMost;
+            TopMostCheck.IsChecked = WpfConfig.KeepWindowsOnTop;
+            Topmost = WpfConfig.KeepWindowsOnTop;
             LoadCurrentSettings();
         }
 

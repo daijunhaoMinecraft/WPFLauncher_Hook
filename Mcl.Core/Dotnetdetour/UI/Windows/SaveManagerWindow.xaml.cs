@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +12,7 @@ using Mcl.Core.Dotnetdetour.UI.Dialogs;
 using Mcl.Core.NeteaseProtocol;
 using Newtonsoft.Json;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.UI.Windows
 {
     public partial class SaveManagerWindow : Window
@@ -67,7 +68,7 @@ namespace Mcl.Core.Dotnetdetour.UI.Windows
                 if (isSuccess)
                 {
                     // 可以选择在这里加一个小日志
-                    WpfConfig.DefaultLogger.Info($"[载入窗口] 检测到槽位 {backupId} 备份成功，正在自动刷新列表...");
+                    PluginLog.Info("UI", $"[载入窗口] 检测到槽位 {backupId} 备份成功，正在自动刷新列表...");
                     
                     await LoadSavesAsync();
                 }

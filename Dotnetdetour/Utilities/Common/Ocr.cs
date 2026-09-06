@@ -95,13 +95,13 @@ internal class Ocr
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             form.MinimizeBox = false;
             form.MaximizeBox = false;
-            form.TopMost = WpfConfig.IsWindowTopMost;
+            form.TopMost = WpfConfig.KeepWindowsOnTop;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = WpfConfig.IsWindowTopMost,
+                Checked = WpfConfig.KeepWindowsOnTop,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = form.ClientSize.Width - topMostCheck.Width - 15;

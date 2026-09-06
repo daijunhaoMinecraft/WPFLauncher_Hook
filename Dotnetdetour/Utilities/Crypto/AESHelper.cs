@@ -6,10 +6,8 @@ using System.Text;
 
 namespace Mcl.Core.Dotnetdetour.Tools;
 
-// Token: 0x0200004C RID: 76
 public class AESHelper
 {
-    // Token: 0x06000440 RID: 1088 RVA: 0x00017730 File Offset: 0x00015930
     public static byte[] AES_CBC_Decrypt(byte[] key, byte[] data, byte[] iv)
     {
         byte[] array2;
@@ -32,7 +30,6 @@ public class AESHelper
         return array2;
     }
 
-    // Token: 0x06000441 RID: 1089 RVA: 0x000177DC File Offset: 0x000159DC
     public static byte[] AES_CBC_Encrypt(byte[] key, byte[] data, byte[] iv)
     {
         byte[] array2;
@@ -55,7 +52,6 @@ public class AESHelper
         return array2;
     }
 
-    // Token: 0x06000442 RID: 1090 RVA: 0x00017888 File Offset: 0x00015A88
     public static byte[] AES_CBC256_Encrypt(byte[] key, byte[] toEncrypt, byte[] iv)
     {
         var num = 16 - toEncrypt.Length % 16;
@@ -83,7 +79,6 @@ public class AESHelper
         }.CreateEncryptor().TransformFinalBlock(array, 0, array.Length);
     }
 
-    // Token: 0x06000443 RID: 1091 RVA: 0x00017930 File Offset: 0x00015B30
     public static ICryptoTransform getCipherInstance(byte[] Key, bool encrypt = true)
     {
         if (Key.Length < 16)
@@ -104,19 +99,16 @@ public class AESHelper
         return rijndaelManaged.CreateDecryptor();
     }
 
-    // Token: 0x06000444 RID: 1092 RVA: 0x000039D8 File Offset: 0x00001BD8
     public static byte[] encrypt(byte[] key, byte[] source)
     {
         return getCipherInstance(key).TransformFinalBlock(source, 0, source.Length);
     }
 
-    // Token: 0x06000445 RID: 1093 RVA: 0x000039EB File Offset: 0x00001BEB
     public static byte[] decrypt(byte[] key, byte[] source)
     {
         return getCipherInstance(key, false).TransformFinalBlock(source, 0, source.Length);
     }
 
-    // Token: 0x06000446 RID: 1094 RVA: 0x000179C8 File Offset: 0x00015BC8
     public static byte[] AES_CFB_Decrypt(byte[] key, byte[] data, byte[] iv)
     {
         byte[] array3;
@@ -155,7 +147,6 @@ public class AESHelper
         return array3;
     }
 
-    // Token: 0x06000447 RID: 1095 RVA: 0x00017AAC File Offset: 0x00015CAC
     public static byte[] AES_ECB_Encrypt(byte[] key, byte[] data)
     {
         byte[] array2;
@@ -179,7 +170,6 @@ public class AESHelper
 
 
     // MCL.CORE
-    // Token: 0x06000094 RID: 148 RVA: 0x0000B718 File Offset: 0x00009918
     public static string BytesToHex(byte[] bytes)
     {
         var text = "";
@@ -190,7 +180,6 @@ public class AESHelper
         return text;
     }
 
-    // Token: 0x06000095 RID: 149 RVA: 0x0000B758 File Offset: 0x00009958
     public static byte[] HexToBytes(string hex)
     {
         return (from x in Enumerable.Range(0, hex.Length)
@@ -198,7 +187,6 @@ public class AESHelper
             select Convert.ToByte(hex.Substring(x, 2), 16)).ToArray();
     }
 
-    // Token: 0x06000096 RID: 150 RVA: 0x0000B7C0 File Offset: 0x000099C0
     public static byte[] GetIv(int n)
     {
         var array = new[]
@@ -216,13 +204,11 @@ public class AESHelper
         return Encoding.UTF8.GetBytes(stringBuilder.ToString());
     }
 
-    // Token: 0x06000097 RID: 151 RVA: 0x0000B835 File Offset: 0x00009A35
     public static byte[] GetDefaultIv()
     {
         return Encoding.UTF8.GetBytes("1234567890123456");
     }
 
-    // Token: 0x06000098 RID: 152 RVA: 0x0000B848 File Offset: 0x00009A48
     public static byte[] AESEncryptECB128(byte[] data, byte[] keyBytes, byte[] ivBytes)
     {
         return new RijndaelManaged
@@ -236,7 +222,6 @@ public class AESHelper
         }.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
     }
 
-    // Token: 0x06000099 RID: 153 RVA: 0x0000B89C File Offset: 0x00009A9C
     public static byte[] AESDecryptECB128(byte[] data, byte[] keyBytes, byte[] ivBytes)
     {
         return new RijndaelManaged
@@ -250,7 +235,6 @@ public class AESHelper
         }.CreateDecryptor().TransformFinalBlock(data, 0, data.Length);
     }
 
-    // Token: 0x0600009A RID: 154 RVA: 0x0000B8F0 File Offset: 0x00009AF0
     public static byte[] AESEncrypt128Ex(byte[] data, byte[] keyBytes, byte[] ivBytes)
     {
         return new RijndaelManaged
@@ -264,7 +248,6 @@ public class AESHelper
         }.CreateEncryptor().TransformFinalBlock(data, 0, data.Length);
     }
 
-    // Token: 0x0600009B RID: 155 RVA: 0x0000B944 File Offset: 0x00009B44
     public static byte[] AESDecrypt128Ex(byte[] data, byte[] keyBytes, byte[] ivBytes)
     {
         return new RijndaelManaged

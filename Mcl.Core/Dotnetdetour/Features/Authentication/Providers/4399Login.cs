@@ -16,6 +16,7 @@ using Newtonsoft.Json.Linq;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.UI.Forms;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 
 internal class _4399
@@ -93,7 +94,7 @@ internal class _4399
 
                     if (httpResponse.StatusCode == HttpStatusCode.Accepted)
                     {
-                        WpfConfig.DefaultLogger.Error($"触发 4399 服务器问题，第 {attempt + 1}/{maxRetries} 次重试...");
+                        PluginLog.Error("Auth", $"触发 4399 服务器问题，第 {attempt + 1}/{maxRetries} 次重试...");
 
                         // 如果不是最后一次尝试，等待 1 秒后继续
                         if (attempt < maxRetries - 1)
@@ -109,7 +110,7 @@ internal class _4399
                 
                 if (httpResponse?.StatusCode == HttpStatusCode.Accepted)
                 {
-                    WpfConfig.DefaultLogger.Error("已重试 20 次，仍然触发 4399 服务器问题，停止重试。");
+                    PluginLog.Error("Auth", "已重试 20 次，仍然触发 4399 服务器问题，停止重试。");
                 }
 
                 if (string.IsNullOrEmpty(responseBody))
@@ -138,7 +139,7 @@ internal class _4399
             }
             catch (Exception ex)
             {
-                WpfConfig.DefaultLogger.Error($"[4399] 登录异常: {ex.Message}");
+                PluginLog.Error("Auth", $"[4399] 登录异常: {ex.Message}");
                 return LoginResult.Fail(ex.Message);
             }
         }

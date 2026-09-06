@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using WPFLauncher.Common;
 using WPFLauncher.Manager;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.NetworkAndRoom;
 
 public class ProcessMessage : IMethodHook
@@ -50,14 +51,14 @@ public class ProcessMessage : IMethodHook
 
         var rawData = new byte[dataSize];
         Marshal.Copy(dataPtr, rawData, 0, dataSize);
-        if (WpfConfig.IsDebug)
-            WpfConfig.DefaultLogger.Info(
+        if (WpfConfig.EnableVerboseLogging)
+            PluginLog.Debug("Network", 
                 $"[RECV] Peer:{peerId} Len:{dataSize}, Data: {BitConverter.ToString(rawData).Replace('-', ' ')}");
 
-        if (WpfConfig.UseNetworkMode)
+        if (WpfConfig.EnableVirtualNetwork)
         {
             // 调试日志：查看原始数据前几个字节
-            // WpfConfig.DefaultLogger.Info($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
+            // WpfConfig.DefaultLogger.Debug($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
             var passToNetwork = true;
 
             if (VirualIpProto.IsMagicHeader(rawData))
@@ -71,7 +72,7 @@ public class ProcessMessage : IMethodHook
                     var receivedIp = new IPAddress(ipBytes);
                     var virtualIpString = receivedIp.ToString();
 
-                    WpfConfig.DefaultLogger.Info($"Received PeerId: {peerId} Virtual IP: {virtualIpString}");
+                    PluginLog.Debug("Network", $"Received PeerId: {peerId} Virtual IP: {virtualIpString}");
 
                     // 【修改点】使用 for 循环手动查找索引，替代 FindIndex
                     // ObservableCollection 不支持 FindIndex，但支持通过索引器访问
@@ -102,12 +103,12 @@ public class ProcessMessage : IMethodHook
                         // 6. 执行后续逻辑
                         WintunRouterService.Instance.SendServerPlayerInfo();
 
-                        WpfConfig.DefaultLogger.Info($"[成功] 已更新 PeerId {peerId} 的虚拟 IP 为 {playerInfo.VirtualIp}");
+                        PluginLog.Debug("Network", $"[成功] 已更新 PeerId {peerId} 的虚拟 IP 为 {playerInfo.VirtualIp}");
                     }
                     else
                     {
                         // 可选：调试用
-                        WpfConfig.DefaultLogger.Warn($"[警告] 未找到 PeerId 为 {peerId} 的玩家，无法更新 IP。");
+                        PluginLog.Warn("Network", $"[警告] 未找到 PeerId 为 {peerId} 的玩家，无法更新 IP。");
                     }
 
                     passToNetwork = false;
@@ -121,7 +122,7 @@ public class ProcessMessage : IMethodHook
                 // 调用工具生成字节包
                 var packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
                 SendData(peerId, packetToSend);
-                WpfConfig.DefaultLogger.Info($"peerId: {peerId} 玩家进入选择IP阶段");
+                PluginLog.Debug("Network", $"peerId: {peerId} 玩家进入选择IP阶段");
                 passToNetwork = false;
             }
 
@@ -131,7 +132,7 @@ public class ProcessMessage : IMethodHook
                 if (LanGameProtocolHelper.TryParsePlayerListPacket(rawData, out var players))
                 {
                     // 解析成功，更新本地 UI 或逻辑
-                    WpfConfig.DefaultLogger.Info($"收到玩家列表，共 {players.Count} 人");
+                    PluginLog.Debug("Network", $"收到玩家列表，共 {players.Count} 人");
 
                     // 例如：更新全局列表
                     WebRtcVar.PlayerList = players;
@@ -142,7 +143,7 @@ public class ProcessMessage : IMethodHook
                 {
                     // 解析失败，可能是其他类型的包，或者数据包损坏
                     // 这里可以添加对其他 PacketType (如心跳) 的判断逻辑
-                    WpfConfig.DefaultLogger.Warn("收到无效或非玩家列表的数据包");
+                    PluginLog.Warn("Network", "收到无效或非玩家列表的数据包");
                 }
 
                 passToNetwork = false;
@@ -158,14 +159,14 @@ public class ProcessMessage : IMethodHook
         if (IsMagicHandshake(rawData))
         {
             WebRtcVar.PeerSupportMultiplex[peerId] = true;
-            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Protocol] {peerId} 握手成功 - 开启多路复用");
+            if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Protocol] {peerId} 握手成功 - 开启多路复用");
             return;
         }
 
         if (rawData[0] == 0x00 && rawData.Length == 2)
         {
             int connIdInt = rawData[1];
-            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Protocol] 关闭连接: {connIdInt}");
+            if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Protocol] 关闭连接: {connIdInt}");
 
             var sessionKey_1 = WebRtcVar.Mode == ForwardMode.Server
                 ? $"{peerId}_{connIdInt}"
@@ -188,7 +189,7 @@ public class ProcessMessage : IMethodHook
             // 如果收到长度为 1 的包（只有 ConnId），代表对端通知连接断开
             if (dataSize == 1)
             {
-                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 对端通知关闭 ConnId: {connId}");
+                if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Mux] 对端通知关闭 ConnId: {connId}");
                 if (WebRtcVar.Sessions.TryRemove($"{peerId}_{connId}", out var s)) s.Close();
                 return;
             }
@@ -206,8 +207,8 @@ public class ProcessMessage : IMethodHook
         {
             var comp = WebRtcVar.GetCompressor(WebRtcVar.getIntPtrFromPeerId(peerId).Value);
             if (comp != null) final = comp.b(mcData);
-            if (WpfConfig.IsDebug)
-                WpfConfig.DefaultLogger.Info($"[Decompress] {peerId} {BitConverter.ToString(final)}");
+            if (WpfConfig.EnableVerboseLogging)
+                PluginLog.Debug("Network", $"[Decompress] {peerId} {BitConverter.ToString(final)}");
         }
 
         // 处理 Session 转发
@@ -216,7 +217,7 @@ public class ProcessMessage : IMethodHook
         if (WebRtcVar.Sessions.TryGetValue(sessionKey, out var session))
         {
             // 解压逻辑（如果是 Zlib）
-            // WpfConfig.DefaultLogger.Info($"Data: {BitConverter.ToString(final)}");
+            // WpfConfig.DefaultLogger.Debug($"Data: {BitConverter.ToString(final)}");
             session.SendToSocket(final);
         }
         else
@@ -224,7 +225,7 @@ public class ProcessMessage : IMethodHook
             // 如果服务端没找到 Session，且是多路复用模式，说明是新请求
             if (WebRtcVar.Mode == ForwardMode.Server && WebRtcVar.PeerSupportMultiplex.ContainsKey(peerId))
             {
-                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 创建新服务端 Session: {peerId}_{connId}");
+                if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Mux] 创建新服务端 Session: {peerId}_{connId}");
 
                 var newSession = new UnifiedSession(peerId, connId);
                 WebRtcVar.Sessions[sessionKey] = newSession;
@@ -236,14 +237,14 @@ public class ProcessMessage : IMethodHook
                 if (WebRtcVar.IsNativeCompressionEnabled() && !WebRtcVar.PeerSupportMultiplex.ContainsKey(peerId))
                 {
                     // 创建新连接
-                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 创建新客户端 Session: {peerId}_{connId}");
+                    if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Mux] 创建新客户端 Session: {peerId}_{connId}");
                     WebRtcVar.Sessions[sessionKey] = new UnifiedSession(peerId, true);
                     WebRtcVar.Sessions[sessionKey].SendToSocket(final);
                 }
                 else
                 {
-                    if (WpfConfig.IsDebug)
-                        WpfConfig.DefaultLogger.Warn($"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
+                    if (WpfConfig.EnableVerboseLogging)
+                        PluginLog.Warn("Network", $"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
                 }
             }
         }
@@ -295,18 +296,18 @@ public class ProcessMessage : IMethodHook
             var asm = WebRtcVar.CmInstance.GetType().Assembly;
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
-            if (WpfConfig.IsDebug)
-                WpfConfig.DefaultLogger.Info(
+            if (WpfConfig.EnableVerboseLogging)
+                PluginLog.Debug("Network", 
                     $"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
             var success = (bool)result;
 
-            if (!success) WpfConfig.DefaultLogger.Error("[WebRtc] 一个包发送失败!");
-            // WpfConfig.DefaultLogger.Info($"发送调用结果: {success}");
+            if (!success) PluginLog.Error("Network", "[WebRtc] 一个包发送失败!");
+            // WpfConfig.DefaultLogger.Debug($"发送调用结果: {success}");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Info($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            PluginLog.Error("Network", $"[WebRtc] SendBack 发送失败: {ex.Message}");
         }
     }
 
@@ -325,18 +326,18 @@ public class ProcessMessage : IMethodHook
             var asm = WebRtcVar.CmInstance.GetType().Assembly;
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
-            if (WpfConfig.IsDebug)
-                WpfConfig.DefaultLogger.Info(
+            if (WpfConfig.EnableVerboseLogging)
+                PluginLog.Debug("Network", 
                     $"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
             var success = (bool)result;
 
-            if (!success) WpfConfig.DefaultLogger.Error("[WebRtc] 一个包发送失败!");
-            // WpfConfig.DefaultLogger.Info($"发送调用结果: {success}");
+            if (!success) PluginLog.Error("Network", "[WebRtc] 一个包发送失败!");
+            // WpfConfig.DefaultLogger.Debug($"发送调用结果: {success}");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            PluginLog.Error("Network", $"[WebRtc] SendBack 发送失败: {ex.Message}");
         }
     }
 
@@ -353,18 +354,18 @@ public class ProcessMessage : IMethodHook
             var asm = WebRtcVar.CmInstance.GetType().Assembly;
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
-            if (WpfConfig.IsDebug)
-                WpfConfig.DefaultLogger.Info(
+            if (WpfConfig.EnableVerboseLogging)
+                PluginLog.Debug("Network", 
                     $"[SEND] Peer:{peerId} Len:{data.Length}, Data: {BitConverter.ToString(data).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, data, data.Length });
             var success = (bool)result;
 
-            if (!success) WpfConfig.DefaultLogger.Error("[WebRtc] 一个包发送失败!");
-            // WpfConfig.DefaultLogger.Info($"发送调用结果: {success}");
+            if (!success) PluginLog.Error("Network", "[WebRtc] 一个包发送失败!");
+            // WpfConfig.DefaultLogger.Debug($"发送调用结果: {success}");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"[WebRtc] SendBack 发送失败: {ex.Message}");
+            PluginLog.Error("Network", $"[WebRtc] SendBack 发送失败: {ex.Message}");
         }
     }
 
@@ -380,13 +381,13 @@ public class ProcessMessage : IMethodHook
     {
         try
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
-                WpfConfig.DefaultLogger.Info("--- [TransferServer <<< RECV] ---");
+                PluginLog.Debug("Network", "--- [TransferServer <<< RECV] ---");
                 var hexString = BitConverter.ToString(messageData).Replace("-", " ");
-                WpfConfig.DefaultLogger.Info($"Message ID: {messageId}");
-                WpfConfig.DefaultLogger.Info($"Data (Hex): {hexString}");
-                WpfConfig.DefaultLogger.Info("--------------------------\n");
+                PluginLog.Debug("Network", $"Message ID: {messageId}");
+                PluginLog.Debug("Network", $"Data (Hex): {hexString}");
+                PluginLog.Debug("Network", "--------------------------\n");
             }
 
             if (messageId == 517)
@@ -399,12 +400,12 @@ public class ProcessMessage : IMethodHook
                 {
                     if (data.State == 1)
                     {
-                        WpfConfig.DefaultLogger.Warn($"玩家 {data.UserID} 加入了房间");
+                        PluginLog.Warn("Network", $"玩家 {data.UserID} 加入了房间");
                         // WebRtcVar.PlayerList.Add(data.UserID);
                     }
                     else
                     {
-                        WpfConfig.DefaultLogger.Warn($"玩家 {data.UserID} 离开了房间");
+                        PluginLog.Warn("Network", $"玩家 {data.UserID} 离开了房间");
                         var player = WebRtcVar.PlayerList.FirstOrDefault(x => x.UserID == data.UserID.ToString());
 
                         if (player != null) WebRtcVar.PlayerList.Remove(player);
@@ -416,11 +417,11 @@ public class ProcessMessage : IMethodHook
                 var data = default(TransferStruct.PlayerCreateWebRtcConnectEvent);
                 var deserializer = new PacketDeserializer(messageData);
                 deserializer.Deserialize(ref data);
-                WpfConfig.DefaultLogger.Info(
+                PluginLog.Debug("Network", 
                     $"MessageData: {BitConverter.ToString(messageData)}, UserId: {data.UserID}, PeerId: {data.PeerId}");
 
                 var playerInfo = X19Http.GetPlayerInfo(data.UserID.ToString());
-                WpfConfig.DefaultLogger.Info(
+                PluginLog.Debug("Network", 
                     $"玩家 {playerInfo["entity"]["name"]} 创建了一个 WebRTC 连接, PeerId: {data.PeerId}");
                 var player = new LanGamePlayerInfo
                 {
@@ -431,7 +432,7 @@ public class ProcessMessage : IMethodHook
                     Status = "连接中..."
                 };
                 WebRtcVar.PlayerList.Add(player);
-                if (WpfConfig.UseNetworkMode)
+                if (WpfConfig.EnableVirtualNetwork)
                 {
                     // 假设 PlayerList 已经填充了数据
                     var currentPlayers = WebRtcVar.PlayerList;
@@ -440,7 +441,7 @@ public class ProcessMessage : IMethodHook
                     var packetToSend = LanGameProtocolHelper.BuildPlayerListPacket(currentPlayers);
                     // 发送给特定 peer 或 广播
                     SendData(data.PeerId.ToString(), packetToSend);
-                    WpfConfig.DefaultLogger.Info($"[Router] 玩家列表已发送给 {data.PeerId.ToString()}。");
+                    PluginLog.Debug("Network", $"[Router] 玩家列表已发送给 {data.PeerId.ToString()}。");
                     WintunRouterService.Instance.SendServerPlayerInfo();
                     if (WebRtcVar.NetworkMonitor != null) WebRtcVar.NetworkMonitor.RefreshPlayerData();
                 }
@@ -452,11 +453,11 @@ public class ProcessMessage : IMethodHook
                 deserializer.Deserialize(ref data);
                 if (data.Result == 255)
                 {
-                    WpfConfig.DefaultLogger.Error($"中转服登录失败, 错误码: {data.Result}, 原因: 你未登录/你的账号在另一处登录/Logout");
+                    PluginLog.Error("Network", $"中转服登录失败, 错误码: {data.Result}, 原因: 你未登录/你的账号在另一处登录/Logout");
                 }
                 else if (data.Result == 0)
                 {
-                    WpfConfig.DefaultLogger.Info("中转服登录成功!");
+                    PluginLog.Debug("Network", "中转服登录成功!");
                     try
                     {
                         var player = new LanGamePlayerInfo
@@ -471,22 +472,22 @@ public class ProcessMessage : IMethodHook
                     }
                     catch (Exception e)
                     {
-                        WpfConfig.DefaultLogger.Info("添加自己到玩家列表失败: " + e);
+                        PluginLog.Error("Network", "添加自己到玩家列表失败: " + e);
                     }
                 }
                 else if (data.Result == 4)
                 {
-                    WpfConfig.DefaultLogger.Error($"中转服登录失败, 错误码: {data.Result}, 原因: 服务器忙，登录中转服失败");
+                    PluginLog.Error("Network", $"中转服登录失败, 错误码: {data.Result}, 原因: 服务器忙，登录中转服失败");
                 }
             }
 
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     { type = "TransferMessageRecv", data = new { messageId, messageData } }));
         }
         catch (Exception e)
         {
-            WpfConfig.DefaultLogger.Error(e);
+            PluginLog.Error("Network", e);
         }
 
         return processReceiveTransferMessage(messageId, messageData);
@@ -504,9 +505,9 @@ public class ProcessMessage : IMethodHook
         var player = WebRtcVar.PlayerList.FirstOrDefault(p => p.PeerId == peerId);
         if (player != null)
         {
-            WpfConfig.DefaultLogger.Info($"玩家 {player.Name} 断开连接");
+            PluginLog.Debug("Network", $"玩家 {player.Name} 断开连接");
             WebRtcVar.PlayerList.Remove(player);
-            if (WpfConfig.UseNetworkMode)
+            if (WpfConfig.EnableVirtualNetwork)
             {
                 WintunRouterService.Instance.RemoveRouting(peerId);
                 WintunRouterService.Instance.SendServerPlayerInfo();
@@ -516,7 +517,7 @@ public class ProcessMessage : IMethodHook
         }
         else
         {
-            WpfConfig.DefaultLogger.Info($"PeerId 断开连接: {peerId}");
+            PluginLog.Debug("Network", $"PeerId 断开连接: {peerId}");
         }
 
         OriginalOnDataClose(peerId);
@@ -530,7 +531,7 @@ public class ProcessMessage : IMethodHook
     [HookMethod("WebRtc.NET.cm", "f", "Original_WebSocket_WebRtc_OnMessage")]
     private void WebSocket_OnMessage(string Message)
     {
-        WpfConfig.DefaultLogger.Info($"[WebSocket_WebRtc]收到消息:{Message}");
+        PluginLog.Debug("Network", $"[WebSocket_WebRtc]收到消息:{Message}");
         Original_WebSocket_WebRtc_OnMessage(Message);
     }
 
@@ -542,7 +543,7 @@ public class ProcessMessage : IMethodHook
     [HookMethod("WebRtc.NET.cm", "h", "Original_WebSocket_WebRtc_SendMessage")]
     private void WebSocket_SendMessage(string Message)
     {
-        WpfConfig.DefaultLogger.Info($"[WebSocket_WebRtc]发送消息:{Message}");
+        PluginLog.Debug("Network", $"[WebSocket_WebRtc]发送消息:{Message}");
         Original_WebSocket_WebRtc_SendMessage(Message);
     }
 
@@ -555,9 +556,9 @@ public class ProcessMessage : IMethodHook
     [HookMethod(TargetConst.LanGameManager, "as", "sendTransferMessage")]
     public bool SendTransferMessage_HookMethod(params object[] ObjectMessage)
     {
-        WpfConfig.DefaultLogger.Info("--- [TransferServer >>> SEND] ---");
-        WpfConfig.DefaultLogger.Info(JsonConvert.SerializeObject(ObjectMessage));
-        WpfConfig.DefaultLogger.Info("--------------------------\n");
+        PluginLog.Debug("Network", "--- [TransferServer >>> SEND] ---");
+        PluginLog.Debug("Network", JsonConvert.SerializeObject(ObjectMessage));
+        PluginLog.Debug("Network", "--------------------------\n");
         return sendTransferMessage(ObjectMessage);
     }
 
@@ -569,11 +570,11 @@ public class ProcessMessage : IMethodHook
     [HookMethod("WPFLauncher.Network.acb", "b", "handleReceiveLauncherMessage")]
     public void HandleLauncherRecv(ushort messageId, byte[] messageData)
     {
-        WpfConfig.DefaultLogger.Debug("--- [Launcher <<< RECV] ---");
+        PluginLog.Debug("Network", "--- [Launcher <<< RECV] ---");
         var hexString = BitConverter.ToString(messageData).Replace("-", " ");
-        WpfConfig.DefaultLogger.Debug($"Message ID: {messageId}");
-        WpfConfig.DefaultLogger.Debug($"Data (Hex): {hexString}");
-        WpfConfig.DefaultLogger.Debug("--------------------------\n");
+        PluginLog.Debug("Network", $"Message ID: {messageId}");
+        PluginLog.Debug("Network", $"Data (Hex): {hexString}");
+        PluginLog.Debug("Network", "--------------------------\n");
         handleReceiveLauncherMessage(messageId, messageData);
     }
 
@@ -585,10 +586,10 @@ public class ProcessMessage : IMethodHook
     [HookMethod("WPFLauncher.Manager.LanGame.atk", "g", "SendLauncherMessage")]
     public void HandleLauncherSend(byte[] messageData)
     {
-        WpfConfig.DefaultLogger.Debug("--- [Launcher <<< SEND] ---");
+        PluginLog.Debug("Network", "--- [Launcher <<< SEND] ---");
         var hexString = BitConverter.ToString(messageData).Replace("-", " ");
-        WpfConfig.DefaultLogger.Debug($"Data (Hex): {hexString}");
-        WpfConfig.DefaultLogger.Debug("--------------------------\n");
+        PluginLog.Debug("Network", $"Data (Hex): {hexString}");
+        PluginLog.Debug("Network", "--------------------------\n");
         SendLauncherMessage(messageData);
     }
 }

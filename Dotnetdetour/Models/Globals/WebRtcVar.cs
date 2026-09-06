@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -75,7 +75,7 @@ namespace Mcl.Core.Dotnetdetour.Var
                 lock (_lock)
                 {
                     _activeIds.Remove(id);
-                    if (WpfConfig.IsDebug)
+                    if (WpfConfig.EnableVerboseLogging)
                     {
                         Console.WriteLine($"[ConnManager] 已释放 ID: {id}, 当前活跃数: {_activeIds.Count}");
                     }

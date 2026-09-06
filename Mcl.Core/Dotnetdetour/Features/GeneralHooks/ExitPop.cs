@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Windows;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
@@ -20,7 +20,7 @@ public class ExitPop : IMethodHook
     [HookMethod("WPFLauncher.ViewModel.LobbyGame.jp", "o", "ExitRoomPrivate")]
     private void ExitRoom(object args)
     {
-        if (!WpfConfig.NoTwoExitMessage || WpfConfig.RoomInfo.entity.allow_save || WpfConfig.RoomInfo.entity.owner_id == azf<arg>.Instance.User.Id)
+        if (!WpfConfig.SkipExitConfirmation || WpfConfig.RoomInfo.entity.allow_save || WpfConfig.RoomInfo.entity.owner_id == azf<arg>.Instance.User.Id)
         {
             ExitRoomPrivate(args);
             return;

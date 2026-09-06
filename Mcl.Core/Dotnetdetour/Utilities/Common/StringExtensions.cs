@@ -4,27 +4,13 @@ using System.Linq;
 
 namespace Mcl.Core.Dotnetdetour.Utilities.Common;
 
-// Token: 0x02000006 RID: 6
 public static class StringExtensions
 {
-    // Token: 0x0600001B RID: 27 RVA: 0x00002C4C File Offset: 0x00000E4C
-    public static string RandStringRunes(int length)
-    {
-        var text = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        var random = new Random();
-        return new string((from s in Enumerable.Repeat(text, length)
-            select s[random.Next(s.Length)]).ToArray());
-    }
+    public static string RandStringRunes(int length) => Mcl.Core.Tools.StringExtensions.RandStringRunes(length);
 
-    // Token: 0x0600001C RID: 28 RVA: 0x00002C90 File Offset: 0x00000E90
-    public static string RandomLetter(int length)
-    {
-        var random = new Random();
-        return new string((from s in Enumerable.Repeat("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", length)
-            select s[random.Next(s.Length)]).ToArray());
-    }
+    public static string RandomLetter(int length) =>
+        Mcl.Core.Tools.StringExtensions.RandomCharacters(length, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
 
-    // Token: 0x0600001D RID: 29 RVA: 0x00002CD4 File Offset: 0x00000ED4
     public static uint SafeParseToUInt32(this string numStr)
     {
         uint num;
@@ -32,7 +18,6 @@ public static class StringExtensions
         return num;
     }
 
-    // Token: 0x0600001E RID: 30 RVA: 0x00002CEC File Offset: 0x00000EEC
     public static byte[] HexToBytes(this string hex)
     {
         if (string.IsNullOrEmpty(hex)) return null;

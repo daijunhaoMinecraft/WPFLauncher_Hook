@@ -1,3 +1,4 @@
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 using System;
 using System.Runtime.CompilerServices;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
@@ -23,14 +24,14 @@ internal class MuteBanSystem : IMethodHook
     public new bool CheckMuteBanHook()
     {
         var isMuted = CheckMuteBan();
-        Console.WriteLine($"[INFO] mChatBan: {isMuted}");
+        PluginLog.Debug("Hook", $"[INFO] mChatBan: {isMuted}");
         if (isMuted)
         {
             var banChatExpiredAt = azf<arg>.Instance.User.BanChatExpiredAt;
-            WpfConfig.DefaultLogger.Error("[MuteSystem] 您被系统暂时禁言, 时间至 " + X19Tools.unix_timestamp_to(banChatExpiredAt));
+            PluginLog.Error("Hook", "[MuteSystem] 您被系统暂时禁言, 时间至 " + X19Tools.unix_timestamp_to(banChatExpiredAt));
         }
 
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn("发现网易尝试检测该账号是否在禁言状态, 已被制止");
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Warn("Hook", "发现网易尝试检测该账号是否在禁言状态, 已被制止");
         return false;
     }
 }

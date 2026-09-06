@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Mcl.Core.Dotnetdetour.Tools;
 using Newtonsoft.Json;
 
@@ -11,7 +11,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.Util.tv", "a", "No_Vape")]
         public static Tuple<string, string> a(string gbp)
         {
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
             {
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "VapeDetect", IsBypass = true}));
             }

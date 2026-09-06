@@ -23,6 +23,7 @@ using WPFLauncher.Network;
 using WPFLauncher.Network.TransService;
 using Application = System.Windows.Application;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.NetworkAndRoom;
 
 internal class ChatConnectionPacket : IMethodHook
@@ -56,7 +57,7 @@ internal class ChatConnectionPacket : IMethodHook
         var moduleId = packet.b;
         var commandId = packet.c;
         var sequenceId = packet.e;
-        WpfConfig.DefaultLogger.Info(
+        PluginLog.Debug("Network", 
             $"[ChatConnection] Received a message: {message} , moduleId: {moduleId} , commandId: {commandId} , sequence Number: {sequenceId}");
         var jsonMessage = new JObject();
 
@@ -88,11 +89,11 @@ internal class ChatConnectionPacket : IMethodHook
 
                     if (commandId == 3 && WpfConfig.RoomInfo != null)
                     {
-                        WpfConfig.DefaultLogger.Warn("你已被房主踢出房间");
-                        if (WpfConfig.IsStartWebSocket)
+                        PluginLog.Warn("Network", "你已被房主踢出房间");
+                        if (WpfConfig.EnableWebServer)
                             await Task.Run(() => WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                                 { type = "ChatConnectionPacket", status = "kick", data = message })));
-                        WpfConfig.DefaultLogger.Info("正在重新加入房间...");
+                        PluginLog.Debug("Network", "正在重新加入房间...");
                         while (true)
                         {
                             var joinRoomResponse = JObject.Parse(X19Http.Post("/online-lobby-room-enter",
@@ -103,18 +104,18 @@ internal class ChatConnectionPacket : IMethodHook
                                 })));
                             if (joinRoomResponse["code"].ToObject<int>() == 0)
                             {
-                                WpfConfig.DefaultLogger.Info("成功加入房间!");
+                                PluginLog.Debug("Network", "成功加入房间!");
                                 break;
                             }
 
                             if (joinRoomResponse["code"].ToObject<int>() == 12022)
                             {
-                                WpfConfig.DefaultLogger.Error($"加入房间失败:{joinRoomResponse["message"]},等待0.8秒后再次加入房间");
+                                PluginLog.Error("Network", $"加入房间失败:{joinRoomResponse["message"]},等待0.8秒后再次加入房间");
                                 Thread.Sleep(200);
                             }
                             else
                             {
-                                WpfConfig.DefaultLogger.Info($"加入房间失败:{joinRoomResponse["message"]}");
+                                PluginLog.Error("Network", $"加入房间失败:{joinRoomResponse["message"]}");
                                 break;
                             }
                         }
@@ -131,7 +132,7 @@ internal class ChatConnectionPacket : IMethodHook
                             ? jsonMessage["success"].ToObject<int>() == 1 
                             : jsonMessage["success"].ToObject<bool>();
 
-                        WpfConfig.DefaultLogger.Info($"联机大厅云存档备份Id: {backupId} , 是否成功: {isSuccess}");
+                        PluginLog.Debug("Network", $"联机大厅云存档备份Id: {backupId} , 是否成功: {isSuccess}");
     
                         // 触发全局事件
                         BackupEventManager.TriggerBackupCompleted(backupId, isSuccess);
@@ -157,7 +158,7 @@ internal class ChatConnectionPacket : IMethodHook
                     if (commandId == 1)
                     {
                         if (message.Contains("player_chatver_id") && message.Contains("err"))
-                            WpfConfig.Get_Recv_String_ChatResult = message;
+                            WpfConfig.LastChatResponse = message;
                         else
                             processingTasks.Add(Task.Run(() => HandlePlayerChat(jsonMessage)));
                     }
@@ -166,8 +167,8 @@ internal class ChatConnectionPacket : IMethodHook
                 {
                     processingTasks.Add(Task.Run(() =>
                     {
-                        WpfConfig.DefaultLogger.Debug($"接收到未分类的数据包: {message}");
-                        if (WpfConfig.IsStartWebSocket)
+                        PluginLog.Debug("Network", $"接收到未分类的数据包: {message}");
+                        if (WpfConfig.EnableWebServer)
                             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                                 { type = "ChatConnectionPacket", data = jsonMessage }));
                     }));
@@ -180,19 +181,19 @@ internal class ChatConnectionPacket : IMethodHook
                 try
                 {
                     // 使用线程安全的方式添加到接收列表
-                    lock (WpfConfig.RecvList)
+                    lock (WpfConfig.ReceivedMessages)
                     {
-                        WpfConfig.RecvList.Add(jsonMessage);
+                        WpfConfig.ReceivedMessages.Add(jsonMessage);
                     }
                 }
                 catch (Exception ex)
                 {
-                    WpfConfig.DefaultLogger.Error($"更新接收列表失败: {ex.Message}");
+                    PluginLog.Error("Network", $"更新接收列表失败: {ex.Message}");
                 }
             }
             catch (Exception e)
             {
-                await Task.Run(() => WpfConfig.DefaultLogger.Error($"处理数据包时发生错误: {e}"));
+                await Task.Run(() => PluginLog.Error("Network", $"处理数据包时发生错误: {e}"));
             }
         });
     }
@@ -219,7 +220,7 @@ internal class ChatConnectionPacket : IMethodHook
         var playerName = playerInfo["entity"]["name"].ToObject<string>();
         var tgtPlayerInfo = X19Http.GetPlayerInfo(tgt);
         var tgtPlayerName = tgtPlayerInfo["entity"]["name"].ToObject<string>();
-        WpfConfig.DefaultLogger.Info($"<{playerName}(UserId: {uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))})>: {words} => {tgtPlayerName}(UserId: {tgt} Xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(tgt))))})");
+        PluginLog.DebugContent("Network", "Chat", $"<{playerName}(UserId: {uid})>: {words} => {tgtPlayerName}(UserId: {tgt})");
     }
 
     private static void HandlePlayerComment(JObject jsonData)
@@ -229,7 +230,7 @@ internal class ChatConnectionPacket : IMethodHook
         var comment = jsonData["comment"].ToObject<string>();
         var message = jsonData["message"].ToObject<string>();
         var fid = jsonData["fid"].ToObject<string>();
-        WpfConfig.DefaultLogger.Info($"添加好友请求: {comment} 消息: {message} 好友ID: {fid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(fid))))}");
+        PluginLog.DebugContent("Network", "Friend request", $"comment={comment} message={message} friendId={fid}");
     }
 
     private static void HandleStatusJson(JObject jsonData)
@@ -253,15 +254,15 @@ internal class ChatConnectionPacket : IMethodHook
                     var gameType = hintJson["game_type"]?.ToString() ?? "";
                     var gameId = hintJson["game_id"]?.ToString() ?? "";
                     var hostId = hintJson["host_id"]?.ToString() ?? "";
-                    WpfConfig.DefaultLogger.Info(
-                        $"状态: {statusString} 玩家名: {playerName} 游戏名: {gameName} 游戏类型: {gameType} 游戏ID: {gameId} 房主ID: {hostId} 房主 xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(hostId))))}");
+                    PluginLog.DebugContent("Network", "Player status", 
+                        $"status={statusString} player={playerName} game={gameName} type={gameType} gameId={gameId} hostId={hostId}");
                 }
                 catch
                 {
-                    WpfConfig.DefaultLogger.Info($"状态: {statusString} 玩家名: {playerName} 提示: {hint}");
+                    PluginLog.DebugContent("Network", "Player status", $"status={statusString} player={playerName} hint={hint}");
                 }
             else
-                WpfConfig.DefaultLogger.Info($"状态: {statusString} 玩家名: {playerName}");
+                PluginLog.DebugContent("Network", "Player status", $"status={statusString} player={playerName}");
         }
     }
 
@@ -280,12 +281,12 @@ internal class ChatConnectionPacket : IMethodHook
             var statusJson = JObject.Parse(jsonData["status_json"].ToString());
             var status = statusJson["status"].ToObject<string>();
             var hint = statusJson["hint"].ToObject<string>();
-            WpfConfig.DefaultLogger.Info(
-                $"在线PCPE: {stringOnlinePcpe} UID: {uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName} 状态: {status} 提示: {hint}");
+            PluginLog.Debug("Network", 
+                $"在线PCPE: {stringOnlinePcpe} UID: {uid} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName} 状态: {status} 提示: {hint}");
         }
         else
         {
-            WpfConfig.DefaultLogger.Info($"在线PCPE: {stringOnlinePcpe} UID:{uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName}");
+            PluginLog.Debug("Network", $"在线PCPE: {stringOnlinePcpe} UID:{uid} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName}");
         }
     }
 
@@ -300,11 +301,11 @@ internal class ChatConnectionPacket : IMethodHook
         var hint = jsonData["hint"].ToObject<string>();
         var playerInfo = X19Http.GetPlayerInfo(uid);
         var playerName = playerInfo["entity"]["name"].ToObject<string>();
-        WpfConfig.DefaultLogger.Info($"玩家状态: {statusString} UID:{uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName} 提示: {hint}");
-        var friendStatus = WpfConfig.ListFriendStatus.FirstOrDefault(x => x.UserId.ToString() == uid);
+        PluginLog.Debug("Network", $"玩家状态: {statusString} UID:{uid} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName} 提示: {hint}");
+        var friendStatus = WpfConfig.FriendStatuses.FirstOrDefault(x => x.UserId.ToString() == uid);
         if (friendStatus == null)
         {
-            WpfConfig.ListFriendStatus.Add(new FriendStatus
+            WpfConfig.FriendStatuses.Add(new FriendStatus
             {
                 Status = status,
                 UserId = uid
@@ -328,7 +329,7 @@ internal class ChatConnectionPacket : IMethodHook
         {
             var uid = friend["uid"].ToObject<string>();
             var nickname = friend["nickname"].ToObject<string>();
-            WpfConfig.DefaultLogger.Info($"好友: {nickname} UID:{uid} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))}");
+            PluginLog.Debug("Network", $"好友: {nickname} UID:{uid} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))}");
         }
     }
 
@@ -338,7 +339,7 @@ internal class ChatConnectionPacket : IMethodHook
         {
             if (WpfConfig.RoomInfo?.entity == null)
             {
-                WpfConfig.DefaultLogger.Error("RoomInfo或entity为空，无法更新游戏状态");
+                PluginLog.Error("Network", "RoomInfo或entity为空，无法更新游戏状态");
                 return;
             }
 
@@ -350,7 +351,7 @@ internal class ChatConnectionPacket : IMethodHook
                 ? "游戏状态发生改变,当前可正常启动游戏(服务器在线状态)"
                 : "游戏状态发生改变,当前不可正常启动游戏(服务器离线/不可用状态)";
 
-            WpfConfig.DefaultLogger.Info($"{statusMessage}");
+            PluginLog.Debug("Network", $"{statusMessage}");
 
             // 更新RoomInfoWindow
             Application.Current.Dispatcher.Invoke(() =>
@@ -359,7 +360,7 @@ internal class ChatConnectionPacket : IMethodHook
                 if (roomInfoWindow != null) roomInfoWindow.UpdateRoomInfoFromJson(jsonData);
             });
 
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                 {
                     type = "ChatConnectionPacket",
@@ -374,7 +375,7 @@ internal class ChatConnectionPacket : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"处理游戏状态时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"处理游戏状态时发生错误: {ex.Message}");
         }
     }
 
@@ -407,7 +408,7 @@ internal class ChatConnectionPacket : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"处理玩家操作时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"处理玩家操作时发生错误: {ex.Message}");
         }
     }
 
@@ -417,7 +418,7 @@ internal class ChatConnectionPacket : IMethodHook
         {
             if (WpfConfig.RoomInfo?.entity?.fids == null)
             {
-                WpfConfig.DefaultLogger.Error("RoomInfo或fids列表为空");
+                PluginLog.Error("Network", "RoomInfo或fids列表为空");
                 return;
             }
 
@@ -446,8 +447,8 @@ internal class ChatConnectionPacket : IMethodHook
             else
             {
                 var playerInfo = X19Http.GetPlayerInfo(userId);
-                WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID: {userId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 加入了房间");
-                if (WpfConfig.IsStartWebSocket)
+                PluginLog.Warn("Network", $"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID: {userId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 加入了房间");
+                if (WpfConfig.EnableWebServer)
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     {
                         type = "ChatConnectionPacket",
@@ -462,7 +463,7 @@ internal class ChatConnectionPacket : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"处理玩家加入时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"处理玩家加入时发生错误: {ex.Message}");
         }
     }
 
@@ -472,7 +473,7 @@ internal class ChatConnectionPacket : IMethodHook
         {
             if (WpfConfig.RoomInfo?.entity?.fids == null)
             {
-                WpfConfig.DefaultLogger.Error("RoomInfo或fids列表为空");
+                PluginLog.Error("Network", "RoomInfo或fids列表为空");
                 return;
             }
 
@@ -490,9 +491,9 @@ internal class ChatConnectionPacket : IMethodHook
                 }
             });
 
-            WpfConfig.DefaultLogger.Warn($"玩家 {playerName} UID: {userId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 退出了房间");
+            PluginLog.Warn("Network", $"玩家 {playerName} UID: {userId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 退出了房间");
 
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                 {
                     type = "ChatConnectionPacket",
@@ -505,7 +506,7 @@ internal class ChatConnectionPacket : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"处理玩家离开时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"处理玩家离开时发生错误: {ex.Message}");
         }
     }
 
@@ -529,7 +530,7 @@ internal class ChatConnectionPacket : IMethodHook
             if (WpfConfig.RoomBlacklist.Contains(userId))
             {
                 HandleBlacklistedPlayer(userId);
-                if (WpfConfig.IsStartWebSocket)
+                if (WpfConfig.EnableWebServer)
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     {
                         type = "ChatConnectionPacket",
@@ -572,10 +573,10 @@ internal class ChatConnectionPacket : IMethodHook
                         "total": 1
                         }
                  */
-                WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID: {userId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 加入了房间");
+                PluginLog.Warn("Network", $"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID: {userId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 加入了房间");
                 // 检查正则表达式黑名单
                 CheckRegexBlacklist(userId, playerInfo["entity"]["name"].ToString(), blacklistFilePath);
-                if (WpfConfig.IsStartWebSocket)
+                if (WpfConfig.EnableWebServer)
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     {
                         type = "ChatConnectionPacket",
@@ -590,7 +591,7 @@ internal class ChatConnectionPacket : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"处理黑名单检查时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"处理黑名单检查时发生错误: {ex.Message}");
         }
     }
 
@@ -599,13 +600,13 @@ internal class ChatConnectionPacket : IMethodHook
         if (!Directory.Exists(folderPath))
         {
             Directory.CreateDirectory(folderPath);
-            WpfConfig.DefaultLogger.Info($"创建房间黑名单文件夹: {folderPath}");
+            PluginLog.Debug("Network", $"创建房间黑名单文件夹: {folderPath}");
         }
 
         if (!File.Exists(filePath))
         {
             File.WriteAllText(filePath, "[]");
-            WpfConfig.DefaultLogger.Info($"创建房间黑名单文件: {filePath}", ConsoleColor.Green);
+            PluginLog.Debug("Network", $"创建房间黑名单文件: {filePath}", ConsoleColor.Green);
         }
     }
 
@@ -617,7 +618,7 @@ internal class ChatConnectionPacket : IMethodHook
             if (string.IsNullOrEmpty(jsonContent))
             {
                 WpfConfig.RoomBlacklist = new List<string>();
-                WpfConfig.DefaultLogger.Warn("房间黑名单文件为空,自动替换成空列表");
+                PluginLog.Warn("Network", "房间黑名单文件为空,自动替换成空列表");
             }
             else
             {
@@ -626,7 +627,7 @@ internal class ChatConnectionPacket : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"读取房间黑名单时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"读取房间黑名单时发生错误: {ex.Message}");
             WpfConfig.RoomBlacklist = new List<string>();
         }
     }
@@ -637,7 +638,7 @@ internal class ChatConnectionPacket : IMethodHook
         {
             if (!File.Exists(filePath))
             {
-                WpfConfig.DefaultLogger.Warn("未检测到房间黑名单文件,自动创建文件");
+                PluginLog.Warn("Network", "未检测到房间黑名单文件,自动创建文件");
                 File.WriteAllText(filePath, "[]");
             }
 
@@ -645,7 +646,7 @@ internal class ChatConnectionPacket : IMethodHook
             if (string.IsNullOrEmpty(jsonContent))
             {
                 WpfConfig.RegexBlacklist = new List<string>();
-                WpfConfig.DefaultLogger.Warn("房间黑名单文件为空,自动替换成空列表");
+                PluginLog.Warn("Network", "房间黑名单文件为空,自动替换成空列表");
             }
             else
             {
@@ -654,7 +655,7 @@ internal class ChatConnectionPacket : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"读取房间黑名单时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"读取房间黑名单时发生错误: {ex.Message}");
             WpfConfig.RegexBlacklist = new List<string>();
         }
     }
@@ -664,7 +665,7 @@ internal class ChatConnectionPacket : IMethodHook
         if (IsCurrentUserRoomOwner())
             KickPlayer(userId, userId, "在黑名单内");
         else
-            WpfConfig.DefaultLogger.Error($"[RoomInfo]玩家 {userId} 在黑名单内,但不是房主,无法踢出房间");
+            PluginLog.Error("Network", $"[RoomInfo]玩家 {userId} 在黑名单内,但不是房主,无法踢出房间");
     }
 
     private static bool IsCurrentUserRoomOwner()
@@ -689,9 +690,9 @@ internal class ChatConnectionPacket : IMethodHook
 
                 if (kickResult["code"].ToObject<int>() == 0)
                 {
-                    WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerName} {reason},已自动踢出房间");
+                    PluginLog.Warn("Network", $"[RoomInfo]玩家 {playerName} {reason},已自动踢出房间");
 
-                    if (WpfConfig.IsStartWebSocket)
+                    if (WpfConfig.EnableWebServer)
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                         {
                             type = "ChatConnectionPacket",
@@ -702,12 +703,12 @@ internal class ChatConnectionPacket : IMethodHook
                     break;
                 }
 
-                WpfConfig.DefaultLogger.Error($"[RoomInfo]玩家 {playerName} {reason},踢出失败,正在重试...");
+                PluginLog.Error("Network", $"[RoomInfo]玩家 {playerName} {reason},踢出失败,正在重试...");
             } while (true);
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"踢出玩家时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"踢出玩家时发生错误: {ex.Message}");
         }
     }
 
@@ -723,7 +724,7 @@ internal class ChatConnectionPacket : IMethodHook
                     // 添加到黑名单
                     WpfConfig.RoomBlacklist.Add(userId);
                     File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(WpfConfig.RoomBlacklist));
-                    WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerName} 匹配正则表达式 {regex}，已添加到黑名单");
+                    PluginLog.Warn("Network", $"[RoomInfo]玩家 {playerName} 匹配正则表达式 {regex}，已添加到黑名单");
 
                     // 踢出玩家
                     if (IsCurrentUserRoomOwner()) KickPlayer(userId, playerName, "匹配正则表达式黑名单");
@@ -732,7 +733,7 @@ internal class ChatConnectionPacket : IMethodHook
             }
             catch (Exception ex)
             {
-                WpfConfig.DefaultLogger.Error($"处理正则表达式 {regex} 时发生错误: {ex.Message}");
+                PluginLog.Error("Network", $"处理正则表达式 {regex} 时发生错误: {ex.Message}");
             }
     }
 
@@ -742,12 +743,12 @@ internal class ChatConnectionPacket : IMethodHook
         {
             if (WpfConfig.RoomInfo?.entity == null)
             {
-                WpfConfig.DefaultLogger.Error("RoomInfo或entity为空，无法更新房间信息");
+                PluginLog.Error("Network", "RoomInfo或entity为空，无法更新房间信息");
                 return;
             }
 
-            WpfConfig.DefaultLogger.Warn("房间信息已更改:");
-            WpfConfig.DefaultLogger.Warn("-----------------------------------------------------------");
+            PluginLog.Warn("Network", "房间信息已更改:");
+            PluginLog.Warn("Network", "-----------------------------------------------------------");
 
             // 更新RoomInfoWindow
             Application.Current.Dispatcher.Invoke(() =>
@@ -763,7 +764,7 @@ internal class ChatConnectionPacket : IMethodHook
             UpdateRoomInfo(newRoomInfo);
 
             // 发送WebSocket通知
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                 {
                     type = "ChatConnectionPacket",
@@ -773,11 +774,11 @@ internal class ChatConnectionPacket : IMethodHook
                     playerCount = WpfConfig.RoomInfo.entity.cur_num
                 }));
 
-            WpfConfig.DefaultLogger.Warn("-----------------------------------------------------------");
+            PluginLog.Warn("Network", "-----------------------------------------------------------");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"处理房间信息变化时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"处理房间信息变化时发生错误: {ex.Message}");
         }
     }
 
@@ -786,23 +787,23 @@ internal class ChatConnectionPacket : IMethodHook
         var entity = WpfConfig.RoomInfo.entity;
 
         if (entity.entity_id != newRoomInfo["entity_id"].ToObject<string>())
-            WpfConfig.DefaultLogger.Info($"房间ID更改为: {newRoomInfo["entity_id"].ToObject<string>()}");
+            PluginLog.Debug("Network", $"房间ID更改为: {newRoomInfo["entity_id"].ToObject<string>()}");
 
         if (entity.owner_id != newRoomInfo["owner_id"].ToObject<string>())
             LogOwnerChange(entity.owner_id, newRoomInfo["owner_id"].ToObject<string>());
 
         if (entity.room_name != newRoomInfo["room_name"].ToObject<string>())
-            WpfConfig.DefaultLogger.Info($"房间名称更改为: {newRoomInfo["room_name"].ToObject<string>()}");
+            PluginLog.Debug("Network", $"房间名称更改为: {newRoomInfo["room_name"].ToObject<string>()}");
 
         if (entity.save_size != newRoomInfo["save_size"].ToObject<uint>())
-            WpfConfig.DefaultLogger.Info($"保存大小更改为: {newRoomInfo["save_size"].ToObject<uint>()}");
+            PluginLog.Debug("Network", $"保存大小更改为: {newRoomInfo["save_size"].ToObject<uint>()}");
 
         var newPasswordStatus = newRoomInfo["password"].ToObject<int>() != 0;
         if (entity.password != newPasswordStatus)
-            WpfConfig.DefaultLogger.Info($"密码保护更改为: {(newPasswordStatus ? "是" : "否")}");
+            PluginLog.Debug("Network", $"密码保护更改为: {(newPasswordStatus ? "是" : "否")}");
 
         var newAllowSave = newRoomInfo["allow_save"].ToObject<int>() != 0;
-        if (entity.allow_save != newAllowSave) WpfConfig.DefaultLogger.Info($"允许保存更改为: {(newAllowSave ? "是" : "否")}");
+        if (entity.allow_save != newAllowSave) PluginLog.Debug("Network", $"允许保存更改为: {(newAllowSave ? "是" : "否")}");
 
         var newVisibility = newRoomInfo["visibility"].ToObject<RoomVisibleStatus>();
         if (entity.visibility != newVisibility) LogVisibilityChange(newVisibility);
@@ -815,15 +816,15 @@ internal class ChatConnectionPacket : IMethodHook
             var oldOwnerInfo = X19Http.GetPlayerInfo(oldOwnerId);
             var newOwnerInfo = X19Http.GetPlayerInfo(newOwnerId);
 
-            WpfConfig.DefaultLogger.Warn("当前房间内房主更改");
-            WpfConfig.DefaultLogger.Warn($"原房主的UID: {oldOwnerId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(oldOwnerId))))}");
-            WpfConfig.DefaultLogger.Warn($"新房主的UID: {newOwnerId} xuid: {WpfConfig.PublicSkip32Cipher.IntToHex(WpfConfig.PublicSkip32Cipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(newOwnerId))))}");
-            WpfConfig.DefaultLogger.Warn($"原房主的名称: {oldOwnerInfo["entity"]["name"]}");
-            WpfConfig.DefaultLogger.Warn($"新房主的名称: {newOwnerInfo["entity"]["name"]}");
+            PluginLog.Warn("Network", "当前房间内房主更改");
+            PluginLog.Warn("Network", $"原房主的UID: {oldOwnerId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(oldOwnerId))))}");
+            PluginLog.Warn("Network", $"新房主的UID: {newOwnerId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(newOwnerId))))}");
+            PluginLog.Warn("Network", $"原房主的名称: {oldOwnerInfo["entity"]["name"]}");
+            PluginLog.Warn("Network", $"新房主的名称: {newOwnerInfo["entity"]["name"]}");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"记录房主变更信息时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"记录房主变更信息时发生错误: {ex.Message}");
         }
     }
 
@@ -838,11 +839,11 @@ internal class ChatConnectionPacket : IMethodHook
                 ? descriptionAttribute.Description
                 : newVisibility.ToString();
 
-            WpfConfig.DefaultLogger.Info($"可见性更改为: {visibilityDescription}");
+            PluginLog.Debug("Network", $"可见性更改为: {visibilityDescription}");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"记录可见性变更信息时发生错误: {ex.Message}");
+            PluginLog.Error("Network", $"记录可见性变更信息时发生错误: {ex.Message}");
         }
     }
 
@@ -879,15 +880,15 @@ internal class ChatConnectionPacket : IMethodHook
     {
         var ResultBool = SendMessage(ServerID, Data, ifg, ErrorLog);
 
-        WpfConfig.DefaultLogger.Info("====================");
+        PluginLog.Debug("Network", "====================");
 
-        WpfConfig.DefaultLogger.Info($"服务器ID: {ServerID}");
-        WpfConfig.DefaultLogger.Info($"数据内容: {JsonConvert.SerializeObject(Data, Formatting.Indented)}");
-        WpfConfig.DefaultLogger.Info($"接口信息: {ifg?.ToString() ?? "null"}");
-        WpfConfig.DefaultLogger.Info($"错误日志: {ErrorLog}");
-        WpfConfig.DefaultLogger.Info($"结果: {ResultBool}");
+        PluginLog.Debug("Network", $"服务器ID: {ServerID}");
+        PluginLog.Debug("Network", $"数据内容: {JsonConvert.SerializeObject(Data, Formatting.Indented)}");
+        PluginLog.Debug("Network", $"接口信息: {ifg?.ToString() ?? "null"}");
+        PluginLog.Error("Network", $"错误日志: {ErrorLog}");
+        PluginLog.Debug("Network", $"结果: {ResultBool}");
 
-        WpfConfig.DefaultLogger.Info("====================");
+        PluginLog.Debug("Network", "====================");
 
         return ResultBool;
     }

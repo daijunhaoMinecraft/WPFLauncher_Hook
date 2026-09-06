@@ -18,7 +18,6 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace Mcl.Core.Dotnetdetour.HookList
 {
-	// Token: 0x02000017 RID: 23
 	public class LoginFix : IMethodHook
 	{
 		[OriginalMethod]
@@ -30,7 +29,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Network.Launcher.acp", "g", "g")]
 		public static async Task g(string hud, Action<EntityResponse<acl.Resposne>, Exception> hue)
 		{
-			if (WpfConfig.EnableCustomAccountLogin && !WpfConfig.MpayUnless)
+			if (WpfConfig.EnableAlternativeAccountLogin && !WpfConfig.UseAccountManagerLogin)
 			{
 				MessageBoxResult messageBoxResult;
 				if (WpfConfig.CookieLoginWithoutMpay)
@@ -118,12 +117,12 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
 		private static void LoginWithOriginal(string sauthJson, Action<EntityResponse<acl.Resposne>, Exception> hue)
 		{
-			if (WpfConfig.IsStartWebSocket)
+			if (WpfConfig.EnableWebServer)
 			{
 				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = sauthJson } }));
 			}
 			WpfConfig.DefaultLogger.Info($"SauthJson: {JsonConvert.SerializeObject(new { sauth_json = sauthJson })}");
-			WpfConfig.IsLogin = true;
+			WpfConfig.IsLoggedIn = true;
 			LoginFix.f(sauthJson, hue);
 		}
 

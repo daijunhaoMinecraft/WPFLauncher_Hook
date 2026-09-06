@@ -1,206 +1,188 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 
 namespace Mcl.Core.Dotnetdetour.Models.Config;
 
-public class ConfigEntry
-{
-    public string Key { get; set; } // 必须对应 WpfConfig 里的静态字段名
-    public string Description { get; set; } // UI 上显示的中文名
-    public Type FieldType { get; set; } // 变量类型
-    public string Category { get; set; } // 新增：分类 (如 "基础", "联机", "高级")
-}
-
 public static class ConfigManager
 {
-    private const string CONFIG_FILE = "config.json";
+    private static readonly object Sync = new object();
+    private static JObject _unknownValues = new JObject();
+    public static string ConfigFilePath => Path.Combine(WpfConfig.LauncherRootDirectory, "config.json");
 
-    public static readonly List<ConfigEntry> Registry = new()
+    // Key is a public JSON/API contract. FieldName may change independently.
+    public static readonly IReadOnlyList<ConfigEntry> Registry = Array.AsReadOnly(new[]
     {
-        // 基础设置
-        new ConfigEntry { Key = "MemoryOptimize", Description = "游戏启动前进行内存优化", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry { Key = "ShowAccountInfo", Description = "在控制台中显示账号敏感信息", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry { Key = "ShowCustomServer", Description = "显示自定义服务器(如基岩版布吉岛等)", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry
-        {
-            Key = "IsBypassGameUpdate_Bedrock", Description = "绕过基岩版更新", FieldType = typeof(bool), Category = "基础设置"
-        },
-        new ConfigEntry { Key = "BedrockPath", Description = "基岩版目录", FieldType = typeof(string), Category = "基础设置" },
-        new ConfigEntry
-            { Key = "IsEnableX64mc", Description = "使用X64版本(基岩)", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry
-            { Key = "IsWindowTopMost", Description = "窗口保持在最上层", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry { Key = "IsDebug", Description = "详细日志模式", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry { Key = "ShowLogInConsole", Description = "显示游戏输出日志到控制台上", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry { Key = "ShowLogInWpf", Description = "显示游戏输出日志到Wpf日志窗口上", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry
-            { Key = "IsLogOutputFolder", Description = "启动器日志输出到文件夹", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry
-            { Key = "IsStartWebSocket", Description = "启用Web服务器", FieldType = typeof(bool), Category = "基础设置" },
-        new ConfigEntry { Key = "HttpPort", Description = "Web服务器端口", FieldType = typeof(int), Category = "基础设置" },
-        new ConfigEntry { Key = "ShowWindowsNotify", Description = "聊天显示系统原生通知", FieldType = typeof(bool), Category = "美化" },
-        new ConfigEntry { Key = "LanGameNicknameFilterString", Description = "过滤本地联机玩家名称关键字(使用分号隔开, 例如: 生存;一服)", FieldType = typeof(string), Category = "过滤设置" },
+        new ConfigEntry("MemoryOptimize", nameof(WpfConfig.OptimizeMemoryBeforeLaunch), "游戏启动前进行内存优化", "常规"),
+        new ConfigEntry("IsWindowTopMost", nameof(WpfConfig.KeepWindowsOnTop), "窗口保持在最上层", "常规"),
+        new ConfigEntry("ShowWindowsNotify", nameof(WpfConfig.EnableChatNotifications), "聊天显示系统原生通知", "常规"),
+        new ConfigEntry("IsBypassGameUpdate_Bedrock", nameof(WpfConfig.SkipBedrockUpdates), "绕过基岩版更新", "基岩版"),
+        new ConfigEntry("BedrockPath", nameof(WpfConfig.BedrockDirectory), "基岩版目录", "基岩版"),
+        new ConfigEntry("IsEnableX64mc", nameof(WpfConfig.Use64BitBedrock), "使用X64版本(基岩)", "基岩版"),
+        new ConfigEntry("EnableCustomBedrockSelect", nameof(WpfConfig.EnableBedrockClientSelection), "自由选择基岩版客户端", "基岩版"),
+        new ConfigEntry("KeepOffDeleteLastResourcepacks", nameof(WpfConfig.PreserveResourcePacks), "阻止网易删除resourcepacks文件夹", "Java 版"),
+        new ConfigEntry("KeepOffDeleteLastConfig", nameof(WpfConfig.PreserveGameConfig), "阻止网易删除config文件夹", "Java 版"),
+        new ConfigEntry("KeepOffDeleteLastShaderPacks", nameof(WpfConfig.PreserveShaderPacks), "阻止网易删除shaderpacks文件夹", "Java 版"),
+        new ConfigEntry("UseJavaExe", nameof(WpfConfig.UseJavaExe), "使用 java.exe 启动游戏而不是 javaw.exe", "Java 版"),
+        new ConfigEntry("CustomJVMArguments", nameof(WpfConfig.CustomJvmArguments), "自定义 JVM 参数", "Java 版"),
+        new ConfigEntry("EnableModsInject", nameof(WpfConfig.EnableModInjection), "启用模组注入", "Java 版"),
+        new ConfigEntry("EnableCustomAccountLogin", nameof(WpfConfig.EnableAlternativeAccountLogin), "选择使用Sauth/4399账号登录", "账号与存档"),
+        new ConfigEntry("MpayUnless", nameof(WpfConfig.UseAccountManagerLogin), "不使用Mpay登录(将会调用账号管理器窗口登录)", "账号与存档"),
+        new ConfigEntry("AdvancedSavesManager", nameof(WpfConfig.EnableAdvancedSaveManager), "更高级的存档管理界面(支持多槽位)", "账号与存档"),
+        new ConfigEntry("ShowCustomServer", nameof(WpfConfig.ShowCustomServers), "显示自定义服务器(如基岩版布吉岛等)", "联机与房间"),
+        new ConfigEntry("MaxRoomCount", nameof(WpfConfig.MaxRoomCount), "最大房间数量", "联机与房间", 1, 1000),
+        new ConfigEntry("IsCustomIP", nameof(WpfConfig.UseCustomServerAddress), "自定义IP进入服务器", "联机与房间"),
+        new ConfigEntry("NoTwoExitMessage", nameof(WpfConfig.SkipExitConfirmation), "禁用退出二次确认", "联机与房间"),
+        new ConfigEntry("EnableRoomBlacklist", nameof(WpfConfig.EnableRoomBlacklist), "启用房间黑名单", "联机与房间"),
+        new ConfigEntry("AllowFrp", nameof(WpfConfig.EnablePortForwarding), "允许内网穿透", "联机与房间"),
+        new ConfigEntry("UseNetworkMode", nameof(WpfConfig.EnableVirtualNetwork), "使用组网模式(需开启允许内网穿透)", "联机与房间", helpText: "同时开启「允许内网穿透」后生效。"),
+        new ConfigEntry("ShowRoomManagerWindow", nameof(WpfConfig.ShowRoomDetailsWindow), "显示房间信息查看窗口", "联机与房间"),
+        new ConfigEntry("LanGameNicknameFilterString", nameof(WpfConfig.LanNicknameFilterKeywords), "过滤本地联机玩家名称关键字(使用分号隔开, 例如: 生存;一服)", "联机与房间"),
+        new ConfigEntry("IsStartWebSocket", nameof(WpfConfig.EnableWebServer), "启用Web服务器", "下载与服务"),
+        new ConfigEntry("HttpPort", nameof(WpfConfig.HttpPort), "Web服务器端口", "下载与服务", 1, 65535),
+        new ConfigEntry("ServerListUrl", nameof(WpfConfig.ServerListUrl), "网易更新域名", "下载与服务"),
+        new ConfigEntry("IsDownloadMultiConfig", nameof(WpfConfig.EnableParallelDownloads), "启用多线程下载", "下载与服务"),
+        new ConfigEntry("MaxThread", nameof(WpfConfig.DownloadWorkerCount), "下载多线程数", "下载与服务", 1, 64, helpText: "有效范围 1–64；仅在开启多线程下载时使用。"),
+        new ConfigEntry("LimitDownload", nameof(WpfConfig.ParallelDownloadThresholdMb), "大小限制(小于此大小即为小文件, 只使用单线程下载, 单位MB)", "下载与服务", 1, 4096, helpText: "单位 MiB，小于此阈值的文件使用单线程。"),
+        new ConfigEntry("IsDebug", nameof(WpfConfig.EnableVerboseLogging), "启用详细日志", "日志与诊断", helpText: "关闭时隐藏 Debug/Trace 与请求、数据包等诊断输出；保留关键状态、警告和错误。保存后立即生效。"),
+        new ConfigEntry("ShowLogInConsole", nameof(WpfConfig.ShowGameLogsInConsole), "显示游戏输出日志到控制台上", "日志与诊断", helpText: "仅控制游戏 stdout/stderr，不受详细日志开关影响。"),
+        new ConfigEntry("ShowLogInWpf", nameof(WpfConfig.ShowGameLogsWindow), "显示游戏输出日志到Wpf日志窗口上", "日志与诊断", helpText: "下次启动游戏时创建日志窗口；关闭后停止接收游戏输出。"),
+        new ConfigEntry("IsLogOutputFolder", nameof(WpfConfig.WriteLauncherLogsToFile), "启动器日志输出到文件夹", "日志与诊断", helpText: "将启动器日志写入 logs 目录，与控制台使用相同的详细级别。"),
+        new ConfigEntry("ShowAccountInfo", nameof(WpfConfig.LogSensitiveAccountDetails), "记录账号敏感诊断", "日志与诊断", helpText: "需要同时开启详细日志，可能将身份凭据写入控制台和日志文件。仅在本机排障时临时开启，分享日志前务必检查。"),
+        new ConfigEntry("ShowStartupLogo", nameof(WpfConfig.ShowStartupLogo), "显示启动 Logo", "日志与诊断", helpText: "默认开启；关闭后仅隐藏启动 Logo，不影响版本、状态和错误日志。"),
+    });
 
-        // Java启动设置
-        new ConfigEntry
-        {
-            Key = "KeepOffDeleteLastResourcepacks", Description = "阻止网易删除resourcepacks文件夹", FieldType = typeof(bool),
-            Category = "Java启动设置"
-        },
-        new ConfigEntry
-        {
-            Key = "KeepOffDeleteLastConfig", Description = "阻止网易删除config文件夹", FieldType = typeof(bool),
-            Category = "Java启动设置"
-        },
-        new ConfigEntry
-        {
-            Key = "KeepOffDeleteLastShaderPacks", Description = "阻止网易删除shaderpacks文件夹", FieldType = typeof(bool),
-            Category = "Java启动设置"
-        },
-        new ConfigEntry
-        {
-            Key = "UseJavaExe", Description = "使用 java.exe 启动游戏而不是 javaw.exe", FieldType = typeof(bool),
-            Category = "Java启动设置"
-        },
-
-        // 自定义设置
-        new ConfigEntry
-        {
-            Key = "AdvancedSavesManager", Description = "更高级的存档管理界面(支持多槽位)", FieldType = typeof(bool),
-            Category = "自定义设置"
-        },
-        new ConfigEntry
-        {
-            Key = "ShowRoomManagerWindow", Description = "显示房间信息查看窗口", FieldType = typeof(bool),
-            Category = "自定义设置"
-        },
-        new ConfigEntry
-        {
-            Key = "EnableCustomBedrockSelect", Description = "自由选择基岩版客户端", FieldType = typeof(bool), Category = "自定义设置"
-        },
-        new ConfigEntry
-        {
-            Key = "EnableCustomAccountLogin", Description = "选择使用Sauth/4399账号登录", FieldType = typeof(bool),
-            Category = "自定义设置"
-        },
-        new ConfigEntry
-        {
-            Key = "MpayUnless", Description = "不使用Mpay登录(将会调用账号管理器窗口登录)", FieldType = typeof(bool), Category = "自定义设置"
-        },
-
-
-        // 联机大厅设置
-        new ConfigEntry { Key = "MaxRoomCount", Description = "最大房间数量", FieldType = typeof(int), Category = "联机大厅设置" },
-        new ConfigEntry
-            { Key = "IsCustomIP", Description = "自定义IP进入服务器", FieldType = typeof(bool), Category = "联机大厅设置" },
-        new ConfigEntry
-            { Key = "NoTwoExitMessage", Description = "禁用退出二次确认", FieldType = typeof(bool), Category = "联机大厅设置" },
-        new ConfigEntry
-            { Key = "EnableRoomBlacklist", Description = "启用房间黑名单", FieldType = typeof(bool), Category = "联机大厅设置" },
-        new ConfigEntry { Key = "AllowFrp", Description = "允许内网穿透", FieldType = typeof(bool), Category = "本地联机" },
-        new ConfigEntry { Key = "UseNetworkMode", Description = "使用组网模式(需开启允许内网穿透)", FieldType = typeof(bool), Category = "本地联机" },
-
-        // 模组与高级
-        new ConfigEntry
-            { Key = "EnableModsInject", Description = "启用模组注入", FieldType = typeof(bool), Category = "高级功能" },
-        new ConfigEntry
-            { Key = "ServerListUrl", Description = "网易更新域名", FieldType = typeof(string), Category = "高级功能" },
-        new ConfigEntry
-            { Key = "CustomJVMArguments", Description = "[新手请留空]自定义JVM虚拟机参数(例: -Key Value -Key2...", FieldType = typeof(string), Category = "高级功能" },
-
-
-        // Experiment
-        new ConfigEntry
-            { Key = "IsDownloadMultiConfig", Description = "启用多线程下载", FieldType = typeof(bool), Category = "实验功能" },
-        new ConfigEntry { Key = "MaxThread", Description = "下载多线程数", FieldType = typeof(int), Category = "实验功能" },
-        new ConfigEntry
-        {
-            Key = "LimitDownload", Description = "大小限制(小于此大小即为小文件, 只使用单线程下载, 单位MB)", FieldType = typeof(int),
-            Category = "实验功能"
-        }
-    };
-
-    // 自动保存 WpfConfig 里的值到 JSON
-    public static void Save()
-    {
-        var data = new Dictionary<string, object>();
-        foreach (var item in Registry)
-        {
-            var field = typeof(WpfConfig).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
-            if (field != null) data[item.Key] = field.GetValue(null);
-        }
-
-        File.WriteAllText(CONFIG_FILE, JsonConvert.SerializeObject(data, Formatting.Indented));
-        Console.WriteLine("[Config] 配置已保存到 JSON");
-    }
-
-    // 自动从 JSON 加载值到 WpfConfig
-    public static void Load()
-    {
-        if (!File.Exists(CONFIG_FILE)) return;
-        try
-        {
-            var json = File.ReadAllText(CONFIG_FILE);
-            var data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-            foreach (var item in Registry)
-                if (data.TryGetValue(item.Key, out var val))
-                {
-                    var field = typeof(WpfConfig).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
-                    if (field != null)
-                    {
-                        // 自动处理 Json 反序列化时的类型转换
-                        var convertedVal = Convert.ChangeType(val, item.FieldType);
-                        field.SetValue(null, convertedVal);
-                    }
-                }
-
-            Console.WriteLine("[Config] 配置加载成功");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("[Config] 加载失败: " + ex.Message);
-        }
-    }
-
-    // 获取当前所有配置的值 (用于 /config/get)
     public static Dictionary<string, object> GetCurrentConfigValues()
     {
-        var data = new Dictionary<string, object>();
-        foreach (var item in Registry)
+        lock (Sync) return Registry.ToDictionary(entry => entry.Key, entry => entry.GetValue());
+    }
+
+    public static Dictionary<string, object> GetMetadata() => Registry.ToDictionary(
+        entry => entry.Key,
+        entry => (object)new
         {
-            var field = typeof(WpfConfig).GetField(item.Key, BindingFlags.Public | BindingFlags.Static);
-            if (field != null) data[item.Key] = field.GetValue(null);
-        }
+            desc = entry.Description, type = entry.FieldType.Name, category = entry.Category,
+            fieldName = entry.FieldName, help = entry.HelpText, minimum = entry.Minimum, maximum = entry.Maximum
+        });
 
-        return data;
-    }
-
-    // 获取设置的元数据 (用于 /config/settingslist)
-    // 返回格式: { Key: { desc: "中文名", type: "Boolean/Int32/String" } }
-    public static Dictionary<string, object> GetMetadata()
+    public static void Save()
     {
-        return Registry.ToDictionary(
-            x => x.Key,
-            x => (object)new { desc = x.Description, type = x.FieldType.Name }
-        );
+        lock (Sync) Persist(GetCurrentConfigValues());
+        ApplyLoggingSettings();
     }
 
-    // 从 JSON 字符串批量更新 WpfConfig (用于 Web 保存)
+    public static void Load()
+    {
+        lock (Sync)
+        {
+            if (!File.Exists(ConfigFilePath))
+            {
+                ApplyLoggingSettings();
+                return;
+            }
+            try
+            {
+                var values = JObject.Parse(File.ReadAllText(ConfigFilePath));
+                _unknownValues = (JObject)values.DeepClone();
+                foreach (var entry in Registry)
+                {
+                    // Old keys take precedence when both names occur in an existing file.
+                    var value = values[entry.Key] ?? values[entry.FieldName];
+                    _unknownValues.Remove(entry.Key);
+                    _unknownValues.Remove(entry.FieldName);
+                    if (value == null) continue;
+                    try
+                    {
+                        var converted = entry.ConvertValue(GetScalar(value));
+                        Validate(entry, converted);
+                        entry.SetValue(converted);
+                    }
+                    catch (ArgumentException)
+                    {
+                        PluginLog.Warn("Config", "忽略无效配置项（保留当前值）: " + entry.Key);
+                    }
+                }
+            }
+            catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException || exception is JsonException)
+            {
+                PluginLog.Error("Config", exception, "无法读取配置，保留当前值且不覆盖原文件。");
+            }
+        }
+        ApplyLoggingSettings();
+    }
+
     public static void UpdateFromJson(string json)
     {
-        var updates = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-        foreach (var key in updates.Keys)
-        {
-            var field = typeof(WpfConfig).GetField(key, BindingFlags.Public | BindingFlags.Static);
-            var registryItem = Registry.FirstOrDefault(x => x.Key == key);
-            if (field != null && registryItem != null)
-                field.SetValue(null, Convert.ChangeType(updates[key], registryItem.FieldType));
-        }
-
-        Save(); // 保存到文件
+        var document = JObject.Parse(json);
+        Update(document.Properties().ToDictionary(property => property.Name,
+            property => (object)property.Value));
     }
+
+    /// <summary>Validate everything, persist once, then publish. Failed input never partially applies.</summary>
+    public static void Update(IDictionary<string, object> updates)
+    {
+        if (updates == null) throw new ArgumentNullException(nameof(updates));
+        lock (Sync)
+        {
+            var pending = new Dictionary<ConfigEntry, object>();
+            foreach (var entry in Registry)
+            {
+                if (!updates.TryGetValue(entry.Key, out var value) &&
+                    !updates.TryGetValue(entry.FieldName, out value)) continue;
+                var converted = entry.ConvertValue(value is JToken token ? GetScalar(token) : value);
+                Validate(entry, converted);
+                pending[entry] = converted;
+            }
+
+            var values = GetCurrentConfigValues();
+            foreach (var pair in pending) values[pair.Key.Key] = pair.Value;
+            Persist(values);
+            foreach (var pair in pending) pair.Key.SetValue(pair.Value);
+        }
+        ApplyLoggingSettings();
+    }
+
+    private static object GetScalar(JToken token)
+    {
+        if (!(token is JValue value)) throw new ArgumentException("配置值必须是文本、布尔值或整数。");
+        return value.Value;
+    }
+
+    private static void Validate(ConfigEntry entry, object value)
+    {
+        if (entry.FieldName == nameof(WpfConfig.ServerListUrl))
+        {
+            if (!Uri.TryCreate((string)value, UriKind.Absolute, out var uri) ||
+                (uri.Scheme != Uri.UriSchemeHttps && uri.Scheme != Uri.UriSchemeHttp))
+                throw new ArgumentException(entry.Description + "：请输入完整的 HTTP(S) 地址。");
+        }
+        else if (entry.FieldName == nameof(WpfConfig.BedrockDirectory))
+        {
+            try { Path.GetFullPath((string)value); }
+            catch (Exception exception) when (exception is ArgumentException || exception is NotSupportedException || exception is PathTooLongException)
+            {
+                throw new ArgumentException(entry.Description + "：请输入有效路径。", exception);
+            }
+        }
+        else if (entry.FieldName == nameof(WpfConfig.CustomJvmArguments))
+        {
+            var arguments = ((string)value).Trim();
+            if (arguments.Length > 0 && (!arguments.StartsWith("-", StringComparison.Ordinal) || arguments.Count(c => c == '"') % 2 != 0))
+                throw new ArgumentException("JVM 参数必须以 '-' 开头，且双引号需要成对闭合。");
+        }
+    }
+
+    private static void Persist(Dictionary<string, object> values)
+    {
+        var document = (JObject)_unknownValues.DeepClone();
+        foreach (var pair in values) document[pair.Key] = JToken.FromObject(pair.Value ?? "");
+        AtomicFile.WriteAllText(ConfigFilePath, document.ToString(Formatting.Indented));
+    }
+
+    private static void ApplyLoggingSettings() => LauncherLogging.Configure(
+        WpfConfig.EnableVerboseLogging, WpfConfig.WriteLauncherLogsToFile, WpfConfig.LauncherRootDirectory);
 }

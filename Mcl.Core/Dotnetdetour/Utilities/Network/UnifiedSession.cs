@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading;
@@ -66,13 +67,13 @@ public class UnifiedSession
     // ========== 日志辅助方法 ==========
     private void Log(string message)
     {
-        if (WpfConfig.IsDebug) Console.WriteLine($"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} {message}");
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} {message}");
     }
 
     private void LogError(string message, Exception ex = null)
     {
-        Console.WriteLine($"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} [ERROR] {message}");
-        if (ex != null) Console.WriteLine($"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} [ERROR] 异常详情: {ex}");
+        PluginLog.Error("Network", $"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} [ERROR] {message}");
+        if (ex != null) PluginLog.Error("Network", $"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} [ERROR] 异常详情: {ex}");
     }
 
     // ========== 连接本地MC服务器 ==========

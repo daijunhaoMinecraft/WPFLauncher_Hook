@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
@@ -45,7 +45,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             Height = 500;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Background = new SolidColorBrush(Colors.WhiteSmoke);
-            Topmost = WpfConfig.IsWindowTopMost;
+            Topmost = WpfConfig.KeepWindowsOnTop;
 
             var mainPanel = new StackPanel { Margin = new Thickness(20) };
 
@@ -69,7 +69,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 Content = "置顶",
                 VerticalAlignment = VerticalAlignment.Center,
-                IsChecked = WpfConfig.IsWindowTopMost
+                IsChecked = WpfConfig.KeepWindowsOnTop
             };
             topMostCheck.Checked += (s, e) => Topmost = true;
             topMostCheck.Unchecked += (s, e) => Topmost = false;
@@ -161,10 +161,10 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 ScanVersions();
                 // return;
             }
-            if (Directory.Exists(WpfConfig.BedrockPath))
+            if (Directory.Exists(WpfConfig.BedrockDirectory))
             {
-                _pathTextBox.Text = WpfConfig.BedrockPath;
-                _selectedPath = WpfConfig.BedrockPath;
+                _pathTextBox.Text = WpfConfig.BedrockDirectory;
+                _selectedPath = WpfConfig.BedrockDirectory;
                 ScanVersions();
             }
 
@@ -193,7 +193,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     
                     try
                     {
-                        WpfConfig.BedrockPath = _selectedPath;
+                        WpfConfig.BedrockDirectory = _selectedPath;
                         ConfigManager.Save();
                         // File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "BedrockPath.txt"), _selectedPath);
                     }
@@ -311,16 +311,16 @@ namespace Mcl.Core.Dotnetdetour.HookList
             // 检查是否是基岩版启动
             if (FileName.Contains("Minecraft.Windows.exe"))
             {
-                if (WpfConfig.IsCustomIP && WpfConfig.IsSelectedIP == false)
+                if (WpfConfig.UseCustomServerAddress && WpfConfig.HasSelectedServerAddress == false)
                 {
                     Console.WriteLine("[Thread] 线程滞后: 等待用户选择好IP地址");
-                    while (!WpfConfig.IsSelectedIP)
+                    while (!WpfConfig.HasSelectedServerAddress)
                     {
                         Thread.Sleep(100);
                     }
                 }
 
-                if (WpfConfig.EnableCustomBedrockSelect)
+                if (WpfConfig.EnableBedrockClientSelection)
                 {
                     // 显示基岩版路径选择窗口
                     Application.Current.Dispatcher.Invoke(() =>

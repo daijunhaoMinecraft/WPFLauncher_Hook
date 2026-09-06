@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
@@ -6,6 +6,7 @@ using Mcl.Core.Dotnetdetour.Models.Entity;
 using WPFLauncher.Common;
 using WPFLauncher.Manager.Configuration;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
 public class AddCustomNetGameServer : IMethodHook
@@ -20,7 +21,7 @@ public class AddCustomNetGameServer : IMethodHook
     private void RefreshRecentNetGameListHook(string unkString, Action afterAction = null, Action unk = null)
     {
         int insertIndex = 0;
-        foreach (Tuple<string, NetGameResponse> recentList in WpfConfig.CustomRecentList)
+        foreach (Tuple<string, NetGameResponse> recentList in WpfConfig.CustomRecentServers)
         {
             string item = recentList.Item1;
             if (!azf<axi>.Instance.NetGameConfig.OrderList.Contains(item))
@@ -28,7 +29,7 @@ public class AddCustomNetGameServer : IMethodHook
                 azf<axi>.Instance.NetGameConfig.OrderList.Insert(0, item);
             }
         }
-        WpfConfig.DefaultLogger.Debug("调用最近网络游戏刷新成功!");
+        PluginLog.Debug("Game", "调用最近网络游戏刷新成功!");
         RefreshRecentNetGameList(unkString, afterAction, unk);
     }
 }

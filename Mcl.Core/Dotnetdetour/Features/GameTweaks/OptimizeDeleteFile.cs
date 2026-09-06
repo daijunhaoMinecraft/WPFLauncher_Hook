@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
@@ -10,6 +10,7 @@ using Mcl.Core.Dotnetdetour.Models.Config;
 using WPFLauncher.Manager;
 using WPFLauncher.Util;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
 public class OptimizeDeleteFile : IMethodHook
@@ -17,13 +18,13 @@ public class OptimizeDeleteFile : IMethodHook
     [HookMethod("WPFLauncher.Model.Game.ale", "a", "DeleteGame")]
     private void DeleteGameHook(object aleInstance)
     {
-        WpfConfig.DefaultLogger.Info("触发 DeleteGameHook，开始解析目标路径...");
+        PluginLog.Info("Game", "触发 DeleteGameHook，开始解析目标路径...");
 
         // 1. 获取 aleInstance 中的私有字段 'i' (类型为 alp)
         var iField = aleInstance.GetType().GetField("i", BindingFlags.NonPublic | BindingFlags.Instance);
         if (iField == null)
         {
-            WpfConfig.DefaultLogger.Error("反射获取字段 'i' 失败，Hook 提前退出。");
+            PluginLog.Error("Game", "反射获取字段 'i' 失败，Hook 提前退出。");
             return;
         }
 
@@ -33,7 +34,7 @@ public class OptimizeDeleteFile : IMethodHook
         var exeDirNameProp = iInstance.GetType().GetProperty("ExeDirName", BindingFlags.Public | BindingFlags.Instance);
         if (exeDirNameProp == null)
         {
-            WpfConfig.DefaultLogger.Error("反射获取属性 'ExeDirName' 失败，Hook 提前退出。");
+            PluginLog.Error("Game", "反射获取属性 'ExeDirName' 失败，Hook 提前退出。");
             return;
         }
 
@@ -43,7 +44,7 @@ public class OptimizeDeleteFile : IMethodHook
         var aovCField = typeof(aov).GetField("c", BindingFlags.Public | BindingFlags.Static);
         if (aovCField == null)
         {
-            WpfConfig.DefaultLogger.Error("反射获取静态字段 'aov.c' 失败，Hook 提前退出。");
+            PluginLog.Error("Game", "反射获取静态字段 'aov.c' 失败，Hook 提前退出。");
             return;
         }
 
@@ -51,13 +52,13 @@ public class OptimizeDeleteFile : IMethodHook
 
         // 4. 拼接最终的目标路径
         var targetPath = basePath + "Cpp\\" + exeDirName;
-        WpfConfig.DefaultLogger.Info($"成功解析目标基岩版路径: {targetPath}");
+        PluginLog.Info("Game", $"成功解析目标基岩版路径: {targetPath}");
 
         var res = uz.q("检测到版本更新, 请选择你基岩版本体的操作", "", "重命名", "删除");
 
         if (res == MessageBoxResult.OK)
         {
-            WpfConfig.DefaultLogger.Info("用户选择 [重命名] 操作。");
+            PluginLog.Info("Game", "用户选择 [重命名] 操作。");
             if (Directory.Exists(targetPath))
             {
                 var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
@@ -65,25 +66,25 @@ public class OptimizeDeleteFile : IMethodHook
                 try
                 {
                     Directory.Move(targetPath, newPath);
-                    WpfConfig.DefaultLogger.Info($"目录已成功重命名为: {newPath}");
+                    PluginLog.Info("Game", $"目录已成功重命名为: {newPath}");
                 }
                 catch (Exception ex)
                 {
-                    WpfConfig.DefaultLogger.Error($"重命名失败，文件可能被占用: {ex.Message}");
+                    PluginLog.Error("Game", $"重命名失败，文件可能被占用: {ex.Message}");
                 }
             }
             else
             {
-                WpfConfig.DefaultLogger.Warn("目标目录不存在，无需重命名。");
+                PluginLog.Warn("Game", "目标目录不存在，无需重命名。");
             }
         }
         else if (res == MessageBoxResult.No)
         {
-            WpfConfig.DefaultLogger.Info("用户选择 [删除] 操作，准备执行平滑清理策略...");
+            PluginLog.Info("Game", "用户选择 [删除] 操作，准备执行平滑清理策略...");
             if (Directory.Exists(targetPath))
                 SmoothDeleteDirectory(targetPath);
             else
-                WpfConfig.DefaultLogger.Warn("目标目录不存在，无需清理。");
+                PluginLog.Warn("Game", "目标目录不存在，无需清理。");
         }
     }
 
@@ -96,15 +97,15 @@ public class OptimizeDeleteFile : IMethodHook
         try
         {
             Directory.Move(targetPath, tempPath);
-            WpfConfig.DefaultLogger.Info($"瞬间释放原路径成功，已转移至: {tempPath}");
+            PluginLog.Info("Game", $"瞬间释放原路径成功，已转移至: {tempPath}");
         }
         catch (Exception ex)
         {
             tempPath = targetPath;
-            WpfConfig.DefaultLogger.Warn($"瞬间转移目录失败，将降级在原目录操作。原因: {ex.Message}");
+            PluginLog.Warn("Game", $"瞬间转移目录失败，将降级在原目录操作。原因: {ex.Message}");
         }
 
-        WpfConfig.DefaultLogger.Info("已开启后台低优先级线程进行 I/O 节流清理...");
+        PluginLog.Info("Game", "已开启后台低优先级线程进行 I/O 节流清理...");
 
         Task.Run(() =>
         {
@@ -140,11 +141,11 @@ public class OptimizeDeleteFile : IMethodHook
 
                 if (Directory.Exists(tempPath)) Directory.Delete(tempPath, false);
 
-                WpfConfig.DefaultLogger.Info($"后台清理完成！共节流删除文件数: {deletedFilesCount}");
+                PluginLog.Info("Game", $"后台清理完成！共节流删除文件数: {deletedFilesCount}");
             }
             catch (Exception ex)
             {
-                WpfConfig.DefaultLogger.Error($"后台清理线程发生未捕获异常: {ex.Message}");
+                PluginLog.Error("Game", $"后台清理线程发生未捕获异常: {ex.Message}");
             }
         });
     }

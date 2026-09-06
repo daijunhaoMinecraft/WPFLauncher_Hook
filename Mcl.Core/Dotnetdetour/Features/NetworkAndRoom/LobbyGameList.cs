@@ -1,3 +1,4 @@
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 using System;
 using System.Runtime.CompilerServices;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
@@ -21,8 +22,8 @@ internal class LobbyGameList : IMethodHook
     public static void GetLobbyGameListHook(string resId, int jni, int jnj,
         Action<EntityListResponse<LobbyGameRoomEntity>> response)
     {
-        Console.WriteLine($"[Online]成功将房间最大显示个数修改成{WpfConfig.MaxRoomCount.ToString()}!");
-        Console.WriteLine($"[Online]获取房间列表ResID:{resId}");
+        PluginLog.Debug("Network", $"[Online]成功将房间最大显示个数修改成{WpfConfig.MaxRoomCount.ToString()}!");
+        PluginLog.Debug("Network", $"[Online]获取房间列表ResID:{resId}");
         GetLobbyGameList(resId, jni, WpfConfig.MaxRoomCount, response);
     }
 }

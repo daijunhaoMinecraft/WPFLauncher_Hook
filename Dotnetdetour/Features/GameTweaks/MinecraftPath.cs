@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Mcl.Core.Dotnetdetour.Tools;
 using Mcl.Core.Utils;
@@ -19,7 +19,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             string MinecraftPath = ChangeMinecraftPath();
             string NowMinecraftPath = Path.Combine(new string[] { tb.n, "Game", ".minecraft" });
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                                 Console.WriteLine("[MinecraftPath]Minecraft路径: " + MinecraftPath);
                 Console.WriteLine("[MinecraftPath]现在Mincraft路径: " + NowMinecraftPath);
@@ -110,7 +110,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             string result = "";
             string regGetPath = RegistryHelper.GetValue("MinecraftBENeteasePath");
-            string userSelectPath = WpfConfig.BedrockPath;
+            string userSelectPath = WpfConfig.BedrockDirectory;
             bool checkResultUserSelectPath = CheckPermission(userSelectPath);
             bool checkResultRegGetPath = CheckPermission(regGetPath);
             result = userSelectPath;
@@ -125,7 +125,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 result = regGetPath;
             }
 
-            WpfConfig.BedrockPath = result;
+            WpfConfig.BedrockDirectory = result;
             return result;
         }
     }

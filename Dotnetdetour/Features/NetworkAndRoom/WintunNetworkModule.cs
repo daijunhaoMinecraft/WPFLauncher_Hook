@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -54,7 +54,7 @@ namespace Mcl.Core.Dotnetdetour.Tools.Network
 
         public void Start(string virtualIp)
         {
-            if (!WpfConfig.UseNetworkMode) return;
+            if (!WpfConfig.EnableVirtualNetwork) return;
             this.LocalVirtualIp = virtualIp;
 
             Guid guid = Guid.NewGuid();
@@ -144,7 +144,7 @@ namespace Mcl.Core.Dotnetdetour.Tools.Network
                 if (!string.IsNullOrEmpty(entry.Key))
                 {
                     _routingTable.TryRemove(entry.Key, out _);
-                    if (WpfConfig.IsDebug)
+                    if (WpfConfig.EnableVerboseLogging)
                     {
                         Console.WriteLine($"[Router] 已移除路由: {entry.Key} -> {peerId}");
                     }
@@ -183,7 +183,7 @@ namespace Mcl.Core.Dotnetdetour.Tools.Network
             // {
             //     if (_routingTable.TryGetValue(dstIp, out string targetPeerId))
             //     {
-            //         if (WpfConfig.IsDebug) Console.WriteLine($"[Router] 转发: {srcIp} -> {dstIp} (Peer: {targetPeerId})");
+            //         if (WpfConfig.EnableVerboseLogging) Console.WriteLine($"[Router] 转发: {srcIp} -> {dstIp} (Peer: {targetPeerId})");
             //         SendData(targetPeerId, data);
             //     }
             // }
@@ -218,7 +218,7 @@ namespace Mcl.Core.Dotnetdetour.Tools.Network
 
                         if (WebRtcVar.Mode == ForwardMode.Client)
                         {
-                            if (WpfConfig.IsDebug) Console.WriteLine($"[Router] 转发: {dstIp} -> {WebRtcVar.TargetPeerId}");
+                            if (WpfConfig.EnableVerboseLogging) Console.WriteLine($"[Router] 转发: {dstIp} -> {WebRtcVar.TargetPeerId}");
                             // 客户端很简单：所有包都扔给服务器 (假设服务器 PeerId 已知)
                             SendData(WebRtcVar.TargetPeerId, packetData);
                         }
@@ -227,7 +227,7 @@ namespace Mcl.Core.Dotnetdetour.Tools.Network
                             // 服务端：根据目的 IP 找 PeerId
                             if (_routingTable.TryGetValue(dstIp, out string targetPeerId))
                             {
-                                if (WpfConfig.IsDebug) Console.WriteLine($"[Router] 转发: {dstIp} -> {targetPeerId}");
+                                if (WpfConfig.EnableVerboseLogging) Console.WriteLine($"[Router] 转发: {dstIp} -> {targetPeerId}");
                                 SendData(targetPeerId, packetData);
                             }
                         }
@@ -260,7 +260,7 @@ namespace Mcl.Core.Dotnetdetour.Tools.Network
             try {
                 Assembly asm = WebRtcVar.CmInstance.GetType().Assembly;
                 Type ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
-                if (WpfConfig.IsDebug) Console.WriteLine($"[WebRtc]发送数据: {BitConverter.ToString(data)}");
+                if (WpfConfig.EnableVerboseLogging) Console.WriteLine($"[WebRtc]发送数据: {BitConverter.ToString(data)}");
                 MethodInfo sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
                 sMethod.Invoke(null, new object[] { peerPtr.Value, data, data.Length });
             } catch { }
@@ -393,7 +393,7 @@ namespace Mcl.Core.Dotnetdetour.Tools.Network
     //             return;
     //         }
     //
-    //         if (WpfConfig.UseNetworkMode)
+    //         if (WpfConfig.EnableVirtualNetwork)
     //         {
     //             // 收到数据，交给路由器模块处理 (包含路由转发和注入功能)
     //             byte[] rawData = new byte[dataSize];

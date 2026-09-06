@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Mcl.Core.Dotnetdetour.Var;
@@ -29,13 +29,13 @@ namespace Mcl.Core.Dotnetdetour.Window
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.BackColor = SystemColors.Control;
-            this.TopMost = WpfConfig.IsWindowTopMost;
+            this.TopMost = WpfConfig.KeepWindowsOnTop;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = WpfConfig.IsWindowTopMost,
+                Checked = WpfConfig.KeepWindowsOnTop,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;

@@ -1,7 +1,8 @@
-﻿using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
+using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.AntiCheatBypass;
 
 public class BypassForbidden : IMethodHook
@@ -16,7 +17,7 @@ public class BypassForbidden : IMethodHook
     public bool CheckDisableHook(string key)
     {
         var result = CheckDisable(key);
-        WpfConfig.DefaultLogger.Info($"CheckDisable, key: {key}, value: {result}");
+        PluginLog.Debug("Core", $"CheckDisable, key: {key}, value: {result}");
         return result;
     }
 }

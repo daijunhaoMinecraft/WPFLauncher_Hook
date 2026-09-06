@@ -1,15 +1,13 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using DotNetDetour;
 using DotNetTranstor;
 
 namespace WPFLauncherLib
 {
-	// Token: 0x0200001B RID: 27
 	public class Main
 	{
 		public static bool IsinitHook = false;
-		// Token: 0x0600004D RID: 77 RVA: 0x0000392C File Offset: 0x00001B2C
 		public static int start(string msg)
 		{
 			if (!IsinitHook)
@@ -20,7 +18,6 @@ namespace WPFLauncherLib
 			return 0;
 		}
 
-		// Token: 0x0600004E RID: 78 RVA: 0x00003948 File Offset: 0x00001B48
 		public static void killMe(int pid = -1)
 		{
 			bool flag = pid <= 0;

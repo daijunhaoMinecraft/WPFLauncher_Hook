@@ -22,9 +22,9 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             try
             {
-                if (Directory.Exists(WpfConfig.BedrockPath))
+                if (Directory.Exists(WpfConfig.BedrockDirectory))
                 {
-                    foreach (var dir in Directory.GetDirectories(WpfConfig.BedrockPath))
+                    foreach (var dir in Directory.GetDirectories(WpfConfig.BedrockDirectory))
                     {
                         if (File.Exists(Path.Combine(dir, "Minecraft.Windows.exe")))
                         {
@@ -46,17 +46,17 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Model.Game.ale", "fn", "No_Update")]
 		public bool CheckUpdate(bool skipValidation = true)
 		{
-			if (WpfConfig.IsStartWebSocket)
+			if (WpfConfig.EnableWebServer)
 			{
-				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "IsBypassGameUpdate_Bedrock",BypassGameUpdate_Bedrock = WpfConfig.IsBypassGameUpdate_Bedrock, skipValidation = skipValidation}));
+				WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "IsBypassGameUpdate_Bedrock",BypassGameUpdate_Bedrock = WpfConfig.SkipBedrockUpdates, skipValidation = skipValidation}));
 			}
 
-			if (WpfConfig.IsDebug)
+			if (WpfConfig.EnableVerboseLogging)
 			{
-				Console.WriteLine($"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{WpfConfig.IsBypassGameUpdate_Bedrock},skipValidation:{skipValidation}");
+				Console.WriteLine($"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{WpfConfig.SkipBedrockUpdates},skipValidation:{skipValidation}");
 			}
 
-			if (WpfConfig.IsBypassGameUpdate_Bedrock)
+			if (WpfConfig.SkipBedrockUpdates)
 			{
                 // --- 新增逻辑开始 ---
                 if (!IsLocalBedrockGameExists())

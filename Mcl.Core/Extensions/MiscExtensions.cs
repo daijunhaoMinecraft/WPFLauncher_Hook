@@ -1,13 +1,11 @@
-﻿using System.IO;
+using System.IO;
 using Mcl.Core.Network;
 using Mcl.Core.Network.Interface;
 
 namespace Mcl.Core.Extensions;
 
-// Token: 0x02000024 RID: 36
 public static class MiscExtensions
 {
-    // Token: 0x0600026D RID: 621 RVA: 0x00005F5C File Offset: 0x0000415C
     public static byte[] ReadAsBytes(this Stream input)
     {
         var array = new byte[16384];
@@ -22,7 +20,6 @@ public static class MiscExtensions
         return array2;
     }
 
-    // Token: 0x0600026E RID: 622 RVA: 0x00005FC8 File Offset: 0x000041C8
     public static INetResponse<T> ToAsyncResponse<T>(this INetResponse response)
     {
         return new NetResponse<T>

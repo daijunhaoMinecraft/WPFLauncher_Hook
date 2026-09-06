@@ -16,7 +16,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Unisdk.nz", "onCompactViewClosed", "No_RealName")]
 		protected void onCompactViewClosed(int code)
 		{
-			if (WpfConfig.IsDebug)
+			if (WpfConfig.EnableVerboseLogging)
 			{
 				WpfConfig.DefaultLogger.Info("[MpayLogin]code_onCompactViewClosed: " + code.ToString());
 			}

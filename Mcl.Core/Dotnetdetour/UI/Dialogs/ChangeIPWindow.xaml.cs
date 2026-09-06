@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 using Mcl.Core.Dotnetdetour.Models.Config;
@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using WPFLauncher.Model.Game;
 using WPFLauncher.Util;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks
 {
     public partial class ChangeIPWindow : Window
@@ -18,8 +19,8 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks
             _roomInfo = roomInfo;
 
             // 初始化置顶状态
-            TopMostCheck.IsChecked = WpfConfig.IsWindowTopMost;
-            Topmost = WpfConfig.IsWindowTopMost;
+            TopMostCheck.IsChecked = WpfConfig.KeepWindowsOnTop;
+            Topmost = WpfConfig.KeepWindowsOnTop;
 
             LoadRoomInfo();
         }
@@ -61,15 +62,15 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks
                 _roomInfo.CppGameCfg.room_info.port = port;
                 
                 var sCppGameConfigPath = _roomInfo.CppGameCfg.path;
-                WpfConfig.DefaultLogger.Info($"[CustomIP] CppGamePath: {sCppGameConfigPath}");
+                PluginLog.Info("UI", $"[CustomIP] CppGamePath: {sCppGameConfigPath}");
                 
                 // 覆盖 temp.config
                 File.WriteAllText(Path.Combine(tb.n, "temp", "temp.config"),
                     JsonConvert.SerializeObject(_roomInfo.CppGameCfg));
                 
-                WpfConfig.DefaultLogger.Info("[CustomIP] Config Saved!");
+                PluginLog.Info("UI", "[CustomIP] Config Saved!");
                 
-                WpfConfig.IsSelectedIP = true;
+                WpfConfig.HasSelectedServerAddress = true;
                 DialogResult = true; // 自动关闭窗口
             }
             catch (Exception ex)
@@ -80,7 +81,7 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
-            WpfConfig.IsSelectedIP = true;
+            WpfConfig.HasSelectedServerAddress = true;
             DialogResult = false; // 自动关闭窗口
         }
     }

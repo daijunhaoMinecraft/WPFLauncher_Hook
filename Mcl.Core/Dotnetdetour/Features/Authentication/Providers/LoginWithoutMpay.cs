@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.IO;
 using System.Net;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
@@ -18,7 +19,7 @@ public class LoginWithoutMpay : IMethodHook
     [HookMethod("WPFLauncher.Unisdk.nx", "a", "InitMpay")]
     public void InitMpayHook(string title, string mpayPath, Action<int> initFinishAction, string uniSdkUrl)
     {
-        if (WpfConfig.MpayUnless)
+        if (WpfConfig.UseAccountManagerLogin)
         {
             initFinishAction(0);
             
@@ -43,10 +44,10 @@ public class LoginWithoutMpay : IMethodHook
     [HookMethod("WPFLauncher.Manager.arf", "j", "ProcessLogout")]
     public void ProcessLogoutHook()
     {
-        WpfConfig.DefaultLogger.Info("执行注销...");
+        PluginLog.Debug("Auth", "执行注销...");
         ProcessLogout();
 
-        if (WpfConfig.MpayUnless)
+        if (WpfConfig.UseAccountManagerLogin)
         {
             string sauthJson = AuthIntegrationService.RequestUserLogin(allowOriginal: false);
             if (!string.IsNullOrEmpty(sauthJson))
@@ -72,16 +73,16 @@ public class LoginWithoutMpay : IMethodHook
     {
         if (File.Exists("4399pc.data"))
         {
-            Console.WriteLine("选择渠道服: 4399");
+            PluginLog.Debug("Auth", "选择渠道服: 4399");
             return "4399pc";
         }
 
         if (File.Exists("native_a50_cn.data"))
         {
-            Console.WriteLine("选择渠道服: a50sdk");
+            PluginLog.Debug("Auth", "选择渠道服: a50sdk");
             return "a50_sdk_cn";
         }
-        Console.WriteLine("选择渠道服: netease");
+        PluginLog.Debug("Auth", "选择渠道服: netease");
         return "netease";
     }
 

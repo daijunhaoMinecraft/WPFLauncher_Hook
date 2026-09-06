@@ -92,7 +92,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         if (commandId == 3 && WpfConfig.RoomInfo != null)
                         {
                             WpfConfig.DefaultLogger.Warn("你已被房主踢出房间");
-                            if (WpfConfig.IsStartWebSocket)
+                            if (WpfConfig.EnableWebServer)
                             {
                                 await Task.Run(() => WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "ChatConnectionPacket", status = "kick", data = message })));
                             }
@@ -166,7 +166,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         {
                             if (message.Contains("player_chatver_id") && message.Contains("err"))
                             {
-                                WpfConfig.Get_Recv_String_ChatResult = message;
+                                WpfConfig.LastChatResponse = message;
                             }
                             else
                             {
@@ -179,7 +179,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                         processingTasks.Add(Task.Run(() => 
                         {
                             WpfConfig.DefaultLogger.Debug($"接收到未分类的数据包: {message}");
-                            if (WpfConfig.IsStartWebSocket)
+                            if (WpfConfig.EnableWebServer)
                             {
                                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "ChatConnectionPacket", data = jsonMessage }));
                             }
@@ -193,9 +193,9 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     try
                     {
                         // 使用线程安全的方式添加到接收列表
-                        lock (WpfConfig.RecvList)
+                        lock (WpfConfig.ReceivedMessages)
                         {
-                            WpfConfig.RecvList.Add(jsonMessage);
+                            WpfConfig.ReceivedMessages.Add(jsonMessage);
                         }
                     }
                     catch (Exception ex)
@@ -315,10 +315,10 @@ namespace Mcl.Core.Dotnetdetour.HookList
             JObject playerInfo = X19Http.GetPlayerInfo(uid);
             string playerName = playerInfo["entity"]["name"].ToObject<string>();
             WpfConfig.DefaultLogger.Info($"玩家状态: {statusString} UID:{uid} 玩家名: {playerName} 提示: {hint}");
-            FriendStatus friendStatus = WpfConfig.ListFriendStatus.FirstOrDefault(x => x.UserId.ToString() == uid);
+            FriendStatus friendStatus = WpfConfig.FriendStatuses.FirstOrDefault(x => x.UserId.ToString() == uid);
             if (friendStatus == null)
             {
-                WpfConfig.ListFriendStatus.Add(new FriendStatus()
+                WpfConfig.FriendStatuses.Add(new FriendStatus()
                 {
                     Status = status,
                     UserId = uid
@@ -375,7 +375,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     }
                 });
 
-                if (WpfConfig.IsStartWebSocket)
+                if (WpfConfig.EnableWebServer)
                 {
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                     { 
@@ -464,7 +464,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 {
                     JObject playerInfo = X19Http.GetPlayerInfo(userId);
                     WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间");
-                    if (WpfConfig.IsStartWebSocket)
+                    if (WpfConfig.EnableWebServer)
                     {
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                         { 
@@ -511,7 +511,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
                 WpfConfig.DefaultLogger.Warn($"玩家 {playerName} UID:{userId} 退出了房间");
 
-                if (WpfConfig.IsStartWebSocket)
+                if (WpfConfig.EnableWebServer)
                 {
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                     { 
@@ -550,7 +550,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 if (WpfConfig.RoomBlacklist.Contains(userId))
                 {
                     HandleBlacklistedPlayer(userId);
-                    if (WpfConfig.IsStartWebSocket)
+                    if (WpfConfig.EnableWebServer)
                     {
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                         { 
@@ -598,7 +598,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerInfo["entity"]["name"]} UID:{userId} 加入了房间");
                     // 检查正则表达式黑名单
                     CheckRegexBlacklist(userId, playerInfo["entity"]["name"].ToString(), blacklistFilePath);
-                    if (WpfConfig.IsStartWebSocket)
+                    if (WpfConfig.EnableWebServer)
                     {
                         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                         { 
@@ -719,7 +719,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                     {
                         WpfConfig.DefaultLogger.Warn($"[RoomInfo]玩家 {playerName} {reason},已自动踢出房间");
                         
-                        if (WpfConfig.IsStartWebSocket)
+                        if (WpfConfig.EnableWebServer)
                         {
                             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new 
                             { 
@@ -806,7 +806,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 UpdateRoomInfo(newRoomInfo);
 
                 // 发送WebSocket通知
-                if (WpfConfig.IsStartWebSocket)
+                if (WpfConfig.EnableWebServer)
                 {
                     WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     {

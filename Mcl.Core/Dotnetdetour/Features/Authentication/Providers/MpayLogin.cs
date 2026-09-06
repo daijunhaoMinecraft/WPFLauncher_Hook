@@ -13,6 +13,7 @@ using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.UI.Core;
 using Mcl.Core.Dotnetdetour.UI.Forms;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 
 public static class MpayLogin
@@ -103,7 +104,7 @@ public static class MpayLogin
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"设备注册失败: {ex.Message}");
+            PluginLog.Error("Auth", $"设备注册失败: {ex.Message}");
             MessageBox.Show($"设备注册发生异常: {ex.Message}", "设备注册错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return null;
         }

@@ -1,56 +1,39 @@
 ﻿<Window x:Class="Mcl.Core.Dotnetdetour.UI.Controls.ProcessLogWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="进程运行日志" Height="500" Width="800"
-        Background="#202020" WindowStartupLocation="CenterScreen"
-        FontFamily="Segoe UI">
-    
-    <Grid Margin="10">
+        Title="进程运行日志" Height="560" Width="900" MinWidth="600" MinHeight="360"
+        Background="{DynamicResource WindowBackgroundBrush}" Foreground="{DynamicResource TextBrush}"
+        WindowStartupLocation="CenterScreen" FontFamily="{DynamicResource UiFont}" UseLayoutRounding="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Mcl.Core;component/Dotnetdetour/UI/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Margin="24">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-
-        <!-- 顶部控制栏 (标题 + 按钮组) -->
-        <Grid Grid.Row="0" Margin="0,0,0,10">
-            <TextBlock x:Name="TitleTextBlock" Text="启动日志 - 等待进程..." 
-                       Foreground="White" FontSize="16" FontWeight="SemiBold" 
-                       VerticalAlignment="Center"/>
-            
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <!-- 结束进程按钮 (红色警告风格) -->
-                <Button x:Name="KillProcessButton" Content="结束进程" Margin="0,0,10,0" Padding="15,5" 
-                        Background="#C50F1F" Foreground="White" BorderThickness="0"
-                        Cursor="Hand" Click="KillProcess_Click">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="4"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-                
-                <!-- 导出日志按钮 -->
-                <Button Content="导出日志" Padding="15,5" 
-                        Background="#333333" Foreground="White" BorderThickness="0"
-                        Cursor="Hand" Click="ExportLog_Click">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="4"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-            </StackPanel>
-        </Grid>
-
-        <!-- 日志显示区 -->
-        <Border Grid.Row="1" Background="#181818" CornerRadius="6" BorderBrush="#333333" BorderThickness="1">
-            <ScrollViewer x:Name="LogScroller" ScrollChanged="LogScroller_ScrollChanged" Margin="5">
-                <TextBox x:Name="LogTextBox" 
-                         Background="Transparent" BorderThickness="0"
-                         Foreground="#D4D4D4" FontFamily="Consolas" FontSize="13"
-                         IsReadOnly="True" TextWrapping="Wrap"
-                         AcceptsReturn="True" />
+        <TextBlock x:Name="TitleTextBlock" Text="运行日志" Style="{StaticResource PageTitle}"
+                   TextTrimming="CharacterEllipsis" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,16">
+            <Button Content="导出最近日志" Click="ExportLog_Click" Style="{StaticResource PrimaryButton}" />
+            <Button x:Name="KillProcessButton" Content="结束进程" Margin="8,0,0,0" Click="KillProcess_Click"
+                    Style="{StaticResource DangerButton}" />
+        </StackPanel>
+        <Border Grid.Row="2" Style="{StaticResource Card}" Padding="8">
+            <ScrollViewer x:Name="LogScroller" ScrollChanged="LogScroller_ScrollChanged"
+                          VerticalScrollBarVisibility="Auto">
+                <TextBox x:Name="LogTextBox" Background="Transparent" BorderThickness="0"
+                         FontFamily="Cascadia Mono, Consolas" FontSize="13" IsReadOnly="True"
+                         TextWrapping="Wrap" AcceptsReturn="True" AutomationProperties.Name="游戏输出日志" />
             </ScrollViewer>
         </Border>
+        <TextBlock Grid.Row="3" Margin="0,12,0,0" Style="{StaticResource SecondaryText}"
+                   Text="显示最近 50,000 字符，导出保留最近 2 Mi 字符。向上滚动暂停跟随，滚到底部恢复。" />
     </Grid>
 </Window>

@@ -1,3 +1,4 @@
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -65,7 +66,7 @@ public static class AccountManager
             catch (Exception ex)
             {
                 // WpfConfig.DefaultLogger.Error($"[AccountManager] 保存账号失败: {ex.Message}");
-                Console.WriteLine($"[AccountManager] 保存账号失败: {ex.Message}");
+                PluginLog.Error("Auth", $"[AccountManager] 保存账号失败: {ex.Message}");
             }
         }
     }
@@ -126,7 +127,7 @@ public static class AccountManager
             if (needsSave)
             {
                 Save();
-                // WpfConfig.DefaultLogger.Info("[AccountManager] 已成功导入旧版账号文件");
+                // WpfConfig.DefaultLogger.Debug("[AccountManager] 已成功导入旧版账号文件");
             }
         }
         catch (Exception ex)

@@ -1,7 +1,8 @@
-﻿using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
+using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 
 public class DirectoryEvent : IMethodHook
@@ -14,25 +15,25 @@ public class DirectoryEvent : IMethodHook
     [HookMethod("Pri.LongPath.Directory", "Delete", "Delete")]
     public static void DeleteHook(string path, bool recursive)
     {
-        WpfConfig.DefaultLogger.Info("Deleting: " + path);
+        PluginLog.Info("Hook", "Deleting: " + path);
         if (!(path.Contains("\\cache\\") || path.Contains("/cache/")))
         {
             if ((path.EndsWith("\\resourcepacks") || path.EndsWith("/resourcepacks")) &&
-                WpfConfig.KeepOffDeleteLastResourcepacks)
+                WpfConfig.PreserveResourcePacks)
             {
-                WpfConfig.DefaultLogger.Info("阻止网易删除resourcepacks文件夹");
+                PluginLog.Info("Hook", "阻止网易删除resourcepacks文件夹");
                 return;
             }
 
-            if ((path.EndsWith("\\config") || path.EndsWith("/config")) && WpfConfig.KeepOffDeleteLastConfig)
+            if ((path.EndsWith("\\config") || path.EndsWith("/config")) && WpfConfig.PreserveGameConfig)
             {
-                WpfConfig.DefaultLogger.Info("阻止网易删除config文件夹");
+                PluginLog.Info("Hook", "阻止网易删除config文件夹");
                 return;
             }
 
-            if ((path.EndsWith("\\shaderpacks") || path.EndsWith("/shaderpacks")) && WpfConfig.KeepOffDeleteLastShaderPacks)
+            if ((path.EndsWith("\\shaderpacks") || path.EndsWith("/shaderpacks")) && WpfConfig.PreserveShaderPacks)
             {
-                WpfConfig.DefaultLogger.Info("阻止网易删除shaderpacks文件夹");
+                PluginLog.Info("Hook", "阻止网易删除shaderpacks文件夹");
                 return;
             }
         }

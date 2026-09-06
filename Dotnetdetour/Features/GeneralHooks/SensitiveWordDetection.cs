@@ -20,7 +20,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.cn", "a", "No_Sensitive_word_Init")]
         public static void InitHookA()
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                 WpfConfig.DefaultLogger.Warn("[INFO]发现网易正在初始化敏感词功能已被制止");
             }
@@ -30,7 +30,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.cn", "b", "No_Sensitive_word_Init")]
         public static void InitHookB()
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                 WpfConfig.DefaultLogger.Warn("[INFO]发现网易正在初始化敏感词功能已被制止");
             }
@@ -50,7 +50,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.cn", "c", "No_Sensitive_word_String")]
         public static string StringHookC(string content)
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                 WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }
@@ -61,7 +61,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.cn", "e", "No_Sensitive_word_String")]
         public static string StringHookE(string content)
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                 WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }
@@ -82,7 +82,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.cn", "d", "No_Sensitive_word_Bool")]
         public static bool BoolHookD(string content)
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                 WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }
@@ -93,7 +93,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.cn", "f", "No_Sensitive_word_Bool")]
         public static bool BoolHookF(string content)
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                 WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
             }

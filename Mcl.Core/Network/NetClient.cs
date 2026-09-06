@@ -22,24 +22,19 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFLauncher.Util;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Network;
 
-// Token: 0x02000012 RID: 18
 public class NetClient : INetClient
 {
-    // Token: 0x04000069 RID: 105
     private static readonly Version version = new AssemblyName(Assembly.GetExecutingAssembly().FullName).Version;
 
-    // Token: 0x04000079 RID: 121
     private readonly Regex structuredSyntaxSuffixRegex = new("\\+\\w+$", RegexOptions.Compiled);
 
-    // Token: 0x0400007A RID: 122
     private readonly Regex structuredSyntaxSuffixWildcardRegex = new("^\\*\\+\\w+$", RegexOptions.Compiled);
 
-    // Token: 0x0400006A RID: 106
     public IHttpFactory HttpFactory = new SimpleFactory<Http>();
 
-    // Token: 0x060000F3 RID: 243 RVA: 0x00004214 File Offset: 0x00002414
     public NetClient()
     {
         Encoding = Encoding.UTF8;
@@ -48,14 +43,12 @@ public class NetClient : INetClient
         FollowRedirects = true;
     }
 
-    // Token: 0x060000F4 RID: 244 RVA: 0x00004282 File Offset: 0x00002482
     public NetClient(Uri baseUrl)
         : this()
     {
         BaseUrl = baseUrl;
     }
 
-    // Token: 0x060000F5 RID: 245 RVA: 0x00004294 File Offset: 0x00002494
     public NetClient(string baseUrl)
         : this()
     {
@@ -64,17 +57,13 @@ public class NetClient : INetClient
         BaseUrl = new Uri(baseUrl);
     }
 
-    // Token: 0x17000053 RID: 83
-    // (get) Token: 0x060000F6 RID: 246 RVA: 0x000042CC File Offset: 0x000024CC
-    // (set) Token: 0x060000F7 RID: 247 RVA: 0x000042D4 File Offset: 0x000024D4
     private IList<string> AcceptTypes { get; }
 
-    // Token: 0x060000CE RID: 206 RVA: 0x00003DB4 File Offset: 0x00001FB4
     public virtual NetRequestAsyncHandle ExecuteAsync(INetRequest request,
         Action<INetResponse, NetRequestAsyncHandle> callback)
     {
         var uri = new Uri(new Uri(BaseUrl.ToString()), request.Resource);
-        WpfConfig.DefaultLogger.Info($"[AsyncRequest] url: {uri}");
+        PluginLog.Info("Network", $"[AsyncRequest] url: {uri}");
 
         // 获取请求内容
         var body = new byte[] { };
@@ -106,41 +95,42 @@ public class NetClient : INetClient
             {
                 var decryptString = X19Crypt.DecryptX19Body(body);
                 var parseJson = JObject.Parse(decryptString);
-                WpfConfig.DefaultLogger.Info("[Netease Anti Cheat] 发现/salog-new的post请求(进程检测/dll检测/注入检测等)已及时制止");
-                WpfConfig.DefaultLogger.Info("[INFO]检测类型: " + parseJson["type"] + "发送数据: " + parseJson["data"]);
+                PluginLog.Info("Network", "Blocked security telemetry request: endpoint=/salog-new type={0}", parseJson["type"]?.ToString());
+                PluginLog.Debug("Network", "Security telemetry payload omitted: size={0}", decryptString.Length);
                 return netRequestAsyncHandle;
             }
 
             if (uri.ToString().EndsWith("/salog"))
             {
                 var JsonRequest = JObject.Parse(stringBody);
-                WpfConfig.DefaultLogger.Info($"[Salog] type: {JsonRequest["type"]}, data: {JsonRequest["data"]}");
+                PluginLog.Debug("Network", "Security telemetry payload omitted: endpoint=/salog size={0} type={1}",
+                    stringBody.Length, JsonRequest["type"]?.ToString());
                 return netRequestAsyncHandle;
             }
 
             if (uri.ToString().EndsWith("/client-log"))
             {
                 var JsonRequest = JObject.Parse(stringBody);
-                WpfConfig.DefaultLogger.Info(
-                    $"[ClientLog] FileName: {JsonRequest["file_name"]}, msg: {JsonRequest["msg"]}");
+                PluginLog.Debug("Network", "Client log request received: file={0} size={1}",
+                    JsonRequest["file_name"]?.ToString(), stringBody.Length);
                 return netRequestAsyncHandle;
             }
 
             if (uri.ToString().EndsWith("/diagnostic-log"))
             {
-                WpfConfig.DefaultLogger.Info($"[diagnosticLog] Json: {stringBody}");
+                PluginLog.Debug("Network", "Diagnostic log payload omitted: size={0}", stringBody.Length);
                 return netRequestAsyncHandle;
             }
 
             if (uri.ToString().EndsWith("/diagnostic-value"))
             {
-                WpfConfig.DefaultLogger.Info($"[diagnosticValue] Json: {stringBody}");
+                PluginLog.Debug("Network", "Diagnostic value payload omitted: size={0}", stringBody.Length);
                 return netRequestAsyncHandle;
             }
 
             if (uri.ToString().EndsWith("game-play-v2/start"))
             {
-                WpfConfig.DefaultLogger.Info("用户启动了游戏");
+                PluginLog.Info("Game", "Game start request intercepted.");
                 var result =
                     "{\n   \"code\" : 0,\n   \"details\" : \"\",\n   \"entity\" : {\n      \"anti_addiction_info\" : {\n         \"current_online_time_sum\" : 0,\n         \"msg\" : \"\",\n         \"online_time_left\" : 0,\n         \"online_time_limit\" : 0,\n         \"online_time_sum\" : 0,\n         \"status\" : 0\n      },\n      \"is_anti_addiction\" : false,\n      \"record\" : null\n   },\n   \"message\" : \"正常返回\"\n}";
                 netResponse.Content = result;
@@ -150,10 +140,10 @@ public class NetClient : INetClient
 
             if (uri.ToString().EndsWith("game-play-v2/stop"))
             {
-                WpfConfig.DefaultLogger.Info("用户关闭了游戏");
+                PluginLog.Info("Game", "Game stop request intercepted.");
                 var result =
                     "{\"code\":0,\"message\":\"\\u6b63\\u5e38\\u8fd4\\u56de\",\"details\":\"\",\"entity\":null}";
-                WpfConfig.IsJoinCustomServer = false;
+                WpfConfig.IsJoiningCustomServer = false;
                 netResponse.Content = result;
                 callback(netResponse, netRequestAsyncHandle);
                 return netRequestAsyncHandle;
@@ -165,16 +155,15 @@ public class NetClient : INetClient
                 var authenticationUpdateResult = X19Http.Post("/authentication/update", decryptRequest, WpfConfig.ServerList["CoreServerUrl"].ToString(), X19Http.RequestType.Encrypt);
 
                 var authResult = JObject.Parse(authenticationUpdateResult);
-                if (WpfConfig.ShowAccountInfo)
+                if (WpfConfig.LogSensitiveAccountDetails)
                 {
-                    WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {authenticationUpdateResult}");
+                    PluginLog.Debug("Auth", "Authentication response received: size={0}", authenticationUpdateResult.Length);
                 }
                 if (authResult["code"].ToObject<int>() == 0)
                 {
                     X19Crypt.Token = authResult["entity"]["token"].ToString();
                     X19Crypt.UserId = authResult["entity"]["entity_id"].ToString();
-                    WpfConfig.DefaultLogger.Info(
-                        $"Update Authentication Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}");
+                    PluginLog.Info("Auth", "Authentication updated: userId={0}", X19Crypt.UserId);
                 }
 
                 netResponse.RawBytes = X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(authenticationUpdateResult));
@@ -186,20 +175,20 @@ public class NetClient : INetClient
             if (uri.ToString().EndsWith("/item-address/get"))
             {
                 JObject queryJson = JObject.Parse(stringBody);
-                Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+                Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentServers.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
                 if (customResponse != null)
                 {
                     netResponse.Content = $"{{\"code\":0,\"details\":\"\",\"entity\":{{\"announcement\":\"\",\"entity_id\":\"{queryJson["item_id"]}\",\"game_status\":0,\"in_whitelist\":false,\"ip\":\"{customResponse.Item2.NetGameEntity.Ip}\",\"isp_enable\":false,\"port\":{customResponse.Item2.NetGameEntity.Port.ToString()}}},\"message\":\"正常返回\"}}";
                     callback(netResponse, netRequestAsyncHandle);
-                    WpfConfig.IsJoinCustomServer = true;
+                    WpfConfig.IsJoiningCustomServer = true;
                     return netRequestAsyncHandle;
                 }
-                WpfConfig.IsJoinCustomServer = false;
+                WpfConfig.IsJoiningCustomServer = false;
             }
         }
         catch (Exception e)
         {
-            WpfConfig.DefaultLogger.Error(e);
+            PluginLog.Error("Network", e);
             return netRequestAsyncHandle;
         }
 
@@ -210,14 +199,12 @@ public class NetClient : INetClient
         return netRequestAsyncHandle;
     }
 
-    // Token: 0x060000CF RID: 207 RVA: 0x00003E24 File Offset: 0x00002024
     public virtual NetRequestAsyncHandle ExecuteAsyncGet(INetRequest request,
         Action<INetResponse, NetRequestAsyncHandle> callback, string httpMethod)
     {
         return ExecuteAsync(request, callback, httpMethod, DoAsGetAsync);
     }
 
-    // Token: 0x060000D0 RID: 208 RVA: 0x00003E4C File Offset: 0x0000204C
     public virtual NetRequestAsyncHandle ExecuteAsyncPost(INetRequest request,
         Action<INetResponse, NetRequestAsyncHandle> callback, string httpMethod)
     {
@@ -225,19 +212,16 @@ public class NetClient : INetClient
         return ExecuteAsync(request, callback, httpMethod, DoAsPostAsync);
     }
 
-    // Token: 0x060000D1 RID: 209 RVA: 0x00003E7C File Offset: 0x0000207C
     public virtual Task<INetResponse> ExecuteTaskAsync(INetRequest request)
     {
         return ExecuteTaskAsync(request, CancellationToken.None);
     }
 
-    // Token: 0x060000D2 RID: 210 RVA: 0x00003E9C File Offset: 0x0000209C
     public virtual Task<INetResponse> ExecuteGetTaskAsync(INetRequest request)
     {
         return ExecuteGetTaskAsync(request, CancellationToken.None);
     }
 
-    // Token: 0x060000D3 RID: 211 RVA: 0x00003EBC File Offset: 0x000020BC
     public virtual Task<INetResponse> ExecuteGetTaskAsync(INetRequest request, CancellationToken token)
     {
         var flag = request == null;
@@ -246,13 +230,11 @@ public class NetClient : INetClient
         return ExecuteTaskAsync(request, token);
     }
 
-    // Token: 0x060000D4 RID: 212 RVA: 0x00003EF4 File Offset: 0x000020F4
     public virtual Task<INetResponse> ExecutePostTaskAsync(INetRequest request)
     {
         return ExecutePostTaskAsync(request, CancellationToken.None);
     }
 
-    // Token: 0x060000D5 RID: 213 RVA: 0x00003F14 File Offset: 0x00002114
     public virtual Task<INetResponse> ExecutePostTaskAsync(INetRequest request, CancellationToken token)
     {
         var flag = request == null;
@@ -261,7 +243,6 @@ public class NetClient : INetClient
         return ExecuteTaskAsync(request, token);
     }
 
-    // Token: 0x060000D6 RID: 214 RVA: 0x00003F4C File Offset: 0x0000214C
     public virtual Task<INetResponse> ExecuteTaskAsync(INetRequest request, CancellationToken token)
     {
         var flag = request == null;
@@ -292,72 +273,32 @@ public class NetClient : INetClient
         return taskCompletionSource.Task;
     }
 
-    // Token: 0x17000047 RID: 71
-    // (get) Token: 0x060000DB RID: 219 RVA: 0x00004147 File Offset: 0x00002347
-    // (set) Token: 0x060000DC RID: 220 RVA: 0x0000414F File Offset: 0x0000234F
     public int? MaxRedirects { get; set; }
 
-    // Token: 0x17000048 RID: 72
-    // (get) Token: 0x060000DD RID: 221 RVA: 0x00004158 File Offset: 0x00002358
-    // (set) Token: 0x060000DE RID: 222 RVA: 0x00004160 File Offset: 0x00002360
     public X509CertificateCollection ClientCertificates { get; set; }
 
-    // Token: 0x17000049 RID: 73
-    // (get) Token: 0x060000DF RID: 223 RVA: 0x00004169 File Offset: 0x00002369
-    // (set) Token: 0x060000E0 RID: 224 RVA: 0x00004171 File Offset: 0x00002371
     public RequestCachePolicy CachePolicy { get; set; }
 
-    // Token: 0x1700004A RID: 74
-    // (get) Token: 0x060000E1 RID: 225 RVA: 0x0000417A File Offset: 0x0000237A
-    // (set) Token: 0x060000E2 RID: 226 RVA: 0x00004182 File Offset: 0x00002382
     public bool FollowRedirects { get; set; }
 
-    // Token: 0x1700004B RID: 75
-    // (get) Token: 0x060000E3 RID: 227 RVA: 0x0000418B File Offset: 0x0000238B
-    // (set) Token: 0x060000E4 RID: 228 RVA: 0x00004193 File Offset: 0x00002393
     public CookieContainer CookieContainer { get; set; }
 
-    // Token: 0x1700004C RID: 76
-    // (get) Token: 0x060000E5 RID: 229 RVA: 0x0000419C File Offset: 0x0000239C
-    // (set) Token: 0x060000E6 RID: 230 RVA: 0x000041A4 File Offset: 0x000023A4
     public string UserAgent { get; set; }
 
-    // Token: 0x1700004D RID: 77
-    // (get) Token: 0x060000E7 RID: 231 RVA: 0x000041AD File Offset: 0x000023AD
-    // (set) Token: 0x060000E8 RID: 232 RVA: 0x000041B5 File Offset: 0x000023B5
     public int Timeout { get; set; }
 
-    // Token: 0x1700004E RID: 78
-    // (get) Token: 0x060000E9 RID: 233 RVA: 0x000041BE File Offset: 0x000023BE
-    // (set) Token: 0x060000EA RID: 234 RVA: 0x000041C6 File Offset: 0x000023C6
     public int ReadWriteTimeout { get; set; }
 
-    // Token: 0x1700004F RID: 79
-    // (get) Token: 0x060000EB RID: 235 RVA: 0x000041CF File Offset: 0x000023CF
-    // (set) Token: 0x060000EC RID: 236 RVA: 0x000041D7 File Offset: 0x000023D7
     public bool UseSynchronizationContext { get; set; }
 
-    // Token: 0x17000050 RID: 80
-    // (get) Token: 0x060000ED RID: 237 RVA: 0x000041E0 File Offset: 0x000023E0
-    // (set) Token: 0x060000EE RID: 238 RVA: 0x000041E8 File Offset: 0x000023E8
     public virtual Uri BaseUrl { get; set; }
 
-    // Token: 0x17000051 RID: 81
-    // (get) Token: 0x060000EF RID: 239 RVA: 0x000041F1 File Offset: 0x000023F1
-    // (set) Token: 0x060000F0 RID: 240 RVA: 0x000041F9 File Offset: 0x000023F9
     public Encoding Encoding { get; set; }
 
-    // Token: 0x17000052 RID: 82
-    // (get) Token: 0x060000F1 RID: 241 RVA: 0x00004202 File Offset: 0x00002402
-    // (set) Token: 0x060000F2 RID: 242 RVA: 0x0000420A File Offset: 0x0000240A
     public bool PreAuthenticate { get; set; }
 
-    // Token: 0x17000054 RID: 84
-    // (get) Token: 0x060000F8 RID: 248 RVA: 0x000042DD File Offset: 0x000024DD
-    // (set) Token: 0x060000F9 RID: 249 RVA: 0x000042E5 File Offset: 0x000024E5
     public IList<Parameter> DefaultParameters { get; }
 
-    // Token: 0x060000FA RID: 250 RVA: 0x000042F0 File Offset: 0x000024F0
     public Uri BuildUri(INetRequest request)
     {
         var flag = BaseUrl == null;
@@ -413,22 +354,20 @@ public class NetClient : INetClient
         return uri;
     }
 
-    // Token: 0x060000FF RID: 255 RVA: 0x00004E44 File Offset: 0x00003044
     public byte[] DownloadData(INetRequest request)
     {
         return DownloadData(request, false);
     }
 
-    // Token: 0x06000101 RID: 257 RVA: 0x00004E88 File Offset: 0x00003088
     public virtual INetResponse Execute(INetRequest request)
     {
         var isServerListRequest = false;
         var uri = new Uri(new Uri(BaseUrl.ToString()), request.Resource);
-        WpfConfig.DefaultLogger.Info($"[Request] url: {uri}");
+        PluginLog.Info("Network", $"[Request] url: {uri}");
         if (request.Resource.EndsWith("/serverlist/release.json") ||
             uri.ToString().EndsWith("/serverlist/release.json"))
         {
-            WpfConfig.DefaultLogger.Info("更改服务器");
+            PluginLog.Info("Network", "更改服务器");
             request.Resource = "";
             BaseUrl = WpfConfig.ServerListUri;
             isServerListRequest = true;
@@ -459,13 +398,13 @@ public class NetClient : INetClient
 
         if (uri.ToString().EndsWith("/diagnostic-log"))
         {
-            WpfConfig.DefaultLogger.Info($"diagnosticLog, Json: {stringBody}");
+            PluginLog.Debug("Network", $"diagnosticLog, Json: {stringBody}");
             return netResponse;
         }
 
         if (uri.ToString().EndsWith("popup-window/query"))
         {
-            WpfConfig.DefaultLogger.Info("拦截网易我的世界启动器弹窗广告获取请求");
+            PluginLog.Info("Web", "Launcher popup request blocked.");
             netResponse.Content =
                 "{\"code\":0,\"details\":\"\",\"entity\":{\"popup_window\":[],\"server_time\":0},\"message\":\"正常返回\"}";
             return netResponse;
@@ -475,7 +414,7 @@ public class NetClient : INetClient
         {
             if (WpfConfig.RoomInfo != null)
             {
-                WpfConfig.DefaultLogger.Info("拦截网易我的世界启动器联机大厅下载请求");
+                PluginLog.Info("Web", "Online lobby download request blocked.");
                 netResponse.Content = "{\"code\":0,\"details\":\"\",\"entities\":[],\"message\":\"正常返回\",\"total\":0}";
                 return netResponse;
             }
@@ -485,17 +424,17 @@ public class NetClient : INetClient
         {
             var decryptString = X19Crypt.DecryptX19Body(body);
             var parseJson = JObject.Parse(decryptString);
-            WpfConfig.DefaultLogger.Info("[Netease Anti Cheat] 发现/salog-new的post请求(进程检测/dll检测/注入检测等)已及时制止");
-            WpfConfig.DefaultLogger.Info("[INFO]检测类型: " + parseJson["type"] + "发送数据: " + parseJson["data"]);
+            PluginLog.Info("Network", "Blocked security telemetry request: endpoint=/salog-new type={0}", parseJson["type"]?.ToString());
+            PluginLog.Debug("Network", "Security telemetry payload omitted: size={0}", decryptString.Length);
             return netResponse;
         }
 
         if (uri.ToString().EndsWith("/authentication-otp"))
         {
             var sauthJson = SauthJsonRandomGenerator.Generate();
-            if (WpfConfig.ShowAccountInfo)
+            if (WpfConfig.LogSensitiveAccountDetails)
             {
-                WpfConfig.DefaultLogger.Info($"sauth_json随机化(authentication-otp): {sauthJson}");
+                PluginLog.Credential("Auth", "Sauth", sauthJson);
             }
             var decryptBody = JObject.Parse(X19Crypt.DecryptX19Body(body));
             decryptBody["sauth_json"] = sauthJson;
@@ -504,7 +443,7 @@ public class NetClient : INetClient
 
         if (uri.ToString().EndsWith("game-play-v2/start"))
         {
-            WpfConfig.DefaultLogger.Info("用户启动了游戏");
+            PluginLog.Info("Network", "用户启动了游戏");
             var result =
                 "{\n   \"code\" : 0,\n   \"details\" : \"\",\n   \"entity\" : {\n      \"anti_addiction_info\" : {\n         \"current_online_time_sum\" : 0,\n         \"msg\" : \"\",\n         \"online_time_left\" : 0,\n         \"online_time_limit\" : 0,\n         \"online_time_sum\" : 0,\n         \"status\" : 0\n      },\n      \"is_anti_addiction\" : false,\n      \"record\" : null\n   },\n   \"message\" : \"正常返回\"\n}";
             netResponse.Content = result;
@@ -514,7 +453,7 @@ public class NetClient : INetClient
         if (uri.ToString().EndsWith("/item/query/search-by-iid"))
         {
             JObject queryJson = JObject.Parse(stringBody);
-            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentServers.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
             if (customResponse != null)
             {
                 netResponse.Content = JsonConvert.SerializeObject(customResponse.Item2);
@@ -525,7 +464,7 @@ public class NetClient : INetClient
         if (uri.ToString().EndsWith("/item-channel/query/search-by-item-channel"))
         {
             JObject queryJson = JObject.Parse(stringBody);
-            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentServers.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
             if (customResponse != null)
             {
                 netResponse.Content = $"{{\"code\":0,\"details\":\"\",\"entities\":[{{\"channel_id\":\"{queryJson["channel_id"].ToString()}\",\"entity_id\":\"2650669\",\"item_id\":\"{queryJson["item_id"].ToString()}\",\"title_image_url\":\"{customResponse.Item2.NetGameEntity.TitleImageUrl}\"}}],\"message\":\"正常返回\",\"total\":1}}";
@@ -536,7 +475,7 @@ public class NetClient : INetClient
         if (uri.ToString().EndsWith("/item/user-is-purchase-item"))
         {
             JObject queryJson = JObject.Parse(stringBody);
-            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentServers.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
             if (customResponse != null)
             {
                 netResponse.Content = $"{{\"code\":0,\"message\":\"正常返回\",\"details\":\"\",\"entity\":{{\"entity_id\":\"{queryJson["item_id"].ToString()}\"}}}}";
@@ -547,7 +486,7 @@ public class NetClient : INetClient
         if (uri.ToString().EndsWith("/game-server-info/get"))
         {
             JObject queryJson = JObject.Parse(stringBody);
-            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["server_id"].ToString() == x.Item1);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentServers.FirstOrDefault(x => queryJson["server_id"].ToString() == x.Item1);
             if (customResponse != null)
             {
                 netResponse.Content = $"{{\"code\":0,\"details\":\"\",\"entity\":{{\"entity_id\":\"{queryJson["server_id"]}\",\"online_count\":1}},\"message\":\"正常返回\"}}";
@@ -558,7 +497,7 @@ public class NetClient : INetClient
         if (uri.ToString().EndsWith("/pe-game/load-pe-mcgame-res-infos"))
         {
             JObject queryJson = JObject.Parse(stringBody);
-            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentList.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
+            Tuple<string, NetGameResponse> customResponse = WpfConfig.CustomRecentServers.FirstOrDefault(x => queryJson["item_id"].ToString() == x.Item1);
             if (customResponse != null)
             {
                 netResponse.Content = "{\"code\":0,\"details\":\"\",\"entities\":[],\"message\":\"正常返回\"}";
@@ -575,29 +514,29 @@ public class NetClient : INetClient
         {
             var decryptString = X19Crypt.DecryptX19Body(netResponse.RawBytes);
             var authResult = JObject.Parse(decryptString);
-            if (WpfConfig.ShowAccountInfo)
+            if (WpfConfig.LogSensitiveAccountDetails)
             {
-                WpfConfig.DefaultLogger.Info($"AuthenticationResponse: {decryptString}");
+                PluginLog.Debug("Auth", "Authentication response received: size={0}", decryptString.Length);
             }
             if (authResult["code"].ToObject<int>() == 0)
             {
                 X19Crypt.Token = authResult["entity"]["token"].ToString();
                 X19Crypt.UserId = authResult["entity"]["entity_id"].ToString();
                 var UserDetailResult = X19Http.Post("/user-detail", "");
-                if (WpfConfig.ShowAccountInfo)
+                if (WpfConfig.LogSensitiveAccountDetails)
                 {
-                    WpfConfig.DefaultLogger.Info($"Login Successfully! userId: {X19Crypt.UserId}, userToken: {X19Crypt.Token}, userDetail: {UserDetailResult}");
+                    PluginLog.Info("Auth", "Login succeeded: userId={0}", X19Crypt.UserId);
                 }
             }
             else if (authResult["code"].ToObject<int>() == 29)
             {
                 var detailsObj = JObject.Parse(authResult["details"].ToString());
-                WpfConfig.DefaultLogger.Error(
+                PluginLog.Error("Network", 
                     $"因 {detailsObj["ban_msg"]} 您的账号被禁止登录游戏至 {X19Tools.unix_timestamp_to(detailsObj["ban_to_ts"].ToObject<long>())}，{authResult["message"]}!");
             }
             else
             {
-                WpfConfig.DefaultLogger.Error($"Auth Failed: {decryptString}");
+                PluginLog.Error("Network", $"Auth Failed: {decryptString}");
             }
         }
 
@@ -635,7 +574,7 @@ public class NetClient : INetClient
                     try
                     {
                         JObject tipsJson = JObject.Parse(roomInfo["tips"].ToString());
-                        if (WpfConfig.LanGameNicknameFilter.FirstOrDefault(x => tipsJson["NickName"].ToString().Contains(x)) != null)
+                        if (WpfConfig.LanNicknameFilters.FirstOrDefault(x => tipsJson["NickName"].ToString().Contains(x)) != null)
                         {
                             list.RemoveAt(i);
                         }
@@ -651,20 +590,17 @@ public class NetClient : INetClient
         return netResponse;
     }
 
-    // Token: 0x06000103 RID: 259 RVA: 0x00004F80 File Offset: 0x00003180
     public INetResponse ExecuteAsGet(INetRequest request, string httpMethod)
     {
         return Execute(request, httpMethod, DoExecuteAsGet);
     }
 
-    // Token: 0x06000104 RID: 260 RVA: 0x00004FA8 File Offset: 0x000031A8
     public INetResponse ExecuteAsPost(INetRequest request, string httpMethod)
     {
         request.Method = Method.POST;
         return Execute(request, httpMethod, DoExecuteAsPost);
     }
 
-    // Token: 0x060000D7 RID: 215 RVA: 0x00004038 File Offset: 0x00002238
     private NetRequestAsyncHandle ExecuteAsync(INetRequest request,
         Action<INetResponse, NetRequestAsyncHandle> callback, string httpMethod,
         Func<IHttp, Action<HttpResponse>, string, HttpWebRequest> getWebRequest)
@@ -685,19 +621,16 @@ public class NetClient : INetClient
         return asyncHandle;
     }
 
-    // Token: 0x060000D8 RID: 216 RVA: 0x000040F0 File Offset: 0x000022F0
     private static HttpWebRequest DoAsGetAsync(IHttp http, Action<HttpResponse> responseCb, string method)
     {
         return http.AsGetAsync(responseCb, method);
     }
 
-    // Token: 0x060000D9 RID: 217 RVA: 0x0000410C File Offset: 0x0000230C
     private static HttpWebRequest DoAsPostAsync(IHttp http, Action<HttpResponse> responseCb, string method)
     {
         return http.AsPostAsync(responseCb, method);
     }
 
-    // Token: 0x060000DA RID: 218 RVA: 0x00004128 File Offset: 0x00002328
     private static void ProcessResponse(INetRequest request, HttpResponse httpResponse,
         NetRequestAsyncHandle asyncHandle, Action<INetResponse, NetRequestAsyncHandle> callback)
     {
@@ -705,13 +638,11 @@ public class NetClient : INetClient
         callback(netResponse, asyncHandle);
     }
 
-    // Token: 0x060000FB RID: 251 RVA: 0x000045F0 File Offset: 0x000027F0
     private static string EncodeParameters(IEnumerable<Parameter> parameters)
     {
         return string.Join("&", parameters.Select(EncodeParameter).ToArray());
     }
 
-    // Token: 0x060000FC RID: 252 RVA: 0x00004624 File Offset: 0x00002824
     private static string EncodeParameter(Parameter parameter)
     {
         return parameter.Value == null
@@ -719,7 +650,6 @@ public class NetClient : INetClient
             : parameter.Name.UrlEncode() + "=" + parameter.Value.ToString().UrlEncode();
     }
 
-    // Token: 0x060000FD RID: 253 RVA: 0x0000467C File Offset: 0x0000287C
     private void ConfigureHttp(INetRequest request, IHttp http)
     {
         http.Encoding = Encoding;
@@ -821,7 +751,6 @@ public class NetClient : INetClient
         }
     }
 
-    // Token: 0x060000FE RID: 254 RVA: 0x00004BF0 File Offset: 0x00002DF0
     private static NetResponse ConvertToNetResponse(INetRequest request, HttpResponse httpResponse)
     {
         var netResponse = new NetResponse
@@ -869,7 +798,6 @@ public class NetClient : INetClient
         return netResponse;
     }
 
-    // Token: 0x06000100 RID: 256 RVA: 0x00004E50 File Offset: 0x00003050
     public byte[] DownloadData(INetRequest request, bool throwOnError)
     {
         var netResponse = Execute(request);
@@ -900,7 +828,6 @@ public class NetClient : INetClient
             }
     }
 
-    // Token: 0x06000102 RID: 258 RVA: 0x00004EF8 File Offset: 0x000030F8
     private INetResponse Execute(INetRequest request, string httpMethod, Func<IHttp, string, HttpResponse> getResponse)
     {
         INetResponse netResponse = new NetResponse();
@@ -922,13 +849,11 @@ public class NetClient : INetClient
         return netResponse;
     }
 
-    // Token: 0x06000105 RID: 261 RVA: 0x00004FD8 File Offset: 0x000031D8
     private static HttpResponse DoExecuteAsGet(IHttp http, string method)
     {
         return http.AsGet(method);
     }
 
-    // Token: 0x06000106 RID: 262 RVA: 0x00004FF4 File Offset: 0x000031F4
     private static HttpResponse DoExecuteAsPost(IHttp http, string method)
     {
         return http.AsPost(method);

@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Collections.Generic;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
@@ -19,7 +20,7 @@ public class ChatNotificationHook : IMethodHook
     [HookMethod("WPFLauncher.Network.Service.acq", "i", "I_Original")]
     private void MCLauncherNotifyHook(UserM targetUser, aiv msg, uint targetUserId, bool isNotifyAllowed)
     {
-        if (WpfConfig.ShowWindowsNotify)
+        if (WpfConfig.EnableChatNotifications)
         {
             // 如果不需要通知（正在查看该聊天、或开启了免打扰），则直接返回
             if (!ShouldNotify(targetUser, isNotifyAllowed)) return;
@@ -53,7 +54,7 @@ public class ChatNotificationHook : IMethodHook
         }
         catch (Exception ex)
         {
-            Console.WriteLine("更新聊天状态失败: " + ex.Message);
+            PluginLog.Error("Hook", "更新聊天状态失败: " + ex.Message);
         }
 
         // 检查系统设置中是否开启了消息通知
@@ -124,7 +125,7 @@ public class ChatNotificationHook : IMethodHook
             }
             catch (Exception ex)
             {
-                Console.WriteLine("显示托盘气泡失败: " + ex.Message);
+                PluginLog.Error("Hook", "显示托盘气泡失败: " + ex.Message);
             }
         }));
     }

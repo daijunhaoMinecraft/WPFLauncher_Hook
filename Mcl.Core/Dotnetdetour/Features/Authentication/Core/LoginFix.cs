@@ -12,6 +12,7 @@ using WPFLauncher.Code;
 using WPFLauncher.Network.Launcher;
 using WPFLauncher.View.UI;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 
 public class LoginFix : IMethodHook
@@ -25,7 +26,7 @@ public class LoginFix : IMethodHook
     {
         string sauthJsonToUse = sauthJson;
 
-        if (WpfConfig.EnableCustomAccountLogin && !WpfConfig.MpayUnless && !WpfConfig.CookieLoginWithoutMpay)
+        if (WpfConfig.EnableAlternativeAccountLogin && !WpfConfig.UseAccountManagerLogin && !WpfConfig.CookieLoginWithoutMpay)
         {
             string newSauth = AuthIntegrationService.RequestUserLogin(allowOriginal: true);
             if (!string.IsNullOrEmpty(newSauth))
@@ -39,18 +40,18 @@ public class LoginFix : IMethodHook
 
     private static void ExecuteFinalLogin(string sauthJson, Action<EntityResponse<acl.Resposne>, Exception> callAction)
     {
-        if (WpfConfig.IsStartWebSocket)
+        if (WpfConfig.EnableWebServer)
         {
             var wsPayload = JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = sauthJson } });
             WebSocketHelper.SendToClient(wsPayload);
         }
 
-        // WpfConfig.DefaultLogger.Info($"最终登录 SauthJson: {sauthJson}");
-        if (WpfConfig.ShowAccountInfo)
+        // WpfConfig.DefaultLogger.Debug($"最终登录 SauthJson: {sauthJson}");
+        if (WpfConfig.LogSensitiveAccountDetails)
         {
-            WpfConfig.DefaultLogger.Debug("SauthJson: " + JsonConvert.SerializeObject(new { sauth_json = sauthJson }));
+            PluginLog.Debug("Auth", "SauthJson: " + JsonConvert.SerializeObject(new { sauth_json = sauthJson }));
         }
-        WpfConfig.IsLogin = true;
+        WpfConfig.IsLoggedIn = true;
         
         LoginOtp(sauthJson, callAction);
     }

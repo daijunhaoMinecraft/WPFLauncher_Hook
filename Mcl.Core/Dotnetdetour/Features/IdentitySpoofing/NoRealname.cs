@@ -1,3 +1,4 @@
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 using System;
 using System.Runtime.CompilerServices;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
@@ -19,7 +20,7 @@ internal class NoRealname : IMethodHook
     [HookMethod(TargetConst.Mpay, "onExtendFuncFinish", "OnExtendFuncFinish")]
     protected void OnExtendFuncFinishHook(string json)
     {
-        if (WpfConfig.IsDebug) Console.WriteLine("[RealName]json: " + json);
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Identity", "[RealName]json: " + json);
         OnExtendFuncFinish("{\"methodId\":\"getRealnameStatus\",\"status\":3}");
     }
     
@@ -31,7 +32,7 @@ internal class NoRealname : IMethodHook
     [HookMethod(TargetConst.Mpay, "onCompactViewClosed", "OnCompactViewClosed")]
     protected void OnCompactViewClosedHook(int code)
     {
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info("[MpayLogin]code_onCompactViewClosed: " + code);
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Identity", "[MpayLogin]code_onCompactViewClosed: " + code);
         OnCompactViewClosed(3);
     }
 }

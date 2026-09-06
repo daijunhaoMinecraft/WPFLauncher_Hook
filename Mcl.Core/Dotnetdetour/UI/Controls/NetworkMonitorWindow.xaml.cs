@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,8 +18,8 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
         public NetworkMonitorWindow()
         {
             InitializeComponent();
-            TopMostCheck.IsChecked = WpfConfig.IsWindowTopMost;
-            Topmost = WpfConfig.IsWindowTopMost;
+            TopMostCheck.IsChecked = WpfConfig.KeepWindowsOnTop;
+            Topmost = WpfConfig.KeepWindowsOnTop;
             RefreshPlayerData();
             
             // F5 快捷键支持
@@ -57,7 +58,7 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[刷新玩家列表异常] {ex.Message}");
+                PluginLog.Error("UI", $"[刷新玩家列表异常] {ex.Message}");
             }
         }
 
@@ -89,7 +90,7 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
                 catch (Exception ex)
                 {
                     // 其他未知异常直接打印日志，防止程序崩溃
-                    Console.WriteLine($"[剪贴板异常] {ex.Message}");
+                    PluginLog.Error("UI", $"[剪贴板异常] {ex.Message}");
                     return;
                 }
             }

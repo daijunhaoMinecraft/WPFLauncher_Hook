@@ -46,7 +46,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Unisdk.nx", "onLoginFinish", "No_RealName")]
 		protected async void onLoginFinish(int code)
 		{
-			if (WpfConfig.IsDebug)
+			if (WpfConfig.EnableVerboseLogging)
 			{
 				WpfConfig.DefaultLogger.Info("[MpayLogin]返回代码: " + code.ToString());
 			}
@@ -174,7 +174,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				}
 
 				WpfConfig.CookieLoginWithoutMpay = true;
-				WpfConfig.IsLogin = true;
+				WpfConfig.IsLoggedIn = true;
 				WPFLauncher.Common.azf<apm>.Instance.h();
 			}
 			catch (Exception ex)

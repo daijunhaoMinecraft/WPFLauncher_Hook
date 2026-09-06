@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Threading;
@@ -65,7 +65,7 @@ public class UnifiedSession
     // ========== 日志辅助方法 ==========
     private void Log(string message)
     {
-        if (WpfConfig.IsDebug) Console.WriteLine($"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} {message}");
+        if (WpfConfig.EnableVerboseLogging) Console.WriteLine($"{DateTime.Now:HH:mm:ss.fff} {_logPrefix} {message}");
     }
 
     private void LogError(string message, Exception ex = null)

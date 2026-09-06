@@ -26,7 +26,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 				WpfConfig.DefaultLogger.Error("[MuteSystem] 您被系统暂时禁言, 时间至 " + X19Tools.unix_timestamp_to(banChatExpiredAt));
 			}
 			
-			if (WpfConfig.IsDebug)
+			if (WpfConfig.EnableVerboseLogging)
 			{
 				WpfConfig.DefaultLogger.Warn($"发现网易尝试检测该账号是否在禁言状态, 已被制止");
 			}

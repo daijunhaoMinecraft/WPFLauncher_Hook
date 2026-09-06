@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using Mcl.Core.Dotnetdetour.Models.Config;
 
 namespace Mcl.Core.Dotnetdetour.UI.Controls
@@ -10,8 +10,8 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
             InitializeComponent();
 
             // 初始化置顶状态
-            TopMostCheck.IsChecked = WpfConfig.IsWindowTopMost;
-            Topmost = WpfConfig.IsWindowTopMost;
+            TopMostCheck.IsChecked = WpfConfig.KeepWindowsOnTop;
+            Topmost = WpfConfig.KeepWindowsOnTop;
         }
 
         private void OnTopMostChanged(object sender, RoutedEventArgs e)

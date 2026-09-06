@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net48</TargetFramework>
+        <PlatformTarget>x86</PlatformTarget>
+        <UseWPF>true</UseWPF>
+        <LangVersion>latest</LangVersion>
+        <EnableDefaultItems>false</EnableDefaultItems>
+        <!-- Match pack URIs without referencing/loading the production module initializer. -->
+        <AssemblyName>Mcl.Core</AssemblyName>
+        <RootNamespace>Mcl.Core</RootNamespace>
+        <LauncherDirectory Condition="'$(LauncherDirectory)' == ''">D:\Games\MCLauncher</LauncherDirectory>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="NLog"><HintPath>$(LauncherDirectory)\NLog.dll</HintPath></Reference>
+        <Reference Include="Newtonsoft.Json"><HintPath>$(LauncherDirectory)\Newtonsoft.Json.dll</HintPath></Reference>
+        <Reference Include="System.Xml.Linq"/>
+        <Compile Include="Program.cs;HostStubs.cs"/>
+        <Compile Include="..\..\Mcl.Core\Tools\**\*.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Config\*.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Entities\FriendStatus.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Entities\NetGame.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\*.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Crypto\AESHelper.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\UI\Themes\FluentTheme.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\UI\Controls\SettingsPanel.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\UI\Controls\ProcessLogWindow.xaml.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\UI\WebAssets\HtmlResource.cs"/>
+        <Page Include="..\..\Mcl.Core\Dotnetdetour\UI\Themes\Fluent.xaml" Link="Dotnetdetour\UI\Themes\Fluent.xaml"/>
+        <Page Include="..\..\Mcl.Core\Dotnetdetour\UI\Controls\ProcessLogWindow.xaml" Link="Dotnetdetour\UI\Controls\ProcessLogWindow.xaml"/>
+        <EmbeddedResource Include="..\..\Mcl.Core\Dotnetdetour\UI\WebAssets\*.html;..\..\Mcl.Core\Dotnetdetour\UI\WebAssets\*.css">
+            <LogicalName>Mcl.Core.Web.%(Filename)%(Extension)</LogicalName>
+        </EmbeddedResource>
+    </ItemGroup>
+</Project>

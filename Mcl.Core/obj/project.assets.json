@@ -644,11 +644,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "H:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
+      "projectUniqueName": "E:\\Code\\C#\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
       "projectName": "Mcl.Core",
-      "projectPath": "H:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
+      "projectPath": "E:\\Code\\C#\\MclCoreDLLSrc_public\\Mcl.Core\\Mcl.Core.csproj",
       "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
-      "outputPath": "H:\\Code\\Hook\\MCLHookProject\\MclCoreDLLSrc_public\\Mcl.Core\\obj\\",
+      "outputPath": "E:\\Code\\C#\\MclCoreDLLSrc_public\\Mcl.Core\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "E:\\Application\\Visual Studio\\Shared\\NuGetPackages"

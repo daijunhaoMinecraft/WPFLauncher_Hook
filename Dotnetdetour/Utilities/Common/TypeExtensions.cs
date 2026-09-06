@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
 namespace Mcl.Core.Dotnetdetour.Extensions
 {
-	// Token: 0x0200001A RID: 26
 	public static class TypeExtensions
 	{
-		// Token: 0x0600004B RID: 75 RVA: 0x000038B4 File Offset: 0x00001AB4
 		public static T GetCustomAttribute<T>(this MemberInfo @this)
 		{
 			object[] customAttributes = @this.GetCustomAttributes(typeof(T), true);
@@ -24,7 +22,6 @@ namespace Mcl.Core.Dotnetdetour.Extensions
 			return (T)((object)enumerable.FirstOrDefault<object>());
 		}
 
-		// Token: 0x0600004C RID: 76 RVA: 0x000038F0 File Offset: 0x00001AF0
 		public static T GetCustomAttribute<T>(this ParameterInfo @this)
 		{
 			object[] customAttributes = @this.GetCustomAttributes(typeof(T), true);

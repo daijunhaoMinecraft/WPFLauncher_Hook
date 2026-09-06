@@ -15,7 +15,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Unisdk.nz", "onExtendFuncFinish", "No_RealName")]
 		protected void onExtendFuncFinish(string json)
 		{
-			if (WpfConfig.IsDebug)
+			if (WpfConfig.EnableVerboseLogging)
 			{
 								Console.WriteLine("[RealName]json: " + json.ToString());
 							}

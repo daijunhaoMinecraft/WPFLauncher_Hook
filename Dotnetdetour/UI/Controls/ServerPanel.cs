@@ -22,13 +22,13 @@ namespace Mcl.Core.Dotnetdetour.Window
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.TopMost = WpfConfig.IsWindowTopMost;
+            this.TopMost = WpfConfig.KeepWindowsOnTop;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = WpfConfig.IsWindowTopMost,
+                Checked = WpfConfig.KeepWindowsOnTop,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;
@@ -60,7 +60,7 @@ namespace Mcl.Core.Dotnetdetour.Window
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
-            WpfConfig.IsSelectedIP = true;
+            WpfConfig.HasSelectedServerAddress = true;
         }
     }
 }

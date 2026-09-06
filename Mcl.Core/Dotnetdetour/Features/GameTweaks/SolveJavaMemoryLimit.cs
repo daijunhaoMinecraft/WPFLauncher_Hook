@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
@@ -8,6 +8,7 @@ using Mcl.Core.Dotnetdetour.Utilities.Common;
 using WPFLauncher.Common;
 using WPFLauncher.Manager.Configuration;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
 // 解决Java版最大内存只能设置到8191问题
@@ -18,7 +19,7 @@ public class SolveJavaMemoryLimit : IMethodHook
     {
         if (targetInstance == null)
         {
-            WpfConfig.DefaultLogger.Info("错误：未找到 SysSetting 实例。");
+            PluginLog.Info("Game", "错误：未找到 SysSetting 实例。");
             return;
         }
 
@@ -37,7 +38,7 @@ public class SolveJavaMemoryLimit : IMethodHook
             var fieldHs = type.GetField("hs", flags);
             if (fieldHs == null)
             {
-                WpfConfig.DefaultLogger.Error("未找到字段 'hs'，可能混淆后的名称已改变。");
+                PluginLog.Error("Game", "未找到字段 'hs'，可能混淆后的名称已改变。");
                 return;
             }
 
@@ -45,7 +46,7 @@ public class SolveJavaMemoryLimit : IMethodHook
             var fieldHt = type.GetField("ht", flags);
             if (fieldHt == null)
             {
-                WpfConfig.DefaultLogger.Error("未找到字段 'ht'，可能混淆后的名称已改变。");
+                PluginLog.Error("Game", "未找到字段 'ht'，可能混淆后的名称已改变。");
                 return;
             }
 
@@ -56,12 +57,12 @@ public class SolveJavaMemoryLimit : IMethodHook
             fieldHs.SetValue(targetInstance, newHsValue);
             fieldHt.SetValue(targetInstance, newHtValue);
 
-            WpfConfig.DefaultLogger.Info($"成功修改内存设置：MinMemoryLimit={newHsValue}, MaxMemoryLimit={newHtValue}");
+            PluginLog.Info("Game", $"成功修改内存设置：MinMemoryLimit={newHsValue}, MaxMemoryLimit={newHtValue}");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"发生异常：{ex.Message}");
-            WpfConfig.DefaultLogger.Error(ex.StackTrace);
+            PluginLog.Error("Game", $"发生异常：{ex.Message}");
+            PluginLog.Error("Game", ex.StackTrace);
         }
     }
 

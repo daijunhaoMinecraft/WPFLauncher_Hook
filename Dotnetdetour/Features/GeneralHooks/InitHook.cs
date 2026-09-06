@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -110,7 +110,7 @@ public class InitHook : IMethodHook
         }
 
         // 如果启用了模组注入，打开 ModsInject 文件夹并提示
-        if (WpfConfig.EnableModsInject)
+        if (WpfConfig.EnableModInjection)
         {
             string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
             if (!Directory.Exists(modsInjectPath))
@@ -152,7 +152,7 @@ public class InitHook : IMethodHook
             FontFamily = new FontFamily("Segoe UI, Microsoft YaHei"),
             ResizeMode = ResizeMode.NoResize,
             WindowStyle = WindowStyle.SingleBorderWindow,
-            Topmost = WpfConfig.IsWindowTopMost
+            Topmost = WpfConfig.KeepWindowsOnTop
         };
 
         var mainGrid = new Grid();
@@ -168,7 +168,7 @@ public class InitHook : IMethodHook
         {
             Content = "置顶",
             HorizontalAlignment = HorizontalAlignment.Right,
-            IsChecked = WpfConfig.IsWindowTopMost,
+            IsChecked = WpfConfig.KeepWindowsOnTop,
             Margin = new Thickness(0, 0, 0, 8)
         };
         topMostCheck.Checked += (s, e) => win.Topmost = true;
@@ -268,7 +268,7 @@ public class InitHook : IMethodHook
             // 检查基岩版路径合法性
             try
             {
-                Path.GetFullPath(WpfConfig.BedrockPath);
+                Path.GetFullPath(WpfConfig.BedrockDirectory);
             }
             catch (Exception)
             {
@@ -280,7 +280,7 @@ public class InitHook : IMethodHook
                 ConfigManager.Save();
 
                 // 如果启用了模组注入，打开 ModsInject 文件夹并提示
-                if (WpfConfig.EnableModsInject)
+                if (WpfConfig.EnableModInjection)
                 {
                     string modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
                     if (!Directory.Exists(modsInjectPath))
@@ -308,17 +308,17 @@ public class InitHook : IMethodHook
     private static void ApplyRuntimeSettings()
     {
         // 这里放你原本在 Save 按钮里的那些初始化逻辑
-        if (WpfConfig.IsStartWebSocket)
+        if (WpfConfig.EnableWebServer)
         {
-            WpfConfig.Default_HttpAddress = $"http://127.0.0.1:{WpfConfig.HttpPort}/";
+            WpfConfig.DefaultHttpAddress = $"http://127.0.0.1:{WpfConfig.HttpPort}/";
             var server = new SimpleHttpServer(); 
-            Task.Run(() => server.Start(WpfConfig.Default_HttpAddress));
-            WpfConfig.DefaultLogger.Info($"[Web] 服务器已启动: {WpfConfig.Default_HttpAddress}");
+            Task.Run(() => server.Start(WpfConfig.DefaultHttpAddress));
+            WpfConfig.DefaultLogger.Info($"[Web] 服务器已启动: {WpfConfig.DefaultHttpAddress}");
         }
         
         // Mac 地址逻辑
-        WpfConfig.Mac_Addr = Get_MacAddr();
-        WpfConfig.Random_Mac_Addr = ConvertToOriginalFormat(GenerateRandomMacAddress());
+        WpfConfig.MacAddress = Get_MacAddr();
+        WpfConfig.RandomMacAddress = ConvertToOriginalFormat(GenerateRandomMacAddress());
         
         // ... 其余逻辑保持不变 ...
     }

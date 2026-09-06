@@ -47,11 +47,11 @@ public class WebSocket_WebRtc : IMethodHook
 
         var rawData = new byte[dataSize];
         Marshal.Copy(dataPtr, rawData, 0, dataSize);
-        if (WpfConfig.IsDebug)
+        if (WpfConfig.EnableVerboseLogging)
             WpfConfig.DefaultLogger.Info(
                 $"[RECV] Peer:{peerId} Len:{dataSize}, Data: {BitConverter.ToString(rawData).Replace('-', ' ')}");
 
-        if (WpfConfig.UseNetworkMode)
+        if (WpfConfig.EnableVirtualNetwork)
         {
             // 调试日志：查看原始数据前几个字节
             // WpfConfig.DefaultLogger.Info($"[RECV] Peer:{peerId} Len:{dataSize} Head:{BitConverter.ToString(rawData.Take(Math.Min(dataSize, 4)).ToArray())}");
@@ -159,14 +159,14 @@ public class WebSocket_WebRtc : IMethodHook
         if (IsMagicHandshake(rawData))
         {
             WebRtcVar.PeerSupportMultiplex[peerId] = true;
-            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Protocol] {peerId} 握手成功 - 开启多路复用");
+            if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info($"[Protocol] {peerId} 握手成功 - 开启多路复用");
             return;
         }
 
         if (rawData[0] == 0x00 && rawData.Length == 2)
         {
             int connIdInt = rawData[1];
-            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Protocol] 关闭连接: {connIdInt}");
+            if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info($"[Protocol] 关闭连接: {connIdInt}");
 
             var sessionKey_1 = WebRtcVar.Mode == ForwardMode.Server
                 ? $"{peerId}_{connIdInt}"
@@ -189,7 +189,7 @@ public class WebSocket_WebRtc : IMethodHook
             // 如果收到长度为 1 的包（只有 ConnId），代表对端通知连接断开
             if (dataSize == 1)
             {
-                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 对端通知关闭 ConnId: {connId}");
+                if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info($"[Mux] 对端通知关闭 ConnId: {connId}");
                 if (WebRtcVar.Sessions.TryRemove($"{peerId}_{connId}", out var s)) s.Close();
                 return;
             }
@@ -207,7 +207,7 @@ public class WebSocket_WebRtc : IMethodHook
         {
             var comp = WebRtcVar.GetCompressor(WebRtcVar.getIntPtrFromPeerId(peerId).Value);
             if (comp != null) final = comp.b(mcData);
-            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Decompress] {peerId} {BitConverter.ToString(final)}");
+            if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info($"[Decompress] {peerId} {BitConverter.ToString(final)}");
         }
 
         // 处理 Session 转发
@@ -224,7 +224,7 @@ public class WebSocket_WebRtc : IMethodHook
             // 如果服务端没找到 Session，且是多路复用模式，说明是新请求
             if (WebRtcVar.Mode == ForwardMode.Server && WebRtcVar.PeerSupportMultiplex.ContainsKey(peerId))
             {
-                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 创建新服务端 Session: {peerId}_{connId}");
+                if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info($"[Mux] 创建新服务端 Session: {peerId}_{connId}");
 
                 var newSession = new UnifiedSession(peerId, connId);
                 WebRtcVar.Sessions[sessionKey] = newSession;
@@ -236,13 +236,13 @@ public class WebSocket_WebRtc : IMethodHook
                 if (WebRtcVar.IsNativeCompressionEnabled() && !WebRtcVar.PeerSupportMultiplex.ContainsKey(peerId))
                 {
                     // 创建新连接
-                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"[Mux] 创建新客户端 Session: {peerId}_{connId}");
+                    if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info($"[Mux] 创建新客户端 Session: {peerId}_{connId}");
                     WebRtcVar.Sessions[sessionKey] = new UnifiedSession(peerId, true);
                     WebRtcVar.Sessions[sessionKey].SendToSocket(final);
                 }
                 else
                 {
-                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn($"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
+                    if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Warn($"[Mux] 丢弃孤立包: {sessionKey} (Len:{mcData.Length})");
                 }
             }
         }
@@ -294,7 +294,7 @@ public class WebSocket_WebRtc : IMethodHook
             var asm = WebRtcVar.CmInstance.GetType().Assembly;
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
                 WpfConfig.DefaultLogger.Info(
                     $"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
@@ -324,7 +324,7 @@ public class WebSocket_WebRtc : IMethodHook
             var asm = WebRtcVar.CmInstance.GetType().Assembly;
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
                 WpfConfig.DefaultLogger.Info(
                     $"[SEND] Peer:{peerId} Len:{payload.Length}, Data: {BitConverter.ToString(payload).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, payload, payload.Length });
@@ -352,7 +352,7 @@ public class WebSocket_WebRtc : IMethodHook
             var asm = WebRtcVar.CmInstance.GetType().Assembly;
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
                 WpfConfig.DefaultLogger.Info(
                     $"[SEND] Peer:{peerId} Len:{data.Length}, Data: {BitConverter.ToString(data).Replace('-', ' ')}");
             var result = sMethod.Invoke(null, new object[] { peerPtr.Value, data, data.Length });
@@ -379,7 +379,7 @@ public class WebSocket_WebRtc : IMethodHook
     {
         try
         {
-            if (WpfConfig.IsDebug)
+            if (WpfConfig.EnableVerboseLogging)
             {
                 WpfConfig.DefaultLogger.Info("--- [TransferServer <<< RECV] ---");
                 var hexString = BitConverter.ToString(messageData).Replace("-", " ");
@@ -431,7 +431,7 @@ public class WebSocket_WebRtc : IMethodHook
                     Status = "连接中..."
                 };
                 WebRtcVar.PlayerList.Add(player);
-                if (WpfConfig.UseNetworkMode)
+                if (WpfConfig.EnableVirtualNetwork)
                 {
                     // 假设 PlayerList 已经填充了数据
                     ObservableCollection<LanGamePlayerInfo> currentPlayers = WebRtcVar.PlayerList;
@@ -480,7 +480,7 @@ public class WebSocket_WebRtc : IMethodHook
                 }
             }
 
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     { type = "TransferMessageRecv", data = new { messageId, messageData } }));
         }
@@ -506,7 +506,7 @@ public class WebSocket_WebRtc : IMethodHook
         {
             WpfConfig.DefaultLogger.Info($"玩家 {player.Name} 断开连接");
             WebRtcVar.PlayerList.Remove(player);
-            if (WpfConfig.UseNetworkMode)
+            if (WpfConfig.EnableVirtualNetwork)
             {
                 WintunRouterService.Instance.RemoveRouting(peerId);
                 WintunRouterService.Instance.SendServerPlayerInfo();

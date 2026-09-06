@@ -1,69 +1,4 @@
-﻿// using System;
-// using System.Reflection;
-// using DotNetTranstor;
-//
-// namespace Mcl.Core.DotNetTranstor.Hookevent;
-//
-// // Download with Multi Thread
-// public class DownloadEvent : IMethodHook
-// {
-//     [OriginalMethod]
-//     private void DownloadFileOriginal()
-//     {
-//     }
-//     [HookMethod("WPFLauncher.Network.acd", "c", null)]
-//     private void DownloadFileHook(object instance)
-//     {
-//         Console.WriteLine("[Download] Download Start");
-//     
-//         // 1. 先打印 instance 的真实类型确认
-//         Console.WriteLine($"[Download] Instance Type: {instance?.GetType().FullName}");
-//     
-//         // 2. 如果 instance 是委托，尝试从 _target 获取真实对象
-//         object realInstance = instance;
-//         var targetField = instance.GetType().GetField("_target", BindingFlags.NonPublic | BindingFlags.Instance);
-//         if (targetField != null)
-//         {
-//             var target = targetField.GetValue(instance);
-//             if (target != null && target != instance)
-//             {
-//                 // Console.WriteLine($"[Download] Found real target: {target.GetType().FullName}");
-//                 realInstance = target;
-//             }
-//         }
-//     
-//         // 3. 用真实实例获取字段
-//         Type targetType = realInstance.GetType();
-//         var fField = targetType.GetField("f", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-//     
-//         // 4. 如果没找到，递归检查基类
-//         if (fField == null)
-//         {
-//             var baseType = targetType.BaseType;
-//             while (baseType != null && baseType != typeof(object))
-//             {
-//                 fField = baseType.GetField("f", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-//                 if (fField != null) break;
-//                 baseType = baseType.BaseType;
-//             }
-//         }
-//     
-//         if (fField != null)
-//         {
-//             string fValue = (string)fField.GetValue(realInstance);
-//             Console.WriteLine($"[Download] 下载链接: {fValue}");
-//         }
-//         else
-//         {
-//             Console.WriteLine("[Download] Field 'f' not found, listing all fields:");
-//             foreach (FieldInfo field in targetType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public))
-//             {
-//                 Console.WriteLine($"  - {field.FieldType.Name} {field.Name}");
-//             }
-//         }
-//         DownloadFileOriginal();
-//     }
-// }
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 
 using System;
 using System.IO;
@@ -108,25 +43,25 @@ public class DownloadEvent : IMethodHook
     [HookMethod("WPFLauncher.Network.acd", "c")]
     public void DownloadFileHook(object instance)
     {
-        if (!WpfConfig.IsDownloadMultiConfig)
+        if (!WpfConfig.EnableParallelDownloads)
         {
             Original_c();
             return;
         }
 
-        ServicePointManager.DefaultConnectionLimit = WpfConfig.MaxThread + 10;
+        ServicePointManager.DefaultConnectionLimit = WpfConfig.DownloadWorkerCount + 10;
         ServicePointManager.Expect100Continue = false;
         ServicePointManager.UseNagleAlgorithm = false;
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 |
                                                SecurityProtocolType.Tls13;
 
-        threadCount = WpfConfig.MaxThread;
-        if (WpfConfig.IsDebug) Console.WriteLine("\n[MultiDown] === Hook Started ===");
+        threadCount = WpfConfig.DownloadWorkerCount;
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Download", "\n[MultiDown] === Hook Started ===");
 
         var realInstance = ResolveRealInstance(instance);
         if (realInstance == null)
         {
-            Console.WriteLine("[MultiDown] Error: Cannot resolve instance.");
+            PluginLog.Error("Download", "[MultiDown] Error: Cannot resolve instance.");
             Original_c();
             return;
         }
@@ -136,20 +71,20 @@ public class DownloadEvent : IMethodHook
         var filePath = GetField<string>(type, realInstance, "g");
         var contentLength = GetField<long>(type, realInstance, "i");
 
-        Console.WriteLine($"[MultiDown] Target: {Path.GetFileName(filePath)}");
-        Console.WriteLine($"[MultiDown] Size: {FormatSize(contentLength)}");
-        Console.WriteLine($"[MultiDown] URL: {url}");
+        PluginLog.Debug("Download", $"[MultiDown] Target: {Path.GetFileName(filePath)}");
+        PluginLog.Debug("Download", $"[MultiDown] Size: {FormatSize(contentLength)}");
+        PluginLog.Debug("Download", $"[MultiDown] URL: {url}");
 
         if (string.IsNullOrEmpty(url) || string.IsNullOrEmpty(filePath) || contentLength <= 0)
         {
-            Console.WriteLine("[MultiDown] Invalid parameters. Fallback.");
+            PluginLog.Debug("Download", "[MultiDown] Invalid parameters. Fallback.");
             Original_c();
             return;
         }
 
-        if (contentLength < WpfConfig.LimitDownload * 1024 * 1024)
+        if (contentLength < WpfConfig.ParallelDownloadThresholdMb * 1024 * 1024)
         {
-            Console.WriteLine("[MultiDown] Small file. Fallback.");
+            PluginLog.Debug("Download", "[MultiDown] Small file. Fallback.");
             Original_c();
             return;
         }
@@ -166,7 +101,7 @@ public class DownloadEvent : IMethodHook
             // 3. 检查 Range 支持
             if (!IsRangeSupported(url))
             {
-                Console.WriteLine("[MultiDown] No Range support. Fallback.");
+                PluginLog.Debug("Download", "[MultiDown] No Range support. Fallback.");
                 Original_c();
                 return;
             }
@@ -183,7 +118,7 @@ public class DownloadEvent : IMethodHook
             var unzipOverwrite = GetField<bool>(type, realInstance, "u");
             var unzipCallback = GetField<Action<object>>(type, realInstance, "l");
 
-            Console.WriteLine($"[MultiDown] Starting {threadCount} threads...");
+            PluginLog.Debug("Download", $"[MultiDown] Starting {threadCount} threads...");
 
             // 6. 执行下载
             if (threadCount == 1)
@@ -191,18 +126,11 @@ public class DownloadEvent : IMethodHook
             else
                 PerformMultiThreadDownload(url, filePath, contentLength, progressObj);
 
-            // // 7. 等待下载完成，强制最后一次更新
-            // if (progressObj is IProgress<long> p)
-            // {
-            //     try { p.Report(contentLength); } catch { }
-            // }
 
             // // 通知渲染线程结束并等待它画完最后一帧
             // _renderCts.Cancel();
             // try { _renderTask.Wait(2000); } catch { } // 最多等 2 秒
-
-            Console.WriteLine(); // 换行
-            Console.WriteLine("[MultiDown] Download & Merge Complete.");
+            PluginLog.Debug("Download", "[MultiDown] Download & Merge Complete.");
 
             // 8. 更新实例状态
             SetField(type, realInstance, "p", contentLength);
@@ -214,7 +142,7 @@ public class DownloadEvent : IMethodHook
             // 9. 触发后续
             if (shouldUnzip && !string.IsNullOrEmpty(unzipDest))
             {
-                Console.WriteLine("[MultiDown] Unzipping...");
+                PluginLog.Debug("Download", "[MultiDown] Unzipping...");
                 TryTriggerUnzip(type.Assembly, filePath, unzipDest, unzipOverwrite, unzipCallback, type, realInstance);
             }
             else if (onCompleteAction != null)
@@ -222,17 +150,16 @@ public class DownloadEvent : IMethodHook
                 onCompleteAction.Invoke();
             }
 
-            Console.WriteLine("[MultiDown] All Done.");
+            PluginLog.Debug("Download", "[MultiDown] All Done.");
         }
         catch (Exception ex)
         {
             if (_renderCts != null) _renderCts.Cancel();
-            Console.WriteLine();
-            Console.WriteLine($"[MultiDown] FATAL ERROR: {ex.GetType().Name}");
-            Console.WriteLine($"[MultiDown] Message: {ex.Message}");
+            PluginLog.Error("Download", $"[MultiDown] FATAL ERROR: {ex.GetType().Name}");
+            PluginLog.Debug("Download", $"[MultiDown] Message: {ex.Message}");
             if (ex is AggregateException agg)
                 foreach (var inner in agg.InnerExceptions)
-                    Console.WriteLine($"  -> {inner.Message}");
+                    PluginLog.Debug("Download", $"  -> {inner.Message}");
             CleanupFiles(filePath);
             Original_c();
         }
@@ -318,7 +245,7 @@ public class DownloadEvent : IMethodHook
 
             try
             {
-                Console.Write(output);
+                PluginLog.Debug("Download", output);
                 Console.Out.Flush();
             }
             catch
@@ -333,7 +260,6 @@ public class DownloadEvent : IMethodHook
         }
 
         // 循环结束后的收尾工作
-        Console.WriteLine(); // 换行，确保光标移到下一行，不被后续日志覆盖
 
         if (uiProgressObj is IProgress<long> finalProgress)
             try
@@ -370,7 +296,7 @@ public class DownloadEvent : IMethodHook
         Task.WaitAll(tasks);
 
         // 验证并合并
-        Console.Write("\r[MultiDown] Merging files... ");
+        PluginLog.Debug("Download", "\r[MultiDown] Merging files... ");
         using (var outFs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None))
         {
             foreach (var t in temps)
@@ -385,63 +311,9 @@ public class DownloadEvent : IMethodHook
             }
         }
 
-        Console.WriteLine("Done.          "); // 多加空格清除残留字符
+        PluginLog.Debug("Download", "Done.          "); // 多加空格清除残留字符
     }
 
-    // private void DownloadChunk(string url, string path, long start, long end, object progress)
-    // {
-    //     // 静默启动，不打印日志以免干扰进度条
-    //     int retries = 0;
-    //     while (retries < 3)
-    //     {
-    //         try
-    //         {
-    //             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-    //             req.Method = "GET";
-    //             if (start > 0 || end < long.MaxValue - 1) 
-    //                 req.AddRange(start, end);
-    //             
-    //             req.Timeout = 120000;
-    //             req.ReadWriteTimeout = 120000;
-    //             req.Proxy = null;
-    //             req.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0";
-    //             req.KeepAlive = false;
-    //
-    //             using (HttpWebResponse resp = (HttpWebResponse)req.GetResponse())
-    //             {
-    //                 if (resp.StatusCode != HttpStatusCode.OK && resp.StatusCode != HttpStatusCode.PartialContent)
-    //                     throw new WebException($"Status: {resp.StatusCode}");
-    //
-    //                 using (Stream rs = resp.GetResponseStream())
-    //                 using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
-    //                 {
-    //                     byte[] buffer = new byte[65536]; // 64KB
-    //                     int read;
-    //                     while ((read = rs.Read(buffer, 0, buffer.Length)) > 0)
-    //                     {
-    //                         fs.Write(buffer, 0, read);
-    //                         
-    //                         // 原子累加全局进度
-    //                         Interlocked.Add(ref _globalDownloadedBytes, (long)read);
-    //
-    //                         // // 汇报给游戏 UI (频率由游戏内部控制，这里直接报没事)
-    //                         // if (progress is IProgress<long> p)
-    //                         // {
-    //                         //     try { p.Report(totalNow); } catch (Exception e) { Console.WriteLine(e); }
-    //                         // }
-    //                     }
-    //                 }
-    //             }
-    //             return;
-    //         }
-    //         catch (Exception ex)
-    //         {
-    //             retries++;
-    //             if (retries >= 3) throw;
-    //             Thread.Sleep(2000 * retries);
-    //         }
-    //     }
-    // }
 
     private async Task DownloadChunk(string url, string path, long start, long end, object progress)
     {
@@ -482,12 +354,6 @@ public class DownloadEvent : IMethodHook
 
                     // ✅ 原子累加全局进度
                     Interlocked.Add(ref _globalDownloadedBytes, read);
-                    // // ✅ 汇报进度
-                    // if (progress is IProgress<long> p)
-                    // {
-                    //     try { p.Report(_globalDownloadedBytes); }
-                    //     catch { }
-                    // }
                 }
 
                 return;
@@ -586,20 +452,10 @@ public class DownloadEvent : IMethodHook
         var num4 = wa.a(zip, dest, "", overwrite, wk.a, cb);
         if (num4 != 0)
         {
-            Console.WriteLine("[Unzip Error] code={0} dest={1} path={2}", num4, dest, zip);
+            PluginLog.Error("Download", "[Unzip Error] code={0} dest={1} path={2}", num4, dest, zip);
             SetField(type, realInstance, "e", 3);
             SetField(type, realInstance, "d", null);
         }
-        // var wa = asm.GetType("WPFLauncher.Util.wa");
-        // var wk = asm.GetType("WPFLauncher.Util.Zip.wk");
-        // if (wa == null) throw new Exception("wa not found");
-        // var wkA = wk != null ? Enum.Parse(wk, "a") : (object)0;
-        // var method = wa.GetMethods(BindingFlags.Public | BindingFlags.Static)
-        //     .FirstOrDefault(m => m.Name == "a" && m.GetParameters().Length >= 5 && (wk == null || m.GetParameters()[4].ParameterType == wk));
-        // if (method == null) throw new Exception("wa.a not found");
-        // int code = (int)method.Invoke(null, new object[] { zip, dest, "", overwrite, wkA, cb });
-        // if (code != 0) Console.WriteLine($"[MultiDown] Unzip error: {code}");
-        // else Console.WriteLine("[MultiDown] Unzip OK.");
     }
 
     private string FormatSize(long bytes)

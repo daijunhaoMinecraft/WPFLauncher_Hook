@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.IdentitySpoofing;
 
 public class SpoofDeviceInfo : IMethodHook
@@ -30,7 +31,7 @@ public class SpoofDeviceInfo : IMethodHook
         try
         {
             if (text.Length != 8) text = RandomStr(8).ToUpper();
-            WpfConfig.DefaultLogger.Info("虚拟机器码: " + text);
+            PluginLog.Debug("Identity", "虚拟机器码: " + text);
             return text;
         }
         catch
@@ -64,7 +65,7 @@ public class SpoofDeviceInfo : IMethodHook
                 result = result.Substring(0, MaxTotalLength);
             }
 
-            WpfConfig.DefaultLogger.Info($"CPUID: {result}");
+            PluginLog.Debug("Identity", $"CPUID: {result}");
         }
         catch
         {

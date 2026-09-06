@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Mcl.Core.Dotnetdetour.Model;
 using WPFLauncher.Model;
@@ -19,7 +19,7 @@ public class FixLanGameFriendShow : IMethodHook
         List<UserM> friendList = OriginalFriendList();
         foreach (UserM friend in friendList)
         {
-            FriendStatus searchedFriend = WpfConfig.ListFriendStatus.FirstOrDefault(x => x.UserId.ToString() == friend.UserID.ToString());
+            FriendStatus searchedFriend = WpfConfig.FriendStatuses.FirstOrDefault(x => x.UserId.ToString() == friend.UserID.ToString());
             if (searchedFriend != null)
             {
                 bool isOnline = searchedFriend.Status == 1;

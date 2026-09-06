@@ -1,4 +1,4 @@
-﻿// using System;
+// using System;
 // using System.Reflection;
 // using DotNetTranstor;
 //
@@ -102,20 +102,20 @@ public class DownloadEvent : IMethodHook
     [HookMethod("WPFLauncher.Network.acd", "c", null)]
     public void DownloadFileHook(object instance)
     {
-        if (!WpfConfig.IsDownloadMultiConfig)
+        if (!WpfConfig.EnableParallelDownloads)
         {
             Original_c();
             return;
         }
         
-        ServicePointManager.DefaultConnectionLimit = WpfConfig.MaxThread + 10;
+        ServicePointManager.DefaultConnectionLimit = WpfConfig.DownloadWorkerCount + 10;
         ServicePointManager.Expect100Continue = false;
         ServicePointManager.UseNagleAlgorithm = false;
         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | 
                                                SecurityProtocolType.Tls13;
 
-        threadCount = WpfConfig.MaxThread;
-        if (WpfConfig.IsDebug)
+        threadCount = WpfConfig.DownloadWorkerCount;
+        if (WpfConfig.EnableVerboseLogging)
         {
             Console.WriteLine("\n[MultiDown] === Hook Started ===");
         }
@@ -144,7 +144,7 @@ public class DownloadEvent : IMethodHook
             return;
         }
 
-        if (contentLength < WpfConfig.LimitDownload * 1024 * 1024)
+        if (contentLength < WpfConfig.ParallelDownloadThresholdMb * 1024 * 1024)
         {
             Console.WriteLine("[MultiDown] Small file. Fallback.");
             Original_c();

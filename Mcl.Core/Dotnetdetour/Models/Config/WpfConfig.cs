@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Permissions;
@@ -15,27 +15,27 @@ using WPFLauncher.View.UI;
 
 namespace Mcl.Core.Dotnetdetour.Models.Config;
 
-public class WpfConfig
+public partial class WpfConfig
 {
-    public static string Version = "6.0.1-DLL-Public-Beta2";
-    public static string Default_WebSocketAddress = "ws://127.0.0.1:4600/websocket";
-    public static string Default_HttpAddress = "http://127.0.0.1:4600/";
+    public static string Version = "7.0.0-DLL-Public-Beta1";
+    public static string DefaultWebSocketAddress = "ws://127.0.0.1:4600/websocket";
+    public static string DefaultHttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
     public static bool CookieLoginWithoutMpay = false;
-    public static string Get_Recv_String_ChatResult = string.Empty;
-    public static bool IsBypassGameUpdate_Bedrock = false;
-    public static bool IsDebug = false;
+    public static string LastChatResponse = string.Empty;
+    public static bool SkipBedrockUpdates = false;
+    public static bool EnableVerboseLogging = false;
     public static EntityResponse<LobbyGameRoomEntity> RoomInfo = null;
     public static string Password = string.Empty;
-    public static string Mac_Addr = string.Empty;
-    public static string Random_Mac_Addr = string.Empty;
-    public static bool IsEnableX64mc = true;
-    public static JArray RecvList = new();
+    public static string MacAddress = string.Empty;
+    public static string RandomMacAddress = string.Empty;
+    public static bool Use64BitBedrock = true;
+    public static JArray ReceivedMessages = new();
     public static bool EnableRoomBlacklist = false;
     public static List<string> RoomBlacklist = new();
     public static List<string> RegexBlacklist = new();
     public static int MaxRoomCount = 16;
-    public static bool IsLogin = false;
+    public static bool IsLoggedIn = false;
 
     public static string ServerListUrl = "https://x19.update.netease.com/serverlist/release.json";
     public static Uri ServerListUri = new(ServerListUrl);
@@ -43,103 +43,100 @@ public class WpfConfig
 
     public static JArray RoomPlayerList = new();
     public static long JoinOrCreateTime = 0;
-    public static string wpflauncherRoot = Directory.GetCurrentDirectory();
-    public static bool IsStartWebSocket = false;
-    public static bool IsCustomIP = false;
-    public static bool IsSelectedIP = true;
-    public static bool NoTwoExitMessage = true;
-    public static int JoinFailRetry = 0;
+    public static string LauncherRootDirectory = Directory.GetCurrentDirectory();
+    public static bool EnableWebServer = false;
+    public static bool UseCustomServerAddress = false;
+    public static bool HasSelectedServerAddress = true;
+    public static bool SkipExitConfirmation = true;
+    public static int JoinRetryCount = 0;
     public static string JavaGamePath = string.Empty;
-    public static bool MemoryOptimize = false;
-    public static bool ShowAccountInfo = false;
-    
+    public static bool OptimizeMemoryBeforeLaunch = false;
+    public static bool LogSensitiveAccountDetails = false;
+    public static bool ShowStartupLogo = true;
+
     // 美化
-    public static bool ShowWindowsNotify = false;
-    
+    public static bool EnableChatNotifications = false;
+
     // threading Download Config
-    public static int MaxThread = 8;
-    public static bool IsDownloadMultiConfig = false;
-    public static int LimitDownload = 30;
-    public static string BedrockPath = tb.s;
-    public static bool IsWindowTopMost = false;
-    
+    public static int DownloadWorkerCount = 8;
+    public static bool EnableParallelDownloads = false;
+    public static int ParallelDownloadThresholdMb = 30;
+    public static string BedrockDirectory = tb.s;
+    public static bool KeepWindowsOnTop = false;
+
     // Advanced
-    public static bool EnableModsInject = false;
-    
-    public static bool IsLogOutputFolder = true;
+    public static bool EnableModInjection = false;
+
+    public static bool WriteLauncherLogsToFile = true;
 
     // custom Settings
-    public static bool EnableCustomBedrockSelect = false;
-    public static bool EnableCustomAccountLogin = false;
-    public static bool MpayUnless = false;
-    public static bool AdvancedSavesManager = true;
-    public static bool ShowRoomManagerWindow = true;
+    public static bool EnableBedrockClientSelection = false;
+    public static bool EnableAlternativeAccountLogin = false;
+    public static bool UseAccountManagerLogin = false;
+    public static bool EnableAdvancedSaveManager = true;
+    public static bool ShowRoomDetailsWindow = true;
 
-    public static bool KeepOffDeleteLastResourcepacks = false;
-    public static bool KeepOffDeleteLastConfig = false;
-    public static bool KeepOffDeleteLastShaderPacks = false;
-    
+    public static bool PreserveResourcePacks = false;
+    public static bool PreserveGameConfig = false;
+    public static bool PreserveShaderPacks = false;
+
     // LanGame Settings
-    public static bool AllowFrp = false;
-    public static bool UseNetworkMode = false;
-    
+    public static bool EnablePortForwarding = false;
+    public static bool EnableVirtualNetwork = false;
+
     // Java Settings
-    public static string CustomJVMArguments = string.Empty;
+    public static string CustomJvmArguments = string.Empty;
     public static bool UseJavaExe = false;
-    
+
     public static Logger DefaultLogger = LogManager.GetCurrentClassLogger();
-    public static List<FriendStatus> ListFriendStatus = new();
-    
+    public static List<FriendStatus> FriendStatuses = new();
+
     // Custom Recent Server
-    public static List<Tuple<string, NetGameResponse>> CustomRecentList = new ();
-    public static bool IsJoinCustomServer = false;
-    public static bool ShowCustomServer = false;
-    
+    public static List<Tuple<string, NetGameResponse>> CustomRecentServers = new();
+    public static bool IsJoiningCustomServer = false;
+    public static bool ShowCustomServers = false;
+
     // Filter
-    public static string LanGameNicknameFilterString = string.Empty;
-    public static List<string> LanGameNicknameFilter = new List<string>();
-    
-    public static bool ShowLogInConsole = false;
-    public static bool ShowLogInWpf = false;
-    
-    public static Skip32Cipher PublicSkip32Cipher = new();
+    public static string LanNicknameFilterKeywords = string.Empty;
+    public static List<string> LanNicknameFilters = new List<string>();
 
-    
-    public static CustomLoadingWindow LoginLoadingWindow = new();
-    
-    public static void WriteRoomBlacklist()
-    {
-        var blacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
-        var blacklistFilePath = Path.Combine(blacklistFolderPath, "BlackList.json");
-        File.WriteAllText(blacklistFilePath, JsonConvert.SerializeObject(RoomBlacklist));
-    }
+    public static bool ShowGameLogsInConsole = false;
+    public static bool ShowGameLogsWindow = false;
 
-    public static void WriteRegexBlacklist()
-    {
-        var regexBlacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
-        var regexBlacklistFilePath = Path.Combine(regexBlacklistFolderPath, "RegexBlackList.json");
-        File.WriteAllText(regexBlacklistFilePath, JsonConvert.SerializeObject(RegexBlacklist));
-    }
+    public static Skip32Cipher SharedUidCipher = new();
 
-    // Read
-    public static void ReadRoomBlacklist()
+
+    public static CustomLoadingWindow LoginLoadingWindow;
+
+    private static string RoomConfigPath(string fileName) =>
+        Path.Combine(LauncherRootDirectory, "RoomConfig", fileName);
+
+    public static void WriteRoomBlacklist() => WriteList("BlackList.json", RoomBlacklist);
+    public static void WriteRegexBlacklist() => WriteList("RegexBlackList.json", RegexBlacklist);
+    public static void ReadRoomBlacklist() => RoomBlacklist = ReadList("BlackList.json");
+    public static void ReadRegexBlacklist() => RegexBlacklist = ReadList("RegexBlackList.json");
+
+    private static void WriteList(string fileName, List<string> values) =>
+        AtomicFile.WriteAllText(RoomConfigPath(fileName), JsonConvert.SerializeObject(values ?? new List<string>()));
+
+    private static List<string> ReadList(string fileName)
     {
-        var blacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
-        var blacklistFilePath = Path.Combine(blacklistFolderPath, "BlackList.json");
-        if (!Directory.Exists($"{wpflauncherRoot}/RoomConfig"))
+        var path = RoomConfigPath(fileName);
+        if (!File.Exists(path))
         {
-            // Create Directory RoomConfig
-            Directory.CreateDirectory($"{wpflauncherRoot}/RoomConfig");
-            DefaultLogger.Warn("未创建RoomConfig文件夹,已自动创建");
+            WriteList(fileName, new List<string>());
+            return new List<string>();
         }
 
-        if (!File.Exists($"{wpflauncherRoot}/RoomConfig/BlackList.json"))
+        try
         {
-            // Init BlackList
-            File.WriteAllText($"{wpflauncherRoot}/RoomConfig/BlackList.json", "[]");
-            DefaultLogger.Warn("[Warn] 未创建RoomConfig/BlackList.json文件,已自动创建");
+            return JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(path)) ?? new List<string>();
         }
-
-        RoomBlacklist = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(blacklistFilePath));
+        catch (Exception exception) when (exception is IOException || exception is UnauthorizedAccessException ||
+                                          exception is JsonException)
+        {
+            DefaultLogger.Warn("无法读取房间列表，保留原文件: " + fileName);
+            return new List<string>();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -47,14 +48,14 @@ public class WebRtcEx : IMethodHook
     private int RunGame()
     {
         bool originalStart = true;
-        if (WpfConfig.AllowFrp)
+        if (WpfConfig.EnablePortForwarding)
         {
             if (WebRtcVar.LanGameManager != null)
             {
-                WpfConfig.DefaultLogger.Info(WebRtcVar.LanGameManager.ae());
+                PluginLog.Debug("Network", WebRtcVar.LanGameManager.ae());
                 try
                 {
-                    if (WpfConfig.UseNetworkMode)
+                    if (WpfConfig.EnableVirtualNetwork)
                     {
                         // [修复] 使用 WPF STA 线程呼出 SelectIpWindow
                         string GetUserVirtualIp()
@@ -85,7 +86,7 @@ public class WebRtcEx : IMethodHook
                                 }
                                 catch (Exception ex)
                                 {
-                                    WpfConfig.DefaultLogger.Error($"[监控窗体错误] {ex}");
+                                    PluginLog.Error("Network", $"[监控窗体错误] {ex}");
                                 }
                             });
 
@@ -107,19 +108,19 @@ public class WebRtcEx : IMethodHook
                                 while (WebRtcVar.PlayerList.Count == 0)
                                 {
                                     Thread.Sleep(1000);
-                                    WpfConfig.DefaultLogger.Info("等待玩家列表获取成功...");
+                                    PluginLog.Debug("Network", "等待玩家列表获取成功...");
                                 }
 
-                                WpfConfig.DefaultLogger.Info($"成功获取到 {WebRtcVar.PlayerList.Count} 个玩家。");
+                                PluginLog.Debug("Network", $"成功获取到 {WebRtcVar.PlayerList.Count} 个玩家。");
                                 var clientIp = GetUserVirtualIp();
 
                                 if (string.IsNullOrEmpty(clientIp))
                                 {
-                                    WpfConfig.DefaultLogger.Warn("用户未配置 IP，启动中止。");
+                                    PluginLog.Warn("Network", "用户未配置 IP，启动中止。");
                                     return -1;
                                 }
 
-                                WpfConfig.DefaultLogger.Info($"[客户端] 正在启动虚拟网卡 ({clientIp})...");
+                                PluginLog.Debug("Network", $"[客户端] 正在启动虚拟网卡 ({clientIp})...");
 
                                 Task.Run(() =>
                                 {
@@ -129,12 +130,12 @@ public class WebRtcEx : IMethodHook
                                     }
                                     catch (Exception ex)
                                     {
-                                        WpfConfig.DefaultLogger.Error($"启动失败: {ex.Message}");
+                                        PluginLog.Error("Network", $"启动失败: {ex.Message}");
                                     }
                                 });
 
                                 WebRtcVar.Enable = true;
-                                WpfConfig.DefaultLogger.Info($"客户端已启动。IP: {clientIp}");
+                                PluginLog.Debug("Network", $"客户端已启动。IP: {clientIp}");
 
                                 ShowMonitorAsync();
                                 return 0;
@@ -151,23 +152,23 @@ public class WebRtcEx : IMethodHook
                                 var serverIp = GetUserVirtualIp();
                                 if (string.IsNullOrEmpty(serverIp))
                                 {
-                                    WpfConfig.DefaultLogger.Warn("用户未配置 IP，启动中止。");
+                                    PluginLog.Warn("Network", "用户未配置 IP，启动中止。");
                                     return -1;
                                 }
 
                                 if (WebRtcVar.LanGameManager == null)
-                                    WpfConfig.DefaultLogger.Warn("房间管理实例 为 Null");
+                                    PluginLog.Warn("Network", "房间管理实例 为 Null");
                                 else if (WebRtcVar.LanGameManager.aya == null) 
-                                    WpfConfig.DefaultLogger.Warn("发包函数为Null");
+                                    PluginLog.Warn("Network", "发包函数为Null");
 
                                 CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager, RoomVisibleStatus.OPEN);
                                 CallShowRoomManageReflection();
 
-                                WpfConfig.DefaultLogger.Info($"[服务端] 正在启动虚拟网卡 ({serverIp})...");
+                                PluginLog.Debug("Network", $"[服务端] 正在启动虚拟网卡 ({serverIp})...");
                                 WintunRouterService.Instance.Start(serverIp);
 
                                 WebRtcVar.Enable = true;
-                                WpfConfig.DefaultLogger.Info($"服务端已启动。IP: {serverIp}");
+                                PluginLog.Debug("Network", $"服务端已启动。IP: {serverIp}");
 
                                 ShowMonitorAsync();
                                 return 0;
@@ -203,7 +204,7 @@ public class WebRtcEx : IMethodHook
                                     }
                                     catch (Exception ex)
                                     {
-                                        WpfConfig.DefaultLogger.Error($"[控制台窗体错误] {ex}");
+                                        PluginLog.Error("Network", $"[控制台窗体错误] {ex}");
                                     }
                                 });
                                 panelThread.SetApartmentState(ApartmentState.STA);
@@ -229,9 +230,9 @@ public class WebRtcEx : IMethodHook
                                 });
 
                                 if (WebRtcVar.LanGameManager == null)
-                                    WpfConfig.DefaultLogger.Warn("房间管理实例 为 Null");
+                                    PluginLog.Warn("Network", "房间管理实例 为 Null");
                                 else if (WebRtcVar.LanGameManager.aya == null) 
-                                    WpfConfig.DefaultLogger.Warn("发包函数为Null");
+                                    PluginLog.Warn("Network", "发包函数为Null");
                                 
                                 CallAtpDMethodUsingReflection(WebRtcVar.LanGameManager, RoomVisibleStatus.OPEN);
                                 CallShowRoomManageReflection();
@@ -244,18 +245,18 @@ public class WebRtcEx : IMethodHook
                 }
                 catch (AccessViolationException ave)
                 {
-                    WpfConfig.DefaultLogger.Error($"内存违规: {ave.Message}");
-                    WpfConfig.DefaultLogger.Error($"StackTrace: {ave.StackTrace}");
+                    PluginLog.Error("Network", $"内存违规: {ave.Message}");
+                    PluginLog.Error("Network", $"StackTrace: {ave.StackTrace}");
                     return 0;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    PluginLog.Error("Network", e);
                 }
             }
         }
         
-        if (WpfConfig.EnableModsInject)
+        if (WpfConfig.EnableModInjection)
         {
             var modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
             var minecraftModsPath = Path.Combine(MinecraftPath.GetMinecraftPath(), "mods");
@@ -284,7 +285,7 @@ public class WebRtcEx : IMethodHook
                     string destinationPath = Path.Combine(minecraftModsPath, newFileName);
 
                     File.Copy(jarFile, destinationPath, true);
-                    WpfConfig.DefaultLogger.Info($"成功复制模组: {originalFileName} (伪装名称: {newFileName}) 到 {minecraftModsPath}");
+                    PluginLog.Debug("Network", $"成功复制模组: {originalFileName} (伪装名称: {newFileName}) 到 {minecraftModsPath}");
                 }
             }
         }
@@ -323,7 +324,7 @@ public class WebRtcEx : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"[WebRtcEx] 反射调用 atp.d() 方法时出错: {ex.Message}");
+            PluginLog.Error("Network", $"[WebRtcEx] 反射调用 atp.d() 方法时出错: {ex.Message}");
             return false;
         }
     }
@@ -342,7 +343,7 @@ public class WebRtcEx : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"反射调用失败: {ex}");
+            PluginLog.Error("Network", $"反射调用失败: {ex}");
         }
     }
 
@@ -353,7 +354,7 @@ public class WebRtcEx : IMethodHook
     public void SetGameM(ait gameM)
     {
         WebRtcVar.LanGameManager = gameM;
-        WpfConfig.DefaultLogger.Info("获取gameM实例成功!");
+        PluginLog.Debug("Network", "获取gameM实例成功!");
         SetGameMOriginal(gameM);
     }
 
@@ -361,12 +362,12 @@ public class WebRtcEx : IMethodHook
     public static string b(int ogm)
     {
         var stackTrace = new StackTrace(true);
-        WpfConfig.DefaultLogger.Info("[WebRtcEx.b] 调用堆栈:");
+        PluginLog.Debug("Network", "[WebRtcEx.b] 调用堆栈:");
         for (var i = 0; i < stackTrace.FrameCount; i++)
         {
             var frame = stackTrace.GetFrame(i);
             var method = frame.GetMethod();
-            WpfConfig.DefaultLogger.Info($"  [{i}] {method.DeclaringType?.FullName}.{method.Name} (行: {frame.GetFileLineNumber()})");
+            PluginLog.Debug("Network", $"  [{i}] {method.DeclaringType?.FullName}.{method.Name} (行: {frame.GetFileLineNumber()})");
         }
         return "恭喜: 你的Crash被我截到了";
     }
@@ -378,7 +379,7 @@ public class WebRtcEx : IMethodHook
     public void ClearProcess(avo min)
     {
         try { ClearProcessOriginal(min); }
-        catch (Exception ex) { Console.WriteLine($"发生异常: {ex.Message}"); }
+        catch (Exception ex) { PluginLog.Error("Network", $"发生异常: {ex.Message}"); }
     }
 
     #region 判断玩家当前状态(进入房间/创建房间)
@@ -390,7 +391,7 @@ public class WebRtcEx : IMethodHook
     private void JoinRoomResult(byte[] data)
     {
         WebRtcVar.Mode = ForwardMode.Client;
-        Console.WriteLine("[WebRtc] 切换模式至客户端");
+        PluginLog.Debug("Network", "[WebRtc] 切换模式至客户端");
         JoinRoomResultOriginal(data);
     }
 
@@ -404,7 +405,7 @@ public class WebRtcEx : IMethodHook
             WebRtcVar.LanGameManager = config;
         
         WebRtcVar.Mode = ForwardMode.Server;
-        Console.WriteLine("[WebRtc] 切换模式至服务端");
+        PluginLog.Debug("Network", "[WebRtc] 切换模式至服务端");
         SendCreateRoomOriginal(config);
     }
 
@@ -414,7 +415,7 @@ public class WebRtcEx : IMethodHook
     [HookMethod(TargetConst.LanGameManager, "t", "ExitRoomOriginal")]
     public void ExitRoom()
     {
-        Console.WriteLine("[WebRtc] 退出房间");
+        PluginLog.Debug("Network", "[WebRtc] 退出房间");
         WebRtcVar.StopForwarder();
         WebRtcVar.Mode = ForwardMode.None;
         ExitRoomOriginal();

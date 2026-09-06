@@ -3,6 +3,7 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 
 /// <summary>
@@ -20,17 +21,10 @@ internal class SensitiveWordDetection : IMethodHook
     }
 
     [CompilerGenerated]
-    [HookMethod(ClassName, "a", "No_Sensitive_word_Init")]
+    [HookMethod(ClassName, "e", "No_Sensitive_word_Init")]
     public static void InitHookA()
     {
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn("[INFO]发现网易正在初始化敏感词功能已被制止");
-    }
-
-    [CompilerGenerated]
-    [HookMethod(ClassName, "b", "No_Sensitive_word_Init")]
-    public static void InitHookB()
-    {
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn("[INFO]发现网易正在初始化敏感词功能已被制止");
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Warn("Hook", "[INFO]发现网易正在初始化敏感词功能已被制止");
     }
 
     #endregion
@@ -44,18 +38,18 @@ internal class SensitiveWordDetection : IMethodHook
     }
 
     [CompilerGenerated]
-    [HookMethod(ClassName, "c", "No_Sensitive_word_String")]
+    [HookMethod(ClassName, "g", "No_Sensitive_word_String")]
     public static string StringHookC(string content)
     {
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Warn("Hook", $"[INFO]发现网易检测名称敏感词已被制止, 检测的内容为:{content}");
         return content;
     }
 
     [CompilerGenerated]
-    [HookMethod(ClassName, "e", "No_Sensitive_word_String")]
+    [HookMethod(ClassName, "i", "No_Sensitive_word_String")]
     public static string StringHookE(string content)
     {
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Warn("Hook", $"[INFO]发现网易检测文本敏感词已被制止, 检测的内容为:{content}");
         return content;
     }
 
@@ -70,18 +64,18 @@ internal class SensitiveWordDetection : IMethodHook
     }
 
     [CompilerGenerated]
-    [HookMethod(ClassName, "d", "No_Sensitive_word_Bool")]
+    [HookMethod(ClassName, "h", "No_Sensitive_word_Bool")]
     public static bool BoolHookD(string content)
     {
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Warn("Hook", $"[INFO]发现网易检测名称敏感词已被制止, 检测的内容为:{content}");
         return true;
     }
 
     [CompilerGenerated]
-    [HookMethod(ClassName, "f", "No_Sensitive_word_Bool")]
+    [HookMethod(ClassName, "j", "No_Sensitive_word_Bool")]
     public static bool BoolHookF(string content)
     {
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Warn($"[INFO]发现网易检测敏感词已被制止,检测的内容为:{content}");
+        if (WpfConfig.EnableVerboseLogging) PluginLog.Warn("Hook", $"[INFO]发现网易检测文本敏感词已被制止, 检测的内容为:{content}");
         return true;
     }
 

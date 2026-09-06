@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Mcl.Core.Dotnetdetour.Model;
@@ -88,16 +88,16 @@ namespace Mcl.Core.Dotnetdetour
         {
             string blacklistFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "RoomConfig");
             string blacklistFilePath = Path.Combine(blacklistFolderPath, "BlackList.json");
-            if (!Directory.Exists($"{WpfConfig.wpflauncherRoot}/RoomConfig"))
+            if (!Directory.Exists($"{WpfConfig.LauncherRootDirectory}/RoomConfig"))
             {
                 // Create Directory RoomConfig
-                Directory.CreateDirectory($"{WpfConfig.wpflauncherRoot}/RoomConfig");
+                Directory.CreateDirectory($"{WpfConfig.LauncherRootDirectory}/RoomConfig");
                 WpfConfig.DefaultLogger.Warn("未创建RoomConfig文件夹,已自动创建");
             }
-            if (!File.Exists($"{WpfConfig.wpflauncherRoot}/RoomConfig/BlackList.json"))
+            if (!File.Exists($"{WpfConfig.LauncherRootDirectory}/RoomConfig/BlackList.json"))
             {
                 // Init BlackList
-                File.WriteAllText($"{WpfConfig.wpflauncherRoot}/RoomConfig/BlackList.json", "[]");
+                File.WriteAllText($"{WpfConfig.LauncherRootDirectory}/RoomConfig/BlackList.json", "[]");
                 WpfConfig.DefaultLogger.Warn("[Warn] 未创建RoomConfig/BlackList.json文件,已自动创建");
             }
             WpfConfig.RoomBlacklist = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText(blacklistFilePath));

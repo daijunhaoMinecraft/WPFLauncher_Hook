@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -29,7 +29,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         [HookMethod("WPFLauncher.Manager.Game.Launcher.auw", "o", "StartJava_Original")]
         private aqq StartJava(string oby, EventHandler obz, JavaType oca, string ocb, bool occ = true)
         {
-            if (WpfConfig.EnableModsInject)
+            if (WpfConfig.EnableModInjection)
             {
                 string modsInjectPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
                 string minecraftModsPath = System.IO.Path.Combine(tb.z, "mods");

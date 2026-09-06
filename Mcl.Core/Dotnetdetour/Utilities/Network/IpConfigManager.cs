@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.IO;
 
 namespace Mcl.Core.Dotnetdetour.Utilities.Network;
@@ -35,7 +36,7 @@ public static class IpConfigManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"读取 IP 配置失败: {ex.Message}");
+            PluginLog.Error("Web", $"读取 IP 配置失败: {ex.Message}");
         }
 
         return null;
@@ -59,7 +60,7 @@ public static class IpConfigManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"保存 IP 配置失败: {ex.Message}");
+            PluginLog.Error("Web", $"保存 IP 配置失败: {ex.Message}");
             return false;
         }
     }

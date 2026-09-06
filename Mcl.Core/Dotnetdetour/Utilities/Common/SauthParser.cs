@@ -6,6 +6,7 @@ using Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Newtonsoft.Json.Linq;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Utilities.Common
 {
     public static class SauthParser
@@ -56,12 +57,12 @@ namespace Mcl.Core.Dotnetdetour.Utilities.Common
                 if (!loginResult.Success)
                     return null;
 
-                WpfConfig.DefaultLogger.Info("4399:" + username);
+                PluginLog.Debug("Core", "[4399] 正在使用所选账号登录。");
                 return JObject.Parse(loginResult.SauthJson)["sauth_json"].ToString();
             }
             catch (Exception ex)
             {
-                WpfConfig.DefaultLogger.Error($"4399账号转换失败: \n{ex}");
+                PluginLog.Error("Core", $"4399账号转换失败: \n{ex}");
                 return null;
             }
         }
@@ -76,7 +77,7 @@ namespace Mcl.Core.Dotnetdetour.Utilities.Common
                 {
                     sauthContent = JObject.Parse(account.CookieData)["sauth_json"].ToString();
                     if (logInfo)
-                        WpfConfig.DefaultLogger.Info($"[Phone] 使用缓存凭证 {account.PhoneNumber}");
+                        PluginLog.Debug("Core", "[Phone] 正在使用缓存凭证登录。");
                 }
                 catch
                 {
@@ -88,7 +89,7 @@ namespace Mcl.Core.Dotnetdetour.Utilities.Common
                 return sauthContent;
 
             if (logInfo)
-                WpfConfig.DefaultLogger.Info($"[Phone] 开始手机号登录: {account.PhoneNumber}");
+                PluginLog.Debug("Core", "[Phone] 开始手机号登录。");
 
             string result = MpayLogin.FullLoginFlow(account.PhoneNumber, account.DeviceId);
             if (string.IsNullOrEmpty(result))

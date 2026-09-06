@@ -1,0 +1,120 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCL 设置</title>
+    <style>/* MCL_FLUENT_THEME */</style>
+</head>
+<body>
+<main class="settings-shell">
+    <h1>MCL 设置</h1>
+    <p class="subtitle">按功能分类管理扩展。详细日志开关保存后立即生效，游戏启动选项在下次启动时生效。</p>
+    <div class="settings-toolbar">
+        <input id="search" type="search" placeholder="搜索设置名称或说明" aria-label="搜索设置">
+        <select id="category" aria-label="设置分类"><option value="">全部设置</option></select>
+    </div>
+    <div id="settings" class="settings-list"></div>
+</main>
+<footer class="settings-footer">
+    <div class="settings-footer-inner">
+        <span id="status" class="settings-status" role="status" aria-live="polite">正在加载设置…</span>
+        <button id="reload" type="button">重新加载</button>
+        <button id="save" type="button" class="primary" disabled>保存并应用</button>
+    </div>
+</footer>
+<script>
+    const controls = new Map();
+    const status = document.getElementById('status');
+    const save = document.getElementById('save');
+    const reload = document.getElementById('reload');
+
+    function showStatus(message, error = false) {
+        status.textContent = message;
+        status.classList.toggle('error', error);
+    }
+
+    async function request(path, options) {
+        const response = await fetch(path, options);
+        if (!response.ok) throw new Error(`请求失败 (${response.status})`);
+        const result = await response.json();
+        if (result.error !== 0) throw new Error(result.message || '操作失败');
+        return result;
+    }
+
+    async function loadSettings() {
+        save.disabled = reload.disabled = true;
+        showStatus('正在加载设置…');
+        try {
+            const [metadata, current] = await Promise.all([request('/config/settingslist'), request('/config/get')]);
+            const container = document.getElementById('settings');
+            const category = document.getElementById('category');
+            container.replaceChildren();
+            category.replaceChildren(new Option('全部设置', ''));
+            const categories = new Set();
+            controls.clear();
+            for (const [key, item] of Object.entries(metadata.data)) {
+                const card = document.createElement('label');
+                card.className = 'setting-card';
+                card.dataset.category = item.category || '其他';
+                card.dataset.search = `${item.desc} ${item.help || ''} ${key} ${item.fieldName || ''}`.toLowerCase();
+                const label = document.createElement('span');
+                label.className = 'setting-label';
+                const title = document.createElement('strong');
+                title.textContent = item.desc;
+                label.append(title);
+                if (item.help) {
+                    const help = document.createElement('small');
+                    help.textContent = item.help;
+                    label.append(help);
+                }
+                const input = document.createElement('input');
+                input.type = item.type === 'Boolean' ? 'checkbox' : item.type === 'Int32' ? 'number' : 'text';
+                if (input.type === 'checkbox') input.checked = current.data[key] === true;
+                else input.value = current.data[key] ?? '';
+                if (item.minimum != null) input.min = item.minimum;
+                if (item.maximum != null) input.max = item.maximum;
+                input.setAttribute('aria-label', item.desc);
+                card.append(label, input);
+                container.append(card);
+                controls.set(key, input);
+                categories.add(card.dataset.category);
+            }
+            for (const name of categories) category.add(new Option(name, name));
+            filterSettings();
+            showStatus('更改将在保存后应用。');
+            save.disabled = false;
+        } catch (error) { showStatus(error.message, true); }
+        finally { reload.disabled = false; }
+    }
+
+    function filterSettings() {
+        const query = document.getElementById('search').value.trim().toLowerCase();
+        const category = document.getElementById('category').value;
+        for (const card of document.querySelectorAll('.setting-card'))
+            card.hidden = !card.dataset.search.includes(query) || (category !== '' && card.dataset.category !== category);
+    }
+
+    save.addEventListener('click', async () => {
+        const updates = {};
+        for (const [key, input] of controls) {
+            if (!input.checkValidity()) { showStatus(`请检查：${input.getAttribute('aria-label')}`, true); return; }
+            // Keep numeric text intact: the server validates integers without parseInt truncation.
+            updates[key] = input.type === 'checkbox' ? input.checked : input.value;
+        }
+        save.disabled = reload.disabled = true;
+        try {
+            await request('/config/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates) });
+            showStatus('配置已保存，日志策略已更新。');
+        } catch (error) { showStatus(error.message, true); }
+        finally { save.disabled = reload.disabled = false; }
+    });
+    reload.addEventListener('click', () => {
+        if (confirm('重新加载会丢弃尚未保存的更改。继续吗？')) loadSettings();
+    });
+    document.getElementById('search').addEventListener('input', filterSettings);
+    document.getElementById('category').addEventListener('change', filterSettings);
+    loadSettings();
+</script>
+</body>
+</html>

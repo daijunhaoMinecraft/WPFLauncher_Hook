@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Dynamic;
@@ -34,6 +34,7 @@ using WPFLauncher.View.Launcher.LobbyGame;
 using WPFLauncher.ViewModel.LobbyGame;
 using Exception = System.Exception;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Utilities.Network;
 
 public class SimpleHttpServer
@@ -65,7 +66,7 @@ public class SimpleHttpServer
     {
         if (!HttpListener.IsSupported)
         {
-            WpfConfig.DefaultLogger.Error("[Http]当前系统不支持 HttpListener.");
+            PluginLog.Error("Web", "[Http]当前系统不支持 HttpListener.");
             return;
         }
 
@@ -75,7 +76,7 @@ public class SimpleHttpServer
         _httpListener = new HttpListener();
         _httpListener.Prefixes.Add(httpAddress); // 使用配置的地址
         _httpListener.Start();
-        WpfConfig.DefaultLogger.Info($"[Http]HTTP 服务器已启动,监听 {httpAddress}");
+        PluginLog.Debug("Web", $"[Http]HTTP 服务器已启动,监听 {httpAddress}");
 
         // 开始处理请求
         while (true)
@@ -130,13 +131,13 @@ public class SimpleHttpServer
                 }
                 catch (Exception e)
                 {
-                    WpfConfig.DefaultLogger.Error($"处理请求时发生错误: {e.Message}");
-                    WpfConfig.DefaultLogger.Error("[STACK TRACE]:" + e.StackTrace);
+                    PluginLog.Error("Web", $"处理请求时发生错误: {e.Message}");
+                    PluginLog.Error("Web", "[STACK TRACE]:" + e.StackTrace);
                 }
             }
             catch (Exception ex)
             {
-                WpfConfig.DefaultLogger.Error($"处理请求时发生错误: {ex.Message}");
+                PluginLog.Error("Web", $"处理请求时发生错误: {ex.Message}");
             }
     }
 
@@ -144,7 +145,7 @@ public class SimpleHttpServer
     public void Stop()
     {
         _httpListener.Stop();
-        WpfConfig.DefaultLogger.Info("HTTP 服务器已停止");
+        PluginLog.Info("Web", "HTTP 服务器已停止");
     }
 
     [DllImport("kernel32.dll")]
@@ -310,7 +311,7 @@ public class SimpleHttpServer
                                 avatarUrl = "https://x19.fp.ps.netease.com/file/5a34e0777f9d2a8a4ea3d36eza31LhW3",
                                 signature = ""
                             });
-                        WpfConfig.DefaultLogger.Error($"[HTTP] 获取黑名单用户详情失败: {ex.Message}");
+                        PluginLog.Error("Web", $"[HTTP] 获取黑名单用户详情失败: {ex.Message}");
                     }
 
                 dynamic SendResponse = new ExpandoObject();
@@ -355,7 +356,8 @@ public class SimpleHttpServer
             requestObject = JsonConvert.DeserializeObject<dynamic>(requestBody);
             // 获取"/api/"后面的内容
             var contentAfterApiPost = "/" + context.Request.Url.AbsolutePath.Substring(5);
-            WpfConfig.DefaultLogger.Info($"[POST]args:{contentAfterApiPost}");
+            if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails)
+                PluginLog.Debug("Web", $"[POST]args:{contentAfterApiPost}");
             if (context.Request.HttpMethod == "POST")
             {
                 // 使用 GBK 编码（适用于简体中文环境）
@@ -380,7 +382,7 @@ public class SimpleHttpServer
                     SendResponse = get_result;
                 }
 
-                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + get_result);
+                if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails) PluginLog.Debug("Web", "[HTTP][POST]请求返回内容:" + get_result);
             }
             else if (context.Request.HttpMethod == "GET")
             {
@@ -431,7 +433,7 @@ public class SimpleHttpServer
                         SendResponse = resultContent;
                     }
 
-                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + resultContent);
+                    if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails) PluginLog.Debug("Web", "[HTTP][POST]请求返回内容:" + resultContent);
                     IsPostFlag = true;
                 }
 
@@ -453,7 +455,7 @@ public class SimpleHttpServer
                         SendResponse = get_result;
                     }
 
-                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info("[HTTP][GET]请求返回内容:" + get_result);
+                    if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails) PluginLog.Debug("Web", "[HTTP][GET]请求返回内容:" + get_result);
                 }
             }
 
@@ -472,7 +474,8 @@ public class SimpleHttpServer
             requestObject = JsonConvert.DeserializeObject<dynamic>(requestBody);
             // 获取"/api/"后面的内容
             var contentAfterApiPost = "/" + context.Request.Url.AbsolutePath.Substring(5);
-            WpfConfig.DefaultLogger.Info($"[POST]args:{contentAfterApiPost}");
+            if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails)
+                PluginLog.Debug("Web", $"[POST]args:{contentAfterApiPost}");
             if (context.Request.HttpMethod == "POST")
             {
                 var http = new HttpClient();
@@ -738,7 +741,7 @@ public class SimpleHttpServer
                 SendResponse.Base64Token = Convert.ToBase64String(array);
                 break;
             case "/get_RecvInfo":
-                SendResponse = new { ade.SendKey, ade.RecvKey, DataList = WpfConfig.RecvList };
+                SendResponse = new { ade.SendKey, ade.RecvKey, DataList = WpfConfig.ReceivedMessages };
                 break;
             case "/get_RoomBlacklist":
                 if (WpfConfig.EnableRoomBlacklist) // 判断房间黑名单功能是否开启
@@ -855,17 +858,17 @@ public class SimpleHttpServer
                         var startTime = DateTime.Now;
                         while (true)
                         {
-                            if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
+                            if (!string.IsNullOrEmpty(WpfConfig.LastChatResponse))
                             {
                                 var Get_Recv_String_ChatResult_ToJson =
-                                    JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
+                                    JObject.Parse(WpfConfig.LastChatResponse);
                                 if (!((IDictionary<string, JToken>)
                                         Get_Recv_String_ChatResult_ToJson).ContainsKey("Get_Recv_String_ChatResult") &&
                                     Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
                                 {
                                     SendResponse = new
                                         { error = 1, message = "发送失败", errorInfo = Get_Recv_String_ChatResult_ToJson };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
                                 else
                                 {
@@ -874,7 +877,7 @@ public class SimpleHttpServer
                                         error = 0, message = "发送成功", SendResult = Get_Recv_String_ChatResult_ToJson,
                                         SendMessage = message, ToUserID = ChatUserID
                                     };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
 
                                 break;
@@ -883,7 +886,7 @@ public class SimpleHttpServer
                             if ((DateTime.Now - startTime).TotalSeconds > 3)
                             {
                                 SendResponse = new { error = 1, message = "发送超时" };
-                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                WpfConfig.LastChatResponse = string.Empty;
                                 break;
                             }
                         }
@@ -920,17 +923,17 @@ public class SimpleHttpServer
                         var startTime = DateTime.Now;
                         while (true)
                         {
-                            if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
+                            if (!string.IsNullOrEmpty(WpfConfig.LastChatResponse))
                             {
                                 var Get_Recv_String_ChatResult_ToJson =
-                                    JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
+                                    JObject.Parse(WpfConfig.LastChatResponse);
                                 if (!((IDictionary<string, JToken>)
                                         Get_Recv_String_ChatResult_ToJson).ContainsKey("Get_Recv_String_ChatResult") &&
                                     Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
                                 {
                                     SendResponse = new
                                         { error = 1, message = "发送失败", errorInfo = Get_Recv_String_ChatResult_ToJson };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
                                 else
                                 {
@@ -939,7 +942,7 @@ public class SimpleHttpServer
                                         error = 0, message = "发送成功", SendResult = Get_Recv_String_ChatResult_ToJson,
                                         SendMessage = message, ToGroupID = GroupID
                                     };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
 
                                 break;
@@ -948,7 +951,7 @@ public class SimpleHttpServer
                             if ((DateTime.Now - startTime).TotalSeconds > 3)
                             {
                                 SendResponse = new { error = 1, message = "发送超时" };
-                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                WpfConfig.LastChatResponse = string.Empty;
                                 break;
                             }
                         }
@@ -994,7 +997,7 @@ public class SimpleHttpServer
                         {
                             // 处理读取或发送HTML文件时可能出现的错误
                             SendResponse = JToken.FromObject(new { error = 1, message = $"加载房间管理页面失败: {ex.Message}" });
-                            WpfConfig.DefaultLogger.Info($"[Http]Error loading RoomManage.html: {ex.Message}");
+                            PluginLog.Error("Web", $"[Http]Error loading RoomManage.html: {ex.Message}");
                         }
                     }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/console/show"))
@@ -1070,7 +1073,7 @@ public class SimpleHttpServer
                                 default: consoleColor = ConsoleColor.White; break;
                             }
 
-                            WpfConfig.DefaultLogger.Info($"[WebAPI] {message}");
+                            PluginLog.Debug("Web", $"[WebAPI] {message}");
                             Console.ResetColor();
 
                             SendResponse = new { error = 0, message = "日志已添加", content = message, color };
@@ -1124,11 +1127,11 @@ public class SimpleHttpServer
                                     var kickResult =
                                         JObject.Parse(X19Http.Post("/online-lobby-member-kick", requestData));
                                     if (kickResult["code"].ToObject<int>() == 0)
-                                        WpfConfig.DefaultLogger.Info($"[RoomManage] 已将玩家 {userId} 踢出房间并加入黑名单");
+                                        PluginLog.Info("Web", $"[RoomManage] 已将玩家 {userId} 踢出房间并加入黑名单");
                                 }
                                 catch (Exception ex)
                                 {
-                                    WpfConfig.DefaultLogger.Info($"[RoomManage] 踢出玩家失败: {ex.Message}");
+                                    PluginLog.Info("Web", $"[RoomManage] 踢出玩家失败: {ex.Message}");
                                 }
 
                             SendResponse = JToken.FromObject(new { error = 0, message = "已将用户添加到黑名单" });
@@ -1197,7 +1200,7 @@ public class SimpleHttpServer
                                     if (kickResult["code"].ToObject<int>() == 0)
                                     {
                                         SendResponse = JToken.FromObject(new { error = 0, message = "已将玩家踢出房间" });
-                                        WpfConfig.DefaultLogger.Info($"[RoomManage] 已将玩家 {userId} 踢出房间");
+                                        PluginLog.Info("Web", $"[RoomManage] 已将玩家 {userId} 踢出房间");
                                     }
                                     else
                                     {
@@ -1263,7 +1266,7 @@ public class SimpleHttpServer
                                                     })));
                                             if (RemovePlayerReturn["code"].ToObject<int>() == 0)
                                             {
-                                                WpfConfig.DefaultLogger.Info("[RoomInfo]玩家 " + playerName +
+                                                PluginLog.Info("Web", "[RoomInfo]玩家 " + playerName +
                                                                              " 在正则黑名单内,已自动踢出房间");
                                                 RoomKickInfo.Add(JToken.FromObject(new
                                                 {
@@ -1273,7 +1276,7 @@ public class SimpleHttpServer
                                                 break; // 成功踢出后退出循环
                                             }
 
-                                            WpfConfig.DefaultLogger.Info(@"[RoomInfo]玩家 " + playerName +
+                                            PluginLog.Info("Web", @"[RoomInfo]玩家 " + playerName +
                                                                          " 在正则黑名单内,踢出失败,正在重试...");
                                         } while (true); // 一直重试直到成功
                                     }
@@ -1455,8 +1458,8 @@ public class SimpleHttpServer
                             }
                             catch (Exception ex)
                             {
-                                WpfConfig.DefaultLogger.Error($"反射访问内部类时出错: {ex.Message}");
-                                WpfConfig.DefaultLogger.Error($"堆栈跟踪: {ex.StackTrace}");
+                                PluginLog.Error("Web", $"反射访问内部类时出错: {ex.Message}");
+                                PluginLog.Error("Web", $"堆栈跟踪: {ex.StackTrace}");
                             }
 
                             // 获取 jo 类的类型信息
@@ -1474,7 +1477,7 @@ public class SimpleHttpServer
                                 // 调用私有方法 a
                                 methodA.Invoke(CreateRoomInfo, new object[] { null });
                             else
-                                WpfConfig.DefaultLogger.Error("方法 a 未找到，请确认方法签名是否正确。");
+                                PluginLog.Error("Web", "方法 a 未找到，请确认方法签名是否正确。");
                             SendResponse = new { error = 0, message = "创建房间成功" };
                         }
                         catch (Exception ex)
@@ -1545,7 +1548,7 @@ public class SimpleHttpServer
 
                                 if (dispatchException != null)
                                 {
-                                    WpfConfig.DefaultLogger.Error($"UI 线程调用失败: {dispatchException}");
+                                    PluginLog.Error("Web", $"UI 线程调用失败: {dispatchException}");
                                     SendResponse = new { error = 1, message = $"加入失败: {dispatchException.Message}" };
                                 }
                                 else
@@ -1556,7 +1559,7 @@ public class SimpleHttpServer
                         }
                         catch (Exception e)
                         {
-                            WpfConfig.DefaultLogger.Info(e);
+                            PluginLog.Info("Web", e);
                             SendResponse = new { error = 1, message = $"加入房间异常: {e.Message}" };
                         }
                     }
@@ -1739,7 +1742,7 @@ public class SimpleHttpServer
                         //     SendResponse.user_id = WPFLauncher.Common.azf<arg>.Instance.User.Id;
                         //     SendResponse.user_token = userToken;
                         //     SendResponse.response = get_result;
-                        //     WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + get_result);
+                        //     WpfConfig.DefaultLogger.Debug("[HTTP][POST]请求返回内容:" + get_result);
                         //     break;
                         // case "/get":
                         //     HttpClient http_Get = new HttpClient();
@@ -1753,7 +1756,7 @@ public class SimpleHttpServer
                         //     SendResponse.user_id = WPFLauncher.Common.azf<arg>.Instance.User.Id;
                         //     SendResponse.user_token = userToken_Get;
                         //     SendResponse.response = get_result_Get;
-                        //     WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + get_result_Get);
+                        //     WpfConfig.DefaultLogger.Debug("[HTTP][POST]请求返回内容:" + get_result_Get);
                         //     break;
                         case "/Send_ChatMessage":
                             try
@@ -1770,10 +1773,10 @@ public class SimpleHttpServer
                                     var startTime = DateTime.Now;
                                     while (true)
                                     {
-                                        if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
+                                        if (!string.IsNullOrEmpty(WpfConfig.LastChatResponse))
                                         {
                                             var Get_Recv_String_ChatResult_ToJson =
-                                                JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
+                                                JObject.Parse(WpfConfig.LastChatResponse);
                                             if (!((IDictionary<string, JToken>)Get_Recv_String_ChatResult_ToJson)
                                                     .ContainsKey("Get_Recv_String_ChatResult") &&
                                                 Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
@@ -1783,7 +1786,7 @@ public class SimpleHttpServer
                                                     error = 1, message = "发送失败",
                                                     errorInfo = Get_Recv_String_ChatResult_ToJson
                                                 };
-                                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                                WpfConfig.LastChatResponse = string.Empty;
                                             }
                                             else
                                             {
@@ -1793,7 +1796,7 @@ public class SimpleHttpServer
                                                     SendResult = Get_Recv_String_ChatResult_ToJson,
                                                     SendMessage = message, ToUserID = ChatUserID
                                                 };
-                                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                                WpfConfig.LastChatResponse = string.Empty;
                                             }
 
                                             break;
@@ -1802,7 +1805,7 @@ public class SimpleHttpServer
                                         if ((DateTime.Now - startTime).TotalSeconds > 3)
                                         {
                                             SendResponse = new { error = 1, message = "发送超时" };
-                                            WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                            WpfConfig.LastChatResponse = string.Empty;
                                             break;
                                         }
                                     }
@@ -1882,7 +1885,7 @@ public class SimpleHttpServer
                                                             })));
                                                     if (RemovePlayerReturn["code"].ToObject<int>() == 0)
                                                     {
-                                                        WpfConfig.DefaultLogger.Info("[RoomInfo]玩家 " + playerName +
+                                                        PluginLog.Info("Web", "[RoomInfo]玩家 " + playerName +
                                                             " 在正则黑名单内,已自动踢出房间");
                                                         RoomKickInfo.Add(JToken.FromObject(new
                                                         {
@@ -1892,7 +1895,7 @@ public class SimpleHttpServer
                                                         break; // 成功踢出后退出循环
                                                     }
 
-                                                    WpfConfig.DefaultLogger.Info(@"[RoomInfo]玩家 " + playerName +
+                                                    PluginLog.Info("Web", @"[RoomInfo]玩家 " + playerName +
                                                         " 在正则黑名单内,踢出失败,正在重试...");
                                                 } while (true); // 一直重试直到成功
                                             }
@@ -1970,7 +1973,7 @@ public class SimpleHttpServer
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Info($"处理 POST 请求时发生错误: {ex.Message}");
+            PluginLog.Info("Web", $"处理 POST 请求时发生错误: {ex.Message}");
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             var errorResponse = new
             {
@@ -2017,14 +2020,14 @@ public class SimpleHttpServer
                 _webSockets.Add(webSocket);
             }
 
-            WpfConfig.DefaultLogger.Info($"[WebSocket] 新连接已建立，当前连接数: {_webSockets.Count}");
+            PluginLog.Info("Web", $"[WebSocket] 新连接已建立，当前连接数: {_webSockets.Count}");
 
             // 处理WebSocket消息
             await ProcessWebSocketMessages(webSocket, webSocketContext);
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"[WebSocket] 处理WebSocket连接时出错: {ex.Message}");
+            PluginLog.Error("Web", $"[WebSocket] 处理WebSocket连接时出错: {ex.Message}");
         }
     }
 
@@ -2048,7 +2051,7 @@ public class SimpleHttpServer
 
                 // 处理接收到的消息
                 var receivedMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                WpfConfig.DefaultLogger.Info($"[WebSocket] 收到消息: {receivedMessage}");
+                PluginLog.Debug("Web", $"[WebSocket] 收到消息: {receivedMessage}");
 
                 // 处理消息并发送响应
                 // string responseMessage = ProcessWebSocketMessage(receivedMessage, context);
@@ -2059,7 +2062,7 @@ public class SimpleHttpServer
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"[WebSocket] 处理消息时出错: {ex.Message}");
+            PluginLog.Error("Web", $"[WebSocket] 处理消息时出错: {ex.Message}");
         }
         finally
         {
@@ -2074,7 +2077,7 @@ public class SimpleHttpServer
                     CancellationToken.None);
 
             webSocket.Dispose();
-            WpfConfig.DefaultLogger.Info($"[WebSocket] 连接已关闭，当前连接数: {_webSockets.Count}");
+            PluginLog.Info("Web", $"[WebSocket] 连接已关闭，当前连接数: {_webSockets.Count}");
         }
     }
 
@@ -2104,7 +2107,7 @@ public class SimpleHttpServer
                 }
                 catch (Exception ex)
                 {
-                    WpfConfig.DefaultLogger.Error($"[WebSocket] 广播消息时出错: {ex.Message}");
+                    PluginLog.Error("Web", $"[WebSocket] 广播消息时出错: {ex.Message}");
                 }
     }
 

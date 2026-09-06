@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -87,7 +87,7 @@ public class LoginWithoutMpay : IMethodHook
             }
 
             WpfConfig.CookieLoginWithoutMpay = true;
-            WpfConfig.IsLogin = true;
+            WpfConfig.IsLoggedIn = true;
             WPFLauncher.Common.azf<apm>.Instance.h();
         }
         catch (Exception ex)
@@ -104,7 +104,7 @@ public class LoginWithoutMpay : IMethodHook
     [HookMethod("WPFLauncher.Unisdk.nx", "a", "InitMpay")]
     public void InitMpayHook(string title, string mpayPath, Action<int> initFinishAction, string uniSdkUrl)
     {
-        if (WpfConfig.MpayUnless)
+        if (WpfConfig.UseAccountManagerLogin)
         {
             initFinishAction(0);
             while (true)
@@ -173,13 +173,13 @@ public class LoginWithoutMpay : IMethodHook
             return;
         }
 
-        if (WpfConfig.IsStartWebSocket)
+        if (WpfConfig.EnableWebServer)
         {
             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "Login", cookie = new { sauth_json = sauthJson } }));
         }
         WpfConfig.DefaultLogger.Info($"SauthJson: {JsonConvert.SerializeObject(new { sauth_json = sauthJson })}");
         InjectMpayCookie(sauthJson);
-        WpfConfig.IsLogin = true;
+        WpfConfig.IsLoggedIn = true;
     }
     
     [HookMethod("WPFLauncher.Manager.PCChannel.asx", "a", null)]
@@ -205,7 +205,7 @@ public class LoginWithoutMpay : IMethodHook
     {
 	    WpfConfig.DefaultLogger.Info("Logout!");
 	    ProcessLogout();
-	    if (WpfConfig.MpayUnless)
+	    if (WpfConfig.UseAccountManagerLogin)
 	    {
 		    while (true)
 		    {

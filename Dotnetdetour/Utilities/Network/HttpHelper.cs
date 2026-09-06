@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Dynamic;
@@ -379,7 +379,7 @@ public class SimpleHttpServer
                     SendResponse = get_result;
                 }
 
-                if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + get_result);
+                if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + get_result);
             }
             else if (context.Request.HttpMethod == "GET")
             {
@@ -430,7 +430,7 @@ public class SimpleHttpServer
                         SendResponse = resultContent;
                     }
 
-                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + resultContent);
+                    if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info("[HTTP][POST]请求返回内容:" + resultContent);
                     IsPostFlag = true;
                 }
 
@@ -452,7 +452,7 @@ public class SimpleHttpServer
                         SendResponse = get_result;
                     }
 
-                    if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info("[HTTP][GET]请求返回内容:" + get_result);
+                    if (WpfConfig.EnableVerboseLogging) WpfConfig.DefaultLogger.Info("[HTTP][GET]请求返回内容:" + get_result);
                 }
             }
 
@@ -737,7 +737,7 @@ public class SimpleHttpServer
                 SendResponse.Base64Token = Convert.ToBase64String(array);
                 break;
             case "/get_RecvInfo":
-                SendResponse = new { ade.SendKey, ade.RecvKey, DataList = WpfConfig.RecvList };
+                SendResponse = new { ade.SendKey, ade.RecvKey, DataList = WpfConfig.ReceivedMessages };
                 break;
             case "/get_RoomBlacklist":
                 if (WpfConfig.EnableRoomBlacklist) // 判断房间黑名单功能是否开启
@@ -854,17 +854,17 @@ public class SimpleHttpServer
                         var startTime = DateTime.Now;
                         while (true)
                         {
-                            if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
+                            if (!string.IsNullOrEmpty(WpfConfig.LastChatResponse))
                             {
                                 var Get_Recv_String_ChatResult_ToJson =
-                                    JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
+                                    JObject.Parse(WpfConfig.LastChatResponse);
                                 if (!((IDictionary<string, JToken>)
                                         Get_Recv_String_ChatResult_ToJson).ContainsKey("Get_Recv_String_ChatResult") &&
                                     Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
                                 {
                                     SendResponse = new
                                         { error = 1, message = "发送失败", errorInfo = Get_Recv_String_ChatResult_ToJson };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
                                 else
                                 {
@@ -873,7 +873,7 @@ public class SimpleHttpServer
                                         error = 0, message = "发送成功", SendResult = Get_Recv_String_ChatResult_ToJson,
                                         SendMessage = message, ToUserID = ChatUserID
                                     };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
 
                                 break;
@@ -882,7 +882,7 @@ public class SimpleHttpServer
                             if ((DateTime.Now - startTime).TotalSeconds > 3)
                             {
                                 SendResponse = new { error = 1, message = "发送超时" };
-                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                WpfConfig.LastChatResponse = string.Empty;
                                 break;
                             }
                         }
@@ -919,17 +919,17 @@ public class SimpleHttpServer
                         var startTime = DateTime.Now;
                         while (true)
                         {
-                            if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
+                            if (!string.IsNullOrEmpty(WpfConfig.LastChatResponse))
                             {
                                 var Get_Recv_String_ChatResult_ToJson =
-                                    JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
+                                    JObject.Parse(WpfConfig.LastChatResponse);
                                 if (!((IDictionary<string, JToken>)
                                         Get_Recv_String_ChatResult_ToJson).ContainsKey("Get_Recv_String_ChatResult") &&
                                     Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
                                 {
                                     SendResponse = new
                                         { error = 1, message = "发送失败", errorInfo = Get_Recv_String_ChatResult_ToJson };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
                                 else
                                 {
@@ -938,7 +938,7 @@ public class SimpleHttpServer
                                         error = 0, message = "发送成功", SendResult = Get_Recv_String_ChatResult_ToJson,
                                         SendMessage = message, ToGroupID = GroupID
                                     };
-                                    WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                    WpfConfig.LastChatResponse = string.Empty;
                                 }
 
                                 break;
@@ -947,7 +947,7 @@ public class SimpleHttpServer
                             if ((DateTime.Now - startTime).TotalSeconds > 3)
                             {
                                 SendResponse = new { error = 1, message = "发送超时" };
-                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                WpfConfig.LastChatResponse = string.Empty;
                                 break;
                             }
                         }
@@ -1775,10 +1775,10 @@ public class SimpleHttpServer
                                     var startTime = DateTime.Now;
                                     while (true)
                                     {
-                                        if (!string.IsNullOrEmpty(WpfConfig.Get_Recv_String_ChatResult))
+                                        if (!string.IsNullOrEmpty(WpfConfig.LastChatResponse))
                                         {
                                             var Get_Recv_String_ChatResult_ToJson =
-                                                JObject.Parse(WpfConfig.Get_Recv_String_ChatResult);
+                                                JObject.Parse(WpfConfig.LastChatResponse);
                                             if (!((IDictionary<string, JToken>)Get_Recv_String_ChatResult_ToJson)
                                                     .ContainsKey("Get_Recv_String_ChatResult") &&
                                                 Get_Recv_String_ChatResult_ToJson["err"].ToObject<int>() != 0)
@@ -1788,7 +1788,7 @@ public class SimpleHttpServer
                                                     error = 1, message = "发送失败",
                                                     errorInfo = Get_Recv_String_ChatResult_ToJson
                                                 };
-                                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                                WpfConfig.LastChatResponse = string.Empty;
                                             }
                                             else
                                             {
@@ -1798,7 +1798,7 @@ public class SimpleHttpServer
                                                     SendResult = Get_Recv_String_ChatResult_ToJson,
                                                     SendMessage = message, ToUserID = ChatUserID
                                                 };
-                                                WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                                WpfConfig.LastChatResponse = string.Empty;
                                             }
 
                                             break;
@@ -1807,7 +1807,7 @@ public class SimpleHttpServer
                                         if ((DateTime.Now - startTime).TotalSeconds > 3)
                                         {
                                             SendResponse = new { error = 1, message = "发送超时" };
-                                            WpfConfig.Get_Recv_String_ChatResult = string.Empty;
+                                            WpfConfig.LastChatResponse = string.Empty;
                                             break;
                                         }
                                     }

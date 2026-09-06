@@ -20,13 +20,13 @@ namespace Mcl.Core.Dotnetdetour.Window
             this.Size = new Size(350, 250);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
-            this.TopMost = WpfConfig.IsWindowTopMost;
+            this.TopMost = WpfConfig.KeepWindowsOnTop;
 
             var topMostCheck = new CheckBox
             {
                 Text = "置顶",
                 Size = new Size(55, 20),
-                Checked = WpfConfig.IsWindowTopMost,
+                Checked = WpfConfig.KeepWindowsOnTop,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.Left = this.ClientSize.Width - topMostCheck.Width - 15;

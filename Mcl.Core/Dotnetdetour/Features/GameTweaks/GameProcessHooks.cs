@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -44,20 +45,21 @@ public class GameProcessStartupHook : IMethodHook
             {
                 if (outputCallback != null) outputCallback(s);
             };
-            
-            Console.WriteLine("[StartGame] 启动信息创建中...");
+
+            PluginLog.Debug("Game", "Process start request received.");
             var processResult = StartProcessOriginal(executablePath, arguments, exitHandler, startType, workDir, true, outputCallbackHook);
 
             if (processResult != null)
             {
                 processResult.EnableRaisingEvents = true;
-                processResult.Exited += (sender, e) => { Console.WriteLine($"\n[进程] 进程 {executablePath} 已退出"); };
+                processResult.Exited += (sender, e) =>
+                    PluginLog.Info("Process", "Outer process exited: file={0}", Path.GetFileName(executablePath));
             }
             return processResult;
         }
         finally
         {
-            _isInvokedByWbA.Value = false; 
+            _isInvokedByWbA.Value = false;
         }
     }
     #endregion
@@ -68,7 +70,7 @@ public class GameProcessStartupHook : IMethodHook
     {
         return new aqq();
     }
-    
+
     [HookMethod("WPFLauncher.Manager.aqr", "t", "ProcessStartOriginal")]
     public aqq ProcessStart(string fileName, string args, aqo startType, string workDirectory = null)
     {
@@ -90,18 +92,18 @@ public class GameProcessStartupHook : IMethodHook
             {
                 fileName = fileName.Replace("javaw.exe", "java.exe");
             }
-            if (!string.IsNullOrWhiteSpace(WpfConfig.CustomJVMArguments))
+            if (!string.IsNullOrWhiteSpace(WpfConfig.CustomJvmArguments))
             {
-                args = MergeMinecraftArgs(args, WpfConfig.CustomJVMArguments);
-                WpfConfig.DefaultLogger.Info($"[进程] 已注入自定义JVM参数");
+                args = MergeMinecraftArgs(args, WpfConfig.CustomJvmArguments);
+                PluginLog.Info("Game", $"[进程] 已注入自定义JVM参数");
             }
         }
 
-        bool useWpfLog = _isInvokedByWbA.Value && WpfConfig.ShowLogInWpf;
-        
-        if (_isInvokedByWbA.Value && WpfConfig.MemoryOptimize)
+        bool useWpfLog = _isInvokedByWbA.Value && WpfConfig.ShowGameLogsWindow;
+
+        if (_isInvokedByWbA.Value && WpfConfig.OptimizeMemoryBeforeLaunch)
         {
-            OptimizeMemoryBeforeLaunch(); 
+            OptimizeMemoryBeforeLaunch();
         }
 
         ProcessLogWindow logWindow = null;
@@ -110,9 +112,12 @@ public class GameProcessStartupHook : IMethodHook
             Application.Current.Dispatcher.Invoke(() =>
             {
                 logWindow = new ProcessLogWindow(Path.GetFileName(fileName));
+                logWindow.Closed += (sender, eventArgs) => logWindow = null;
                 logWindow.Show();
             });
         }
+
+        bool captureGameOutput = useWpfLog || WpfConfig.ShowGameLogsInConsole || !isJava;
 
         var processObj = new aqq
         {
@@ -120,15 +125,15 @@ public class GameProcessStartupHook : IMethodHook
             {
                 FileName = fileName,
                 Arguments = args,
-                UseShellExecute = false,        
-                RedirectStandardOutput = useWpfLog || !isJava, 
-                RedirectStandardError  = useWpfLog || !isJava,  
-                CreateNoWindow         = useWpfLog || !isJava 
+                UseShellExecute = false,
+                RedirectStandardOutput = captureGameOutput,
+                RedirectStandardError  = captureGameOutput,
+                CreateNoWindow         = useWpfLog || !isJava
             },
             Type = startType
         };
-        
-        if (!string.IsNullOrEmpty(workDirectory)) 
+
+        if (!string.IsNullOrEmpty(workDirectory))
         {
             processObj.StartInfo.WorkingDirectory = workDirectory;
         }
@@ -140,8 +145,8 @@ public class GameProcessStartupHook : IMethodHook
             if (!string.IsNullOrEmpty(outputArgs.Data))
             {
                 string cleanMsg = AnsiColorRegex.Replace(outputArgs.Data, string.Empty);
-                if (WpfConfig.ShowLogInConsole) Console.WriteLine(cleanMsg);
-                if (useWpfLog) logWindow?.AppendLog(cleanMsg, isError: false);
+                if (WpfConfig.ShowGameLogsInConsole) ConsoleOutput.WriteLine(cleanMsg, ConsoleColor.Gray);
+                if (useWpfLog && WpfConfig.ShowGameLogsWindow) logWindow?.AppendLog(cleanMsg, isError: false);
             }
         };
         processObj.ErrorDataReceived += (sender, errorArgs) =>
@@ -149,22 +154,22 @@ public class GameProcessStartupHook : IMethodHook
             if (!string.IsNullOrEmpty(errorArgs.Data))
             {
                 string cleanMsg = AnsiColorRegex.Replace(errorArgs.Data, string.Empty);
-                if (WpfConfig.ShowLogInConsole) Console.WriteLine($"[StdErr] {cleanMsg}");
-                if (useWpfLog) logWindow?.AppendLog(cleanMsg, isError: true);
+                if (WpfConfig.ShowGameLogsInConsole) ConsoleOutput.WriteLine($"[StdErr] {cleanMsg}", ConsoleColor.Red);
+                if (useWpfLog && WpfConfig.ShowGameLogsWindow) logWindow?.AppendLog(cleanMsg, isError: true);
             }
         };
 
         if (useWpfLog || isBedrock)
         {
-            processObj.EnableRaisingEvents = true; 
-            
+            processObj.EnableRaisingEvents = true;
+
             processObj.Exited += (sender, e) =>
             {
                 int exitCode = -1;
                 try { exitCode = processObj.ExitCode; } catch { }
-                
+
                 logWindow?.OnProcessExited(exitCode);
-                Console.WriteLine($"\n[进程] 进程 {Path.GetFileName(fileName)} 已退出, 错误代码: {exitCode}");
+                PluginLog.Info("Process", "Process exited: file={0} exitCode={1}", Path.GetFileName(fileName), exitCode);
 
                 // === 基岩版进程退出后，检查 error.log 并清理垃圾文件夹 ===
                 if (isBedrock && !string.IsNullOrEmpty(bedrockTimestampFolder))
@@ -182,7 +187,7 @@ public class GameProcessStartupHook : IMethodHook
                             else
                             {
                                 // 有报错内容，打印到日志，不删除目录供排查
-                                WpfConfig.DefaultLogger.Error($"[基岩版进程] 检测到错误日志输出，已保留文件 {bedrockErrorLogPath}。\n错误详情:\n{errorContent}");
+                                PluginLog.Error("Game", $"[基岩版进程] 检测到错误日志输出，已保留文件 {bedrockErrorLogPath}。\n错误详情:\n{errorContent}");
                             }
                         }
                         else
@@ -196,7 +201,7 @@ public class GameProcessStartupHook : IMethodHook
                     }
                     catch (Exception ex)
                     {
-                        WpfConfig.DefaultLogger.Error($"[基岩版进程] 清理临时文件夹失败: {ex.Message}");
+                        PluginLog.Error("Game", $"[基岩版进程] 清理临时文件夹失败: {ex.Message}");
                     }
                 }
             };
@@ -213,18 +218,18 @@ public class GameProcessStartupHook : IMethodHook
                         if (!processObj.HasExited)
                         {
                             processObj.Kill();
-                            WpfConfig.DefaultLogger.Info($"[进程] 已由用户手动强制结束进程: {fileName}");
+                            PluginLog.Info("Game", $"[进程] 已由用户手动强制结束进程: {fileName}");
                         }
                     }
                     catch (Exception ex)
                     {
-                        WpfConfig.DefaultLogger.Error($"[进程] 强制结束进程失败: {ex.Message}");
+                        PluginLog.Error("Game", $"[进程] 强制结束进程失败: {ex.Message}");
                     }
                 });
             });
         }
 
-        WpfConfig.DefaultLogger.Info($"[进程] 启动进程: {fileName}");
+        PluginLog.Info("Game", $"[进程] 启动进程: {fileName}");
         return processObj;
     }
     #endregion
@@ -247,7 +252,7 @@ public class GameProcessStartupHook : IMethodHook
         {
             string originalConfigPath = configMatch.Groups[1].Value;
             string tempBaseDir = Path.GetDirectoryName(originalConfigPath); // 获取到 temp 文件夹的路径
-            
+
             // 构造新的以时间命名的文件夹 (屏蔽不支持字符 / :)
             string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
             timestampFolder = Path.Combine(tempBaseDir, timestamp);
@@ -271,14 +276,14 @@ public class GameProcessStartupHook : IMethodHook
             }
 
             // 针对这个新的 config 文件进行 Patch
-            if (WpfConfig.IsJoinCustomServer)
+            if (WpfConfig.IsJoiningCustomServer)
             {
                 PatchCustomServerConfig(newConfigPath);
             }
         }
 
         // 2. 选择基岩版 EXE 逻辑
-        if (WpfConfig.EnableCustomBedrockSelect)
+        if (WpfConfig.EnableBedrockClientSelection)
         {
             string tempFileName = fileName;
             string tempWorkDir = workDirectory;
@@ -299,8 +304,8 @@ public class GameProcessStartupHook : IMethodHook
             fileName = tempFileName;
             workDirectory = tempWorkDir;
         }
-            
-        WpfConfig.DefaultLogger.Info($"[SelectBedrock] 选择的基岩版: {fileName}");
+
+        PluginLog.Info("Game", $"[SelectBedrock] 选择的基岩版: {fileName}");
         WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { Type = "StartBedrockGame", SelectBedrockExePath = fileName }));
     }
 
@@ -311,11 +316,11 @@ public class GameProcessStartupHook : IMethodHook
     {
         try
         {
-            WpfConfig.DefaultLogger.Info($"[CustomServer] 正在修改 CppGamePath: {configPath}");
+            PluginLog.Info("Game", $"[CustomServer] 正在修改 CppGamePath: {configPath}");
 
             if (!File.Exists(configPath))
             {
-                WpfConfig.DefaultLogger.Error($"[CustomServer] 找不到配置文件: {configPath}");
+                PluginLog.Error("Game", $"[CustomServer] 找不到配置文件: {configPath}");
                 return;
             }
 
@@ -325,15 +330,15 @@ public class GameProcessStartupHook : IMethodHook
             jsonConfig["room_info"]["item_ids"][0] = "4668698705152194374";
 
             File.WriteAllText(configPath, JsonConvert.SerializeObject(jsonConfig, Formatting.None));
-            WpfConfig.DefaultLogger.Info("[CustomServer] 配置文件修改并保存成功！");
+            PluginLog.Info("Game", "[CustomServer] 配置文件修改并保存成功！");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"[CustomServer] 修改失败: {ex}");
+            PluginLog.Error("Game", $"[CustomServer] 修改失败: {ex}");
             throw;
         }
     }
-    
+
     // ======== 下方的 MergeMinecraftArgs, SplitArgs, OptimizeMemoryBeforeLaunch 保持原样不作变动 ========
 
     private static string MergeMinecraftArgs(string originalArgs, string customArgs)
@@ -350,7 +355,7 @@ public class GameProcessStartupHook : IMethodHook
             {
                 if (token.StartsWith("-Xmx") || token.StartsWith("-Xms"))
                 {
-                    string prefix = token.Substring(0, 4); 
+                    string prefix = token.Substring(0, 4);
                     if (Regex.IsMatch(newArgs, $@"\{prefix}\S+"))
                         newArgs = Regex.Replace(newArgs, $@"\{prefix}\S+", token);
                     else
@@ -366,12 +371,12 @@ public class GameProcessStartupHook : IMethodHook
                     string escapedKey = Regex.Escape(token);
                     string pattern = $@"{escapedKey}\s+(?:""[^""]*""|\S+)";
                     string replacement = $"{token} {nextToken}";
-                    
+
                     if (Regex.IsMatch(newArgs, pattern))
-                        newArgs = Regex.Replace(newArgs, pattern, replacement); 
+                        newArgs = Regex.Replace(newArgs, pattern, replacement);
                     else
-                        newArgs = replacement + " " + newArgs; 
-                        
+                        newArgs = replacement + " " + newArgs;
+
                     i++;
                 }
                 else
@@ -438,13 +443,13 @@ public class GameProcessStartupHook : IMethodHook
     {
         try
         {
-            WpfConfig.DefaultLogger.Info("[内存优化] 正在尝试释放系统物理内存...");
+            PluginLog.Info("Game", "[内存优化] 正在尝试释放系统物理内存...");
 
             using (var identity = WindowsIdentity.GetCurrent(TokenAccessLevels.Query | TokenAccessLevels.AdjustPrivileges))
             {
                 PrivilegeToken token = new PrivilegeToken { PrivilegeCount = 1, Attributes = 2 /* SE_PRIVILEGE_ENABLED */ };
                 long luid = 0;
-                
+
                 if (LookupPrivilegeValue(null, "SeProfileSingleProcessPrivilege", ref luid))
                 {
                     token.Luid = luid;
@@ -452,21 +457,21 @@ public class GameProcessStartupHook : IMethodHook
                 }
                 else
                 {
-                    WpfConfig.DefaultLogger.Error($"[内存优化] 无法查找特权, 错误码: {Marshal.GetLastWin32Error()}");
+                    PluginLog.Error("Game", $"[内存优化] 无法查找特权, 错误码: {Marshal.GetLastWin32Error()}");
                     return;
                 }
             }
 
             for (int command = 2; command <= 4; command++)
             {
-                int cmd = command; 
+                int cmd = command;
                 GCHandle handle = GCHandle.Alloc(cmd, GCHandleType.Pinned);
                 try
                 {
                     uint result = NtSetSystemInformation(80, handle.AddrOfPinnedObject(), Marshal.SizeOf(cmd));
                     if (result != 0)
                     {
-                        WpfConfig.DefaultLogger.Info($"[内存优化] 指令 {command} 执行异常，NTSTATUS: {result}");
+                        PluginLog.Info("Game", $"[内存优化] 指令 {command} 执行异常，NTSTATUS: {result}");
                     }
                 }
                 finally
@@ -475,11 +480,11 @@ public class GameProcessStartupHook : IMethodHook
                 }
             }
 
-            WpfConfig.DefaultLogger.Info("[内存优化] 内存释放完成！已为游戏腾出最大物理空间。");
+            PluginLog.Info("Game", "[内存优化] 内存释放完成！已为游戏腾出最大物理空间。");
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"[内存优化] 执行失败: {ex.Message}");
+            PluginLog.Error("Game", $"[内存优化] 执行失败: {ex.Message}");
         }
     }
     #endregion

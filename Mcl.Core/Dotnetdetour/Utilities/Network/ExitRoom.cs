@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -22,30 +23,30 @@ public class ExitRoom // 退出此前进入过的房间 By Daijunhao
         var sGetAllRooms = X19Http.Post("/online-lobby-room/query/list-room-by-res-id",
             JsonConvert.SerializeObject(new { res_id = "", offset = 0, length = 99999, version }));
         var jGetAllRooms = JObject.Parse(sGetAllRooms);
-        Console.WriteLine($"[AutoExit] 成功获取到房间数:{jGetAllRooms["total"]}");
+        PluginLog.Debug("Network", $"[AutoExit] 成功获取到房间数:{jGetAllRooms["total"]}");
         foreach (var jGetRooms in jGetAllRooms["entities"])
             if (jGetRooms["member_uids"].ToObject<List<string>>().Contains(azf<arg>.Instance.User.Id))
             {
-                Console.WriteLine(
+                PluginLog.Debug("Network", 
                     $"[AutoExit] 成功获取到玩家加入的房间,房间号: {jGetRooms["room_name"]}, entity_id: {jGetRooms["entity_id"]}");
-                Console.WriteLine("[AutoExit] 正在退出房间...");
+                PluginLog.Debug("Network", "[AutoExit] 正在退出房间...");
                 var sExitRoomResult = X19Http.Post("/online-lobby-room-enter/leave-room",
                     JsonConvert.SerializeObject(new { room_id = jGetRooms["entity_id"] }));
-                Console.WriteLine($"[AutoExit] 退出房间返回:{Regex.Escape(sExitRoomResult)}");
+                PluginLog.Debug("Network", $"[AutoExit] 退出房间返回:{Regex.Escape(sExitRoomResult)}");
                 if (JObject.Parse(sExitRoomResult)["code"].ToObject<int>() == 0)
                 {
-                    Console.WriteLine("[AutoExit] 退出房间成功!");
+                    PluginLog.Debug("Network", "[AutoExit] 退出房间成功!");
                 }
                 else
                 {
-                    Console.WriteLine($"[AutoExit] 退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");
+                    PluginLog.Error("Network", $"[AutoExit] 退出房间失败,返回信息:{JObject.Parse(sExitRoomResult)["message"]}!");
                     return false;
                 }
 
                 return true;
             }
 
-        Console.WriteLine("[AutoExit] Fail: 找不到玩家所在的房间");
+        PluginLog.Debug("Network", "[AutoExit] Fail: 找不到玩家所在的房间");
         return false;
     }
 }

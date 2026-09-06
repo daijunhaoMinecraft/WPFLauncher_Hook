@@ -158,7 +158,7 @@ internal class RoomManager : IMethodHook
             }
 
             // 发送WebSocket通知
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                 {
                     type = "RoomManage",
@@ -286,7 +286,7 @@ internal class RoomManager : IMethodHook
             WpfConfig.RoomInfo.entity.fids.Add(azf<arg>.Instance.User.Id);
             WpfConfig.JoinOrCreateTime = X19Tools.TimestampHelper.GetCurrentTimestampMilliseconds();
             WpfConfig.DefaultLogger.Error($"[RoomManage] 加入房间时间:{WpfConfig.JoinOrCreateTime}");
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                     { type = "RoomManage", status = "JoinRoom", data = WpfConfig.RoomInfo }));
         }
@@ -345,20 +345,17 @@ internal class RoomManager : IMethodHook
 
     #region GetRoomIP
 
-    // Token: 0x0600003E RID: 62 RVA: 0x000032F0 File Offset: 0x000014F0
     [OriginalMethod]
     public bool GetRoomIpOriginal(akv config, BaseWindow window)
     {
         return true;
     }
 
-    // Token: 0x0600003F RID: 63 RVA: 0x000032F4 File Offset: 0x000014F4
     [CompilerGenerated]
     [HookMethod("WPFLauncher.Manager.Game.aum", "d", "GetRoomIpOriginal")]
-    // Token: 0x06000433 RID: 1075 RVA: 0x00042D28 File Offset: 0x00040F28
     public bool GetRoomIp(akv config, BaseWindow window)
     {
-        WpfConfig.IsSelectedIP = false;
+        WpfConfig.HasSelectedServerAddress = false;
         var Get_FlagBool = GetRoomIpOriginal(config, window);
         if (Get_FlagBool)
         {
@@ -370,7 +367,7 @@ internal class RoomManager : IMethodHook
 
 
             // 检查是否满足特定条件，如果满足则显示IP更改界面
-            if (WpfConfig.IsCustomIP)
+            if (WpfConfig.UseCustomServerAddress)
                 Dispatcher.CurrentDispatcher.BeginInvoke(() =>
                 {
                     using (var changeIPForm = new ChangeIPForm(config))
@@ -379,7 +376,7 @@ internal class RoomManager : IMethodHook
                     }
                 });
 
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
             {
                 var settings = new JsonSerializerSettings
                 {
@@ -482,7 +479,7 @@ internal class RoomManager : IMethodHook
         });
 
         // 发送WebSocket通知
-        if (WpfConfig.IsStartWebSocket)
+        if (WpfConfig.EnableWebServer)
         {
             var playerInfoList = new JArray();
             var infoIndex = 0;
@@ -574,8 +571,8 @@ internal class RoomManager : IMethodHook
             WpfConfig.DefaultLogger.Info($"隐藏状态: {(statusVisibility ? "是" : "否")}");
             WpfConfig.DefaultLogger.Info("-----------------------------------------------------------");
             Console.ResetColor();
-            if (result.code == 12003) WpfConfig.JoinFailRetry++;
-            if (WpfConfig.JoinFailRetry == 2)
+            if (result.code == 12003) WpfConfig.JoinRetryCount++;
+            if (WpfConfig.JoinRetryCount == 2)
             {
                 var loadConfigResult = uz.q("警告:已连续尝试加入房间2次均为无法重复进入房间,是否退出此前进入过的房间?", "", "是", "否");
                 if (loadConfigResult == MessageBoxResult.OK)
@@ -583,11 +580,11 @@ internal class RoomManager : IMethodHook
                     var bGetExitRoomResult = ExitRoom.AutoExitRoom();
                     var sMessage = bGetExitRoomResult ? "成功退出房间(请重新点击加入房间)" : "退出房间失败,详细请见控制台";
                     uz.n(sMessage);
-                    WpfConfig.JoinFailRetry = 0;
+                    WpfConfig.JoinRetryCount = 0;
                 }
                 else
                 {
-                    WpfConfig.JoinFailRetry = 0;
+                    WpfConfig.JoinRetryCount = 0;
                 }
             }
         }
@@ -678,7 +675,7 @@ internal class RoomManager : IMethodHook
                 }
         });
 
-        if (WpfConfig.IsStartWebSocket)
+        if (WpfConfig.EnableWebServer)
             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                 { type = "RoomManage", status = "Leave", data = new { roomId } }));
 

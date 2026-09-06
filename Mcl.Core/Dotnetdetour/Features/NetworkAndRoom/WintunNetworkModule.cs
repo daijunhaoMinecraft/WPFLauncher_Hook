@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
@@ -32,7 +33,7 @@ public class WintunRouterService
 
     public void Start(string virtualIp)
     {
-        if (!WpfConfig.UseNetworkMode) return;
+        if (!WpfConfig.EnableVirtualNetwork) return;
         LocalVirtualIp = virtualIp;
 
         var guid = Guid.NewGuid();
@@ -88,13 +89,13 @@ public class WintunRouterService
                 var sendData = header.Concat(ipBytes).ToArray();
 
                 SendData(WebRtcVar.TargetPeerId, sendData);
-                Console.WriteLine($"[Router] 发送虚拟IP: {virtualIp}");
+                PluginLog.Debug("Network", $"[Router] 发送虚拟IP: {virtualIp}");
             }
         }
 
         // 启动网卡监听线程
         Task.Run(() => CaptureLoop());
-        Console.WriteLine($"[Router] 虚拟网卡已启动，本机虚拟IP: {virtualIp}");
+        PluginLog.Debug("Network", $"[Router] 虚拟网卡已启动，本机虚拟IP: {virtualIp}");
     }
 
     public void SetRouting(string ip, string peerId)
@@ -105,7 +106,7 @@ public class WintunRouterService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            PluginLog.Error("Network", e);
         }
     }
 
@@ -118,12 +119,12 @@ public class WintunRouterService
             if (!string.IsNullOrEmpty(entry.Key))
             {
                 _routingTable.TryRemove(entry.Key, out _);
-                if (WpfConfig.IsDebug) Console.WriteLine($"[Router] 已移除路由: {entry.Key} -> {peerId}");
+                if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Router] 已移除路由: {entry.Key} -> {peerId}");
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine($"[Router] 移除路由时出错: {e.Message}");
+            PluginLog.Error("Network", $"[Router] 移除路由时出错: {e.Message}");
         }
     }
 
@@ -154,7 +155,7 @@ public class WintunRouterService
         // {
         //     if (_routingTable.TryGetValue(dstIp, out string targetPeerId))
         //     {
-        //         if (WpfConfig.IsDebug) Console.WriteLine($"[Router] 转发: {srcIp} -> {dstIp} (Peer: {targetPeerId})");
+        //         if (WpfConfig.EnableVerboseLogging) Console.WriteLine($"[Router] 转发: {srcIp} -> {dstIp} (Peer: {targetPeerId})");
         //         SendData(targetPeerId, data);
         //     }
         // }
@@ -189,7 +190,7 @@ public class WintunRouterService
 
                     if (WebRtcVar.Mode == ForwardMode.Client)
                     {
-                        if (WpfConfig.IsDebug) Console.WriteLine($"[Router] 转发: {dstIp} -> {WebRtcVar.TargetPeerId}");
+                        if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Router] 转发: {dstIp} -> {WebRtcVar.TargetPeerId}");
                         // 客户端很简单：所有包都扔给服务器 (假设服务器 PeerId 已知)
                         SendData(WebRtcVar.TargetPeerId, packetData);
                     }
@@ -198,7 +199,7 @@ public class WintunRouterService
                         // 服务端：根据目的 IP 找 PeerId
                         if (_routingTable.TryGetValue(dstIp, out var targetPeerId))
                         {
-                            if (WpfConfig.IsDebug) Console.WriteLine($"[Router] 转发: {dstIp} -> {targetPeerId}");
+                            if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[Router] 转发: {dstIp} -> {targetPeerId}");
                             SendData(targetPeerId, packetData);
                         }
                     }
@@ -232,7 +233,7 @@ public class WintunRouterService
         {
             var asm = WebRtcVar.CmInstance.GetType().Assembly;
             var ateType = asm.GetType("WPFLauncher.Manager.LanGame.ate");
-            if (WpfConfig.IsDebug) Console.WriteLine($"[WebRtc]发送数据: {BitConverter.ToString(data)}");
+            if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[WebRtc]发送数据: {BitConverter.ToString(data)}");
             var sMethod = ateType.GetMethod("s", BindingFlags.Public | BindingFlags.Static);
             sMethod.Invoke(null, new object[] { peerPtr.Value, data, data.Length });
         }
@@ -257,13 +258,13 @@ public class WintunRouterService
         {
             // 发送给特定 peer 或 广播
             SendBoardCastData(packetToSend);
-            Console.WriteLine("[Router] 玩家列表已广播。");
+            PluginLog.Debug("Network", "[Router] 玩家列表已广播。");
         }
         else
         {
             // 发送给特定 peer 或 广播
             SendData(peerId, packetToSend);
-            Console.WriteLine($"[Router] 玩家列表已发送给 {peerId}。");
+            PluginLog.Debug("Network", $"[Router] 玩家列表已发送给 {peerId}。");
         }
     }
 
@@ -282,11 +283,11 @@ public class WintunRouterService
     {
         if (!_isRunning && _adapter == IntPtr.Zero)
         {
-            Console.WriteLine("[Router] 服务未运行，无需停止。");
+            PluginLog.Debug("Network", "[Router] 服务未运行，无需停止。");
             return;
         }
 
-        Console.WriteLine("[Router] 正在停止虚拟网卡服务...");
+        PluginLog.Debug("Network", "[Router] 正在停止虚拟网卡服务...");
 
         // 1. 标记停止状态，终止 CaptureLoop 循环
         _isRunning = false;
@@ -298,11 +299,11 @@ public class WintunRouterService
             try
             {
                 WintunEndSession(_session);
-                Console.WriteLine("[Router] Wintun 会话已关闭。");
+                PluginLog.Debug("Network", "[Router] Wintun 会话已关闭。");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Router] 关闭会话时出错: {ex.Message}");
+                PluginLog.Error("Network", $"[Router] 关闭会话时出错: {ex.Message}");
             }
 
             _session = IntPtr.Zero;
@@ -314,11 +315,11 @@ public class WintunRouterService
             try
             {
                 WintunCloseAdapter(_adapter);
-                Console.WriteLine("[Router] 虚拟网卡适配器已移除。");
+                PluginLog.Debug("Network", "[Router] 虚拟网卡适配器已移除。");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[Router] 关闭适配器时出错: {ex.Message}");
+                PluginLog.Error("Network", $"[Router] 关闭适配器时出错: {ex.Message}");
                 // 如果正常关闭失败，可能需要强制清理，但 WintunCloseAdapter 通常很可靠
             }
 
@@ -336,7 +337,7 @@ public class WintunRouterService
             // 尝试将接口设为 DHCP (如果网卡还存在于系统中)
             // 这步是防御性的，通常不需要，因为网卡已经被 CloseAdapter 删除了
             // Process.Start("netsh", $"interface ip set address name=\"MclVirtualNic\" dhcp"); 
-            Console.WriteLine("[Router] 网络配置清理完成。");
+            PluginLog.Debug("Network", "[Router] 网络配置清理完成。");
         }
         catch
         {
@@ -349,7 +350,7 @@ public class WintunRouterService
         // 7. 通知监控窗口或其他监听者 (如果需要)
         // 例如: OnServiceStopped?.Invoke();
 
-        Console.WriteLine("[Router] 组网服务已完全停止。");
+        PluginLog.Debug("Network", "[Router] 组网服务已完全停止。");
     }
 
     #region Wintun P/Invoke (省略部分，参考前文)
@@ -405,7 +406,7 @@ public class WintunRouterService
 //             return;
 //         }
 //
-//         if (WpfConfig.UseNetworkMode)
+//         if (WpfConfig.EnableVirtualNetwork)
 //         {
 //             // 收到数据，交给路由器模块处理 (包含路由转发和注入功能)
 //             byte[] rawData = new byte[dataSize];

@@ -40,7 +40,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             Ticket = null;
 
             InitializeComponent();
-            this.TopMost = WpfConfig.IsWindowTopMost;
+            this.TopMost = WpfConfig.KeepWindowsOnTop;
         }
 
         private void InitializeComponent()

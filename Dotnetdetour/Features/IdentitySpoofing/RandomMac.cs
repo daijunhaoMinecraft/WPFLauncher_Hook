@@ -9,8 +9,8 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Manager.Log.Util.asi", "b", null)]
 		public static string GetMacAddress()
 		{
-			WpfConfig.DefaultLogger.Info($"当前Mac地址:{WpfConfig.Mac_Addr}, 成功替换伪造的mac地址:{WpfConfig.Random_Mac_Addr}");
-			return WpfConfig.Random_Mac_Addr;
+			WpfConfig.DefaultLogger.Info($"当前Mac地址:{WpfConfig.MacAddress}, 成功替换伪造的mac地址:{WpfConfig.RandomMacAddress}");
+			return WpfConfig.RandomMacAddress;
 		}
 		
 	}

@@ -15,7 +15,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
 		[HookMethod("WPFLauncher.Unisdk.nz", "onLog", "Mpay_Log_Show")]
 		protected void onLog(string log)
 		{
-			if (WpfConfig.IsDebug)
+			if (WpfConfig.EnableVerboseLogging)
 			{
 				WpfConfig.DefaultLogger.Info(log);
 			}

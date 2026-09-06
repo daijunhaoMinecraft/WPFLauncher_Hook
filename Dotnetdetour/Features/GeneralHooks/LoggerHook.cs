@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using NLog;
 using NLog.Config;
@@ -93,7 +93,7 @@ public class LoggerHook : IMethodHook
         config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, consoleTarget));
 
         // === 2. 检查开关，决定是否输出到本地文件夹 ===
-        if (WpfConfig.IsLogOutputFolder) // 假设 WpfConfig 是你的配置类
+        if (WpfConfig.WriteLauncherLogsToFile) // 假设 WpfConfig 是你的配置类
         {
             FileTarget fileTarget = new FileTarget("logFile");
             

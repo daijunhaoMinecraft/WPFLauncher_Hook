@@ -33,7 +33,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.TopMost = WpfConfig.IsWindowTopMost;
+            this.TopMost = WpfConfig.KeepWindowsOnTop;
 
             // 置顶复选框
             var topMostCheck = new CheckBox
@@ -41,7 +41,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 Text = "置顶",
                 Location = new Point(this.ClientSize.Width - 65, 8),
                 Size = new Size(55, 20),
-                Checked = WpfConfig.IsWindowTopMost,
+                Checked = WpfConfig.KeepWindowsOnTop,
                 Anchor = AnchorStyles.Top | AnchorStyles.Right
             };
             topMostCheck.CheckedChanged += (s, e) => this.TopMost = topMostCheck.Checked;
@@ -130,7 +130,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 WpfConfig.DefaultLogger.Info("[CustomIP] Config Saved!");
                 this.DialogResult = DialogResult.OK;
                 this.Close();
-                WpfConfig.IsSelectedIP = true;
+                WpfConfig.HasSelectedServerAddress = true;
             }
             catch (Exception ex)
             {
@@ -142,7 +142,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
-            WpfConfig.IsSelectedIP = true;
+            WpfConfig.HasSelectedServerAddress = true;
         }
     }
 }

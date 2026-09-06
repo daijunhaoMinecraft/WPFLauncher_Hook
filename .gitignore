@@ -1,4 +1,5 @@
 ﻿/Mcl.Core/bin/x86/Debug/net48/WPFLauncher.dump.exe
+/Mcl.Core/bin/x86/Debug/net48/WPFLauncher.dump-cleaned.exe
 /Mcl.Core/bin/x86/Debug/net48/Mcl.Core.pdb
 /Mcl.Core/bin/x86/Debug/net48/Newtonsoft.Json.dll
 /Mcl.Core/bin/x86/Debug/net48/NLog.dll
@@ -10,3 +11,8 @@
 *.info
 *.xml
 *.7z
+
+# Local validation outputs; existing tracked build files are deliberately not deleted.
+/.artifacts/
+/tests/**/bin/
+/tests/**/obj/

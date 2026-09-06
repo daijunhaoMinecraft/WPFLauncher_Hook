@@ -39,7 +39,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             Height = 500;
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             Background = new SolidColorBrush(Colors.WhiteSmoke);
-            Topmost = WpfConfig.IsWindowTopMost;
+            Topmost = WpfConfig.KeepWindowsOnTop;
 
             var mainPanel = new StackPanel { Margin = new Thickness(20) };
 
@@ -69,7 +69,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 Content = "置顶",
                 VerticalAlignment = VerticalAlignment.Center,
-                IsChecked = WpfConfig.IsWindowTopMost
+                IsChecked = WpfConfig.KeepWindowsOnTop
             };
             topMostCheck.Checked += (s, e) => Topmost = true;
             topMostCheck.Unchecked += (s, e) => Topmost = false;

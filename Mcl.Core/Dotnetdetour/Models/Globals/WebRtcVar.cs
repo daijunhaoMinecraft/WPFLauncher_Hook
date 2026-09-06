@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -130,7 +131,7 @@ public class WebRtcVar
                 {
                     if ((now - session.LastActive).TotalSeconds > 60)
                     {
-                        Console.WriteLine($"[WebRtc] Session {session.PeerId}_{session.ConnId} 超时关闭");
+                        PluginLog.Debug("Network", $"[WebRtc] Session {session.PeerId}_{session.ConnId} 超时关闭");
                         session.Close();
                     }
                 }
@@ -210,12 +211,12 @@ public class WebRtcVar
             if (clearMethod != null)
             {
                 clearMethod.Invoke(activeRoomsObj, null);
-                Console.WriteLine("[Success] 成功清空 ActiveRooms!");
+                PluginLog.Debug("Network", "[Success] 成功清空 ActiveRooms!");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[Exception] {ex.GetType().Name}: {ex.Message}");
+            PluginLog.Error("Network", $"[Exception] {ex.GetType().Name}: {ex.Message}");
         }
     }
 
@@ -245,7 +246,7 @@ public class WebRtcVar
             lock (_lock)
             {
                 _activeIds.Remove(id);
-                if (WpfConfig.IsDebug) Console.WriteLine($"[ConnManager] 已释放 ID: {id}, 当前活跃数: {_activeIds.Count}");
+                if (WpfConfig.EnableVerboseLogging) PluginLog.Debug("Network", $"[ConnManager] 已释放 ID: {id}, 当前活跃数: {_activeIds.Count}");
             }
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -14,6 +14,7 @@ using WPFLauncher.Manager;
 using WPFLauncher.Manager.Configuration;
 using WPFLauncher.Util;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 
 public static class CookieValidator
@@ -119,7 +120,7 @@ public static class AuthIntegrationService
                 string sauthJson = ExtractSauth(selectedAccount);
                 if (string.IsNullOrEmpty(sauthJson))
                 {
-                    WpfConfig.DefaultLogger.Error("账号凭证提取失败，请重试");
+                    PluginLog.Error("Auth", "账号凭证提取失败，请重试");
                     continue;
                 }
                 return sauthJson;
@@ -142,7 +143,7 @@ public static class AuthIntegrationService
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"凭证提取异常: {ex}");
+            PluginLog.Error("Auth", $"凭证提取异常: {ex}");
             return null;
         }
     }
@@ -179,16 +180,16 @@ public static class AuthIntegrationService
             if (fieldD != null)
             {
                 fieldD.SetValue(arfInstance, sauthContent);
-                WpfConfig.DefaultLogger.Info("MPay 状态与 Cookie 注入成功");
+                PluginLog.Debug("Auth", "MPay 状态与 Cookie 注入成功");
             }
 
             WpfConfig.CookieLoginWithoutMpay = true;
-            WpfConfig.IsLogin = true;
+            WpfConfig.IsLoggedIn = true;
             azf<apm>.Instance.h();
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"Cookie注入失败: {ex}");
+            PluginLog.Error("Auth", $"Cookie注入失败: {ex}");
             throw;
         }
     }

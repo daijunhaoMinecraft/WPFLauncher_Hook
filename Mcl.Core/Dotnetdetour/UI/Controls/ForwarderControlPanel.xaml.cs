@@ -1,4 +1,5 @@
-﻿using System;
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -17,8 +18,8 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
             InitializeComponent();
 
             // 初始化置顶
-            TopMostCheck.IsChecked = WpfConfig.IsWindowTopMost;
-            Topmost = WpfConfig.IsWindowTopMost;
+            TopMostCheck.IsChecked = WpfConfig.KeepWindowsOnTop;
+            Topmost = WpfConfig.KeepWindowsOnTop;
 
             LoadSettings();
         }
@@ -87,7 +88,7 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
             // 原关闭时的清理逻辑
             WebRtcVar.LanGameManager.aya.@as(516, WebRtcVar.LanGameManager.HostID);
             WebRtcVar.LanGameManager.aya.d(atl.f);
-            Console.WriteLine("停止转发");
+            PluginLog.Debug("UI", "停止转发");
         }
 
         // 辅助方法，检查窗口是否已释放（避免在 Disposed 之后操作）

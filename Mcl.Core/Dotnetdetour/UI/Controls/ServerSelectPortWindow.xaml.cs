@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Globals;
 
@@ -9,8 +9,8 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
         public ServerSelectPortWindow()
         {
             InitializeComponent();
-            TopMostCheck.IsChecked = WpfConfig.IsWindowTopMost;
-            Topmost = WpfConfig.IsWindowTopMost;
+            TopMostCheck.IsChecked = WpfConfig.KeepWindowsOnTop;
+            Topmost = WpfConfig.KeepWindowsOnTop;
         }
 
         private void OnTopMostChanged(object sender, RoutedEventArgs e) => Topmost = TopMostCheck.IsChecked == true;

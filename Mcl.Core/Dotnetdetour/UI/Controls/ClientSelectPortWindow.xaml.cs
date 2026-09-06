@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -15,8 +15,8 @@ namespace Mcl.Core.Dotnetdetour.UI.Controls
         public ClientSelectPortWindow()
         {
             InitializeComponent();
-            TopMostCheck.IsChecked = WpfConfig.IsWindowTopMost;
-            Topmost = WpfConfig.IsWindowTopMost;
+            TopMostCheck.IsChecked = WpfConfig.KeepWindowsOnTop;
+            Topmost = WpfConfig.KeepWindowsOnTop;
             if (WebRtcVar.Port > 0 && WebRtcVar.Port <= 65535) PortTextBox.Text = WebRtcVar.Port.ToString();
         }
 

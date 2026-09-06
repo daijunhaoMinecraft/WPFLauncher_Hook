@@ -17,137 +17,17 @@
     <PropertyGroup>
         <EnableDefaultItems>False</EnableDefaultItems>
     </PropertyGroup>
-    <PropertyGroup/>
+    <PropertyGroup>
+        <LauncherDirectory Condition="'$(LauncherDirectory)' == ''">D:\Games\MCLauncher</LauncherDirectory>
+        <LauncherAssemblyPath Condition="'$(LauncherAssemblyPath)' == ''">H:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump-cleaned.exe</LauncherAssemblyPath>
+    </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Prefer32bit>true</Prefer32bit>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\HookMethodAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\MonitorAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\NonPublicParameterTypeAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\OriginalAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\OriginalMethodAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\RelocatedMethodAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\RememberTypeAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Attributes\ShadowMethodAttribute.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Base\AssemblyUtil.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Base\DestAndOri.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Base\DetourFactory.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Base\LDasm.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Base\MethodHook.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Base\NativeAPI.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Base\Protection.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\DetourWays\NativeDetourFor32Bit.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\DetourWays\NativeDetourFor64Bit.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IDetour.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IMethodHook.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IMethodHookWithSet.cs"/>
-        <Compile Include="Dotnetdetour\CoreEngine\Interfaces\IMethodMonitor.cs"/>
-        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\BypassFever.cs"/>
-        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\BypassForbidden.cs"/>
-        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\BypassUpdate.cs"/>
-        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\DisableCppLow.cs" />
-        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\DisableCppUpdate.cs"/>
-        <Compile Include="Dotnetdetour\Features\AntiCheatBypass\VapeDetect.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\AccountInfo.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\AccountManager.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\LoginFix.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\MpayLoginAccount.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\PasswordFix.cs" />
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\RebuildX19Crypto.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Core\SauthJsonRandomGenerator.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Providers\4399Login.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Providers\AuthIntegrationService.cs" />
-        <Compile Include="Dotnetdetour\Features\Authentication\Providers\LoginWithoutMpay.cs"/>
-        <Compile Include="Dotnetdetour\Features\Authentication\Providers\MpayLogin.cs" />
-        <Compile Include="Dotnetdetour\Features\GameTweaks\AddCustomNetGameServer.cs" />
-        <Compile Include="Dotnetdetour\Features\GameTweaks\BedrockPathSelectWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\Features\GameTweaks\GameProcessHooks.cs" />
-        <Compile Include="Dotnetdetour\Features\GameTweaks\MinecraftPath.cs"/>
-        <Compile Include="Dotnetdetour\Features\GameTweaks\Mods.cs"/>
-        <Compile Include="Dotnetdetour\Features\GameTweaks\No_SaveWorldEncrypt.cs"/>
-        <Compile Include="Dotnetdetour\Features\GameTweaks\OptimizeDeleteFile.cs"/>
-        <Compile Include="Dotnetdetour\Features\GameTweaks\RecoveryDeleteVersion.cs" />
-        <Compile Include="Dotnetdetour\Features\GameTweaks\SolveJavaMemoryLimit.cs"/>
-        <Compile Include="Dotnetdetour\Features\GameTweaks\UnlockAllMode.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\DirectoryEvent.cs" />
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\DownloadEvent.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\EnableBrowseRightClick.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\ExitPop.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\FixErr.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\FixFriendShow.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\InitHook.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\LoggerHook.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\Mpay_Log.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\MuteBanSystem.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\OptimizationShow.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\RoomInfoWindow.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\SensitiveWordDetection.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\TargetConst.cs"/>
-        <Compile Include="Dotnetdetour\Features\GeneralHooks\WindowsNotify.cs" />
-        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\NoRealname.cs"/>
-        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\OptizimeRandomNickName.cs"/>
-        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\RandomMac.cs"/>
-        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\RandomName.cs"/>
-        <Compile Include="Dotnetdetour\Features\IdentitySpoofing\SpoofDeviceInfo.cs" />
-        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\ChatConnectionPacket.cs"/>
-        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\LobbyGameList.cs"/>
-        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\RoomManager.cs"/>
-        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WebRTCEx.cs"/>
-        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\ProcessMessage.cs" />
-        <Compile Include="Dotnetdetour\Features\NetworkAndRoom\WintunNetworkModule.cs"/>
-        <Compile Include="Dotnetdetour\Features\Optizime\CustomRequestHandler.cs" />
-        <Compile Include="Dotnetdetour\Features\Optizime\LobbyGameSavesManager.cs" />
-        <Compile Include="Dotnetdetour\Features\Optizime\SkinShowerFix.cs" />
-        <Compile Include="Dotnetdetour\Features\SettingsHook\MainSettingsHook.cs" />
-        <Compile Include="Dotnetdetour\Initialize.cs" />
-        <Compile Include="Dotnetdetour\Models\Config\ConfigManager.cs" />
-        <Compile Include="Dotnetdetour\Models\Config\WpfConfig.cs" />
-        <Compile Include="Dotnetdetour\Models\Entities\FriendStatus.cs" />
-        <Compile Include="Dotnetdetour\Models\Entities\LanGamePlayerInfo.cs" />
-        <Compile Include="Dotnetdetour\Models\Entities\TransferStruct.cs" />
-        <Compile Include="Dotnetdetour\Models\Entity\NetGame.cs" />
-        <Compile Include="Dotnetdetour\Models\Entity\SaveEntityModels.cs" />
-        <Compile Include="Dotnetdetour\Models\Globals\WebRtcVar.cs" />
-        <Compile Include="Dotnetdetour\Models\Updater\MarkdownWpfParser.cs" />
-        <Compile Include="Dotnetdetour\Models\Updater\UpdateManager.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\NetworkMonitorWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ProcessLogWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\SelectIpWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ServerPanelWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Controls\ServerSelectPortWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Core\ThreadHelperSTATask.cs" />
-        <Compile Include="Dotnetdetour\UI\Dialogs\ChangeIPWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Dialogs\InputDialogWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Dialogs\LoadingDialogWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\AccountEditorWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\AccountSelectionWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\CaptchaWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\ManualLoginWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Forms\PhoneVerifyWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Injector\SettingsInjector.cs" />
-        <Compile Include="Dotnetdetour\UI\WebAssets\HtmlResource.cs" />
-        <Compile Include="Dotnetdetour\UI\Windows\DownloadProgressWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Windows\SaveBackupWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Windows\SaveManagerWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Windows\UpdateConfigWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\UI\Windows\UpdatePromptWindow.xaml.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Common\ByteArrayExtensions.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Common\MemoryUtils.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Common\SauthParser.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Common\StringExtensions.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Common\TypeExtensions.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Crypto\AESHelper.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\ExitRoom.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\HttpHelper.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\IpConfigManager.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\LocalProxyListener.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\PacketDeserializer.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\UnifiedSession.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\WebHelper.cs" />
-        <Compile Include="Dotnetdetour\Utilities\Network\X19Http.cs" />
+        <Compile Include="Dotnetdetour\**\*.cs" />
+        <Compile Include="Tools\**\*.cs" />
+
         <Compile Include="Extensions\CollectionExtensions.cs" />
         <Compile Include="Extensions\MiscExtensions.cs" />
         <Compile Include="Extensions\ResponseStatusExtensions.cs" />
@@ -183,11 +63,7 @@
         <Compile Include="Network\ResponseStatus.cs" />
         <Compile Include="Network\TimeOutState.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Tools\Skip32Cipher.cs" />
-        <Compile Include="Tools\UidHelper.cs" />
-        <Compile Include="Tools\x19Crypt.cs" />
-        <Compile Include="Tools\X19SignHelper.cs" />
-        <Compile Include="Tools\XxteaEncryption.cs" />
+
         <Compile Include="Utils\AppMutexHelper.cs" />
         <Compile Include="Utils\RegistryHelper.cs" />
         <Compile Include="Utils\RegKey.cs" />
@@ -195,21 +71,21 @@
     </ItemGroup>
     <ItemGroup>
         <Reference Include="3DTools">
-          <HintPath>D:\Games\MCLauncher\3DTools.dll</HintPath>
+          <HintPath>$(LauncherDirectory)\3DTools.dll</HintPath>
         </Reference>
         <Reference Include="CefSharp">
-          <HintPath>D:\Games\MCLauncher\CefSharp.dll</HintPath>
+          <HintPath>$(LauncherDirectory)\CefSharp.dll</HintPath>
         </Reference>
         <Reference Include="CefSharp.Wpf">
-          <HintPath>D:\Games\MCLauncher\CefSharp.Wpf.dll</HintPath>
+          <HintPath>$(LauncherDirectory)\CefSharp.Wpf.dll</HintPath>
         </Reference>
         <Reference Include="Microsoft.CSharp" />
         <Reference Include="Microsoft.VisualBasic" />
         <Reference Include="Newtonsoft.Json">
-          <HintPath>D:\Games\MCLauncher\Newtonsoft.Json.dll</HintPath>
+          <HintPath>$(LauncherDirectory)\Newtonsoft.Json.dll</HintPath>
         </Reference>
         <Reference Include="NLog">
-          <HintPath>D:\Games\MCLauncher\NLog.dll</HintPath>
+          <HintPath>$(LauncherDirectory)\NLog.dll</HintPath>
         </Reference>
         <Reference Include="System.Core" />
         <Reference Include="System.Web" />
@@ -218,14 +94,14 @@
         <Reference Include="System.Windows.Forms" />
         <Reference Include="System.Xaml" />
         <Reference Include="websocket-sharp">
-          <HintPath>D:\Games\MCLauncher\websocket-sharp.dll</HintPath>
+          <HintPath>$(LauncherDirectory)\websocket-sharp.dll</HintPath>
         </Reference>
         <Reference Include="WindowsBase" />
         <Reference Include="WPFControls">
-          <HintPath>D:\Games\MCLauncher\WPFControls.dll</HintPath>
+          <HintPath>$(LauncherDirectory)\WPFControls.dll</HintPath>
         </Reference>
         <Reference Include="WPFLauncher">
-            <HintPath>..\..\..\..\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>
+          <HintPath>H:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>
@@ -233,33 +109,21 @@
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
     </ItemGroup>
     <ItemGroup>
+        <Folder Include="Dotnetdetour\UI\Injector\" />
         <Folder Include="Dotnetdetour\UI\Tray\" />
     </ItemGroup>
     <ItemGroup>
-        <Content Include="Dotnetdetour\UI\WebAssets\RoomManage.html"/>
+        <Content Include="Dotnetdetour\AGENTS.md" />
+        <Content Include="Dotnetdetour\UI\AGENTS.md" />
+        <Content Include="Dotnetdetour\UI\WebAssets\Fluent.css" />
+        <Content Include="Tools\AGENTS.md" />
+        <EmbeddedResource Include="Dotnetdetour\UI\WebAssets\*.html;Dotnetdetour\UI\WebAssets\*.css">
+            <LogicalName>Mcl.Core.Web.%(Filename)%(Extension)</LogicalName>
+        </EmbeddedResource>
+        <Content Include="Dotnetdetour\UI\WebAssets\Settings.html" />
         <EmbeddedResource Include="Resources\31.c5774a7b.chunk.js" />
     </ItemGroup>
     <ItemGroup>
-      <Page Include="Dotnetdetour\Features\GameTweaks\BedrockPathSelectWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Controls\ClientSelectPortWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Controls\ForwarderControlPanel.xaml" />
-      <Page Include="Dotnetdetour\UI\Controls\NetworkMonitorWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Controls\ProcessLogWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Controls\SelectIpWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Controls\ServerPanelWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Controls\ServerSelectPortWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Dialogs\ChangeIPWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Dialogs\InputDialogWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Dialogs\LoadingDialogWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Forms\AccountEditorWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Forms\AccountSelectionWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Forms\CaptchaWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Forms\ManualLoginWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Forms\PhoneVerifyWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Windows\DownloadProgressWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Windows\SaveBackupWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Windows\SaveManagerWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Windows\UpdateConfigWindow.xaml" />
-      <Page Include="Dotnetdetour\UI\Windows\UpdatePromptWindow.xaml" />
+        <Page Include="Dotnetdetour\**\*.xaml" />
     </ItemGroup>
 </Project>

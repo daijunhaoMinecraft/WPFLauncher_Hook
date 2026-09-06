@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
@@ -9,6 +9,7 @@ using Microsoft.VisualBasic.Logging;
 using Newtonsoft.Json.Linq;
 using NLog;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 
 public class RebuildX19Crypto : IMethodHook
@@ -23,8 +24,8 @@ public class RebuildX19Crypto : IMethodHook
         var result = X19Crypt.HttpEncrypt(Encoding.UTF8.GetBytes(body));
         var x19Key = X19Crypt.PickKey(result[result.Length - 1]);
         key = Encoding.UTF8.GetString(x19Key);
-        if (WpfConfig.IsDebug)
-            WpfConfig.DefaultLogger.Info(
+        if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails)
+            PluginLog.Debug("Auth", 
                 $"HttpEncrypt: Path: {path} Body: {body}, EncryptBytesCount: {result.Length}, EncryptKey: {key}");
         return result;
     }
@@ -35,8 +36,8 @@ public class RebuildX19Crypto : IMethodHook
         var result = X19Crypt.DecryptX19Body(encryptBody);
         var x19Key = X19Crypt.PickKey(encryptBody[encryptBody.Length - 1]);
         key = Encoding.UTF8.GetString(x19Key);
-        if (WpfConfig.IsDebug)
-            WpfConfig.DefaultLogger.Info(
+        if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails)
+            PluginLog.Debug("Auth", 
                 $"HttpDecrypt: EncryptBodyCount: {encryptBody.Length}, DecryptBody: {result}, EncryptKey: {key}");
         return result;
     }
@@ -53,8 +54,8 @@ public class RebuildX19Crypto : IMethodHook
     public static string ParseResponseLoginHook(byte[] encryptBody, out string key)
     {
         var result = ParseResponseLogin(encryptBody, out key);
-        if (WpfConfig.IsDebug)
-            WpfConfig.DefaultLogger.Info(
+        if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails)
+            PluginLog.Debug("Auth", 
                 $"ParseResponseLogin: EncryptBodyCount: {encryptBody.Length}, DecryptBody: {result}, EncryptKey: {key}");
         return result;
     }
@@ -63,8 +64,8 @@ public class RebuildX19Crypto : IMethodHook
     public static string ComputeDynamicToken(string path, string body)
     {
         var result = X19Crypt.ComputeDynamicToken(path, body);
-        if (WpfConfig.IsDebug)
-            WpfConfig.DefaultLogger.Info(
+        if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails)
+            PluginLog.Debug("Auth", 
                 $"DynamicToken: Body: {body}, Path: {path}, UserToken: {result}, UserId: {X19Crypt.UserId}");
     
         return result;
@@ -74,7 +75,7 @@ public class RebuildX19Crypto : IMethodHook
     public static string GetH5Token()
     {
         var result = X19Crypt.GetH5Token();
-        if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"GetH5Token: Token: {X19Crypt.Token}, H5Token: {result}");
+        if (WpfConfig.EnableVerboseLogging && WpfConfig.LogSensitiveAccountDetails) PluginLog.Debug("Auth", $"GetH5Token: Token: {X19Crypt.Token}, H5Token: {result}");
 
         return result;
     }

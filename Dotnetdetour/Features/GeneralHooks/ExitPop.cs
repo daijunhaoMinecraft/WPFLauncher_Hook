@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Reflection;
 using System.Windows;
 using WPFLauncher.Manager;
@@ -16,7 +16,7 @@ public class ExitPop : IMethodHook
     [HookMethod("WPFLauncher.ViewModel.LobbyGame.jp", "o","ExitRoomPrivate")]
     private void ExitRoom(object args)
     {
-        if (!WpfConfig.NoTwoExitMessage)
+        if (!WpfConfig.SkipExitConfirmation)
         { 
             ExitRoomPrivate(args);
             return;

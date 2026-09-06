@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -35,7 +35,7 @@ public class WebRtcEx : IMethodHook
         }
         try
         {
-            if (WpfConfig.UseNetworkMode)
+            if (WpfConfig.EnableVirtualNetwork)
             {
                 // 辅助函数：获取用户 IP
                 string GetUserVirtualIp()

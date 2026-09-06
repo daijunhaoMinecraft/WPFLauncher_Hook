@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
@@ -7,6 +7,7 @@ using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Newtonsoft.Json;
 using WPFLauncher.Manager.GrayUpdate;
 
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
 internal class UnlockAllMode : IMethodHook
@@ -25,30 +26,30 @@ internal class UnlockAllMode : IMethodHook
         var updateTypeName = Enum.GetName(typeof(GrayUpdateType), feature);
         if (feature == GrayUpdateType.CppGameX64)
         {
-            if (!WpfConfig.IsEnableX64mc) return false;
+            if (!WpfConfig.Use64BitBedrock) return false;
         }
         else if (feature == GrayUpdateType.ChangeMinecraftPath)
         {
-            WpfConfig.DefaultLogger.Info("发现网易修改游戏路径功能已被制止");
+            PluginLog.Info("Game", "发现网易修改游戏路径功能已被制止");
             return false;
         }
 
-        if (WpfConfig.IsStartWebSocket)
+        if (WpfConfig.EnableWebServer)
             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                 { type = "GrayUpdateEnable", data = updateTypeName }));
         if (updateTypeName == "A50Setup")
         {
-            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"该功能为发烧平台,已返回为false以绕过发烧平台: {updateTypeName}");
+            if (WpfConfig.EnableVerboseLogging) PluginLog.Info("Game", $"该功能为发烧平台,已返回为false以绕过发烧平台: {updateTypeName}");
             return false;
         }
 
         if (updateTypeName == "ChangeMinecraftPath")
         {
-            if (WpfConfig.IsDebug) WpfConfig.DefaultLogger.Info($"该功能为更改.minecraft路径功能已被制止, 功能: {updateTypeName}");
+            if (WpfConfig.EnableVerboseLogging) PluginLog.Info("Game", $"该功能为更改.minecraft路径功能已被制止, 功能: {updateTypeName}");
             return false;
         }
 
-        WpfConfig.DefaultLogger.Info($"成功调用需要概率的功能: {updateTypeName}");
+        PluginLog.Info("Game", $"成功调用需要概率的功能: {updateTypeName}");
         return true;
     }
 }

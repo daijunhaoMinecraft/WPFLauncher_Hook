@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using Mcl.Core.Dotnetdetour.Tools;
 using Newtonsoft.Json;
@@ -22,7 +22,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             string updateTypeName = Enum.GetName(typeof(GrayUpdateType), feature);
             if (feature == GrayUpdateType.CppGameX64)
             {
-                if (!WpfConfig.IsEnableX64mc)
+                if (!WpfConfig.Use64BitBedrock)
                 {
                     return false;
                 }
@@ -32,13 +32,13 @@ namespace Mcl.Core.Dotnetdetour.HookList
                 WpfConfig.DefaultLogger.Info($"发现网易修改游戏路径功能已被制止");
                 return false;
             }
-            if (WpfConfig.IsStartWebSocket)
+            if (WpfConfig.EnableWebServer)
             {
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "GrayUpdateEnable", data = updateTypeName}));
             }
                         if (updateTypeName == "A50Setup")
             {
-                if (WpfConfig.IsDebug)
+                if (WpfConfig.EnableVerboseLogging)
                 {
                     WpfConfig.DefaultLogger.Info($"该功能为发烧平台,已返回为false以绕过发烧平台: {updateTypeName}");
                 }
@@ -46,7 +46,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             }
             if (updateTypeName == "ChangeMinecraftPath")
             {
-                if (WpfConfig.IsDebug)
+                if (WpfConfig.EnableVerboseLogging)
                 {
                     WpfConfig.DefaultLogger.Info($"该功能为更改.minecraft路径功能已被制止, 功能: {updateTypeName}");
                 }

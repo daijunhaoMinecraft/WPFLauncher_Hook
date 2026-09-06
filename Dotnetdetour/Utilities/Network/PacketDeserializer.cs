@@ -1,4 +1,4 @@
-﻿// using System;
+// using System;
 // using System.Collections.Generic;
 // using System.Linq;
 // using System.Reflection;
@@ -176,19 +176,14 @@ using WPFLauncher.Network.Message;
 
 namespace Mcl.Core.Dotnetdetour.Tools;
 
-// Token: 0x02000F8A RID: 3978
 public class PacketDeserializer
 {
-    // Token: 0x04003514 RID: 13588
     private readonly byte[] content;
 
-    // Token: 0x04003515 RID: 13589
     private int Offset;
 
-    // Token: 0x04003516 RID: 13590
     private ushort UnkownNumber;
 
-    // Token: 0x06006463 RID: 25699 RVA: 0x0002CABD File Offset: 0x0002ACBD
     public PacketDeserializer(byte[] data)
     {
         content = data;
@@ -196,7 +191,6 @@ public class PacketDeserializer
         UnkownNumber = 0;
     }
 
-    // Token: 0x06006464 RID: 25700 RVA: 0x0014856C File Offset: 0x0014676C
     public void Deserialize<T>(ref T target)
     {
         var typeFromHandle = typeof(T);
@@ -212,13 +206,11 @@ public class PacketDeserializer
         }
     }
 
-    // Token: 0x06006465 RID: 25701 RVA: 0x001485EC File Offset: 0x001467EC
     public static T ConvertType<T>(object type)
     {
         return (T)Convert.ChangeType(type, typeof(T));
     }
 
-    // Token: 0x06006466 RID: 25702 RVA: 0x00148610 File Offset: 0x00146810
     private void ReadValue(ref object value, Type type)
     {
         switch (Type.GetTypeCode(type))

@@ -14,7 +14,6 @@ namespace Mcl.Core.Dotnetdetour.HookList
 
 		[CompilerGenerated]
 		[HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "d", "GetLobbyGameList")]
-		// Token: 0x060045FE RID: 17918 RVA: 0x000ED080 File Offset: 0x000EB280
 		public static void GetLobbyGameListHook(string resId, int jni, int jnj, Action<EntityListResponse<LobbyGameRoomEntity>> response)
 		{
 						Console.WriteLine($"[Online]成功将房间最大显示个数修改成{WpfConfig.MaxRoomCount.ToString()}!");

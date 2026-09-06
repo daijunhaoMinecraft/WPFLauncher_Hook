@@ -1,3 +1,4 @@
+using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -25,8 +26,8 @@ internal class DisableCppUpdate : IMethodHook
     {
         try
         {
-            if (Directory.Exists(WpfConfig.BedrockPath))
-                foreach (var dir in Directory.GetDirectories(WpfConfig.BedrockPath))
+            if (Directory.Exists(WpfConfig.BedrockDirectory))
+                foreach (var dir in Directory.GetDirectories(WpfConfig.BedrockDirectory))
                     if (File.Exists(Path.Combine(dir, "Minecraft.Windows.exe")))
                         return true;
 
@@ -34,7 +35,7 @@ internal class DisableCppUpdate : IMethodHook
         }
         catch (Exception ex)
         {
-            WpfConfig.DefaultLogger.Error($"检查本地游戏文件时发生异常: {ex.Message}");
+            PluginLog.Error("Core", $"检查本地游戏文件时发生异常: {ex.Message}");
             return false;
         }
     }
@@ -43,24 +44,24 @@ internal class DisableCppUpdate : IMethodHook
     [HookMethod("WPFLauncher.Model.Game.ale", "fn", "No_Update")]
     public bool CheckUpdate(bool skipValidation = true)
     {
-        if (WpfConfig.IsStartWebSocket)
+        if (WpfConfig.EnableWebServer)
             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
             {
-                type = "IsBypassGameUpdate_Bedrock", BypassGameUpdate_Bedrock = WpfConfig.IsBypassGameUpdate_Bedrock,
+                type = "IsBypassGameUpdate_Bedrock", BypassGameUpdate_Bedrock = WpfConfig.SkipBedrockUpdates,
                 skipValidation
             }));
 
-        if (WpfConfig.IsDebug)
-            Console.WriteLine(
-                $"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{WpfConfig.IsBypassGameUpdate_Bedrock},skipValidation:{skipValidation}");
+        if (WpfConfig.EnableVerboseLogging)
+            PluginLog.Debug("Core", 
+                $"[INFO_Bedrock]IsBypassGameUpdate_Bedrock:{WpfConfig.SkipBedrockUpdates},skipValidation:{skipValidation}");
 
-        if (WpfConfig.IsBypassGameUpdate_Bedrock)
+        if (WpfConfig.SkipBedrockUpdates)
         {
             // --- 新增逻辑开始 ---
             if (!IsLocalBedrockGameExists())
             {
-                WpfConfig.DefaultLogger.Warn("已启用跳过更新，但未在本地硬盘检测到有效的基岩版游戏文件 (Minecraft.Windows.exe)。");
-                WpfConfig.DefaultLogger.Warn("将回退到原始更新检查逻辑。");
+                PluginLog.Warn("Core", "已启用跳过更新，但未在本地硬盘检测到有效的基岩版游戏文件 (Minecraft.Windows.exe)。");
+                PluginLog.Warn("Core", "将回退到原始更新检查逻辑。");
 
                 // 返回原始方法的结果 (通常为 false，意味着需要更新或验证失败)
                 return No_Update(skipValidation);

@@ -276,7 +276,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             {
                 Text = "Keep on Top",
                 Size = new Size(100, 22),
-                Checked = WpfConfig.IsWindowTopMost,
+                Checked = WpfConfig.KeepWindowsOnTop,
                 Location = new Point(568, 428),
                 ForeColor = TextSecondary,
                 Font = CountFont
@@ -284,7 +284,7 @@ namespace Mcl.Core.Dotnetdetour.HookList
             topMostCheck.CheckedChanged += (s, e) => this.TopMost = topMostCheck.Checked;
             this.Controls.Add(topMostCheck);
 
-            this.TopMost = WpfConfig.IsWindowTopMost;
+            this.TopMost = WpfConfig.KeepWindowsOnTop;
         }
 
         // ── Button Factory ──
