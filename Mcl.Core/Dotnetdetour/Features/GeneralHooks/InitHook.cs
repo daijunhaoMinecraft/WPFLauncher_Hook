@@ -276,6 +276,7 @@ public class InitHook : IMethodHook
         PluginLog.Info("Core", "Console initialized.");
         PluginLog.Info("Core", "Plugin hook initialized: version={0}", WpfConfig.Version);
         PluginLog.Info("Core", "工具作者: daijunhao(QQ: 3352133106), 本项目仅供学习交流使用, 严禁用于非法用途/商业/倒卖等多类用途使用", WpfConfig.Version);
+        PluginLog.Info("Core", "项目地址: https://github.com/daijunhaoMinecraft/WPFLauncher_Hook");
         try
         {
             using (var httpClient = new HttpClient())
