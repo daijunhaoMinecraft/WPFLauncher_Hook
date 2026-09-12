@@ -11,16 +11,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/WebAssets/NetworkCapture.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetworkCaptureStore.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/ForceJoinLowVersionRoom.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/SkipGameLaunchTimeout.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/SkipJavaCheck.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/AntiCheatBypass/DisableCppLow.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/LoginWithoutMpay.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/FixErr.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Optimization/CustomRequestHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Optimization/CustomRequestHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/WebAssets/HtmlResource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/WebAssets/HtmlResource.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Network/HttpHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Network/HttpHelper.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Diagnostics/LogSanitizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Diagnostics/LogSanitizer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
@@ -53,13 +59,18 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/126f99ae7b5549caa82326f72c4028bd526820/26/506478e5/WebHandlerParser.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/70/3dca8f5d/ux.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/8f/749269b6/apm.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/a9/d9e57590/aks.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.artifacts/log-catalog.json" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/AntiCheatBypass/DisableCppLow.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/AddCustomNetGameServer.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/ForceJoinLowVersionRoom.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/RecoveryDeleteVersion.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/SkipComponentCheck.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/SkipGameLaunchTimeout.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/WindowsNotify.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ClientSelectPortWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ForwarderControlPanel.xaml.cs" root0="FORCE_HIGHLIGHTING" />
@@ -683,7 +694,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复 SauthJson 显示问题" />
     <MESSAGE value="修复网易创建设备出现的问题" />
     <MESSAGE value="将设置等功能从托盘(Tray)移动到启动器中的设置" />
     <MESSAGE value="修改细节" />
@@ -708,7 +718,8 @@
     <MESSAGE value="修复网易我的世界启动器自带的皮肤渲染问题" />
     <MESSAGE value="修复网易的启动器更新定时触发导致游戏过程中经常弹窗更新问题" />
     <MESSAGE value="补齐信息" />
-    <option name="LAST_COMMIT_MESSAGE" value="补齐信息" />
+    <MESSAGE value="添加: 启动器抓包功能, 此功能需要开启 Http 端口访问并使用浏览器访问 http://127.0.0.1:&lt;Port&gt;/network-capture" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加: 启动器抓包功能, 此功能需要开启 Http 端口访问并使用浏览器访问 http://127.0.0.1:&lt;Port&gt;/network-capture" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

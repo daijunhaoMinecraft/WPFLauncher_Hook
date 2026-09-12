@@ -30,6 +30,7 @@ public static class ConfigManager
         new ConfigEntry("UseJavaExe", nameof(WpfConfig.UseJavaExe), "使用 java.exe 启动游戏而不是 javaw.exe", "Java 版"),
         new ConfigEntry("CustomJVMArguments", nameof(WpfConfig.CustomJvmArguments), "自定义 JVM 参数", "Java 版"),
         new ConfigEntry("EnableModsInject", nameof(WpfConfig.EnableModInjection), "启用模组注入", "Java 版"),
+        new ConfigEntry("SkipStartJavaFileFullCheck", nameof(WpfConfig.SkipStartJavaFileFullCheck), "跳过文件完整性检查(谨慎开启)", "Java 版"),
         new ConfigEntry("EnableCustomAccountLogin", nameof(WpfConfig.EnableAlternativeAccountLogin), "选择使用Sauth/4399账号登录", "账号与存档"),
         new ConfigEntry("MpayUnless", nameof(WpfConfig.UseAccountManagerLogin), "不使用Mpay登录(将会调用账号管理器窗口登录)", "账号与存档"),
         new ConfigEntry("AdvancedSavesManager", nameof(WpfConfig.EnableAdvancedSaveManager), "更高级的存档管理界面(支持多槽位)", "账号与存档"),

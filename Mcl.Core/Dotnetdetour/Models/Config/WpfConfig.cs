@@ -17,7 +17,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public partial class WpfConfig
 {
-    public static string Version = "7.0.0-DLL-Public-Beta2";
+    public static string Version = "7.0.0-DLL-Public";
     public static string DefaultWebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string DefaultHttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -68,6 +68,9 @@ public partial class WpfConfig
     public static bool EnableModInjection = false;
 
     public static bool WriteLauncherLogsToFile = true;
+    
+    // 跳过 Java 游戏完整性检查(谨慎开启)
+    public static bool SkipStartJavaFileFullCheck = true;
 
     // custom Settings
     public static bool EnableBedrockClientSelection = false;
@@ -104,6 +107,9 @@ public partial class WpfConfig
     public static bool ShowGameLogsWindow = false;
 
     public static Skip32Cipher SharedUidCipher = new();
+
+    // 测试模式, 在此模式下将会保持使用第一个账号管理器去登录账号到启动器主界面
+    public static bool TestMode = false;
 
 
     public static CustomLoadingWindow LoginLoadingWindow;

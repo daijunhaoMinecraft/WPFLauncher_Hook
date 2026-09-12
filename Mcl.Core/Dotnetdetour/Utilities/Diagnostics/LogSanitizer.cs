@@ -109,7 +109,8 @@ public static class LogSanitizer
     public static string StripLegacyPrefixes(string message)
     {
         if (string.IsNullOrWhiteSpace(message)) return string.Empty;
-        var stripped = LegacyPrefix.Replace(message, string.Empty);
+        // var stripped = LegacyPrefix.Replace(message, string.Empty);
+        var stripped = message;
         return stripped.Replace("[INFO]", string.Empty)
             .Replace("[ERROR]", string.Empty)
             .Replace("[WARN]", string.Empty)

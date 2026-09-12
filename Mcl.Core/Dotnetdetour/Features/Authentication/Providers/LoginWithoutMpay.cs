@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
+using Mcl.Core.Dotnetdetour.Features.Authentication.Core;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using WPFLauncher.Common;
 using WPFLauncher.Manager;
@@ -19,6 +20,19 @@ public class LoginWithoutMpay : IMethodHook
     [HookMethod("WPFLauncher.Unisdk.nx", "a", "InitMpay")]
     public void InitMpayHook(string title, string mpayPath, Action<int> initFinishAction, string uniSdkUrl)
     {
+        if (WpfConfig.TestMode)
+        {
+            initFinishAction(0);
+
+            AccountManager.Load();
+            string sauthJson = AuthIntegrationService.ExtractSauth(AccountManager.GetAllSorted()[0]);
+            if (!string.IsNullOrEmpty(sauthJson))
+            {
+                AuthIntegrationService.InjectMpayCookie(sauthJson);
+            }
+            azf<apm>.Instance.CanChannelLogin = true;
+            return;
+        }
         if (WpfConfig.UseAccountManagerLogin)
         {
             initFinishAction(0);

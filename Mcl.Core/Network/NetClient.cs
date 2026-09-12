@@ -488,6 +488,24 @@ public class NetClient : INetClient
             netResponse.Content = result;
             return netResponse;
         }
+        
+        if (uri.ToString().EndsWith("game-play-v2/login-stop"))
+        {
+            PluginLog.Info("Network", "用户退出登录");
+            var result =
+                "{\"code\":0,\"message\":\"\\u6b63\\u5e38\\u8fd4\\u56de\",\"details\":\"\",\"entity\":{\"record\":null}}";
+            netResponse.Content = result;
+            return netResponse;
+        }
+        
+        if (uri.ToString().EndsWith("game-play-v2/login-start"))
+        {
+            PluginLog.Info("Network", "用户登录");
+            var result =
+                "{\"code\":0,\"message\":\"\\u6b63\\u5e38\\u8fd4\\u56de\",\"details\":\"\",\"entity\":{\"is_anti_addiction\":false,\"anti_addiction_info\":{\"online_time_limit\":0,\"online_time_sum\":0,\"current_online_time_sum\":0,\"online_time_left\":0,\"msg\":\"\",\"status\":0},\"record\":null}}";
+            netResponse.Content = result;
+            return netResponse;
+        }
 
         if (uri.ToString().EndsWith("/item/query/search-by-iid"))
         {
@@ -561,7 +579,6 @@ public class NetClient : INetClient
             {
                 X19Crypt.Token = authResult["entity"]["token"].ToString();
                 X19Crypt.UserId = authResult["entity"]["entity_id"].ToString();
-                var UserDetailResult = X19Http.Post("/user-detail", "");
                 if (WpfConfig.LogSensitiveAccountDetails)
                 {
                     PluginLog.Info("Auth", "Login succeeded: userId={0}", X19Crypt.UserId);

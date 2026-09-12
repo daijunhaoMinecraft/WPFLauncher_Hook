@@ -95,7 +95,7 @@ public class InitHook : IMethodHook
         WpfConfig.ReadRegexBlacklist();
 
         // 2. 交互逻辑
-        if (!File.Exists("ApplyConfig") || !File.Exists(ConfigManager.ConfigFilePath))
+        if ((!File.Exists("ApplyConfig") || !File.Exists(ConfigManager.ConfigFilePath)) && !WpfConfig.TestMode)
         {
             if (File.Exists(ConfigManager.ConfigFilePath))
             {
@@ -106,6 +106,11 @@ public class InitHook : IMethodHook
             {
                 ShowConfigWindow();
             }
+        }
+
+        if (WpfConfig.TestMode)
+        {
+            WpfConfig.DefaultLogger.Warn("警告: 当前处于测试模式, 可能会有一些错误");
         }
         // 3. 应用运行逻辑
         ApplyRuntimeSettings();

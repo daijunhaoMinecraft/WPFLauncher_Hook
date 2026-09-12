@@ -63,6 +63,53 @@ namespace Mcl.Core.Dotnetdetour.Features.Optimization
                     return ResourceHandler.FromStream(stream, mimeType: "application/javascript");
                 }
             }
+            // 2. 过滤 sa-multi-log 请求
+            if (request.Url.Contains("sa-multi-log"))
+            {
+                // ==========================================
+                // 处理 OPTIONS (CORS 预检请求)
+                // ==========================================
+                if (request.Method.Equals("OPTIONS", StringComparison.OrdinalIgnoreCase))
+                {
+                    var optionsHandler = new ResourceHandler
+                    {
+                        MimeType = "text/plain",
+                        StatusCode = 204, // 204 No Content 是 OPTIONS 最标准的返回码
+                        StatusText = "No Content",
+                        Stream = new MemoryStream(), // OPTIONS 不需要返回 Body
+                        AutoDisposeStream = true
+                    };
+
+                    // 必须告诉浏览器：允许跨域，允许 POST，并且允许前端携带自定义头
+                    optionsHandler.Headers.Add("Access-Control-Allow-Origin", "https://x19.gsf.netease.com");
+                    optionsHandler.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                    optionsHandler.Headers.Add("Access-Control-Allow-Headers", "*"); 
+                    optionsHandler.Headers.Add("Access-Control-Max-Age", "86400"); // 告诉浏览器缓存这个预检结果一天
+
+                    return optionsHandler;
+                }
+                
+                // ==========================================
+                // 处理真正的 POST / GET 请求
+                // ==========================================
+                string jsonResponse = "{\"code\":0,\"message\":\"正常返回\",\"details\":\"\",\"entity\":null}";
+                byte[] responseBytes = Encoding.UTF8.GetBytes(jsonResponse);
+
+                var handler = new ResourceHandler
+                {
+                    MimeType = "application/json",
+                    StatusCode = 200,
+                    StatusText = "OK",
+                    Stream = new MemoryStream(responseBytes),
+                    AutoDisposeStream = true
+                };
+
+                // 你的自定义响应头
+                handler.Headers.Add("server", "nginx");
+                handler.Headers.Add("Access-Control-Allow-Origin", "https://x19.gsf.netease.com");
+
+                return handler;
+            }
             return base.GetResourceHandler(chromiumWebBrowser, browser, frame, request);
         }
 
