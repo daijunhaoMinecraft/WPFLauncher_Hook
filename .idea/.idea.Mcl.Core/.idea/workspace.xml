@@ -673,7 +673,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="修复网易创建设备出现的问题" />
     <MESSAGE value="将设置等功能从托盘(Tray)移动到启动器中的设置" />
     <MESSAGE value="修改细节" />
     <MESSAGE value="Commit Release Image" />
@@ -698,7 +697,8 @@
     <MESSAGE value="补齐信息" />
     <MESSAGE value="添加: 启动器抓包功能, 此功能需要开启 Http 端口访问并使用浏览器访问 http://127.0.0.1:&lt;Port&gt;/network-capture" />
     <MESSAGE value="发布正式版" />
-    <option name="LAST_COMMIT_MESSAGE" value="发布正式版" />
+    <MESSAGE value="Release Image" />
+    <option name="LAST_COMMIT_MESSAGE" value="Release Image" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
