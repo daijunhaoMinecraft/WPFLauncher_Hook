@@ -62,6 +62,29 @@ public class NetClient : INetClient
     public virtual NetRequestAsyncHandle ExecuteAsync(INetRequest request,
         Action<INetResponse, NetRequestAsyncHandle> callback)
     {
+        var capture = NetworkCaptureStore.Begin(request, BaseUrl, Encoding, GetEffectiveUserAgent());
+        NetRequestAsyncHandle handle = null;
+        try
+        {
+            handle = ExecuteAsyncCore(request, delegate(INetResponse response, NetRequestAsyncHandle asyncHandle)
+            {
+                NetworkCaptureStore.Complete(capture, request, response, Encoding, GetEffectiveUserAgent());
+                callback(response, asyncHandle);
+            });
+            if (handle?.WebRequest == null && !capture.IsCompleted)
+                NetworkCaptureStore.Complete(capture, request, null, Encoding, GetEffectiveUserAgent(), "Intercepted");
+            return handle;
+        }
+        catch (Exception ex)
+        {
+            NetworkCaptureStore.Fail(capture, request, ex, Encoding, GetEffectiveUserAgent());
+            throw;
+        }
+    }
+
+    private NetRequestAsyncHandle ExecuteAsyncCore(INetRequest request,
+        Action<INetResponse, NetRequestAsyncHandle> callback)
+    {
         var uri = new Uri(new Uri(BaseUrl.ToString()), request.Resource);
         PluginLog.Info("Network", $"[AsyncRequest] url: {uri}");
 
@@ -360,6 +383,22 @@ public class NetClient : INetClient
     }
 
     public virtual INetResponse Execute(INetRequest request)
+    {
+        var capture = NetworkCaptureStore.Begin(request, BaseUrl, Encoding, GetEffectiveUserAgent());
+        try
+        {
+            var response = ExecuteCore(request);
+            NetworkCaptureStore.Complete(capture, request, response, Encoding, GetEffectiveUserAgent());
+            return response;
+        }
+        catch (Exception ex)
+        {
+            NetworkCaptureStore.Fail(capture, request, ex, Encoding, GetEffectiveUserAgent());
+            throw;
+        }
+    }
+
+    private INetResponse ExecuteCore(INetRequest request)
     {
         var isServerListRequest = false;
         var uri = new Uri(new Uri(BaseUrl.ToString()), request.Resource);
@@ -857,5 +896,10 @@ public class NetClient : INetClient
     private static HttpResponse DoExecuteAsPost(IHttp http, string method)
     {
         return http.AsPost(method);
+    }
+
+    private string GetEffectiveUserAgent()
+    {
+        return string.IsNullOrEmpty(UserAgent) ? "WPFLauncher/" + version : UserAgent;
     }
 }

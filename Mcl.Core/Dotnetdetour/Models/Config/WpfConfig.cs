@@ -17,7 +17,7 @@ namespace Mcl.Core.Dotnetdetour.Models.Config;
 
 public partial class WpfConfig
 {
-    public static string Version = "7.0.0-DLL-Public-Beta1";
+    public static string Version = "7.0.0-DLL-Public-Beta2";
     public static string DefaultWebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string DefaultHttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;

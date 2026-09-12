@@ -1,117 +1,349 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Text;
 using CefSharp;
 using CefSharp.Handler;
-using System.IO;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using CefSharp.Wpf;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
-using Mcl.Core.Dotnetdetour.Models.Config;
-using WPFLauncher.View;
-
 using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
-// 1. 自定义请求处理器
-public class CustomRequestHandler : RequestHandler
+using Mcl.Core.Network;
+using Mcl.Core.Network.Interface;
+// 确保包含 INetRequest 等接口
+
+namespace Mcl.Core.Dotnetdetour.Features.Optimization
 {
-    protected override IResourceRequestHandler GetResourceRequestHandler(
-        IWebBrowser chromiumWebBrowser, 
-        IBrowser browser, 
-        IFrame frame, 
-        IRequest request, 
-        bool isNavigation, 
-        bool isDownload, 
-        string requestInitiator, 
-        ref bool disableDefaultHandling)
+    // 1. 自定义请求处理器
+    public class CustomRequestHandler : RequestHandler
     {
-        PluginLog.Info("Web", $"[Chrome Request] url: {request.Url}");
-        // 检查请求的 URL 是否包含你要替换的文件名
-        if (request.Url.Contains("31.c5774a7b.chunk.js"))
+        protected override IResourceRequestHandler GetResourceRequestHandler(
+            IWebBrowser chromiumWebBrowser, 
+            IBrowser browser, 
+            IFrame frame, 
+            IRequest request, 
+            bool isNavigation, 
+            bool isDownload, 
+            string requestInitiator, 
+            ref bool disableDefaultHandling)
         {
-            // 如果是，则返回我们自定义的资源请求处理器
+            PluginLog.Info("Web", $"[Chrome Request] url: {request.Url}");
+            
+            // 返回我们的资源处理器，用于捕获【所有】网络请求
+            // 如果要替换 JS，逻辑会包含在 CustomResourceRequestHandler 内部
             return new CustomResourceRequestHandler();
         }
-
-        // 其他请求走默认处理（正常加载网络资源）
-        return base.GetResourceRequestHandler(chromiumWebBrowser, browser, frame, request, isNavigation, isDownload, requestInitiator, ref disableDefaultHandling);
     }
-}
 
-// 2. 自定义资源请求处理器
-public class CustomResourceRequestHandler : ResourceRequestHandler
-{
-    // 缓存文件的字节数组，避免每次请求都去解析程序集，提高性能
-    private static byte[] _cachedJsBytes = null;
-
-    protected override IResourceHandler GetResourceHandler(
-        IWebBrowser chromiumWebBrowser, 
-        IBrowser browser, 
-        IFrame frame, 
-        IRequest request)
+    // 2. 自定义资源请求处理器
+    public class CustomResourceRequestHandler : ResourceRequestHandler
     {
-        byte[] jsData = GetEmbeddedJsData();
+        private static byte[] _cachedJsBytes = null;
+        
+        // 字典用于在请求开始 (OnBeforeResourceLoad) 和结束 (OnResourceLoadComplete) 之间传递 Entry
+        private static readonly ConcurrentDictionary<ulong, NetworkCaptureEntry> CaptureEntries = 
+            new ConcurrentDictionary<ulong, NetworkCaptureEntry>();
 
-        if (jsData != null)
+        // 处理自定义本地资源（保留你原本替换 JS 的逻辑）
+        protected override IResourceHandler GetResourceHandler(
+            IWebBrowser chromiumWebBrowser, 
+            IBrowser browser, 
+            IFrame frame, 
+            IRequest request)
         {
-            // 将字节数组转为 MemoryStream 交给 CefSharp
-            // 注意：每次请求都需要 new 一个新的 MemoryStream
-            MemoryStream stream = new MemoryStream(jsData);
-            
-            // 使用 FromStream 替代 FromFilePath
-            return ResourceHandler.FromStream(stream, mimeType: "application/javascript");
+            if (request.Url.Contains("31.c5774a7b.chunk.js"))
+            {
+                byte[] jsData = GetEmbeddedJsData();
+                if (jsData != null)
+                {
+                    MemoryStream stream = new MemoryStream(jsData);
+                    return ResourceHandler.FromStream(stream, mimeType: "application/javascript");
+                }
+            }
+            return base.GetResourceHandler(chromiumWebBrowser, browser, frame, request);
         }
 
-        return base.GetResourceHandler(chromiumWebBrowser, browser, frame, request);
+        // --- 网络捕获生命周期：开始 ---
+        protected override CefReturnValue OnBeforeResourceLoad(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, IRequestCallback callback)
+        {
+            try
+            {
+                var netRequest = new CefNetRequestAdapter(request);
+                var uri = new Uri(request.Url);
+                
+                // 获取 User-Agent
+                string userAgent = request.Headers["User-Agent"] ?? "CefSharp Browser";
+
+                var entry = NetworkCaptureStore.Begin(netRequest, uri, Encoding.UTF8, userAgent);
+                CaptureEntries.TryAdd(request.Identifier, entry);
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error("Web", $"NetworkCapture Begin Error: {ex.Message}");
+            }
+
+            return base.OnBeforeResourceLoad(chromiumWebBrowser, browser, frame, request, callback);
+        }
+
+        // --- 网络捕获生命周期：结束 ---
+        protected override void OnResourceLoadComplete(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, IResponse response, UrlRequestStatus status, long receivedContentLength)
+        {
+            try
+            {
+                if (CaptureEntries.TryRemove(request.Identifier, out var entry))
+                {
+                    var netRequest = new CefNetRequestAdapter(request);
+                    string userAgent = request.Headers["User-Agent"] ?? "CefSharp Browser";
+
+                    if (status == UrlRequestStatus.Success)
+                    {
+                        var netResponse = new CefNetResponseAdapter(response, request.Url);
+                        NetworkCaptureStore.Complete(entry, netRequest, netResponse, Encoding.UTF8, userAgent);
+                    }
+                    else
+                    {
+                        var exception = new Exception($"CefSharp Request Failed with status: {status}");
+                        NetworkCaptureStore.Fail(entry, netRequest, exception, Encoding.UTF8, userAgent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error("Web", $"NetworkCapture Complete Error: {ex.Message}");
+            }
+
+            base.OnResourceLoadComplete(chromiumWebBrowser, browser, frame, request, response, status, receivedContentLength);
+        }
+
+        private byte[] GetEmbeddedJsData()
+        {
+            if (_cachedJsBytes != null) return _cachedJsBytes;
+
+            var assembly = Assembly.GetExecutingAssembly();
+            string resourceName = "Mcl.Core.Resources.31.c5774a7b.chunk.js"; 
+            
+            using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream != null)
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        stream.CopyTo(ms);
+                        _cachedJsBytes = ms.ToArray();
+                    }
+                }
+            }
+            return _cachedJsBytes;
+        }
+    }
+
+    // ========================================================================
+    // 以下为适配器类 (Adapters)，用于将 CefSharp 数据映射到你定义的 INetRequest 接口
+    // ========================================================================
+    
+    public class CefNetRequestAdapter : INetRequest
+    {
+        public CefNetRequestAdapter(IRequest cefRequest)
+        {
+            Parameters = new List<Parameter>();
+            Files = new List<FileParameter>();
+            AllowedDecompressionMethods = new List<DecompressionMethods>();
+
+            // 1. 映射 Headers
+            if (cefRequest.Headers != null)
+            {
+                foreach (string key in cefRequest.Headers)
+                {
+                    Parameters.Add(new Parameter 
+                    { 
+                        Name = key, 
+                        Value = cefRequest.Headers[key], 
+                        Type = ParameterType.HttpHeader 
+                    });
+                }
+            }
+
+            // 2. 映射 POST Data (RequestBody)
+            if (cefRequest.PostData != null && cefRequest.PostData.Elements.Count > 0)
+            {
+                var element = cefRequest.PostData.Elements[0];
+                if (element.Bytes != null)
+                {
+                    string bodyContent = Encoding.UTF8.GetString(element.Bytes);
+                    Parameters.Add(new Parameter 
+                    { 
+                        Name = "application/json", 
+                        Value = bodyContent, 
+                        Type = ParameterType.RequestBody 
+                    });
+                }
+            }
+
+            // 3. 映射基础属性
+            if (Enum.TryParse<Method>(cefRequest.Method, true, out var parsedMethod))
+            {
+                Method = parsedMethod;
+            }
+            else
+            {
+                Method = Method.GET;
+            }
+            
+            Resource = string.Empty;
+        }
+
+        // --- NetworkCaptureStore 实际会用到的核心属性 ---
+        public Method Method { get; set; }
+        public string Resource { get; set; }
+        public List<Parameter> Parameters { get; set; }
+
+        // --- 接口要求的其他属性 (CaptureStore 不用，但必须实现以通过编译) ---
+        public IList<DecompressionMethods> AllowedDecompressionMethods { get; set; }
+        public bool AlwaysMultipartFormData { get; set; }
+        public int Attempts { get; set; }
+        public ICredentials Credentials { get; set; }
+        public List<FileParameter> Files { get; set; }
+        public int ReadWriteTimeout { get; set; }
+        public Action<Stream> ResponseWriter { get; set; }
+        public int Timeout { get; set; }
+        public bool UseDefaultCredentials { get; set; }
+
+        // --- 接口要求的扩展方法 (全部返回 this 即可) ---
+        public void IncreaseNumAttempts() { Attempts++; }
+        public INetRequest AddBody(object obj, string contentType) => this;
+        public INetRequest AddBody(object obj) => this;
+        public INetRequest AddCookie(string name, string value) => this;
+        public INetRequest AddDecompressionMethod(DecompressionMethods method) => this;
+        public INetRequest AddFile(string name, string path, string contentType) => this;
+        public INetRequest AddFile(string name, byte[] bytes, string fileName, string contentType) => this;
+        public INetRequest AddFile(string name, Action<Stream> writer, string fileName, long contentLength, string contentType) => this;
+        public INetRequest AddFileBytes(string name, byte[] bytes, string filename, string contentType) => this;
+        public INetRequest AddHeader(string name, string value) => this;
+        public INetRequest AddJsonBody(object obj) => this;
+        public INetRequest AddObject(object obj, params string[] includedProperties) => this;
+        public INetRequest AddObject(object obj) => this;
+        public INetRequest AddOrUpdateParameter(Parameter parameter) => this;
+        public INetRequest AddOrUpdateParameter(string name, object value) => this;
+        public INetRequest AddOrUpdateParameter(string name, object value, ParameterType type) => this;
+        public INetRequest AddOrUpdateParameter(string name, object value, string contentType, ParameterType type) => this;
+        public INetRequest AddParameter(Parameter parameter) => this;
+        public INetRequest AddParameter(string name, object value) => this;
+        public INetRequest AddParameter(string name, object value, ParameterType type) => this;
+        public INetRequest AddParameter(string name, object value, string contentType, ParameterType type) => this;
+        public INetRequest AddQueryParameter(string name, string value) => this;
+        public INetRequest AddUrlSegment(string name, string value) => this;
+        public INetRequest AddXmlBody(object obj) => this;
+        public INetRequest AddXmlBody(object obj, string xmlNamespace) => this;
+    }
+
+    // ========================================================================
+    // 修复后的响应适配器 (CefNetResponseAdapter)
+    // ========================================================================
+    public class CefNetResponseAdapter : INetResponse
+    {
+        public CefNetResponseAdapter(IResponse cefResponse, string requestUrl)
+        {
+            Headers = new List<Parameter>();
+            Cookies = new List<NetResponseCookie>();
+            
+            // 映射响应头
+            if (cefResponse.Headers != null)
+            {
+                foreach (string key in cefResponse.Headers)
+                {
+                    Headers.Add(new Parameter 
+                    { 
+                        Name = key, 
+                        Value = cefResponse.Headers[key],
+                        Type = ParameterType.HttpHeader
+                    });
+                }
+            }
+
+            ContentType = cefResponse.MimeType;
+            StatusCode = (HttpStatusCode)cefResponse.StatusCode; // 类型强转为 HttpStatusCode
+            StatusDescription = cefResponse.StatusText;
+            ResponseUri = new Uri(requestUrl);
+            ResponseStatus = ResponseStatus.Completed;
+            IsSuccessful = cefResponse.StatusCode >= 200 && cefResponse.StatusCode <= 299;
+            ErrorMessage = cefResponse.ErrorCode == CefErrorCode.None ? null : cefResponse.ErrorCode.ToString();
+        }
+
+        // --- NetworkCaptureStore 实际会用到的核心属性 ---
+        public IList<Parameter> Headers { get; set; }
+        public string ContentType { get; set; }
+        public string Content { get; set; } // 网页内容默认无法直接从 CefSharp 拿，保持为 null
+        public byte[] RawBytes { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+        public string StatusDescription { get; set; }
+        public ResponseStatus ResponseStatus { get; set; }
+        public Uri ResponseUri { get; set; }
+        public string ErrorMessage { get; set; }
+        public Exception ErrorException { get; set; }
+
+        // --- 接口要求的其他属性 ---
+        public string ContentEncoding { get; set; }
+        public long ContentLength { get; set; }
+        public IList<NetResponseCookie> Cookies { get; set; }
+        public bool IsSuccessful { get; set; }
+        public Version ProtocolVersion { get; set; }
+        public INetRequest Request { get; set; }
+        public string Server { get; set; }
     }
 
     /// <summary>
-    /// 从 DLL 中读取嵌入的资源
+    /// 模拟你的 Parameter 对象
     /// </summary>
-    private byte[] GetEmbeddedJsData()
+    public class CefNetParameter
     {
-        // 如果已经缓存过，直接返回
-        if (_cachedJsBytes != null) return _cachedJsBytes;
-
-        // 获取当前运行的 DLL 程序集
-        var assembly = Assembly.GetExecutingAssembly();
-        string resourceName = "Mcl.Core.Resources.31.c5774a7b.chunk.js"; 
-        
-        using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+        public CefNetParameter(string name, object value, ParameterType type)
         {
-            if (stream != null)
+            Name = name;
+            Value = value;
+            Type = type;
+        }
+
+        public string Name { get; set; }
+        public object Value { get; set; }
+        public ParameterType Type { get; set; }
+    }
+
+    /// <summary>
+    /// 模拟 Header 对象
+    /// </summary>
+    public class CefNetHeader
+    {
+        public CefNetHeader(string name, object value)
+        {
+            Name = name;
+            Value = value;
+        }
+        public string Name { get; set; }
+        public object Value { get; set; }
+    }
+
+    // ========================================================================
+    // Hook 保持不变
+    // ========================================================================
+    public class ChromeBrowserLoadHook : IMethodHook
+    {
+        [HookMethod("WPFLauncher.View.ChromeBrowser", "e", "Original")]
+        public static void e(ChromiumWebBrowser instance, string bfw) 
+        {
+            if (instance.RequestHandler == null || !(instance.RequestHandler is CustomRequestHandler))
             {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    stream.CopyTo(ms);
-                    _cachedJsBytes = ms.ToArray();
-                }
+                instance.RequestHandler = new CustomRequestHandler();
             }
+            Original(instance, bfw);
         }
 
-        return _cachedJsBytes;
-    }
-}
-
-public class ChromeBrowserLoadHook : IMethodHook
-{
-    // 目标：WPFLauncher.View.ChromeBrowser 类的 e 方法
-    [HookMethod("WPFLauncher.View.ChromeBrowser", "e", "Original")]
-    public static void e(ChromiumWebBrowser instance, string bfw) // 🌟 修复关键：加上 static！
-    {
-        // 此时 instance 就是目标浏览器的实例，安全且不会崩溃
-        if (instance.RequestHandler == null || !(instance.RequestHandler is CustomRequestHandler))
+        [OriginalMethod]
+        public static void Original(ChromiumWebBrowser instance, string bfw) 
         {
-            instance.RequestHandler = new CustomRequestHandler();
+            return;
         }
-
-        // 调用原程序的 e 方法
-        Original(instance, bfw);
-    }
-
-    [OriginalMethod]
-    public static void Original(ChromiumWebBrowser instance, string bfw) // 🌟 这里也必须是 static！
-    {
-        // 占位符，不会执行
-        return;
     }
 }

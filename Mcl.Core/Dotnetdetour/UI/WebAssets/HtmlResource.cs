@@ -10,12 +10,15 @@ public static class HtmlResource
 {
     private static readonly Lazy<string> RoomPage = new Lazy<string>(() => Read("RoomManage.html"));
     private static readonly Lazy<string> SettingsPage = new Lazy<string>(() => Read("Settings.html"));
+    private static readonly Lazy<string> NetworkCapturePage = new Lazy<string>(() => Read("NetworkCapture.html"));
     private static readonly Lazy<string> Theme = new Lazy<string>(() => Read("Fluent.css"));
 
     public static string GetRoomManageHtml() => WithTheme(RoomPage.Value)
         .Replace("__MCL_HTTP_PORT__", WpfConfig.HttpPort.ToString(CultureInfo.InvariantCulture));
 
     public static string GetHotUpdateHtml() => WithTheme(SettingsPage.Value);
+
+    public static string GetNetworkCaptureHtml() => WithTheme(NetworkCapturePage.Value);
 
     private static string WithTheme(string html) => html.Replace("/* MCL_FLUENT_THEME */", Theme.Value);
 

@@ -26,6 +26,7 @@
     </PropertyGroup>
     <ItemGroup>
         <Compile Include="Dotnetdetour\**\*.cs" />
+        <Compile Include="Network\NetworkCaptureStore.cs" />
         <Compile Include="Tools\**\*.cs" />
 
         <Compile Include="Extensions\CollectionExtensions.cs" />
@@ -109,7 +110,6 @@
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Dotnetdetour\UI\Injector\" />
         <Folder Include="Dotnetdetour\UI\Tray\" />
     </ItemGroup>
     <ItemGroup>

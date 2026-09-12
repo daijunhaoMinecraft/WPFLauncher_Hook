@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MCL Network Capture</title>
+    <style>
+        /* MCL_FLUENT_THEME */
+        body { padding: 0; overflow: hidden; }
+        .capture-shell { height: 100vh; display: grid; grid-template-rows: auto 1fr; background: #f3f3f3; }
+        .capture-toolbar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: #fff; border-bottom: 1px solid var(--border-color); }
+        .capture-toolbar h1 { font-size: 18px; margin: 0 12px 0 0; white-space: nowrap; }
+        .capture-toolbar input { width: min(440px, 45vw); }
+        .capture-toolbar .spacer { flex: 1; }
+        .capture-count { color: #5d5d5d; white-space: nowrap; }
+        .capture-main { min-height: 0; display: grid; grid-template-columns: minmax(360px, 42%) 1fr; }
+        .capture-list { min-width: 0; overflow: auto; background: #fff; border-right: 1px solid var(--border-color); }
+        .capture-row { width: 100%; min-height: 68px; display: grid; grid-template-columns: 68px 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; border: 0; border-bottom: 1px solid #ededed; border-radius: 0; text-align: left; background: #fff; }
+        .capture-row:hover { background: #f5f5f5; }
+        .capture-row.active { background: #e3effa; box-shadow: inset 3px 0 var(--primary-color); }
+        .method { font-weight: 700; color: var(--primary-color); }
+        .request-url { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .request-meta { color: #5d5d5d; font-size: 12px; margin-top: 3px; }
+        .status { text-align: right; font-variant-numeric: tabular-nums; }
+        .status.error { color: var(--danger-color); }
+        .capture-detail { min-width: 0; overflow: auto; padding: 18px 22px 40px; }
+        .empty { color: #5d5d5d; padding: 32px; text-align: center; }
+        .detail-title { margin: 0 0 4px; font-size: 18px; overflow-wrap: anywhere; }
+        .detail-meta { color: #5d5d5d; margin-bottom: 20px; }
+        .section { margin-top: 20px; }
+        .section h2 { font-size: 14px; margin: 0 0 8px; }
+        pre { margin: 0; padding: 12px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; background: #fff; border: 1px solid var(--border-color); border-radius: 4px; font: 12px/1.55 Consolas, monospace; min-height: 40px; }
+        .header-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border-color); font-size: 12px; }
+        .header-table th, .header-table td { padding: 7px 10px; border-bottom: 1px solid #ededed; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+        .header-table th { width: 180px; color: #444; }
+        @media (max-width: 760px) {
+            .capture-toolbar { flex-wrap: wrap; }
+            .capture-toolbar input { order: 2; width: 100%; }
+            .capture-main { grid-template-columns: 1fr; grid-template-rows: 42% 58%; }
+            .capture-list { border-right: 0; border-bottom: 1px solid var(--border-color); }
+            .capture-detail { padding: 14px 16px 32px; }
+            .capture-row { grid-template-columns: 56px 1fr auto; }
+            .header-table th { width: 110px; }
+        }
+    </style>
+</head>
+<body>
+<div class="capture-shell">
+    <header class="capture-toolbar">
+        <h1>Network Capture</h1>
+        <input id="filter" type="search" placeholder="Filter URL or method" aria-label="Filter requests">
+        <span class="spacer"></span>
+        <span id="count" class="capture-count">0 requests</span>
+        <button id="pause" type="button">Pause</button>
+        <button id="refresh" type="button">Refresh</button>
+        <button id="clear" type="button">Clear</button>
+    </header>
+    <main class="capture-main">
+        <section id="list" class="capture-list" aria-label="Requests"></section>
+        <section id="detail" class="capture-detail"><div class="empty">Waiting for launcher requests</div></section>
+    </main>
+</div>
+<script>
+    const state = { entries: [], selectedId: null, paused: false };
+    const list = document.getElementById('list');
+    const detail = document.getElementById('detail');
+    const filter = document.getElementById('filter');
+    const count = document.getElementById('count');
+    const pause = document.getElementById('pause');
+
+    function text(tag, value, className) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        element.textContent = value == null || value === '' ? '(empty)' : String(value);
+        return element;
+    }
+
+    function formatHeaders(headers) {
+        if (!headers || !headers.length) return text('pre', '(none)');
+        const table = document.createElement('table');
+        table.className = 'header-table';
+        headers.forEach(header => {
+            const row = document.createElement('tr');
+            row.append(text('th', header.Name));
+            row.append(text('td', header.Value));
+            table.append(row);
+        });
+        return table;
+    }
+
+    function section(title, content) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'section';
+        wrapper.append(text('h2', title));
+        wrapper.append(content);
+        return wrapper;
+    }
+
+    function renderDetail(entry) {
+        detail.replaceChildren();
+        if (!entry) {
+            detail.append(text('div', 'Select a request', 'empty'));
+            return;
+        }
+        detail.append(text('h1', entry.Method + ' ' + entry.Url, 'detail-title'));
+        detail.append(text('div', new Date(entry.StartedAt).toLocaleString() + ' | ' + entry.DurationMs + ' ms | ' + entry.State, 'detail-meta'));
+        detail.append(section('Request headers', formatHeaders(entry.RequestHeaders)));
+        detail.append(section('Request body', text('pre', entry.RequestBody)));
+        if (entry.Response) {
+            const status = entry.Response.StatusCode ? entry.Response.StatusCode + ' ' + (entry.Response.StatusDescription || '') : entry.Response.ResponseStatus;
+            detail.append(section('Response status', text('pre', status)));
+            detail.append(section('Response headers', formatHeaders(entry.Response.Headers)));
+            detail.append(section('Response body', text('pre', entry.Response.Body)));
+            if (entry.Response.Error) detail.append(section('Response error', text('pre', entry.Response.Error)));
+        } else {
+            detail.append(section('Response', text('pre', entry.Error || (entry.State === 'Pending' ? 'Pending' : 'No response (intercepted locally)'))));
+        }
+    }
+
+    function render() {
+        const query = filter.value.trim().toLowerCase();
+        const entries = state.entries.filter(entry => !query || (entry.Method + ' ' + entry.Url).toLowerCase().includes(query));
+        count.textContent = entries.length + ' requests';
+        list.replaceChildren();
+        entries.forEach(entry => {
+            const row = document.createElement('button');
+            row.type = 'button';
+            row.className = 'capture-row' + (entry.Id === state.selectedId ? ' active' : '');
+            row.append(text('span', entry.Method, 'method'));
+            const summary = document.createElement('span');
+            summary.className = 'request-url';
+            summary.append(text('span', entry.Url, 'request-url'));
+            summary.append(text('span', new Date(entry.StartedAt).toLocaleTimeString() + ' | ' + entry.DurationMs + ' ms', 'request-meta'));
+            row.append(summary);
+            const code = entry.Response && entry.Response.StatusCode ? entry.Response.StatusCode : entry.State;
+            row.append(text('span', code, 'status' + (entry.State === 'Error' ? ' error' : '')));
+            row.addEventListener('click', () => { state.selectedId = entry.Id; render(); });
+            list.append(row);
+        });
+        renderDetail(state.entries.find(entry => entry.Id === state.selectedId));
+    }
+
+    async function refresh() {
+        if (state.paused) return;
+        try {
+            const response = await fetch('/api/network-capture', { cache: 'no-store' });
+            state.entries = await response.json();
+            if (state.selectedId == null && state.entries.length) state.selectedId = state.entries[0].Id;
+            render();
+        } catch (error) {
+            count.textContent = 'Capture API unavailable';
+        }
+    }
+
+    filter.addEventListener('input', render);
+    pause.addEventListener('click', () => {
+        state.paused = !state.paused;
+        pause.textContent = state.paused ? 'Resume' : 'Pause';
+        if (!state.paused) refresh();
+    });
+    document.getElementById('refresh').addEventListener('click', () => { state.paused = false; pause.textContent = 'Pause'; refresh(); });
+    document.getElementById('clear').addEventListener('click', async () => {
+        await fetch('/api/network-capture', { method: 'DELETE' });
+        state.entries = [];
+        state.selectedId = null;
+        render();
+    });
+    refresh();
+    setInterval(refresh, 1000);
+</script>
+</body>
+</html>

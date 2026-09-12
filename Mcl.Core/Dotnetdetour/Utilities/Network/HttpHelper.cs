@@ -18,6 +18,7 @@ using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Globals;
 using Mcl.Core.Dotnetdetour.UI.WebAssets;
 using Mcl.Core.NeteaseProtocol;
+using Mcl.Core.Network;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WPFControls.Helpers;
@@ -96,6 +97,10 @@ public class SimpleHttpServer
                     if (context.Request.HttpMethod == "OPTIONS")
                     {
                         HandleOptionsRequest(context);
+                    }
+                    else if (context.Request.Url.AbsolutePath == "/api/network-capture")
+                    {
+                        HandleNetworkCaptureRequest(context);
                     }
                     else if (apiRequestList.Contains(context.Request.Url.AbsolutePath))
                     {
@@ -227,6 +232,25 @@ public class SimpleHttpServer
     {
         var responseBytes = Encoding.UTF8.GetBytes(htmlContent);
         customContentTypeResponse(response, "text/html", responseBytes);
+    }
+
+    private void HandleNetworkCaptureRequest(HttpListenerContext context)
+    {
+        if (context.Request.HttpMethod == "GET")
+        {
+            sendJsonResponse(context.Response, NetworkCaptureStore.GetSnapshot());
+            return;
+        }
+
+        if (context.Request.HttpMethod == "DELETE")
+        {
+            NetworkCaptureStore.Clear();
+            sendJsonResponse(context.Response, new { code = 0, message = "Capture history cleared" });
+            return;
+        }
+
+        context.Response.StatusCode = (int)HttpStatusCode.MethodNotAllowed;
+        context.Response.Close();
     }
 
     /// <summary>
@@ -1628,6 +1652,12 @@ public class SimpleHttpServer
                         context.Response.OutputStream.Close();
                         IsSendResponseFlag = false;
                     }
+                    else if (context.Request.Url.AbsolutePath == "/network-capture")
+                    {
+                        sendHtmlResponse(context.Response, HtmlResource.GetNetworkCaptureHtml());
+                        context.Response.OutputStream.Close();
+                        IsSendResponseFlag = false;
+                    }
                     else if (context.Request.Url.AbsolutePath.StartsWith("/config/get"))
                     {
                         SendResponse = new
@@ -1668,6 +1698,7 @@ public class SimpleHttpServer
                         {
                             "/get_roominfo",
                             "/roommanage",
+                            "/network-capture",
                             "/help",
                             "/Room/AddBlacklist/{userId}",
                             "/Room/RemoveBlacklist/{userId}",
