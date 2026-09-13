@@ -80,12 +80,10 @@ namespace Mcl.Core.Dotnetdetour.Features.Optimization
                         AutoDisposeStream = true
                     };
 
-                    // 必须告诉浏览器：允许跨域，允许 POST，并且允许前端携带自定义头
-                    optionsHandler.Headers.Add("Access-Control-Allow-Origin", "https://x19.gsf.netease.com");
-                    optionsHandler.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-                    optionsHandler.Headers.Add("Access-Control-Allow-Headers", "*"); 
-                    optionsHandler.Headers.Add("Access-Control-Max-Age", "86400"); // 告诉浏览器缓存这个预检结果一天
-
+                    optionsHandler.Headers.Set("Access-Control-Allow-Origin", "*");
+                    optionsHandler.Headers.Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                    optionsHandler.Headers.Set("Access-Control-Allow-Headers", "*"); 
+                    optionsHandler.Headers.Set("Access-Control-Max-Age", "86400");
                     return optionsHandler;
                 }
                 
@@ -105,9 +103,8 @@ namespace Mcl.Core.Dotnetdetour.Features.Optimization
                 };
 
                 // 你的自定义响应头
-                handler.Headers.Add("server", "nginx");
-                handler.Headers.Add("Access-Control-Allow-Origin", "https://x19.gsf.netease.com");
-
+                handler.Headers.Set("server", "nginx");
+                handler.Headers.Set("Access-Control-Allow-Origin", "*");
                 return handler;
             }
             return base.GetResourceHandler(chromiumWebBrowser, browser, frame, request);

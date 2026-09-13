@@ -13,12 +13,12 @@ namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 public class ForceJoinLowVersionRoom : IMethodHook
 {
     [OriginalMethod]
-    public void CheckCppRoomExist(avq instance, GameM gameM, BaseWindow baseWindow)
+    public static void CheckCppRoomExist(avq instance, GameM gameM, BaseWindow baseWindow)
     {
     }
 
     [HookMethod("WPFLauncher.Manager.Game.Pipeline.Task.awj", "hp", "CheckCppRoomExist")]
-    public void CheckCppRoomExistHook(avq instance, GameM gameM, BaseWindow baseWindow)
+    public static void CheckCppRoomExistHook(avq instance, GameM gameM, BaseWindow baseWindow)
     {
         WpfConfig.DefaultLogger.Debug("成功跳过房间检查");
         instance.hs(LTaskOpcode.NEXT);
