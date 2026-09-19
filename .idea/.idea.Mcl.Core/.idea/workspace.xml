@@ -11,10 +11,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/Tools/Cryptography/Channel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/4399Login.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/4399Login.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Network/NetClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Utils/RegistryHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Utils/RegistryHelper.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
@@ -50,13 +52,13 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/70/3dca8f5d/ux.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/8f/749269b6/apm.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2b3cf07968804c6db9a855f64a150f67702200/a9/d9e57590/aks.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/3daeab0868bb484db68858cbde2120f5702200/99/696a477a/nx.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/3daeab0868bb484db68858cbde2120f5702200/ae/aff7a552/tb.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/.artifacts/log-catalog.json" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/AntiCheatBypass/DisableCppLow.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Providers/AuthIntegrationService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/AddCustomNetGameServer.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/ForceJoinLowVersionRoom.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/RecoveryDeleteVersion.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/SkipComponentCheck.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GameTweaks/SkipGameLaunchTimeout.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/WindowsNotify.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ClientSelectPortWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
@@ -74,6 +76,7 @@
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/SaveManagerWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdatePromptWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Tools/Cryptography/CheckChannel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/WPFLauncherLib/Main.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/NetworkMonitorWindow.g.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/ProcessLogWindow.g.cs" root0="SKIP_HIGHLIGHTING" />
@@ -681,7 +684,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="Commit Release Image" />
     <MESSAGE value="修复: 控制台退出启动器时间过长问题, 新增: 本地联机玩家名称过滤功能" />
     <MESSAGE value="增加 Java 启动设置配置: 使用 java.exe 启动游戏而不是 javaw.exe" />
     <MESSAGE value="增加 Java 启动设置配置: 使用 java.exe 启动游戏而不是 javaw.exe #59" />
@@ -706,7 +708,8 @@
     <MESSAGE value="Release Image" />
     <MESSAGE value="Add Capture Image" />
     <MESSAGE value="修复基岩版本地联机无法进入问题以及 sa-muitl-log 跨域相关问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="修复基岩版本地联机无法进入问题以及 sa-muitl-log 跨域相关问题" />
+    <MESSAGE value="修复 4399 登录失败不弹窗问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复 4399 登录失败不弹窗问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

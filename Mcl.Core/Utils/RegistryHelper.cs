@@ -1,5 +1,8 @@
 using System;
+using Mcl.Core.Tools.Cryptography;
 using Microsoft.Win32;
+using WPFLauncher.SQLite;
+using WPFLauncher.Unisdk;
 
 namespace Mcl.Core.Utils;
 
@@ -22,6 +25,10 @@ public class RegistryHelper
     {
         try
         {
+            if (registrykey == null)
+            {
+                Channel.InitializeRegistry();
+            }
             var registryKey = registrykey;
             if (registryKey != null) registryKey.SetValue(key, value);
         }
@@ -35,6 +42,10 @@ public class RegistryHelper
         string text2;
         try
         {
+            if (registrykey == null)
+            {
+                Channel.InitializeRegistry();
+            }
             var registryKey = registrykey;
             string text;
             if (registryKey == null)
