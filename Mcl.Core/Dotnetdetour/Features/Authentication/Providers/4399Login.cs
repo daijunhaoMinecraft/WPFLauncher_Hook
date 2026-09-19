@@ -122,11 +122,61 @@ internal class _4399
                     if (oauthData == null) return LoginResult.Fail("OAuth 回调解析失败");
 
                     var sauthJson = BuildSauthJson(oauthData.Uid, oauthData.State);
-                    
+
                     // 发送给 uni_sauth 注册
                     using var sauthClient = CreateHttpClient();
                     var content = new StringContent(sauthJson, Encoding.UTF8, "application/json");
-                    await sauthClient.PostAsync("https://mgbsdk.matrix.netease.com/x19/sdk/uni_sauth", content);
+                    var sauthResponse = await sauthClient.PostAsync("https://mgbsdk.matrix.netease.com/x19/sdk/uni_sauth", content);
+
+                    // 读取 uni_sauth 返回内容并输出到控制台
+                    var sauthResponseBody = await sauthResponse.Content.ReadAsStringAsync();
+                    PluginLog.Info("Auth", $"[4399] uni_sauth 状态码: {(int)sauthResponse.StatusCode} {sauthResponse.StatusCode}");
+                    PluginLog.Info("Auth", $"[4399] uni_sauth 响应: {sauthResponseBody}");
+
+                    // 尝试解析 JSON 响应体，检查业务 403
+                    JObject sauthObj = null;
+                    try
+                    {
+                        sauthObj = JObject.Parse(sauthResponseBody);
+                    }
+                    catch
+                    {
+                        // 非 JSON 响应，走 HTTP 状态码判断
+                    }
+
+                    if (sauthObj != null && (int?)sauthObj["code"] == 403)
+                    {
+                        var subcode = (int?)sauthObj["subcode"] ?? 0;
+                        var status = (string)sauthObj["status"] ?? "";
+                        var rawMsg = (string)sauthObj["msg"] ?? "";
+                        var popup = (int?)sauthObj["popup"] ?? 0;
+
+                        // 清理 <ntsdk ...>...</ntsdk> 标签，仅保留纯文本
+                        var cleanMsg = Regex.Replace(rawMsg, @"<ntsdk[^>]*>.*?</ntsdk>", "", RegexOptions.Singleline).Trim();
+                        if (string.IsNullOrEmpty(cleanMsg)) cleanMsg = rawMsg;
+
+                        PluginLog.Error("Auth",
+                            $"[4399] uni_sauth 业务 403: subcode={subcode}, status={status}, popup={popup}, msg={cleanMsg}");
+
+                        // 弹窗提示（若项目使用其他 UI 框架，请替换为对应调用）
+                        if (popup == 1 || true) // popup 字段为 1 时必弹；此处统一弹窗
+                        {
+                            System.Windows.MessageBox.Show(
+                                cleanMsg,
+                                "4399 安全验证",
+                                System.Windows.MessageBoxButton.OK,
+                                System.Windows.MessageBoxImage.Warning);
+                        }
+
+                        return LoginResult.Fail($"uni_sauth 403: {cleanMsg}");
+                    }
+
+                    // HTTP 状态码兜底
+                    if (!sauthResponse.IsSuccessStatusCode)
+                    {
+                        PluginLog.Error("Auth", $"[4399] uni_sauth 请求失败: {(int)sauthResponse.StatusCode} {sauthResponseBody}");
+                        return LoginResult.Fail($"uni_sauth 请求失败 ({(int)sauthResponse.StatusCode}): {sauthResponseBody}");
+                    }
 
                     var result = new JObject { ["sauth_json"] = sauthJson };
                     return LoginResult.Ok(result.ToString(Formatting.None));

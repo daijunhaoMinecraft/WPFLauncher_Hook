@@ -214,11 +214,24 @@ public class NetClient : INetClient
             PluginLog.Error("Network", e);
             return netRequestAsyncHandle;
         }
-
+        
+        void ProcessAsyncCallback(INetResponse response, NetRequestAsyncHandle handle)
+        {
+            bool isCallback = true;
+            if (uri.ToString().EndsWith("/login-otp"))
+            {
+                PluginLog.Info("Auth", $"Auth LoginOtp Response: {Regex.Unescape(response.Content)}");
+            }
+            if (isCallback)
+            {
+                callback(response, handle);
+            }
+        }
+        
         if (method - Method.POST > 1 && method != Method.PATCH)
-            netRequestAsyncHandle = ExecuteAsync(request, callback, name, DoAsGetAsync);
+            netRequestAsyncHandle = ExecuteAsync(request, ProcessAsyncCallback, name, DoAsGetAsync);
         else
-            netRequestAsyncHandle = ExecuteAsync(request, callback, name, DoAsPostAsync);
+            netRequestAsyncHandle = ExecuteAsync(request, ProcessAsyncCallback, name, DoAsPostAsync);
         return netRequestAsyncHandle;
     }
 
