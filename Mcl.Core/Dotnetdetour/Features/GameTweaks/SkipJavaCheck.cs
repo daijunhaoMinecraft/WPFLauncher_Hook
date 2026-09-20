@@ -67,12 +67,16 @@ public class SkipJavaCheck : IMethodHook
         
     }
     
-    [HookMethod("WPFLauncher.Manager.Game.Pipeline.Task.awg", "hp", "AntiIndulgence")]
+    [HookMethod("WPFLauncher.Manager.Game.Pipeline.Task.awg", "hp", "CheckLibraries")]
     public static void CheckLibrariesHook(avq instance, GameM gameM, BaseWindow baseWindow)
     {
-        WpfConfig.DefaultLogger.Debug("成功跳过 Libraries 完整性的检查");
-        instance.hs(LTaskOpcode.NEXT);
-        return;
+        if (WpfConfig.SkipStartJavaFileFullCheck)
+        {
+            WpfConfig.DefaultLogger.Debug("成功跳过 Libraries 完整性的检查");
+            instance.hs(LTaskOpcode.NEXT);
+            return;
+        }
+        CheckLibraries(instance, gameM, baseWindow);
     }
     
     [OriginalMethod]
@@ -81,11 +85,15 @@ public class SkipJavaCheck : IMethodHook
         
     }
     
-    [HookMethod("WPFLauncher.Manager.Game.Pipeline.Task.awo", "hp", "AntiIndulgence")]
+    [HookMethod("WPFLauncher.Manager.Game.Pipeline.Task.awo", "hp", "CheckModAuthority")]
     public static void CheckModAuthorityHook(avq instance, GameM gameM, BaseWindow baseWindow)
     {
-        WpfConfig.DefaultLogger.Debug("成功跳过 模组权限 的检查");
-        instance.hs(LTaskOpcode.NEXT);
-        return;
+        if (WpfConfig.SkipStartJavaFileFullCheck)
+        {
+            WpfConfig.DefaultLogger.Debug("成功跳过 模组权限 的检查");
+            instance.hs(LTaskOpcode.NEXT);
+            return;
+        }
+        CheckModAuthority(instance, gameM, baseWindow);
     }
 }
