@@ -117,10 +117,12 @@ public static class AuthIntegrationService
             // 4. 处理选择的账号逻辑
             if (selectedAccount != null)
             {
-                string sauthJson = ExtractSauth(selectedAccount);
+                string sauthJson = ExtractSauth(selectedAccount, out var error);
                 if (string.IsNullOrEmpty(sauthJson))
                 {
-                    PluginLog.Error("Auth", "账号凭证提取失败，请重试");
+                    PluginLog.Error("Auth", string.IsNullOrEmpty(error) ? "账号凭证提取失败，请重试" : error);
+                    // 有明确原因（如 mgbsdk 风控）时弹给用户，否则用户只会看到回到选号窗口
+                    if (!string.IsNullOrEmpty(error)) uz.n(error);
                     continue;
                 }
                 return sauthJson;
@@ -128,13 +130,17 @@ public static class AuthIntegrationService
         }
     }
 
-    public static string ExtractSauth(AccountInfo acc)
+    public static string ExtractSauth(AccountInfo acc) => ExtractSauth(acc, out _);
+
+    /// <param name="error">失败时可直接展示给用户的原因；null 表示无额外信息。</param>
+    public static string ExtractSauth(AccountInfo acc, out string error)
     {
+        error = null;
         try
         {
             return acc.Type switch
             {
-                AccountType.Cookie => SauthParser.ExtractFromCookie(acc.CookieData) ?? acc.CookieData,
+                AccountType.Cookie => CheckCookieAccount(acc, out error),
                 AccountType.Phone => SauthParser.ExtractFromPhoneAccount(acc),
                 AccountType.Email => MpayLogin.EmailLoginFlow(acc.Username, acc.Password),
                 AccountType._4399 => Parse4399Account(acc),
@@ -146,6 +152,14 @@ public static class AuthIntegrationService
             PluginLog.Error("Auth", $"凭证提取异常: {ex}");
             return null;
         }
+    }
+
+    private static string CheckCookieAccount(AccountInfo acc, out string error)
+    {
+        var sauthJson = SauthParser.ExtractFromCookie(acc.CookieData) ?? acc.CookieData;
+
+        // Cookie 渠道直接把 sauth_json 交给启动器，风控时启动器 /login-otp 只会回“服务器繁忙”；先用 uni_sauth 预检拿到可读原因
+        return MgbSdkSauthChecker.Check(sauthJson, out error) ? sauthJson : null;
     }
 
     private static string Parse4399Account(AccountInfo acc)
