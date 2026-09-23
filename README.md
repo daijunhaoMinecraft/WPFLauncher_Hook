@@ -301,6 +301,12 @@ git clone https://github.com/daijunhaoMinecraft/WPFLauncher_Hook.git
  - 创建"DisableConsole"文件来禁用控制台
  - 创建"ApplyConfig"文件来自动使用上次的配置
 
+# 赞助此项目
+
+| 微信支付                                                     | 支付宝                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| <img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/image/sponsor/wechat.png" width="200" alt="微信收款码" /> | <img src="https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/main/image/sponsor/zhifubao.jpg" width="200" alt="支付宝收款码" /> |
+
 ## Star History
 
 <a href="https://www.star-history.com/?repos=daijunhaoMinecraft%2FWPFLauncher_Hook&type=date&legend=top-left">
