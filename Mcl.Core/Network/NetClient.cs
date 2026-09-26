@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour;
 using Mcl.Core.Dotnetdetour.Features.Authentication.Core;
+using Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Entity;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
@@ -221,6 +222,24 @@ public class NetClient : INetClient
             if (uri.ToString().EndsWith("/login-otp"))
             {
                 PluginLog.Info("Auth", $"Auth LoginOtp Response: {Regex.Unescape(response.Content)}");
+                JObject loginOtpResponse = JObject.Parse(response.Content);
+                if (loginOtpResponse["code"].ToObject<int>() != 0)
+                {
+                    PluginLog.Error("Auth", $"LoginOtp Failed, message: {loginOtpResponse["message"].ToString()}, details: {loginOtpResponse["details"].ToString()}, status: {loginOtpResponse["entity"]["status"].ToString()}");
+                    try
+                    {
+                        string sauthJson = JObject.Parse(stringBody)["sauth_json"].ToString();
+                        bool checkResult = MgbSdkSauthChecker.Check(sauthJson, out string error);
+                        if (checkResult == false)
+                        {
+                            uz.n(error);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Check SauthJson Error: {e}");
+                    }
+                }
             }
             if (isCallback)
             {

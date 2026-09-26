@@ -25,7 +25,8 @@ internal static class MgbSdkSauthChecker
     /// 返回 true 表示 mgbsdk 接受（code=200）或响应无法解析（不阻断登录）；
     /// 返回 false 时 <paramref name="error"/> 为可直接展示给用户的失败原因。
     /// </summary>
-    public static bool Check(string sauthJson, out string error)
+    public static bool 
+        Check(string sauthJson, out string error)
     {
         var (ok, err) = Task.Run(() => CheckAsync(sauthJson)).Result;
         error = err;

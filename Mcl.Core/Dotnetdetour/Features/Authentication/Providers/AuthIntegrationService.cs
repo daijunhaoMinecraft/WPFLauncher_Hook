@@ -140,7 +140,7 @@ public static class AuthIntegrationService
         {
             return acc.Type switch
             {
-                AccountType.Cookie => CheckCookieAccount(acc, out error),
+                AccountType.Cookie => SauthParser.ExtractFromCookie(acc.CookieData) ?? acc.CookieData,
                 AccountType.Phone => SauthParser.ExtractFromPhoneAccount(acc),
                 AccountType.Email => MpayLogin.EmailLoginFlow(acc.Username, acc.Password),
                 AccountType._4399 => Parse4399Account(acc),
@@ -158,7 +158,6 @@ public static class AuthIntegrationService
     {
         var sauthJson = SauthParser.ExtractFromCookie(acc.CookieData) ?? acc.CookieData;
 
-        // Cookie 渠道直接把 sauth_json 交给启动器，风控时启动器 /login-otp 只会回“服务器繁忙”；先用 uni_sauth 预检拿到可读原因
         return MgbSdkSauthChecker.Check(sauthJson, out error) ? sauthJson : null;
     }
 
