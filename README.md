@@ -195,7 +195,7 @@
 - (and more)...
 
 ## 安装
-
+**2026/09/27: 你可以下载 [Release 7.0.0-DLL-Public](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/releases/tag/7.0.0-DLL-Public) 中的 [MCLauncher_1.15.28.11160_WithWPFHook.exe](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/releases/download/7.0.0-DLL-Public/MCLauncher_1.15.28.11160_WithWPFHook.exe) 以跳过复杂的安装方法, 这是一个网易我的世界 1.15.28.11160 的安装器其中自带全部 WPFLauncher_Hook 所需文件以及本体**
 ### 1. 前置条件
 在开始之前，请确保您的系统是支持.NET Framework 4.8.1支持库
 ### 2. 快速开始 (Quick Start)
