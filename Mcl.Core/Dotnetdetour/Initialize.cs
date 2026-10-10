@@ -2,7 +2,6 @@ using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks; // 引入 Task
@@ -40,13 +39,6 @@ namespace System.Runtime.CompilerServices
         
         // 1. 添加一个防重入标记，确保退出逻辑绝对只执行一次
         private static int _isExiting = 0;
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool AllocConsole();
-
-        [DllImport("kernel32.dll")]
-        private static extern bool SetConsoleOutputCP(uint wCodePageID);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetConsoleCtrlHandler(ConsoleCtrlDelegate handler, bool add);
@@ -138,19 +130,8 @@ namespace System.Runtime.CompilerServices
         {
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-            if (!File.Exists("DisableConsole"))
+            if (!File.Exists("DisableConsole") && ConsoleEnvironment.TryInitialize())
             {
-                AllocConsole();
-
-                const uint CP_GBK = 936;
-                SetConsoleOutputCP(CP_GBK);
-                Console.OutputEncoding = Encoding.GetEncoding(936);
-
-                var writer = new StreamWriter(Console.OpenStandardOutput(), Console.OutputEncoding);
-                writer.AutoFlush = true;
-                Console.SetOut(writer);
-                Console.CursorVisible = false;
-
                 _consoleHandler = HandlerRoutine;
                 SetConsoleCtrlHandler(_consoleHandler, true);
             }

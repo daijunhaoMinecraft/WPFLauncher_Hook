@@ -41,14 +41,13 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks
 
         private void LoadSavedPath()
         {
-            // tb.s 应该是你代码里的某个全局静态路径
-            if (Directory.Exists(tb.s))
-            {
-                _selectedPath = tb.s;
-            }
-            else if (Directory.Exists(WpfConfig.BedrockDirectory))
+            if (Directory.Exists(WpfConfig.BedrockDirectory))
             {
                 _selectedPath = WpfConfig.BedrockDirectory;
+            }
+            else if (Directory.Exists(tb.s))
+            {
+                _selectedPath = tb.s;
             }
 
             if (!string.IsNullOrEmpty(_selectedPath))
@@ -60,24 +59,23 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks
 
         private void SelectButton_Click(object sender, RoutedEventArgs e)
         {
-            using (var dialog = new FolderBrowserDialog { Description = "请选择基岩版安装路径" })
+            using (var dialog = new FolderBrowserDialog { Description = BedrockPathValidator.HelpText, ShowNewFolderButton = false })
             {
                 if (dialog.ShowDialog() == FormsDialogResult.OK)
                 {
-                    _selectedPath = dialog.SelectedPath;
-                    PathTextBox.Text = _selectedPath;
-
                     try
                     {
-                        WpfConfig.BedrockDirectory = _selectedPath;
-                        ConfigManager.Save();
+                        BedrockPathValidator.Validate(dialog.SelectedPath);
+                        ConfigManager.Update(new Dictionary<string, object> { ["BedrockPath"] = dialog.SelectedPath });
+                        _selectedPath = dialog.SelectedPath;
+                        PathTextBox.Text = _selectedPath;
+                        ScanVersions();
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"保存路径时出错: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     
-                    ScanVersions();
                 }
             }
         }
@@ -116,7 +114,6 @@ namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks
             {
                 _onVersionSelected?.Invoke(selectedItem.Path);
                 DialogResult = true;
-                // Close(); // 设置 DialogResult = true 会自动关闭窗口，不需要手动 Close()
             }
         }
     }

@@ -16,11 +16,22 @@ public class MethodHook
 
     private static bool installed;
     private static readonly List<DestAndOri> destAndOris = new();
+    private static readonly object Sync = new object();
+    private static readonly HookPatchRegistry Patches = new HookPatchRegistry();
 
     /// <summary>
     ///     精确安装指定的 Hook 类 (不传则安装全部)
     /// </summary>
     public static void InstallTypes(Type[] specificHookTypes = null)
+        => InstallTypes(specificHookTypes, DetourFactory.CreateDetourEngine);
+
+    internal static void InstallTypes(Type[] specificHookTypes, Func<IDetour> createEngine)
+    {
+        if (createEngine == null) throw new ArgumentNullException(nameof(createEngine));
+        lock (Sync) InstallTypesCore(specificHookTypes, createEngine);
+    }
+
+    private static void InstallTypesCore(Type[] specificHookTypes, Func<IDetour> createEngine)
     {
         if (installed && specificHookTypes == null) return;
         if (specificHookTypes == null) installed = true;
@@ -68,14 +79,22 @@ public class MethodHook
             }
         }
 
-        // InstallInternal 保持你最原始的代码即可，不需要做任何拦截
-        InstallInternal(true, assemblies);
+        InstallInternal(true, assemblies, createEngine);
     }
 
     /// <summary>
     ///     安装监视器
     /// </summary>
     public static void Install(string dir = null)
+        => Install(dir, DetourFactory.CreateDetourEngine);
+
+    internal static void Install(string dir, Func<IDetour> createEngine)
+    {
+        if (createEngine == null) throw new ArgumentNullException(nameof(createEngine));
+        lock (Sync) InstallCore(dir, createEngine);
+    }
+
+    private static void InstallCore(string dir, Func<IDetour> createEngine)
     {
         if (installed)
             return;
@@ -114,6 +133,7 @@ public class MethodHook
 
         foreach (var monitor in monitors)
         {
+            if (destAndOris.Any(d => d.Obj.GetType() == monitor.GetType())) continue;
             var all = monitor.GetType().GetMethods(AllFlag);
             var hookMethods = all.Where(t =>
                 t.CustomAttributes.Any(a => typeof(HookMethodAttribute).IsAssignableFrom(a.AttributeType)));
@@ -143,13 +163,14 @@ public class MethodHook
             }
         }
 
-        InstallInternal(true, assemblies);
+        InstallInternal(true, assemblies, createEngine);
         AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
     }
 
-    private static void InstallInternal(bool isInstall, Assembly[] assemblies)
+    private static void InstallInternal(bool isInstall, Assembly[] assemblies, Func<IDetour> createEngine)
     {
-        foreach (var detour in destAndOris)
+        // Reflection/JIT can synchronously load another assembly and reenter this method.
+        foreach (var detour in destAndOris.ToArray())
         {
             var hookMethod = detour.HookMethod;
             var hookMethodAttribute = hookMethod.GetCustomAttribute<HookMethodAttribute>();
@@ -199,11 +220,13 @@ public class MethodHook
                 continue;
             }
 
-            if (detour.Obj is IMethodHookWithSet) ((IMethodHookWithSet)detour.Obj).HookMethod(rawMethod);
-
             var originalMethod = detour.OriginalMethod;
-            var engine = DetourFactory.CreateDetourEngine();
-            engine.Patch(rawMethod, hookMethod, originalMethod);
+            if (!Patches.InstallOnce(rawMethod, hookMethod, () =>
+                {
+                    if (detour.Obj is IMethodHookWithSet setter) setter.HookMethod(rawMethod);
+                    var engine = createEngine();
+                    engine.Patch(rawMethod, hookMethod, originalMethod);
+                })) continue;
             // Console.WriteLine($"[Detour] Hook成功! Target:{rawMethod.DeclaringType.Name}.{rawMethod.Name} -> Hook:{hookMethod.Name}");
             Debug.WriteLine("已将目标方法 \"{0}, {1}\" 的调用指向 \"{2}, {3}\" Ori: \"{4}\".", rawMethod.ReflectedType.FullName,
                 rawMethod
@@ -359,6 +382,12 @@ public class MethodHook
 
     private static void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
     {
-        InstallInternal(false, new[] { args.LoadedAssembly });
+        InstallAssembly(args.LoadedAssembly, DetourFactory.CreateDetourEngine);
+    }
+
+    internal static void InstallAssembly(Assembly assembly, Func<IDetour> createEngine)
+    {
+        if (createEngine == null) throw new ArgumentNullException(nameof(createEngine));
+        lock (Sync) InstallInternal(false, new[] { assembly }, createEngine);
     }
 }

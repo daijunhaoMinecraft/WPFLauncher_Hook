@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 namespace Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 
@@ -7,6 +6,7 @@ namespace Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 public static class ConsoleOutput
 {
     private static readonly object Sync = new object();
+    private static readonly IConsoleDevice Device = new SystemConsoleDevice();
 
     public static void WriteLine(string message, ConsoleColor color = ConsoleColor.Gray)
     {
@@ -15,28 +15,69 @@ public static class ConsoleOutput
 
     public static void Write(string message, ConsoleColor color = ConsoleColor.Gray)
     {
+        Write(message, color, Device);
+    }
+
+    internal static void Write(string message, ConsoleColor color, IConsoleDevice device)
+    {
         if (message == null) return;
         lock (Sync)
         {
-            var previous = Console.ForegroundColor;
+            ConsoleColor? previous = null;
             try
             {
-                if (Console.IsOutputRedirected) Console.Out.Write(message);
-                else
+                try
                 {
-                    Console.ForegroundColor = color;
-                    Console.Write(message);
+                    if (device.SupportsColor)
+                    {
+                        previous = device.ForegroundColor;
+                        device.ForegroundColor = color;
+                    }
                 }
+                catch (Exception exception) when (ConsoleEnvironment.IsUnavailable(exception))
+                {
+                }
+
+                // Losing color support must not lose otherwise writable redirected/plain output.
+                device.Write(message);
             }
-            catch (IOException)
+            catch (Exception exception) when (ConsoleEnvironment.IsUnavailable(exception))
             {
                 // The host may close its console while a redirected process is still flushing output.
             }
             finally
             {
-                try { Console.ForegroundColor = previous; }
-                catch (IOException) { }
+                if (previous.HasValue)
+                {
+                    try
+                    {
+                        device.ForegroundColor = previous.Value;
+                    }
+                    catch (Exception exception) when (ConsoleEnvironment.IsUnavailable(exception))
+                    {
+                    }
+                }
             }
         }
+    }
+
+    internal interface IConsoleDevice
+    {
+        bool SupportsColor { get; }
+        ConsoleColor ForegroundColor { get; set; }
+        void Write(string message);
+    }
+
+    private sealed class SystemConsoleDevice : IConsoleDevice
+    {
+        public bool SupportsColor => ConsoleEnvironment.HasInteractiveOutput();
+
+        public ConsoleColor ForegroundColor
+        {
+            get => Console.ForegroundColor;
+            set => Console.ForegroundColor = value;
+        }
+
+        public void Write(string message) => Console.Out.Write(message);
     }
 }

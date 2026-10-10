@@ -237,7 +237,7 @@ public class NetClient : INetClient
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Check SauthJson Error: {e}");
+                        PluginLog.Error("Auth", $"Check SauthJson Error: {e}");
                     }
                 }
             }

@@ -10,7 +10,7 @@ public sealed class ConfigEntry
     private readonly FieldInfo _field;
 
     public ConfigEntry(string key, string fieldName, string description, string category,
-        int? minimum = null, int? maximum = null, string helpText = null)
+        int? minimum = null, int? maximum = null, string helpText = null, string editor = null)
     {
         Key = key;
         FieldName = fieldName;
@@ -19,6 +19,7 @@ public sealed class ConfigEntry
         Minimum = minimum;
         Maximum = maximum;
         HelpText = helpText;
+        Editor = editor;
         _field = typeof(WpfConfig).GetField(fieldName, BindingFlags.Public | BindingFlags.Static)
                  ?? throw new ArgumentException("Unknown configuration field: " + fieldName, nameof(fieldName));
         if (FieldType != typeof(bool) && FieldType != typeof(int) && FieldType != typeof(string))
@@ -33,6 +34,7 @@ public sealed class ConfigEntry
     public int? Minimum { get; }
     public int? Maximum { get; }
     public string HelpText { get; }
+    public string Editor { get; }
     public object GetValue() => _field.GetValue(null);
     internal void SetValue(object value) => _field.SetValue(null, value);
 

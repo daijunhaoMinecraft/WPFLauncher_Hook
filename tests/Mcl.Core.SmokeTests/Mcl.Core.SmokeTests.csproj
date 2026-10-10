@@ -4,6 +4,9 @@
         <TargetFramework>net48</TargetFramework>
         <PlatformTarget>x86</PlatformTarget>
         <UseWPF>true</UseWPF>
+        <UseWindowsForms>true</UseWindowsForms>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <LangVersion>latest</LangVersion>
         <EnableDefaultItems>false</EnableDefaultItems>
         <!-- Match pack URIs without referencing/loading the production module initializer. -->
@@ -15,8 +18,13 @@
         <Reference Include="NLog"><HintPath>$(LauncherDirectory)\NLog.dll</HintPath></Reference>
         <Reference Include="Newtonsoft.Json"><HintPath>$(LauncherDirectory)\Newtonsoft.Json.dll</HintPath></Reference>
         <Reference Include="System.Xml.Linq"/>
-        <Compile Include="Program.cs;HostStubs.cs"/>
+        <Compile Include="Program.cs;BedrockTests.cs;ModInjectionTests.cs;ConsoleTests.cs;HookInstallationTests.cs;HostStubs.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\**\*.cs"/>
+        <Compile Include="..\..\Mcl.Core\Properties\AssemblyInfo.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Services\Bedrock\*.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Services\Mods\*.cs"/>
         <Compile Include="..\..\Mcl.Core\Tools\**\*.cs"/>
+        <Compile Include="..\..\Mcl.Core\Utils\RegistryHelper.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Config\*.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Entities\FriendStatus.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Entities\NetGame.cs"/>

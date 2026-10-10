@@ -1,7 +1,6 @@
 using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -17,6 +16,7 @@ using Mcl.Core.Dotnetdetour.CoreEngine.Base;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Entity;
+using Mcl.Core.Dotnetdetour.Services.Mods;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -228,11 +228,8 @@ public class InitHook : IMethodHook
         // ==========================================
         if (WpfConfig.EnableModInjection)
         {
-            var modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
-            if (!Directory.Exists(modsInjectPath)) Directory.CreateDirectory(modsInjectPath);
-            PluginLog.Info("Hook", "[ModsInject] 模组注入已启用，请将模组文件放入以下文件夹：");
-            PluginLog.Info("Hook", $"[ModsInject] {modsInjectPath}");
-            Process.Start("explorer.exe", modsInjectPath);
+            // Applying settings can run repeatedly. Opening the folder is an explicit UI action only.
+            ModInjectionDirectory.EnsureExists();
         }
 
         if (WpfConfig.ShowCustomServers)
@@ -279,8 +276,8 @@ public class InitHook : IMethodHook
             ConsoleOutput.Write("\n" + StartupLogo + Environment.NewLine, ConsoleColor.Cyan);
 
         PluginLog.Info("Core", "Console initialized.");
-        PluginLog.Info("Core", "Plugin hook initialized: version={0}", WpfConfig.Version);
-        PluginLog.Info("Core", "工具作者: daijunhao(QQ: 3352133106), 本项目仅供学习交流使用, 严禁用于非法用途/商业/倒卖等多类用途使用", WpfConfig.Version);
+        PluginLog.Info("Core", "Plugin hook initialized: version={0}", WpfConfig.GetVersion());
+        PluginLog.Info("Core", "工具作者: daijunhao(QQ: 3352133106), 本项目仅供学习交流使用, 严禁用于非法用途/商业/倒卖等多类用途使用", WpfConfig.GetVersion());
         PluginLog.Info("Core", "项目地址: https://github.com/daijunhaoMinecraft/WPFLauncher_Hook");
         try
         {

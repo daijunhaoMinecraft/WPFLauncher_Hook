@@ -19,7 +19,8 @@
     </PropertyGroup>
     <PropertyGroup>
         <LauncherDirectory Condition="'$(LauncherDirectory)' == ''">D:\Games\MCLauncher</LauncherDirectory>
-        <LauncherAssemblyPath Condition="'$(LauncherAssemblyPath)' == ''">H:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump-cleaned.exe</LauncherAssemblyPath>
+        <!-- Preserve the previous effective reference; debug preparation overrides this explicitly. -->
+        <LauncherAssemblyPath Condition="'$(LauncherAssemblyPath)' == ''">H:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</LauncherAssemblyPath>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Prefer32bit>true</Prefer32bit>
@@ -77,6 +78,9 @@
         <Reference Include="CefSharp">
           <HintPath>$(LauncherDirectory)\CefSharp.dll</HintPath>
         </Reference>
+        <Reference Include="CefSharp.Core">
+          <HintPath>$(LauncherDirectory)\CefSharp.Core.dll</HintPath>
+        </Reference>
         <Reference Include="CefSharp.Wpf">
           <HintPath>$(LauncherDirectory)\CefSharp.Wpf.dll</HintPath>
         </Reference>
@@ -102,7 +106,7 @@
           <HintPath>$(LauncherDirectory)\WPFControls.dll</HintPath>
         </Reference>
         <Reference Include="WPFLauncher">
-          <HintPath>H:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</HintPath>
+          <HintPath>$(LauncherAssemblyPath)</HintPath>
         </Reference>
     </ItemGroup>
     <ItemGroup>

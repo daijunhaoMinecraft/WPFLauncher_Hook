@@ -24,7 +24,7 @@
 ```
 
 其他机器传入本机依赖：
-
+[README.md](Mcl.Core/Dotnetdetour/Models/Config/README.md)
 ```powershell
 .\scripts\Validate-Refactor.ps1 -LauncherDirectory 'D:\Games\MCLauncher' -LauncherAssemblyPath 'D:\Dependencies\WPFLauncher.dump-cleaned.exe'
 ```

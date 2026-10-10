@@ -1028,19 +1028,25 @@ public class SimpleHttpServer
                     {
                         try
                         {
-                            AllocConsole(); // 使用Kernel32.dll分配一个新的控制台
-                            // 重新初始化控制台输出（GBK编码，与AppMutexHelper.CheckAppMutex一致）
-                            const uint CP_GBK = 936;
-                            SetConsoleOutputCP(CP_GBK);
-                            Console.OutputEncoding = Encoding.GetEncoding(936);
-                            var writer = new StreamWriter(
-                                Console.OpenStandardOutput(),
-                                Console.OutputEncoding
-                            );
-                            writer.AutoFlush = true;
-                            Console.SetOut(writer);
-                            Console.CursorVisible = false;
-                            SendResponse = new { error = 0, message = "控制台已显示" };
+                            if (ConsoleEnvironment.IsUtf8Requested)
+                            {
+                                var interactive = ConsoleEnvironment.TryInitialize();
+                                var available = interactive || ConsoleEnvironment.HasOutputDestination();
+                                SendResponse = new
+                                {
+                                    error = available ? 0 : 1,
+                                    message = interactive ? "控制台已显示" : available ? "输出已由宿主或调试器接管" : "没有可用的控制台输出"
+                                };
+                            }
+                            else
+                            {
+                                // Explicit show after hide must reconnect the ordinary host's console writer.
+                                AllocConsole();
+                                SetConsoleOutputCP(936);
+                                Console.OutputEncoding = Encoding.GetEncoding(936);
+                                Console.SetOut(new StreamWriter(Console.OpenStandardOutput(), Console.OutputEncoding) { AutoFlush = true });
+                                SendResponse = new { error = 0, message = "控制台已显示" };
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -1051,11 +1057,18 @@ public class SimpleHttpServer
                     {
                         try
                         {
-                            // 先重定向输出流到Null，防止后续WpfConfig.DefaultLogger.Info报IOException
-                            Console.SetOut(TextWriter.Null);
-                            Console.SetError(TextWriter.Null);
-                            FreeConsole(); // 使用Kernel32.dll释放当前进程的控制台
-                            SendResponse = new { error = 0, message = "控制台已隐藏" };
+                            if (ConsoleEnvironment.IsUtf8Requested)
+                            {
+                                SendResponse = new { error = 0, message = "调试器输出不需要隐藏" };
+                            }
+                            else
+                            {
+                                // 先重定向输出流到Null，防止后续WpfConfig.DefaultLogger.Info报IOException
+                                Console.SetOut(TextWriter.Null);
+                                Console.SetError(TextWriter.Null);
+                                FreeConsole(); // 使用Kernel32.dll释放当前进程的控制台
+                                SendResponse = new { error = 0, message = "控制台已隐藏" };
+                            }
                         }
                         catch (Exception ex)
                         {

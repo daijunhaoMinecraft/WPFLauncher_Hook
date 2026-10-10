@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.IO;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using Mcl.Core.Dotnetdetour.Models.Config;
+using Mcl.Core.Dotnetdetour.Services.Bedrock;
+using Mcl.Core.Dotnetdetour.Services.Mods;
 using Mcl.Core.Dotnetdetour.UI.Themes;
 using Mcl.Core.Updater;
 
@@ -25,10 +29,22 @@ public sealed class SettingsPanel : UserControl
     private readonly CheckBox _disableUpdates;
     private readonly CheckBox _developmentUpdates;
     private readonly Action _onSaved;
+    private readonly Func<ConfigEntry, string, string> _selectFolder;
+    private readonly Action<ProcessStartInfo> _startFolderProcess;
+    private readonly Func<string, bool> _confirmClearPackcache;
 
-    public SettingsPanel(Action onSaved = null)
+    public SettingsPanel(Action onSaved = null, Func<ConfigEntry, string, string> selectFolder = null)
+        : this(onSaved, selectFolder, StartFolderProcess, null)
+    {
+    }
+
+    internal SettingsPanel(Action onSaved, Func<ConfigEntry, string, string> selectFolder,
+        Action<ProcessStartInfo> startFolderProcess, Func<string, bool> confirmClearPackcache = null)
     {
         _onSaved = onSaved;
+        _selectFolder = selectFolder ?? SelectFolder;
+        _startFolderProcess = startFolderProcess ?? throw new ArgumentNullException(nameof(startFolderProcess));
+        _confirmClearPackcache = confirmClearPackcache ?? ConfirmClearPackcache;
         FluentTheme.Apply(this);
 
         var layout = new Grid { Margin = new Thickness(24) };
@@ -187,6 +203,16 @@ public sealed class SettingsPanel : UserControl
                 Text = Convert.ToString(entry.GetValue(), CultureInfo.InvariantCulture),
                 Margin = new Thickness(0, 12, 0, 0), MinWidth = 80
             };
+            if (entry.Editor == "multiline" || entry.Editor == "mcp-sources")
+            {
+                var text = (TextBox)editor;
+                text.AcceptsReturn = true;
+                text.TextWrapping = TextWrapping.Wrap;
+                text.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                text.MinHeight = 100;
+                text.MaxHeight = 180;
+            }
+
             Grid.SetRow(editor, 1);
             Grid.SetColumnSpan(editor, 2);
         }
@@ -196,7 +222,189 @@ public sealed class SettingsPanel : UserControl
         editor.ToolTip = entry.HelpText ?? entry.Description;
         _editors[entry] = editor;
         grid.Children.Add(editor);
+        if (entry.FieldName == nameof(WpfConfig.EnableModInjection))
+        {
+            var open = new Button
+            {
+                Content = "打开注入目录", Margin = new Thickness(0, 12, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                ToolTip = "打开 ModsInject 文件夹；不会启用模组注入或保存设置。"
+            };
+            AutomationProperties.SetName(open, "打开模组注入目录");
+            open.Click += (sender, args) => OpenModInjectionDirectory();
+            Grid.SetRow(open, 1);
+            Grid.SetColumnSpan(open, 2);
+            grid.Children.Add(open);
+        }
+
+        if (entry.Editor == "folder" || entry.Editor == "mcp-sources")
+        {
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            var actions = new WrapPanel { Margin = new Thickness(0, 8, 0, 0) };
+            Grid.SetRow(actions, 2);
+            Grid.SetColumnSpan(actions, 2);
+            grid.Children.Add(actions);
+            var browse = new Button { Content = entry.Editor == "folder" ? "选择文件夹…" : "添加文件夹…" };
+            AutomationProperties.SetName(browse, entry.Description + "：选择文件夹");
+            browse.Click += (sender, args) => BrowseFolder(entry, (TextBox)editor);
+            actions.Children.Add(browse);
+            if (entry.FieldName == nameof(WpfConfig.BedrockPackcacheDirectory))
+            {
+                var clear = new Button
+                {
+                    Content = "清空目录（修复资源包）", Margin = new Thickness(8, 0, 0, 0),
+                    Style = (Style)FindResource("DangerButton"),
+                    ToolTip = "删除该 packcache 目录内的全部内容（保留 packcache 文件夹本身），用于修复损坏的资源包；不可撤销，请先退出游戏。"
+                };
+                AutomationProperties.SetName(clear, "清空 packcache 目录");
+                clear.Click += (sender, args) => ClearPackcache((TextBox)editor);
+                actions.Children.Add(clear);
+            }
+
+            if (entry.Editor == "mcp-sources")
+            {
+                var files = new Button { Content = "添加 .mcp 文件…", Margin = new Thickness(8, 0, 0, 0) };
+                files.Click += (sender, args) => BrowseMcpFiles((TextBox)editor);
+                actions.Children.Add(files);
+                var clear = new Button { Content = "清空列表", Margin = new Thickness(8, 0, 0, 0) };
+                clear.Click += (sender, args) => ((TextBox)editor).Clear();
+                actions.Children.Add(clear);
+            }
+        }
+
         return new Border { Child = grid, Style = (Style)FindResource("Card"), Margin = new Thickness(0, 0, 0, 6) };
+    }
+
+    private void OpenModInjectionDirectory()
+    {
+        try
+        {
+            var path = ModInjectionDirectory.EnsureExists();
+            // Let Windows open the directory as a single path, without constructing a shell command.
+            _startFolderProcess(new ProcessStartInfo { FileName = path, UseShellExecute = true });
+            _status.SetResourceReference(TextBlock.ForegroundProperty, "SecondaryTextBrush");
+            _status.Text = "已请求打开注入目录：" + path;
+        }
+        catch (Exception exception)
+        {
+            _status.SetResourceReference(TextBlock.ForegroundProperty, "DangerBrush");
+            _status.Text = "无法打开注入目录：" + exception.Message;
+        }
+    }
+
+    private static void StartFolderProcess(ProcessStartInfo startInfo)
+    {
+        // Dispose the managed handle, not the Explorer window; shell activation can return null.
+        using (Process.Start(startInfo))
+        {
+        }
+    }
+
+    private void BrowseFolder(ConfigEntry entry, TextBox editor)
+    {
+        try
+        {
+            var selected = _selectFolder(entry, editor.Text);
+            if (selected == null) return;
+            if (entry.FieldName == nameof(WpfConfig.BedrockDirectory)) BedrockPathValidator.Validate(selected);
+            if (entry.Editor == "mcp-sources") AppendPaths(editor, new[] { selected });
+            else
+            {
+                BedrockCacheOptions.ValidateEntry(entry.FieldName, selected);
+                editor.Text = selected;
+            }
+
+            _status.SetResourceReference(TextBlock.ForegroundProperty, "SecondaryTextBrush");
+            _status.Text = "已选择路径，点击「保存并应用」后生效。";
+        }
+        catch (Exception exception)
+        {
+            _status.SetResourceReference(TextBlock.ForegroundProperty, "DangerBrush");
+            _status.Text = exception.Message;
+        }
+    }
+
+    private void ClearPackcache(TextBox editor)
+    {
+        try
+        {
+            var directory = BedrockCacheOptions.FullPath(editor.Text);
+            BedrockCacheOptions.ValidateEntry(nameof(WpfConfig.BedrockPackcacheDirectory), directory);
+            if (!Directory.Exists(directory))
+            {
+                _status.SetResourceReference(TextBlock.ForegroundProperty, "DangerBrush");
+                _status.Text = "目录不存在：" + directory;
+                return;
+            }
+
+            if (!_confirmClearPackcache(directory)) return;
+            var failures = new List<Exception>();
+            var removed = BedrockCacheService.ClearPackcache(directory, failures);
+            if (failures.Count > 0)
+            {
+                _status.SetResourceReference(TextBlock.ForegroundProperty, "DangerBrush");
+                _status.Text = $"已删除 {removed} 项，{failures.Count} 项失败（可能被游戏或其它程序占用）。";
+            }
+            else
+            {
+                _status.SetResourceReference(TextBlock.ForegroundProperty, "SuccessBrush");
+                _status.Text = removed == 0 ? "packcache 目录已为空。" : $"已清空 packcache 目录，共删除 {removed} 项。";
+            }
+        }
+        catch (Exception exception)
+        {
+            _status.SetResourceReference(TextBlock.ForegroundProperty, "DangerBrush");
+            _status.Text = "无法清空 packcache 目录：" + exception.Message;
+        }
+    }
+
+    private bool ConfirmClearPackcache(string directory)
+    {
+        var message = "将删除该 packcache 目录内的全部内容（保留 packcache 文件夹本身），用于修复损坏的资源包：\n\n"
+                      + directory + "\n\n此操作不可撤销，请先完全退出游戏和启动器。是否继续？";
+        var owner = Window.GetWindow(this);
+        return (owner == null
+                   ? MessageBox.Show(message, "清空 packcache", MessageBoxButton.YesNo, MessageBoxImage.Warning)
+                   : MessageBox.Show(owner, message, "清空 packcache", MessageBoxButton.YesNo, MessageBoxImage.Warning))
+               == MessageBoxResult.Yes;
+    }
+
+    private string SelectFolder(ConfigEntry entry, string current)
+    {
+        using (var dialog = new System.Windows.Forms.FolderBrowserDialog
+               {
+                   Description = entry.HelpText ?? entry.Description,
+                   SelectedPath = Directory.Exists(current) ? current : "",
+                   ShowNewFolderButton = false
+               })
+        {
+            return dialog.ShowDialog(new DialogOwner(Window.GetWindow(this))) == System.Windows.Forms.DialogResult.OK
+                ? dialog.SelectedPath
+                : null;
+        }
+    }
+
+    private void BrowseMcpFiles(TextBox editor)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "选择 .mcp 资源文件", Filter = "MCP 文件 (*.mcp)|*.mcp", Multiselect = true, CheckFileExists = true
+        };
+        var owner = Window.GetWindow(this);
+        if ((owner == null ? dialog.ShowDialog() : dialog.ShowDialog(owner)) == true)
+            AppendPaths(editor, dialog.FileNames);
+    }
+
+    private static void AppendPaths(TextBox editor, IEnumerable<string> paths) => editor.Text =
+        string.Join(Environment.NewLine,
+            BedrockCacheOptions.Lines(editor.Text).Concat(paths).Distinct(StringComparer.OrdinalIgnoreCase));
+
+    private sealed class DialogOwner : System.Windows.Forms.IWin32Window
+    {
+        public DialogOwner(Window window) => Handle =
+            window == null ? IntPtr.Zero : new System.Windows.Interop.WindowInteropHelper(window).Handle;
+
+        public IntPtr Handle { get; }
     }
 
     private void FilterSettings()

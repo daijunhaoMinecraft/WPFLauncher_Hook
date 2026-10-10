@@ -22,7 +22,7 @@ using Net.Nekocurit.Cipher;
 using Newtonsoft.Json.Linq;
 using NLog;
 
-internal static class Program
+internal static partial class Program
 {
     private static int _checks;
     private static string _root;
@@ -31,6 +31,21 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        if (args.Length == 1 && args[0] == "--console-encoding-probe")
+        {
+            ConsoleEnvironment.TryInitialize();
+            ConsoleOutput.Write("中文");
+            return 0;
+        }
+        if (args.Length == 1 && args[0] == "--logging-encoding-probe")
+        {
+            ConsoleEnvironment.TryInitialize();
+            Console.OutputEncoding = Encoding.GetEncoding(936); // Simulate a later host-side reset.
+            LauncherLogging.Configure(false, false, AppDomain.CurrentDomain.BaseDirectory);
+            LauncherLogging.Info("[MCL][Hook] [Web] 服务器中文输出");
+            LogManager.Flush();
+            return 0;
+        }
         if (args.Length != 2) { Console.Error.WriteLine("Usage: Mcl.Core.exe <repository> <output-directory>"); return 2; }
         _root = Path.GetFullPath(args[0]);
         _output = Path.GetFullPath(args[1]);
@@ -41,6 +56,10 @@ internal static class Program
         {
             CryptoTests();
             ConfigurationTests();
+            BedrockTests();
+            ModInjectionDirectoryTests();
+            ConsoleTests();
+            HookInstallationTests();
             LoggingTests();
             BufferTests();
             ResourceTests();
@@ -135,7 +154,7 @@ internal static class Program
                      "{\"CustomJVMArguments\":\"-Dkey=\\\"open\"}", "{\"CustomJVMArguments\":\"invalid\"}" })
             Reject(() => ConfigManager.UpdateFromJson(json), "invalid configuration " + json);
         ConfigManager.UpdateFromJson("{\"IsDebug\":false,\"EnableVerboseLogging\":true,\"Version\":\"not-allowed\"}");
-        Check(!WpfConfig.EnableVerboseLogging && WpfConfig.Version != "not-allowed", "stable-key precedence and registry whitelist");
+        Check(!WpfConfig.EnableVerboseLogging && WpfConfig.GetVersion() != "not-allowed", "stable-key precedence and registry whitelist");
         ConfigManager.UpdateFromJson("{\"HttpPort\":1,\"MaxThread\":64}");
         Check(WpfConfig.HttpPort == 1 && WpfConfig.DownloadWorkerCount == 64, "integer boundaries");
 
@@ -169,6 +188,8 @@ internal static class Program
             Console.SetOut(writer);
             var logger = LogManager.GetLogger("host-test");
             LauncherLogging.Configure(false, true, WpfConfig.LauncherRootDirectory);
+            Check((LogManager.Configuration.FindTargetByName("mcl-console") is NLog.Targets.ColoredConsoleTarget) ==
+                ConsoleEnvironment.HasInteractiveOutput(), "NLog uses plain output for non-console handles");
             var computed = false;
             LauncherLogging.Debug(() => { computed = true; return "hidden-lazy"; });
             logger.Debug("hidden-debug");
@@ -233,6 +254,18 @@ internal static class Program
         var panel = new SettingsPanel(() => savedCount++);
         Render(panel, 860, 680, "settings-general.png");
         var navigation = Descendants<ListBox>(panel).Single();
+        navigation.SelectedItem = "基岩版";
+        Render(panel, 860, 680, "settings-bedrock.png");
+        Check(Descendants<Button>(panel).Any(control => AutomationProperties.GetName(control) == "基岩版目录：选择文件夹"), "Bedrock folder picker is present");
+        navigation.SelectedItem = "基岩版缓存";
+        Render(panel, 860, 680, "settings-bedrock-cache.png");
+        Check(Descendants<TextBox>(panel).Count(control => control.AcceptsReturn) == 3, "three multiline cache editors");
+        var settingsScroll = Descendants<ScrollViewer>(panel).Single(control => control.Content is StackPanel);
+        settingsScroll.ScrollToEnd();
+        Render(panel, 660, 520, "settings-bedrock-cache-sources.png");
+        settingsScroll.ScrollToTop();
+        FolderPickerTests();
+        BedrockClearUiTests();
         navigation.SelectedItem = "日志与诊断";
         Render(panel, 860, 680, "settings-logging.png");
         var search = Descendants<TextBox>(panel).Single(control => AutomationProperties.GetName(control) == "搜索设置");
@@ -252,6 +285,8 @@ internal static class Program
         saveButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
         Check(savedCount == 1 && WpfConfig.HttpPort == 54322, "UI save uses shared configuration pipeline");
         Check(JObject.Parse(File.ReadAllText(ConfigManager.ConfigFilePath))["HttpPort"].Value<int>() == 54322, "UI save persisted");
+
+        ModInjectionUiTests();
 
         var logWindow = new ProcessLogWindow("minecraft.exe");
         logWindow.AppendLog("[Game] 游戏正在启动…");

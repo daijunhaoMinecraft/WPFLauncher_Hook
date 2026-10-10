@@ -11,6 +11,7 @@ using CefSharp.Wpf;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
 using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
+using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.Network;
 using Mcl.Core.Network.Interface;
 // 确保包含 INetRequest 等接口
@@ -381,6 +382,9 @@ namespace Mcl.Core.Dotnetdetour.Features.Optimization
             {
                 instance.RequestHandler = new CustomRequestHandler();
             }
+            // Share the host browser's session (cookies/cache) with plugin browser requests.
+            try { CefBrowserRequest.UseSession(instance.RequestContext); }
+            catch (Exception ex) { PluginLog.Debug("Web", $"Session context capture skipped: {ex.Message}"); }
             Original(instance, bfw);
         }
 

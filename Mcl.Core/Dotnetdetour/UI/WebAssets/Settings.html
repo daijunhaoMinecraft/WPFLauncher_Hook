@@ -68,8 +68,10 @@
                     help.textContent = item.help;
                     label.append(help);
                 }
-                const input = document.createElement('input');
-                input.type = item.type === 'Boolean' ? 'checkbox' : item.type === 'Int32' ? 'number' : 'text';
+                const multiline = item.editor === 'multiline' || item.editor === 'mcp-sources';
+                const input = document.createElement(multiline ? 'textarea' : 'input');
+                if (multiline) { input.rows = 5; card.classList.add('multiline-setting'); }
+                else input.type = item.type === 'Boolean' ? 'checkbox' : item.type === 'Int32' ? 'number' : 'text';
                 if (input.type === 'checkbox') input.checked = current.data[key] === true;
                 else input.value = current.data[key] ?? '';
                 if (item.minimum != null) input.min = item.minimum;

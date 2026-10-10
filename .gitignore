@@ -16,3 +16,7 @@
 /.artifacts/
 /tests/**/bin/
 /tests/**/obj/
+
+# Share only IDE launch definitions, never the local host or account/configuration data.
+!/.run/*.run.xml
+/MCLauncherDebug/

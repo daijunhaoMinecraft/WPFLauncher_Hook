@@ -16,6 +16,7 @@ using Mcl.Core.Dotnetdetour.Features.GameTweaks;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Globals;
+using Mcl.Core.Dotnetdetour.Services.Mods;
 using Mcl.Core.Dotnetdetour.UI.Controls;
 using Mcl.Core.Dotnetdetour.UI.Core;  // [新增] 必须引用包含 ThreadHelperSTATask 的命名空间
 using WPFLauncher.Common;
@@ -258,13 +259,12 @@ public class WebRtcEx : IMethodHook
         
         if (WpfConfig.EnableModInjection)
         {
-            var modsInjectPath = Path.Combine(Directory.GetCurrentDirectory(), "ModsInject");
             var minecraftModsPath = Path.Combine(MinecraftPath.GetMinecraftPath(), "mods");
 
             if (!Directory.Exists(minecraftModsPath))
                 Directory.CreateDirectory(minecraftModsPath);
 
-            var jarFiles = Directory.GetFiles(modsInjectPath, "*.jar");
+            var jarFiles = ModInjectionDirectory.GetJarFiles();
 
             using (var md5 = MD5.Create())
             {

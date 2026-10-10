@@ -15,13 +15,13 @@ body { margin: 0; padding: 24px; background: var(--light-color); color: var(--te
 h1, h2, h3 { font-weight: 600; }
 h1 { font-size: 28px; margin: 0 0 8px; }
 h2 { font-size: 20px; }
-button, input, select { font: inherit; }
+button, input, select, textarea { font: inherit; }
 button, .btn { min-height: 32px; padding: 6px 16px; border-radius: 4px; cursor: pointer; border: 1px solid var(--border-color); background: #fbfbfb; color: var(--text-color); }
 button:hover, .btn:hover { background: #f0f0f0; transform: none; }
 button.primary, .btn-primary { background: var(--primary-color); border-color: var(--primary-color); color: white; }
 button.primary:hover, .btn-primary:hover { background: #0055a4; }
 button:disabled { opacity: .5; cursor: default; }
-input:not([type=checkbox]), select { min-height: 34px; border: 1px solid var(--border-color); border-radius: 4px; background: #fbfbfb; color: var(--text-color); padding: 6px 10px; max-width: 100%; }
+input:not([type=checkbox]), select, textarea { min-height: 34px; border: 1px solid var(--border-color); border-radius: 4px; background: #fbfbfb; color: var(--text-color); padding: 6px 10px; max-width: 100%; }
 input[type=checkbox] { accent-color: var(--primary-color); width: 20px; height: 20px; flex-shrink: 0; }
 :focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
 .container { border: 1px solid var(--border-color); }
@@ -41,6 +41,9 @@ input[type=checkbox] { accent-color: var(--primary-color); width: 20px; height: 
 .setting-card .setting-label strong { display: block; }
 .setting-card small, .subtitle { display: block; color: #5d5d5d; margin-top: 4px; }
 .setting-card input:not([type=checkbox]) { width: min(44%, 380px); }
+.setting-card.multiline-setting { flex-wrap: wrap; }
+.setting-card.multiline-setting .setting-label { flex-basis: 100%; }
+.setting-card textarea { width: 100%; min-height: 100px; resize: vertical; }
 .settings-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #f9f9f9; padding: 16px 24px; border-top: 1px solid var(--border-color); }
 .settings-footer-inner { max-width: 1040px; margin: auto; display: flex; align-items: center; gap: 12px; }
 .settings-status { flex: 1; color: #5d5d5d; }

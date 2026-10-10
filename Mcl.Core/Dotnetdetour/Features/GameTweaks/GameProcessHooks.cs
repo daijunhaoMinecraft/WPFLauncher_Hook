@@ -20,6 +20,7 @@ using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading;
 using Mcl.Core.Dotnetdetour.UI.Controls;
+using Mcl.Core.Dotnetdetour.Services.Bedrock;
 
 namespace Mcl.Core.Dotnetdetour.Features.GameTweaks;
 
@@ -75,7 +76,7 @@ public class GameProcessStartupHook : IMethodHook
     public aqq ProcessStart(string fileName, string args, aqo startType, string workDirectory = null)
     {
         fileName = fileName?.Replace("\"", "") ?? string.Empty;
-        bool isBedrock = fileName.Contains("Minecraft.Windows.exe");
+        bool isBedrock = BedrockCacheService.IsBedrockExecutable(fileName);
         bool isJava = fileName.Contains("java.exe") || fileName.Contains("javaw.exe");
 
         // 声明基岩版专属的路径变量，供退出回调使用
@@ -230,6 +231,7 @@ public class GameProcessStartupHook : IMethodHook
         }
 
         PluginLog.Info("Game", $"[进程] 启动进程: {fileName}");
+        BedrockCacheService.Attach(processObj, fileName);
         return processObj;
     }
     #endregion

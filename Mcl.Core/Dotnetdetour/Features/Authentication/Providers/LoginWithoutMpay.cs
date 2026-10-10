@@ -58,9 +58,6 @@ public class LoginWithoutMpay : IMethodHook
     [HookMethod("WPFLauncher.Manager.arf", "j", "ProcessLogout")]
     public void ProcessLogoutHook()
     {
-        PluginLog.Debug("Auth", "执行注销...");
-        ProcessLogout();
-
         if (WpfConfig.UseAccountManagerLogin)
         {
             string sauthJson = AuthIntegrationService.RequestUserLogin(allowOriginal: false);
@@ -69,7 +66,10 @@ public class LoginWithoutMpay : IMethodHook
                 AuthIntegrationService.InjectMpayCookie(sauthJson);
             }
             azf<apm>.Instance.CanChannelLogin = true;
+            return;
         }
+        PluginLog.Debug("Auth", "执行注销...");
+        ProcessLogout();
     }
 
     [HookMethod("WPFLauncher.Manager.PCChannel.asx", "a")]

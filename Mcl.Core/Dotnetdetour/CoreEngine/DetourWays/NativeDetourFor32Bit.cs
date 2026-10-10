@@ -61,6 +61,16 @@ public unsafe class NativeDetourFor32Bit : IDetour
     /// <param name="originalMethod"></param>
     protected virtual void MakePlacholderMethodCallPointsToRawMethod(MethodBase originalMethod)
     {
+        // With the CLR debugger attached, GetFunctionPointer commonly returns an E9 rel32 entry stub.
+        // Its displacement is relative to that stub, not to our allocated trampoline. Copying it unchanged
+        // redirects the original call into unrelated memory. The original JIT body itself remains untouched.
+        if (rawMethodPtr[0] == 0xE9)
+        {
+            var originalTarget = rawMethodPtr + 5 + *(int*)(rawMethodPtr + 1);
+            SetPlaceholderTarget(originalMethod, (IntPtr)originalTarget);
+            return;
+        }
+
         uint oldProtect;
         var needSize = LDasm.SizeofMin5Byte(rawMethodPtr);
         var total_length = (int)needSize + 5;
@@ -76,7 +86,12 @@ public unsafe class NativeDetourFor32Bit : IDetour
 
         Marshal.Copy(code, 0, ptr, total_length);
         NativeAPI.VirtualProtect(ptr, (uint)total_length, Protection.PAGE_EXECUTE_READWRITE, out oldProtect);
+        SetPlaceholderTarget(originalMethod, ptr);
+    }
+
+    private static void SetPlaceholderTarget(MethodBase originalMethod, IntPtr target)
+    {
         RuntimeHelpers.PrepareMethod(originalMethod.MethodHandle);
-        *((uint*)originalMethod.MethodHandle.Value.ToPointer() + 2) = (uint)ptr;
+        *((uint*)originalMethod.MethodHandle.Value.ToPointer() + 2) = (uint)target;
     }
 }

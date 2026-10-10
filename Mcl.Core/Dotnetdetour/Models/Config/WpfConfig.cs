@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Permissions;
+using System.Reflection;
 using Mcl.Core.Dotnetdetour.Models.Entities;
 using Mcl.Core.Dotnetdetour.Models.Entity;
 using Net.Nekocurit.Cipher;
@@ -15,9 +15,11 @@ using WPFLauncher.View.UI;
 
 namespace Mcl.Core.Dotnetdetour.Models.Config;
 
-public partial class WpfConfig
+public class WpfConfig
 {
-    public static string Version = "7.0.0-DLL-Public";
+    public static string GetVersion() => typeof(WpfConfig).Assembly
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        ?? typeof(WpfConfig).Assembly.GetName().Version.ToString();
     public static string DefaultWebSocketAddress = "ws://127.0.0.1:4600/websocket";
     public static string DefaultHttpAddress = "http://127.0.0.1:4600/";
     public static int HttpPort = 4600;
@@ -62,6 +64,15 @@ public partial class WpfConfig
     public static bool EnableParallelDownloads = false;
     public static int ParallelDownloadThresholdMb = 30;
     public static string BedrockDirectory = tb.s;
+    public static bool EnableBedrockCacheCleanup = false;
+    public static bool EnableBedrockMcpCopy = false;
+    public static string BedrockPackcacheDirectory = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MinecraftPE_Netease", "packcache");
+    public static string BedrockCacheFileNames = "play.entity.json\nplayer.animation_controllers.json\nplayer.animation.json\n"
+        + "diamond_sword.json\ngold_sword.json\niron_sword.json\nnetherite_sword.json\nstone_sword.json\nwooden_sword.json";
+    public static string BedrockCacheFolderNames = "attachables";
+    public static int BedrockCacheDurationSeconds = 50;
+    public static string BedrockMcpSources = string.Empty;
     public static bool KeepWindowsOnTop = false;
 
     // Advanced
@@ -70,7 +81,7 @@ public partial class WpfConfig
     public static bool WriteLauncherLogsToFile = true;
     
     // 跳过 Java 游戏完整性检查(谨慎开启)
-    public static bool SkipStartJavaFileFullCheck = true;
+    public static bool SkipStartJavaFileFullCheck = false;
 
     // custom Settings
     public static bool EnableBedrockClientSelection = false;

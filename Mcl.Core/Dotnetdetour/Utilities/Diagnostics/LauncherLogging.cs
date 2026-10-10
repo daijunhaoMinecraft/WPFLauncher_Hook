@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
@@ -25,12 +26,31 @@ public static class LauncherLogging
             var layout = "${date:format=HH\\:mm\\:ss.fff} | ${level:uppercase=true} | ${message}" +
                          (verbose ? " ${exception:format=tostring}" : " ${exception:format=message}");
             var configuration = new LoggingConfiguration();
-            var console = new ColoredConsoleTarget("mcl-console")
+            Target console;
+            if (ConsoleEnvironment.HasInteractiveOutput())
             {
-                Layout = layout,
-                UseDefaultRowHighlightingRules = false
-            };
-            AddConsoleColors(console);
+                var colored = new ColoredConsoleTarget("mcl-console")
+                {
+                    Layout = layout,
+                    UseDefaultRowHighlightingRules = false
+                };
+                if (ConsoleEnvironment.IsUtf8Requested)
+                    colored.Encoding = ConsoleEnvironment.SelectOutputEncoding(true);
+                AddConsoleColors(colored);
+                console = colored;
+            }
+            else if (ConsoleEnvironment.IsUtf8Requested && ConsoleEnvironment.HasOutputDestination())
+            {
+                // A redirected handle (for example an IDE debugger pipe) has no console screen buffer, so the
+                // built-in console targets fail to initialize when an Encoding is requested because setting
+                // Console.OutputEncoding throws. Emit UTF-8 bytes directly to the standard output instead.
+                console = new Utf8ConsoleTarget { Name = "mcl-console", Layout = layout };
+            }
+            else
+            {
+                console = new ConsoleTarget("mcl-console") { Layout = layout };
+            }
+
             configuration.AddTarget(console);
             configuration.LoggingRules.Add(new LoggingRule("*", minimum, console));
             if (writeToFile)
@@ -105,5 +125,27 @@ public static class LauncherLogging
             Condition = "level == LogLevel.Trace",
             ForegroundColor = ConsoleOutputColor.DarkGray
         });
+    }
+
+    /// <summary>
+    /// Plain-text console target for redirected, non-interactive handles. It encodes the rendered line as
+    /// UTF-8 and writes it straight to the standard output stream, avoiding Console.OutputEncoding and any
+    /// console color calls that a redirected debugger pipe cannot service.
+    /// </summary>
+    private sealed class Utf8ConsoleTarget : TargetWithLayout
+    {
+        private static readonly object WriteSync = new object();
+        private static readonly Encoding Utf8 = new UTF8Encoding(false);
+
+        protected override void Write(LogEventInfo logEvent)
+        {
+            var bytes = Utf8.GetBytes(Layout.Render(logEvent) + Environment.NewLine);
+            lock (WriteSync)
+            {
+                var output = Console.OpenStandardOutput();
+                output.Write(bytes, 0, bytes.Length);
+                output.Flush();
+            }
+        }
     }
 }

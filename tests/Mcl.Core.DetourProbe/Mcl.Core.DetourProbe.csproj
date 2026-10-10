@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+    <DebugType>portable</DebugType>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <LauncherDirectory Condition="'$(LauncherDirectory)' == ''">$(MSBuildProjectDirectory)\..\..\MCLauncherDebug</LauncherDirectory>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NLog"><HintPath>$(LauncherDirectory)\NLog.dll</HintPath></Reference>
+    <Compile Include="Program.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\ConsoleEnvironment.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\ConsoleOutput.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\LauncherLogging.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\DetourWays\NativeDetourFor32Bit.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\Base\LDasm.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\Base\NativeAPI.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\Base\Protection.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\Interfaces\IDetour.cs" />
+  </ItemGroup>
+</Project>

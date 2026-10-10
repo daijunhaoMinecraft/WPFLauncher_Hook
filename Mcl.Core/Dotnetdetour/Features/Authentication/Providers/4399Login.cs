@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -15,13 +16,15 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.UI.Forms;
+using Mcl.Core.Dotnetdetour.Utilities.Network;
 
 using Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 namespace Mcl.Core.Dotnetdetour.Features.Authentication.Providers;
 
 internal class _4399
 {
-    private const string UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/129.0.0.0 Safari/537.36";
+    // Keep every 4399 path (browser requests, captcha, uni_sauth) on the same Chrome profile.
+    private const string UserAgent = CefBrowserProfile.UserAgent;
     private const string OAuth2BaseUrl = "https://ptlogin.4399.com/oauth2/";
     private const string RedirectUri = "https://m.4399api.com/openapi/oauth-callback.html?gamekey=44770&game_key=115716";
     private const string SdkVersion = "3.18.0.682";
@@ -48,74 +51,57 @@ internal class _4399
                 if (captchaResult.UsedOcr) ocrAttemptCount++;
 
                 var oauthParams = await ParamsAsync();
+                if (oauthParams == null || string.IsNullOrEmpty(oauthParams.OauthUrl))
+                    return LoginResult.Fail("获取 4399 OAuth 参数失败");
+
                 var loginUrl = $"{OAuth2BaseUrl}loginAndAuthorize.do?channel=&sdk=op&sdk_version={SdkVersion}";
                 var form = BuildLoginForm(username, password, captchaResult.Text, captchaResult.CaptchaId, oauthParams);
-                
-                using var client = CreateHttpClient();
-                
-                // 获取 cookie
-                var getResponse = await client.GetAsync(oauthParams.OauthUrl);
-                getResponse.EnsureSuccessStatusCode();
 
-                var cookieParts = new List<string>();
-                if (getResponse.Headers.TryGetValues("Set-Cookie", out var setCookies))
+                PluginLog.Info("Auth", $"[4399] Starting browser login flow for '{username}'");
+
+                // Prime the browser session. Cookies are stored in the shared browser request
+                // context and automatically reused by the login POST below.
+                var primeResponse = await CefBrowserRequest.GetAsync(
+                    oauthParams.OauthUrl, CefBrowserProfile.Navigation(RedirectUri));
+                if (primeResponse.Failed)
                 {
-                    foreach (var setCookie in setCookies)
-                    {
-                        var cookieKeyValue = setCookie.Split(';')[0].Trim();
-                        if (!string.IsNullOrEmpty(cookieKeyValue))
-                        {
-                            cookieParts.Add(cookieKeyValue);
-                        }
-                    }
+                    PluginLog.Error("Auth", $"[4399] Browser session priming failed: {primeResponse.ErrorMessage}");
+                    return LoginResult.Fail($"4399 会话初始化失败: {primeResponse.ErrorMessage}");
                 }
+                PluginLog.Debug("Auth", $"[4399] Browser session primed, http={primeResponse.StatusCode}");
 
-                var cookieHeader = string.Join("; ", cookieParts);
-
-                string responseBody = null;
-                HttpResponseMessage httpResponse = null;
+                CefBrowserResponse loginResponse = null;
                 const int maxRetries = 20;
 
                 for (int attempt = 0; attempt < maxRetries; attempt++)
                 {
-                    // 正式请求
-                    var request = new HttpRequestMessage(HttpMethod.Post, loginUrl)
-                    {
-                        Content = new FormUrlEncodedContent(form)
-                    };
+                    loginResponse = await PostLoginViaHttpClientAsync(loginUrl, form, "https://ptlogin.4399.com/");
 
-                    if (!string.IsNullOrEmpty(cookieHeader))
+                    if (loginResponse.Failed)
                     {
-                        request.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
+                        PluginLog.Error("Auth", $"[4399] Browser login request failed: {loginResponse.ErrorMessage}");
+                        return LoginResult.Fail($"4399 登录请求失败: {loginResponse.ErrorMessage}");
                     }
 
-                    httpResponse = await client.SendAsync(request);
-                    responseBody = await httpResponse.Content.ReadAsStringAsync();
-
-                    if (httpResponse.StatusCode == HttpStatusCode.Accepted)
+                    if (loginResponse.StatusCode == (int)HttpStatusCode.Accepted)
                     {
-                        PluginLog.Error("Auth", $"触发 4399 服务器问题，第 {attempt + 1}/{maxRetries} 次重试...");
-
-                        // 如果不是最后一次尝试，等待 1 秒后继续
-                        if (attempt < maxRetries - 1)
-                        {
-                            await Task.Delay(1000);
-                        }
+                        PluginLog.Warn("Auth", $"[4399] Server busy (HTTP 202), retry {attempt + 1}/{maxRetries}");
+                        if (attempt < maxRetries - 1) await Task.Delay(1000);
                     }
                     else
                     {
                         break;
                     }
                 }
-                
-                if (httpResponse?.StatusCode == HttpStatusCode.Accepted)
-                {
-                    PluginLog.Error("Auth", "已重试 20 次，仍然触发 4399 服务器问题，停止重试。");
-                }
+
+                if (loginResponse.StatusCode == (int)HttpStatusCode.Accepted)
+                    PluginLog.Error("Auth", $"[4399] Server still busy after {maxRetries} retries, giving up");
+
+                var responseBody = loginResponse.Body;
 
                 if (string.IsNullOrEmpty(responseBody))
                 {
-                    var location = httpResponse.Headers.Location?.ToString();
+                    var location = loginResponse.Location;
                     if (string.IsNullOrEmpty(location)) return LoginResult.Fail("登录成功但无重定向地址");
 
                     var oauthData = await GetOAuthCallbackAsync(location);
@@ -123,15 +109,14 @@ internal class _4399
 
                     var sauthJson = BuildSauthJson(oauthData.Uid, oauthData.State);
 
-                    // 发送给 uni_sauth 注册
+                    // uni_sauth registration intentionally stays on the managed HTTP client.
                     using var sauthClient = CreateHttpClient();
                     var content = new StringContent(sauthJson, Encoding.UTF8, "application/json");
                     var sauthResponse = await sauthClient.PostAsync("https://mgbsdk.matrix.netease.com/x19/sdk/uni_sauth", content);
 
-                    // 读取 uni_sauth 返回内容并输出到控制台
                     var sauthResponseBody = await sauthResponse.Content.ReadAsStringAsync();
-                    PluginLog.Info("Auth", $"[4399] uni_sauth 状态码: {(int)sauthResponse.StatusCode} {sauthResponse.StatusCode}");
-                    PluginLog.Info("Auth", $"[4399] uni_sauth 响应: {sauthResponseBody}");
+                    PluginLog.Info("Auth",
+                        $"[4399] uni_sauth status: {(int)sauthResponse.StatusCode} {sauthResponse.StatusCode}, body length={sauthResponseBody?.Length ?? 0}");
 
                     // 尝试解析 JSON 响应体，检查业务 403
                     JObject sauthObj = null;
@@ -156,7 +141,7 @@ internal class _4399
                         if (string.IsNullOrEmpty(cleanMsg)) cleanMsg = rawMsg;
 
                         PluginLog.Error("Auth",
-                            $"[4399] uni_sauth 业务 403: subcode={subcode}, status={status}, popup={popup}, msg={cleanMsg}");
+                            $"[4399] uni_sauth business 403: subcode={subcode}, status={status}, popup={popup}, msg={cleanMsg}");
 
                         // 弹窗提示（若项目使用其他 UI 框架，请替换为对应调用）
                         if (popup == 1 || true) // popup 字段为 1 时必弹；此处统一弹窗
@@ -174,7 +159,8 @@ internal class _4399
                     // HTTP 状态码兜底
                     if (!sauthResponse.IsSuccessStatusCode)
                     {
-                        PluginLog.Error("Auth", $"[4399] uni_sauth 请求失败: {(int)sauthResponse.StatusCode} {sauthResponseBody}");
+                        PluginLog.Error("Auth",
+                            $"[4399] uni_sauth request failed: {(int)sauthResponse.StatusCode} {sauthResponseBody}");
                         return LoginResult.Fail($"uni_sauth 请求失败 ({(int)sauthResponse.StatusCode}): {sauthResponseBody}");
                     }
 
@@ -182,14 +168,19 @@ internal class _4399
                     return LoginResult.Ok(result.ToString(Formatting.None));
                 }
 
-                if (responseBody.Contains("验证码错误")) continue; // 重新尝试
+                if (responseBody.Contains("验证码错误"))
+                {
+                    PluginLog.Info("Auth", "[4399] Captcha rejected by server, restarting login attempt");
+                    continue; // 重新尝试
+                }
 
                 var errMsg = Regex.Match(responseBody, @"id=""login_err_msg""\s*>\s*([^<]+)\s*<").Groups[1].Value.Trim();
+                PluginLog.Warn("Auth", $"[4399] Login rejected: {(string.IsNullOrEmpty(errMsg) ? "unknown error" : errMsg)}");
                 return LoginResult.Fail(!string.IsNullOrEmpty(errMsg) ? errMsg : "未知登录错误");
             }
             catch (Exception ex)
             {
-                PluginLog.Error("Auth", $"[4399] 登录异常: {ex.Message}");
+                PluginLog.Error("Auth", $"[4399] Login exception: {ex.Message}");
                 return LoginResult.Fail(ex.Message);
             }
         }
@@ -227,35 +218,78 @@ internal class _4399
     {
         try
         {
-            using var wc = new WebClient();
-            wc.Headers.Add("User-Agent", UserAgent);
-            return Convert.ToBase64String(wc.DownloadData($"https://ptlogin.4399.com/ptlogin/captcha.do?captchaId={captchaId}"));
+            // Keep the captcha on the same browser session as the rest of the 4399 flow so
+            // session cookies set before/after it stay consistent.
+            var url = $"https://ptlogin.4399.com/ptlogin/captcha.do?captchaId={captchaId}";
+            var response = CefBrowserRequest
+                .GetAsync(url, CefBrowserProfile.Image("https://ptlogin.4399.com/"))
+                .GetAwaiter().GetResult();
+
+            if (response.Failed || response.RawBytes == null || response.RawBytes.Length == 0)
+            {
+                PluginLog.Error("Auth",
+                    $"[4399] Captcha image request failed: {(response.Failed ? response.ErrorMessage : "empty body")}");
+                return null;
+            }
+
+            PluginLog.Debug("Auth", $"[4399] Captcha image downloaded ({response.RawBytes.Length} bytes)");
+            return Convert.ToBase64String(response.RawBytes);
         }
-        catch { return null; }
+        catch (Exception ex)
+        {
+            PluginLog.Error("Auth", $"[4399] Captcha image download failed: {ex.Message}");
+            return null;
+        }
     }
 
     private static async Task<OAuthParams> ParamsAsync()
     {
-        using var client = CreateHttpClient();
-        var json = await client.GetStringAsync(RedirectUri);
-        var oauthUrl = JObject.Parse(json)["result"]?.ToString();
-        var q = HttpUtility.ParseQueryString(new Uri(oauthUrl).Query);
-        
+        var response = await CefBrowserRequest.GetAsync(RedirectUri, CefBrowserProfile.Navigation());
+        if (response.Failed || string.IsNullOrEmpty(response.Body))
+        {
+            PluginLog.Error("Auth",
+                $"[4399] OAuth params request failed: {(response.Failed ? response.ErrorMessage : "empty body")}");
+            return null;
+        }
+
+        var oauthUrl = JObject.Parse(response.Body)["result"]?.ToString();
+        if (string.IsNullOrEmpty(oauthUrl))
+        {
+            PluginLog.Error("Auth", "[4399] OAuth params response did not contain a result url");
+            return null;
+        }
+
+        var query = HttpUtility.ParseQueryString(new Uri(oauthUrl).Query);
+        PluginLog.Debug("Auth", "[4399] OAuth params resolved");
+
         return new OAuthParams
         {
-            ClientId = q["client_id"] ?? "", State = q["state"] ?? "",
-            RedirectUri = q["redirect_uri"] ?? "", D = q["_d"] ?? "",
-            BizId = q["bizId"] ?? "", Ref = q["ref"] ?? "", OauthUrl = oauthUrl
+            ClientId = query["client_id"] ?? "", State = query["state"] ?? "",
+            RedirectUri = query["redirect_uri"] ?? "", D = query["_d"] ?? "",
+            BizId = query["bizId"] ?? "", Ref = query["ref"] ?? "", OauthUrl = oauthUrl
         };
     }
 
     private static async Task<OAuthCallbackData> GetOAuthCallbackAsync(string locationUrl)
     {
-        using var client = CreateHttpClient();
-        var json = await client.GetStringAsync(locationUrl);
-        var result = JObject.Parse(json)["result"];
-        
-        return result != null ? new OAuthCallbackData { Uid = result["uid"]?.ToString(), State = result["state"]?.ToString() } : null;
+        var response = await CefBrowserRequest.GetAsync(locationUrl,
+            CefBrowserProfile.Navigation("https://ptlogin.4399.com/"));
+        if (response.Failed || string.IsNullOrEmpty(response.Body))
+        {
+            PluginLog.Error("Auth",
+                $"[4399] OAuth callback request failed: {(response.Failed ? response.ErrorMessage : "empty body")}");
+            return null;
+        }
+
+        var result = JObject.Parse(response.Body)["result"];
+        if (result == null)
+        {
+            PluginLog.Error("Auth", "[4399] OAuth callback response did not contain a result");
+            return null;
+        }
+
+        PluginLog.Debug("Auth", "[4399] OAuth callback resolved");
+        return new OAuthCallbackData { Uid = result["uid"]?.ToString(), State = result["state"]?.ToString() };
     }
 
     private static Dictionary<string, string> BuildLoginForm(string username, string password, string captcha, string captchaId, OAuthParams p)
@@ -292,6 +326,53 @@ internal class _4399
         var client = new HttpClient(new HttpClientHandler { AllowAutoRedirect = false });
         client.DefaultRequestHeaders.Add("User-Agent", UserAgent);
         return client;
+    }
+
+    /// <summary>
+    /// Sends the login POST through a managed HttpClient while copying the browser's full header
+    /// set and the cookies held by the shared browser session, so the request still looks like it
+    /// came from the embedded Chrome.
+    /// </summary>
+    private static async Task<CefBrowserResponse> PostLoginViaHttpClientAsync(string loginUrl,
+        Dictionary<string, string> form, string referer)
+    {
+        var result = new CefBrowserResponse { Body = string.Empty };
+        try
+        {
+            var cookieHeader = await CefBrowserRequest.GetCookieHeaderAsync("https://ptlogin.4399.com/");
+
+            using var handler = new HttpClientHandler
+            {
+                AllowAutoRedirect = false,
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+            using var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(30) };
+            using var request = new HttpRequestMessage(HttpMethod.Post, loginUrl)
+            {
+                Content = new FormUrlEncodedContent(form)
+            };
+
+            foreach (var header in CefBrowserProfile.LoginHeaders("https://ptlogin.4399.com", referer))
+                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            if (!string.IsNullOrEmpty(cookieHeader))
+                request.Headers.TryAddWithoutValidation("Cookie", cookieHeader);
+
+            PluginLog.Debug("Auth", $"[4399] Login POST via HttpClient (cookie length={cookieHeader?.Length ?? 0})");
+
+            using var response = await client.SendAsync(request);
+            result.StatusCode = (int)response.StatusCode;
+            result.Body = await response.Content.ReadAsStringAsync();
+            result.Headers = new NameValueCollection();
+            if (response.Headers.Location != null)
+                result.Headers["Location"] = response.Headers.Location.ToString();
+        }
+        catch (Exception ex)
+        {
+            result.Failed = true;
+            result.ErrorMessage = ex.Message;
+        }
+
+        return result;
     }
 
     private class CaptchaSolveResult

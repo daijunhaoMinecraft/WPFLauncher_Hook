@@ -1,4 +1,7 @@
 ﻿// Only external host/update side effects are stubbed. Configuration, crypto, logs and UI are production source.
+// Namespace-only host imports in RegistryHelper; the real helper is linked but registry operations are never invoked.
+namespace WPFLauncher.SQLite { }
+namespace WPFLauncher.Unisdk { }
 namespace WPFLauncher.Util
 {
     public static class tb { public const string s = @"C:\Games\Bedrock"; }

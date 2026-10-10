@@ -19,7 +19,7 @@
 4. UI 和 Web 必须通过 `ConfigManager.Update`/`UpdateFromJson` 写入，不能复制 `GetField + Convert.ChangeType`。
 5. 所有输入先验证，再原子替换文件，最后更新运行时字段；保存失败不能发布半个批次。
 6. 加载旧文件时，非法单项保留当前值并告警；未知键保留，错误 JSON 不自动覆盖。
-7. `WpfConfig.Legacy.cs` 保留旧名称的源码兼容属性；这不兼容第三方已编译的旧字段访问 IL，外部扩展需要重新编译。
+7. `WpfConfig.Legacy.cs` 已按明确的 API 清理要求删除；不要恢复旧 C# 属性别名。JSON/Web 旧键仍由注册表保留，外部扩展必须改用新字段并重新编译。版本通过 `WpfConfig.GetVersion()` 读取 DLL 元数据。
 8. 不要在配置字段初始化中创建 `Window` 等 DispatcherObject；配置可能首先从后台线程读取。
 
 ## 日志约定
