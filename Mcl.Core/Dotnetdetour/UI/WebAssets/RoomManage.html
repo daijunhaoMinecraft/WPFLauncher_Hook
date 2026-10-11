@@ -510,6 +510,12 @@
         let isCustomWs = false;
         let wsConnected = false; // 用于跟踪WebSocket连接状态
 
+        // 仅编码卡片模板中的文本和带引号的 HTML 属性。
+        function escapeHtml(value) {
+            const entities = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+            return String(value).replace(/[&<>"']/g, character => entities[character]);
+        }
+
         // 初始化页面
         function init() {
             // 初始化WebSocket配置
@@ -899,13 +905,13 @@
                 blacklistCard.dataset.userId = userInfo.userId;
 
                 blacklistCard.innerHTML = `
-                    <img class="player-avatar" src="${userInfo.avatarUrl || 'https://x19.fp.ps.netease.com/file/5a34e0777f9d2a8a4ea3d36eza31LhW3'}" alt="${userInfo.userName}">
+                    <img class="player-avatar" src="${escapeHtml(userInfo.avatarUrl || 'https://x19.fp.ps.netease.com/file/5a34e0777f9d2a8a4ea3d36eza31LhW3')}" alt="${escapeHtml(userInfo.userName)}">
                     <div class="player-info">
-                        <div class="player-name">${userInfo.userName || '未知玩家'}</div>
-                        <div class="player-id">ID: ${userInfo.userId}</div>
-                        <div class="player-signature">${userInfo.signature || ''}</div>
+                        <div class="player-name">${escapeHtml(userInfo.userName || '未知玩家')}</div>
+                        <div class="player-id">ID: ${escapeHtml(userInfo.userId)}</div>
+                        <div class="player-signature">${escapeHtml(userInfo.signature || '')}</div>
                         <div class="actions">
-                            <button class="btn btn-danger remove-blacklist-btn" data-user-id="${userInfo.userId}">移除黑名单</button>
+                            <button class="btn btn-danger remove-blacklist-btn" data-user-id="${escapeHtml(userInfo.userId)}">移除黑名单</button>
                         </div>
                     </div>
                 `;
@@ -944,16 +950,16 @@
                 const isPlayerOwner = player.role === "房主" || player.ident === 1;
 
                 playerCard.innerHTML = `
-                    <img class="player-avatar" src="${player.avatarUrl || 'https://x19.fp.ps.netease.com/file/5a34e0777f9d2a8a4ea3d36eza31LhW3'}" alt="${player.playerName}">
-                    <div class="player-role ${isPlayerOwner ? 'owner' : ''}">${player.role || (isPlayerOwner ? '房主' : '成员')}</div>
+                    <img class="player-avatar" src="${escapeHtml(player.avatarUrl || 'https://x19.fp.ps.netease.com/file/5a34e0777f9d2a8a4ea3d36eza31LhW3')}" alt="${escapeHtml(player.playerName)}">
+                    <div class="player-role ${isPlayerOwner ? 'owner' : ''}">${escapeHtml(player.role || (isPlayerOwner ? '房主' : '成员'))}</div>
                     <div class="player-info">
-                        <div class="player-name">${player.playerName || '未知玩家'}</div>
-                        <div class="player-id">ID: ${player.userId}</div>
-                        <div class="player-signature">${player.signature || ''}</div>
+                        <div class="player-name">${escapeHtml(player.playerName || '未知玩家')}</div>
+                        <div class="player-id">ID: ${escapeHtml(player.userId)}</div>
+                        <div class="player-signature">${escapeHtml(player.signature || '')}</div>
                         ${!isPlayerOwner && isOwner ? `
                             <div class="actions">
-                                <button class="btn btn-danger kick-player-btn" data-user-id="${player.userId}">踢出</button>
-                                <button class="btn btn-danger add-blacklist-btn" data-user-id="${player.userId}">加入黑名单</button>
+                                <button class="btn btn-danger kick-player-btn" data-user-id="${escapeHtml(player.userId)}">踢出</button>
+                                <button class="btn btn-danger add-blacklist-btn" data-user-id="${escapeHtml(player.userId)}">加入黑名单</button>
                             </div>
                         ` : ''}
                     </div>
@@ -1001,9 +1007,9 @@
                 regexCard.innerHTML = `
                     <div class="player-info">
                         <div class="player-name">正则表达式</div>
-                        <div class="player-id">${pattern}</div>
+                        <div class="player-id">${escapeHtml(pattern)}</div>
                         <div class="actions">
-                            <button class="btn btn-danger remove-regex-btn" data-pattern="${pattern}">移除</button>
+                            <button class="btn btn-danger remove-regex-btn" data-pattern="${escapeHtml(pattern)}">移除</button>
                         </div>
                     </div>
                 `;
