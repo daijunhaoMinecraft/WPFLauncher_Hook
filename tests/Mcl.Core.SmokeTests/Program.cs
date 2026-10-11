@@ -46,6 +46,18 @@ internal static partial class Program
             LogManager.Flush();
             return 0;
         }
+        if (args.Length == 2 && args[0] == "--packcache-clear-tests")
+        {
+            _output = Path.GetFullPath(args[1]);
+            Directory.CreateDirectory(_output);
+            try
+            {
+                PackcacheClearTests();
+                Console.WriteLine($"PASS: {_checks} packcache clear checks.");
+                return 0;
+            }
+            catch (Exception exception) { Console.Error.WriteLine(exception); return 1; }
+        }
         if (args.Length != 2) { Console.Error.WriteLine("Usage: Mcl.Core.exe <repository> <output-directory>"); return 2; }
         _root = Path.GetFullPath(args[0]);
         _output = Path.GetFullPath(args[1]);
@@ -56,6 +68,7 @@ internal static partial class Program
         {
             CryptoTests();
             ConfigurationTests();
+            PackcacheClearTests();
             BedrockTests();
             ModInjectionDirectoryTests();
             ConsoleTests();
