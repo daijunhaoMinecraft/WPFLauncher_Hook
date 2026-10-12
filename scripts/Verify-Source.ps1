@@ -32,7 +32,7 @@ foreach ($file in Get-ChildItem -LiteralPath (Join-Path $sourceRoot 'Dotnetdetou
         $problems.Add("Duplicated window-level styles: $($file.FullName)")
     }
 }
-if ($windowCount -ne 21) { $problems.Add("Expected 21 XAML windows; found $windowCount. Update the audit when adding a view.") }
+if ($windowCount -ne 22) { $problems.Add("Expected 22 XAML windows; found $windowCount. Update the audit when adding a view.") }
 $configDirectory = Join-Path $sourceRoot 'Dotnetdetour\Models\Config'
 $registry = [IO.File]::ReadAllText((Join-Path $configDirectory 'ConfigManager.cs'))
 if ([regex]::Matches($registry, 'new ConfigEntry\(').Count -ne 45) {

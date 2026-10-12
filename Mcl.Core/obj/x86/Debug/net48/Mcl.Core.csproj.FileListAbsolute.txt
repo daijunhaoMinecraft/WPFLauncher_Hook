@@ -231,3 +231,5 @@ E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Acc
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Accounts\PhoneVerifyWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\BedrockPathSelectWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\WPFLauncher.dump.exe
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\RoomManagementWindow.baml
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\RoomManagementWindow.g.cs

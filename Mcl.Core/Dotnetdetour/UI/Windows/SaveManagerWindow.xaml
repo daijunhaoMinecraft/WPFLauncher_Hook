@@ -110,6 +110,8 @@
                                 <UniformGrid Columns="2">
                                     <TextBlock Text="{Binding SaveTime, StringFormat='保存时间: {0}'}" FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"/>
                                     <TextBlock Text="{Binding ExpireTime, StringFormat='过期时间: {0}'}" FontSize="12" Foreground="{DynamicResource DangerBrush}"/>
+                                    <TextBlock Text="{Binding FormattedSize, StringFormat='存档大小: {0}'}" FontSize="12" Margin="0,4,0,0"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"/>
                                 </UniformGrid>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">

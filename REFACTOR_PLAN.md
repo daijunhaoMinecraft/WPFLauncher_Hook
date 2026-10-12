@@ -153,3 +153,99 @@
 - 实现：`BedrockCacheWorker.ClearContents(root, report)` 清空根目录内容并保留 packcache 文件夹本身，复用 `EnsureSafePath` 的路径逃逸与重解析点校验，逐项失败继续并回报（区别于自动清理的遇错中止）。`BedrockCacheService.ClearPackcache(directory, failures)` 复用 `BedrockCacheOptions.ValidateEntry` 强制目录名必须为 packcache。目录不存在时 UI 明确提示，不删除任何内容。
 - 验证：`Verify-Source.ps1` PASS（195 源文件、21 窗口）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；源码链接烟雾测试 263 项通过（较前 256 项新增 7 项：服务级清空/保留根/拒绝非 packcache/缺失目录，UI 按钮清空/成功提示/缺失提示/取消不删除）。
 - 与前节相同的既存问题：`WpfConfig.BedrockPackcacheDirectory` 默认值为 `PE` 而测试/文档断言为 `PC`，完整通过需临时对齐；真实宿主内嵌设置页的动作按钮行为与真实缓存读写仍未验证。
+
+## 2026-10-12：联机大厅房间密码修改与房间管理页面
+
+- 需求：`/online-lobby-room/update` 的 request json 只要带上 `password` 字段即可修改房间密码，但宿主请求类型 `ResetRoomSettingRequest` 没有该字段，宿主界面也没有入口，只能靠 detour 补字段。
+- Detour：新增 `Features/NetworkAndRoom/RoomSettingsUpdater.cs`，hook `WPFLauncher.Network.Protocol.LobbyGame.age::b`（`/online-lobby-room/update` 的唯一发送点，宿主 `set_AllowSave`/`set_VisibleScope`/转移房主都会走到这里）。插件自行序列化 `{visibility, allow_save, owner_id, room_id, password}`，仍通过宿主的 `aet.g<EntityResponse<ResetRoomSettingRequest>>` 发出，因此 user-id/user-token 头、动态令牌、加密选项和回调派发线程与宿主完全一致；`age.a`（创建房间）本来就带 password，未改动。
+- 密码生命周期：界面显式修改时用一次性 ticket（`[ThreadStatic]`）让紧随其后的那次宿主请求消费，只有服务端返回 `code == 0` 才写入 `WpfConfig.Password` 与 `RoomInfo.entity.password`；没有待处理修改时，若当前房间有密码（创建/加入房间时记录），宿主自身的可见性/允许存档更新和转移房主请求也会带上该密码，避免整包更新丢掉密码；房间本来没有密码时保持宿主原始请求，不产生多余的 `password` 字段。
+- 回退：detour 未安装（宿主版本变化等）或调用失败时，改用 `X19Http.Post("/online-lobby-room/update")` 直连发送同一份请求体，并在日志中标注回退；两条路径都报告同一个 `RoomUpdateResult`。
+- UI：新增 `UI/Windows/RoomManagementWindow.xaml`（第 22 个共享 Fluent/WinUI3 风格窗口），房间信息窗口标题栏新增「房间管理」按钮。页面包含房间状态、密码保护（保存/取消密码保护、明文切换、1-32 字符校验）、可见性与允许存档、玩家列表（踢出/设为房主/房间黑名单，仅房主可操作）以及房间动态；非房主为只读视图，未加入房间时提示且禁用编辑。
+- 兼容：未新增配置项（注册表仍 45 项），未改动房间更新推送（`LobbyGameRoomManager` commandId=4）、Web/HTTP 房间端点与 WebSocket 契约；`RoomManage.html` 本次不提供密码入口。
+- 验证：`Verify-Source.ps1` PASS（198 个源文件、22 个窗口共享主题）；主项目 x86 Debug 构建 0 错误/24 警告；测试项目 0 错误/3 警告；源码链接烟雾测试 264 项通过（较前 263 项新增 1 项窗口渲染）；已渲染 `.artifacts/validation/renders/RoomManagementWindow.png` 人工复核布局。未改变 Hook 引擎、原生 detour 或宿主启动流程，未新增配置项。
+- 与前节相同的既存问题：`WpfConfig.BedrockPackcacheDirectory` 默认值仍为 `PE` 而测试断言为 `PC`，完整跑通烟雾测试同样是在临时对齐 PC 后取得，临时改动已还原。
+- 未验证：真实宿主的登录、建房/进房，服务端是否接受 `update` 请求中的 `password` 字段，非房主的服务端拒绝行为，以及直连回退路径；这些需要在真实账号与房间中手工回归。
+
+## 2026-10-12：用 MCL 房间管理窗口替换启动器房间窗口
+
+- 需求：把启动器自带（WPFLauncher.exe 内）的联机大厅房间窗口替换成 MCL 房间管理窗口，功能不能缺项，并且可以在设置中关闭替换；同时补充踢出、加好友、拉黑等玩家操作。
+- 替换：新增 `Features/NetworkAndRoom/RoomWindowReplacement.cs`，hook `WPFLauncher.Common.BaseWindow::d`（宿主所有窗口的 Show，`hook(window)` 形参承接 this），只拦截 `LobbyGameRoomManagerView`：启用替换时不再显示宿主房间窗口，改为显示 `RoomManagementWindow`，其余窗口原样转发。宿主房间窗口仍然会被创建（`jp` ViewModel 是房间状态与全部房间命令的载体，`azf<apn>.Instance.k<LobbyGameRoomManagerView>()` 仍能取到）；`jp`/`jq` 是 internal 类型，按 `ExitPop`、`HttpHelper` 既有做法通过反射访问。
+- 功能对齐：新增 `Features/NetworkAndRoom/RoomOperations.cs`，通过宿主房间 ViewModel 的公开命令 `GameOperateCommand`/`InviteCommand`/`BackupSaveCommand`/`ResetSaveCommand`/`ReportCommand`/`CloseCommand`/`KickOutPlayerCommand`/`AddFriendCommand` 实现开始/进入游戏、邀请好友、备份存档、重置存档、举报房间、退出房间、踢出玩家、加好友（玩家命令按 UID 在 `Players` 中定位后执行），因此确认框、失败提示以及插件已有 Hook（`ExitPop` 退出确认、`LobbyGameSavesManager` 备份界面、`GetRoomIp`、密码修复）全部沿用。转移房主、可见性、允许存档与密码仍走 `age.b` detour，房间黑名单沿用插件实现；页面新增「房间操作」卡片与玩家行的「加好友」按钮，并按宿主 `LobbyGameState` 切换「开始游戏/进入游戏」。
+- 生命周期：`WpfConfig.UseMclRoomManagementWindow=false` 时完全不拦截，恢复启动器房间窗口；替换过程抛异常会记录日志并立即回退到宿主 Show；宿主房间窗口关闭（退出房间/被踢）或 `age.Left` 时关闭 MCL 房间管理窗口；替换启用时 `RoomManager` 不再重复弹出房间信息窗口。独立 WPF 探针确认：从未显示的窗口 `Activate()` 返回 false、`Close()` 正常，因此隐藏宿主房间窗口不会破坏宿主窗口状态机。
+- 配置：新增注册项 `UseMclRoomManagementWindow`（字段 `WpfConfig.UseMclRoomManagementWindow`，默认 true，分类「联机与房间」，含说明），注册表 45→46；`Verify-Source.ps1` 与烟雾测试同步。
+- 验证：`scripts/Validate-Refactor.ps1` 全流程通过（`Verify-Source.ps1` PASS：200 源文件、22 窗口、46 注册项；主项目 x86 Debug 0 错误/24 警告；测试项目 0 错误/3 警告；源码链接烟雾测试 266 项通过，新增替换开关的关闭/恢复断言与「房间操作」卡片渲染）。渲染 `.artifacts/validation/renders/RoomManagementWindow.png` 已人工复核。
+- 与前节相同的既存问题：`WpfConfig.BedrockPackcacheDirectory` 默认值仍为 `PE` 而测试断言为 `PC`，完整跑通烟雾测试同样是先临时对齐再还原。
+- 未验证：真实启动器中替换后的完整流程（建房/进房、开始游戏、进入游戏、邀请、备份/重置存档、举报、退出、踢出、加好友）、宿主窗口被隐藏时的实际时序，以及服务端是否接受 `update` 请求中的 `password` 字段。
+
+### 修正：房间在线后「开始游戏」按钮仍为灰色
+
+- 原因：房间状态推送（`moduleId=40, commandId=1`）由插件 `ChatConnectionPacket.HandleGameStatus` 与宿主 `ahl.a` 各自处理，前者只更新 `WpfConfig.RoomInfo`，后者把 `akv.State` 改成 `SERVER_ON`；MCL 房间管理窗口的按钮状态原先只在打开窗口/手动刷新/自身操作后重算，没有任何事件驱动，因此一直停留在旧的 `SERVER_OFF/SERVER_OPENING`。
+- 修正：`RoomManagementWindow` 订阅宿主房间对象（`NotifyObject` → `INotifyPropertyChanged`）的 `PropertyChanged`，状态变化立即重算按钮；插件自己的 `HandleGameStatus`/`HandleRoomInfoChange`/`HandlePlayerOperation` 与 `RoomManager` 成员列表 Hook 分别调用 `NotifyRoomStateChanged()`/`NotifyRoomPlayersChanged()`；窗口在打开期间还有一个 2 秒的 `DispatcherTimer` 周期性校正，防止宿主未通知或替换过房间对象。`GetHostGameState()` 在宿主状态不可用时回退到房间推送里的 `game_status`。
+- 验证：主项目 0 错误/24 警告；`Validate-Refactor.ps1` 全流程通过（`Verify-Source.ps1` 200 源文件/22 窗口/46 注册项，主项目与测试项目均 0 错误，烟雾测试 266 项通过，渲染包含更新后的「房间操作」卡片）。真实宿主中需要在房间服务器就绪后确认按钮自动切换为「进入游戏」。
+
+### 修正（第二轮反馈）：房间管理窗口细节
+
+先用插件自身 HTTP API（`http://127.0.0.1:4600/get_roominfo_fast` 与 `POST /api/online-lobby-room/get`）确认了真实房间状态（密码 `123456`、`game_status=1`，服务器在该接口返回的 `fids` 为空），据此完成：
+
+- 跨线程异常：`HandleRoomInfoChange`/`HandleGameStatus` 在后台线程调用 `RoomManagementWindow.Notify*` 时枚举了 `Application.Windows`，触发“调用线程无法访问此对象”。现在统一走 `RunOnWindows`：在 `Application.Dispatcher` 上用 `BeginInvoke` 完成枚举与刷新，异常只记 Debug。该异常此前会中断 `HandleRoomInfoChange`，也是“应用房间设置后控件回退成旧值/密码状态不同步”的直接原因。
+- 应用设置后的回退：`RoomSettingsUpdater` 在服务端返回成功后先把 `visibility`/`allow_save` 写回本地 `RoomInfo.entity` 再回调界面；`刷新房间信息` 改为调用服务器端点 `/online-lobby-room/get`（body `{"room_id":...}`，与宿主 `age.c` 相同）读取真实状态，服务器返回空 `fids` 时保留本地成员列表。
+- 滚轮：玩家列表、房间动态、可见性下拉框、密码框会吞掉滚轮。现在对这些控件挂 `PreviewMouseWheel`：内部还能滚动时保持原行为，否则把滚轮转发给页面 `ScrollViewer`。
+- 窗口行为：移除房间管理窗口的「置顶窗口」复选框（不再强制 Topmost）；移除底部「关闭」按钮，右上角关闭等同于「退出房间」（`OnClosing` 取消关闭并执行宿主 `CloseCommand`，程序化关闭用 `closingWithoutLeave` 抑制）。
+- 重复退出：`RoomManager.Left` 原本对同一条离开消息打印两次（日志 + 彩色控制台各一条），且宿主窗口 Closed 与插件窗口关闭存在两条路径；现在只保留一条英文 Debug 日志，窗口关闭统一走宿主命令，离开时 `CloseAll` 标记程序化关闭。
+- 密码可见性：按需求在 Debug/Info 日志输出本次设置或修改后的密码（`Room update request sent with a new room password: <pwd>`、`Room password updated: <pwd>`），与既有建房/进房日志的密码输出一致；取消密码保护仍只记录状态。
+- 淘汰旧窗口：删除 `UI/Windows/RoomInfoWindow.cs` 与注册配置 `ShowRoomManagerWindow`（`WpfConfig.ShowRoomDetailsWindow`），`RoomManager`/`ChatConnectionPacket` 中所有房间信息窗口的创建、更新、关闭调用一并移除，房间信息统一由 `RoomManagementWindow` 展示；注册配置回到 45 项。
+- 玩家头像：玩家列表读取 `/user/query/search-by-ids` 的 `avatar_image_url` 并在行内显示 28×28 头像，缺失时使用默认头像。
+- 验证：`Verify-Source.ps1` PASS（199 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 266 项通过；渲染已复核（无置顶复选框、无底部关闭按钮）。仍需真实宿主回归：滚轮、关闭窗口即退出、应用设置后控件不回退、头像加载。
+
+### 修正（第三轮反馈）：房间变更对比与关闭窗口异常
+
+- 房间变更对比：`HandleRoomInfoChange` 原先在 `UpdateRoomInfo` 前用 Debug 级日志逐项比较，且上一轮为消除“控件回退”加入的乐观实体写入会把待比较的旧值提前覆盖，导致用户只看到“房间信息已更改:”与一条被重复抑制的分隔线（`suppressed=1`）。现在改为 `DescribeRoomInfoChanges` 先与本地实体逐项对比（房间ID/房主（含名称）/房间名/存档大小/密码保护/允许保存/可见性），输出 Warn 级 `房间信息已更改: <变化字段>` 加每行 `旧值 -> 新值`（标题带字段名，避免同文本被 `PluginLog` 重复抑制），再写入实体；同一批变化同时写入房间管理窗口的「房间动态」。旧的 `LogRoomInfoChanges`/`LogOwnerChange`/`LogVisibilityChange` 已删除。
+- 设置控件回退：移除 `RoomSettingsUpdater` 的乐观实体写入，改为窗口提交成功后 `RefreshFromConfig(refreshSettings: false)` 保留用户刚提交的可见性/允许存档选择，等房间推送到达由 `NotifyRoomInfoChanged` 把控件对齐服务器状态。
+- `CloseCommand` 抛 `InvalidOperationException`（“在 Window 关闭时…”）：用户点击右上角关闭时，插件仍在 `OnClosing`（窗口处于 closing 状态）里同步执行宿主 `CloseCommand`，宿主离开流程最终触发 `RoomManager.Left` → `CloseAll` → 对同一窗口再次 `Close()`，WPF 直接抛异常。现在 `OnClosing` 只取消关闭并用 `Dispatcher.BeginInvoke(DispatcherPriority.Background)` 把退出命令延后到 Closing 结束；`CloseAll`/`CloseForRoom` 增加 `closingWithoutLeave` 去重与 `InvalidOperationException` 兜底。
+- 验证：`Verify-Source.ps1` PASS（199 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 266 项通过。仍需真实宿主回归：房间设置变更时日志与「房间动态」能列出旧值→新值、点右上角关闭只弹一次退出确认且不再报错。
+
+### 修正（第四轮反馈）：“应用房间设置”提示当前未加入房间
+
+- 现象：点「重置存档」后再点「应用房间设置」提示“当前未加入联机大厅房间”。
+- 证据：日志 18:50:53 `POST /online-lobby-room/get`（`age.c`）对**旧房间** `4691130555207178372` 返回“无法找到该房间”，随后 `[MCL][Network] [RoomInfo] 获取房间信息失败` 与 `RoomInfo或entity为空，无法更新游戏状态`；期间用户已退出旧房间并在 18:50:35 新建了房间。
+- 根因：宿主把 `age.c` 复用于两条流程——加入房间（`aum.f`）与重置存档后的 30 秒房间状态轮询（`jp.j` → `aga.d` → `jp.y` 排定 `jp.z` → `age.c(该 VM 绑定的房间)`）。插件的 JoinRoom Hook 把每次调用都当作“加入房间”，失败时无条件 `WpfConfig.RoomInfo = null`（成功时也无条件覆盖），于是旧房间的迟滞轮询会清掉/覆盖当前房间状态。
+- 修复：新增 `RoomManager.IsJoinFlow(roomId)` 区分三类调用：无本地房间 → 加入；房间号与当前一致 → 刷新（`ApplyRoomInfoRefresh` 只同步服务器属性、保留本地成员列表、不重复打印“加入房间”与重置加入时间）；房间号与当前不一致且宿主房间窗口仍存在 → 旧房间迟滞轮询，成功/失败都不改动本地房间状态（失败降为 Debug）。`ApplyRoomInfoRefresh` 只在房间号与当前一致时写回 `RoomInfo`。加入流程写入 `fids` 时增加去重。
+- 验证：`Verify-Source.ps1` PASS（199 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 266 项通过。仍需真实宿主回归：进房 → 重置存档 → 退出并新建房间 → 等 30 秒轮询后「应用房间设置」仍应正常生效，且不再出现旧房间的 ERROR 日志。
+
+## 2026-10-12：云存档大小、房间分享与剪贴板邀请
+
+- 云存档大小：`SaveManagerWindow`（载入存档）的每个槽位新增「存档大小」，`SaveItemViewModel.FormattedSize` 改为 KB/MB/GB 自适应（接口 `size` 为 KB，与备份窗口保持一致）。
+- 房间分享：房间管理窗口新增「房间分享」卡片，三个按钮分别用于在默认浏览器打开 `https://neteasehelper.theconsole.top/rooms/<room_id>?edition=pc`、复制该链接、复制含密码的房间信息。复制内容是「中文房间介绍 + 末尾一行 `MCL-ROOM-INVITE:{json}`」：中文行包含 房间名/房间ID/房主/当前人数/密码/是否允许保存/可见性/游戏状态/浏览器查看链接，机器行包含 房间号/房名/密码/房主/人数/允许保存/可见性/游戏状态，供本插件识别；房主名称通过 `/user/query/search-by-uid` 补齐。
+- 剪贴板邀请：新增 `Models/Entities/RoomInvite.cs`（纯文本模型：生成、解析、校验，已纳入烟雾测试）与 `Features/NetworkAndRoom/RoomInviteSharing.cs`（每 2 秒轮询剪贴板，识别到邀请且不是当前房间时弹窗询问，确认后转到后台线程加入）。加入流程 `RoomOperations.TryJoinRoom`：① 静默关闭宿主房间窗口（触发宿主 `jp.u`：停计时器、POST leave-room、清理大厅页面 VM）并等待 1 秒；② `age.f(roomId, password, true)` 发送带密码的加入请求；③ `age.c(roomId)` 拉取房间信息（同时由 JoinRoom Hook 更新本地房间状态）；④ 按宿主 `aum.f` 的步骤注册房间：`new akv(entity, null)` → `kg.c(akv)`/`PlayingLobbyGame` → `apn.d<LobbyGameRoomManagerView>(azc.o)` → 设置 VM 的 `SelectedGame` 并调用 `jp.a(akv)` → `view.d()`（由替换 Hook 打开 MCL 房间管理窗口）。`aqg`/`kg`/`jp` 均为 internal，按项目既有做法用反射访问。
+- 配置：新增注册项 `EnableRoomInviteClipboard`（字段 `WpfConfig.EnableRoomInviteClipboard`，默认 true，分类「联机与房间」），注册表 45→46；`InitHook.ApplyRuntimeSettings` 启动监听（幂等，可在设置中关闭）。
+- 验证：`Verify-Source.ps1` PASS（201 源文件、22 个 XAML 窗口、46 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 273 项通过（新增邀请文本生成/解析/非法输入 5 项与剪贴板开关 2 项）。
+- 未验证：真实宿主的“退房 → 加入 → 打开房间窗口”完整时序、剪贴板监听在真实 Windows 会话中的行为（占用/权限），以及 neteasehelper 页面在浏览器中的显示；邀请文本中的密码按需求为明文。
+
+### 修正（第五轮反馈）：移除剪贴板邀请，只保留中文房间信息
+
+- 按反馈删除剪贴板读取与一键加入：`RoomInviteSharing` 去掉监听计时器、提示框与加入调用，只保留 `BuildRoomText()`（中文房间信息）与 `BuildRoomPageLink()`；`RoomInvite` 删除 `Marker`/`Parse`/`ToShareText`，只保留 `ToHumanReadableText()`；`RoomOperations` 删除 `TryJoinRoom`、静默退房、宿主房间窗口注册与相关反射辅助；`InitHook` 不再启动剪贴板监听；配置项 `EnableRoomInviteClipboard` 一并移除（注册表回到 45 项）。
+- 复制内容现在只有中文说明（房间名/房间ID/房主/当前人数/密码/是否允许保存/可见性/游戏状态/浏览器查看链接），不再包含 `MCL-ROOM-INVITE` 机器行；`复制房间链接` 与 `在浏览器查看房间` 保持不变。
+- 验证：`Verify-Source.ps1` PASS（201 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 269 项通过（房间信息文本断言改为校验中文字段与链接，并新增“不含机器标记”“房间ID为空不生成链接”两项）。
+
+### 补充：房间状态可选中复制
+
+- 「房间状态」卡片的 8 个值（房间号/房主/当前人数/最大人数/可见性/允许存档/密码保护/游戏状态/版本号/资源ID）由 `TextBlock` 改为扁平只读 `TextBox`（无边框、透明背景、`IsTabStop=false`），支持鼠标选中与 `Ctrl+C`；标签仍是普通文本，因此可以直接选中需要的字段值。
+- 该卡片新增右键菜单：「复制房间状态」（房间名/房间ID/房主/人数/可见性/允许存档/密码保护/游戏状态/版本号/资源ID，**不含密码明文**）与「复制房间信息(含密码)」（与「房间分享」卡片同一份中文文本）。
+- 命名修正：`room_name` 统一显示为「房间号」、`entity_id` 统一显示为「房间ID」。状态卡改为 6 行 × 2 列并新增「房间ID」行（此前「房间号」误显示 entity_id）；标题副标题、`复制房间状态`、中文分享文本与房间变更日志中的「房间名」字样一并改为「房间号」。
+- 验证：`Verify-Source.ps1` PASS（201 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 269 项通过，渲染已复核（状态卡片外观与之前一致，仅可选中）。
+
+## 2026-10-12：房间黑名单管理页与「加入即踢出」
+
+- 需求：拉黑玩家后立即踢出；房间管理窗口内可查看 UserID 黑名单与正则表达式（匹配玩家名称）名单，并支持手动添加/删除。
+- 新增 `Features/NetworkAndRoom/RoomBlacklist.cs`：统一名单增删与落盘（`WpfConfig.WriteRoomBlacklist`/`WriteRegexBlacklist`，文件仍是启动器目录下的 `RoomConfig/BlackList.json`、`RoomConfig/RegexBlackList.json`）、正则合法性校验、踢人（优先走宿主 `KickOutPlayerCommand`，玩家已不在宿主列表时回退 `POST /online-lobby-member-kick`），以及「加入正则后踢出当前房间匹配玩家」：按房间 `fids` 拉取玩家信息、`Regex.IsMatch(name)` 命中则加入 UserID 名单并踢出，与 Web 端 `/Room/AddRegexBlacklist` 行为一致。
+- UI：房间管理窗口新增「房间黑名单」卡片，UserID 名单与正则名单各有一组「输入框 + 加入并踢出 / 移除选中」和带逐条「删除」按钮的列表；未开启 `EnableRoomBlacklist` 时显示提示并禁用编辑；玩家行的「黑名单」按钮改为“加入后立即踢出”（已在名单中则移出），所有结果写入房间动态与底部状态栏。
+- 验证：`Verify-Source.ps1` PASS（202 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 269 项通过；渲染已复核（黑名单卡片的两份名单、按钮与列表）。
+- 未验证：真实房间内的拉黑踢人（需要第二个账号）、正则命中玩家的实际踢出，以及名单文件在启动器目录的读写与重启后加载。
+
+## 2026-10-12：被踢自动重连改为后台线程并去掉重复请求
+
+- 现象：被房主踢出后宿主日志出现 `CheckMCLBlock!` 与 30 帧调用栈（栈顶为 `RoomManager.ReJoinRoom → Thread.Sleep`），启动器界面卡顿；同一秒打印两条“成功重新加入房间”，并反复收到 12022「快速匹配过于频繁」。
+- 根因：宿主在 **UI 线程（Dispatcher）** 调用被踢处理器 `ahl.c`，插件的 `RoomManager.ReJoinRoom` hook 直接在该线程上执行阻塞 HTTP + `Thread.Sleep(800)` 重试循环；同时 `ChatConnectionPacket`（moduleId 40, commandId 3）在后台 Task 中又实现了一份相同的重连循环，两条循环并发请求触发服务端限流。
+- 修复：`RoomManager.ReJoinRoom` 只负责置位与派发，重连循环移到 `Task.Run` 后台；重试固定 1 秒、最多 90 次，12022 只按第 1 次与每 10 次记录日志；仅在重连最终失败时回到 UI 线程调用宿主原处理器 `SendErrToWpf`（提示被踢 + 关闭房间窗口）；用 `Interlocked` 去重，重复踢出包不会启动第二条循环。`ChatConnectionPacket` 删除重复的重连循环，只保留日志与 WebSocket 通知。
+- 验证：`Verify-Source.ps1` PASS（202 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 269 项通过。
+- 未验证：真实被踢场景的重连成功率、宿主看门狗不再触发、以及重连失败时宿主提示与房间窗口关闭的表现（需实机复测）。

@@ -61,10 +61,16 @@ namespace Mcl.Core.Dotnetdetour.Models.Entity
         public string SaveId => OriginalData.SaveId;
         public string ResId => OriginalData.ResId;
         
-        // 格式化文件大小 (KB/MB)
-        public string FormattedSize => OriginalData.Size >= 1024 
-            ? $"{(OriginalData.Size / 1024.0):F2} MB" 
-            : $"{OriginalData.Size} KB";
+        // 格式化文件大小 (接口返回 KB, 显示 KB/MB/GB)
+        public string FormattedSize => FormatSize(OriginalData.Size);
+
+        public static string FormatSize(long sizeInKb)
+        {
+            if (sizeInKb <= 0) return "0 KB";
+            if (sizeInKb >= 1024L * 1024L) return $"{sizeInKb / 1024.0 / 1024.0:F2} GB";
+            if (sizeInKb >= 1024) return $"{sizeInKb / 1024.0:F2} MB";
+            return $"{sizeInKb} KB";
+        }
 
         // 时间戳转本地时间 (.NET 4.8.1 支持 DateTimeOffset.FromUnixTimeSeconds)
         public string SaveTime => DateTimeOffset.FromUnixTimeSeconds(OriginalData.Timestamp).LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss");

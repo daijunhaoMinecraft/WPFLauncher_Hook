@@ -240,7 +240,7 @@ public class InitHook : IMethodHook
         {
             WpfConfig.CustomRecentServers.Clear();
         }
-        
+
         try
         {
             WpfConfig.ServerListUri = new Uri(WpfConfig.ServerListUrl);

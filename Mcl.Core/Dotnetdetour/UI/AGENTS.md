@@ -17,7 +17,7 @@
 - 操作栏应固定在滚动区域之外；文本输入需关联 AutomationProperties.Name。
 - `Accounts` 是历史 Forms 目录，原 `UI.Forms` 命名空间保留。
 - `Integration` 是历史 Injector 目录，原 `UI.Injector` 命名空间保留。
-- `Dialogs/BedrockPathSelectWindow` 与 `Windows/RoomInfoWindow` 保留历史 Features.GeneralHooks 命名空间以减少外部破坏。
+- `Dialogs/BedrockPathSelectWindow`（以及同目录的 `ChangeIPWindow` 等历史窗口）保留 Features.GeneralHooks 命名空间以减少外部破坏；房间信息已并入 `Windows/RoomManagementWindow`，不再单独维护房间信息窗口。
 
 ## 日志窗口
 

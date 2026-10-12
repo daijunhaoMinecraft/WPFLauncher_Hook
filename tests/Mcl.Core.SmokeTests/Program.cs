@@ -177,6 +177,10 @@ internal static partial class Program
         Check(WpfConfig.RoomBlacklist.SequenceEqual(new[] { "example" }), "blacklist directory created on write");
         WpfConfig.ReadRegexBlacklist();
         Check(WpfConfig.RegexBlacklist.Count == 0, "regex blacklist first run");
+        ConfigManager.UpdateFromJson("{\"UseMclRoomManagementWindow\":false}");
+        Check(!WpfConfig.UseMclRoomManagementWindow, "room window replacement can be disabled");
+        ConfigManager.UpdateFromJson("{\"UseMclRoomManagementWindow\":true}");
+        Check(WpfConfig.UseMclRoomManagementWindow, "room window replacement default restored");
     }
 
     private static void LoggingTests()
@@ -244,6 +248,30 @@ internal static partial class Program
         Check(settings.Contains("/config/save") && !settings.Contains("cdn.tailwindcss.com"), "offline settings resource");
         File.WriteAllText(Path.Combine(_output, "settings-preview.html"), settings);
         File.WriteAllText(Path.Combine(_output, "room-preview.html"), room);
+
+        // 房间信息分享文本 (中文, 含密码)
+        var invite = new Mcl.Core.Dotnetdetour.Models.Entities.RoomInvite
+        {
+            RoomId = "4691130188361767049",
+            RoomName = "48518",
+            Password = "123456",
+            OwnerId = "600015788",
+            OwnerName = "dev_console",
+            Players = 1,
+            MaxPlayers = 10,
+            AllowSave = false,
+            VisibilityText = "公开",
+            GameStatus = 1
+        };
+        var shareText = invite.ToHumanReadableText();
+        Check(shareText.Contains("房间号: 48518") && shareText.Contains("房间ID: 4691130188361767049") &&
+              shareText.Contains("密码: 123456") &&
+              shareText.Contains("允许保存: 否") && shareText.Contains("可见性: 公开") &&
+              shareText.Contains("在浏览器查看: https://neteasehelper.theconsole.top/rooms/4691130188361767049?edition=pc"),
+            "room share text lists the room settings and page link");
+        Check(!shareText.Contains("MCL-ROOM-INVITE"), "room share text has no machine-readable marker");
+        Check(Mcl.Core.Dotnetdetour.Models.Entities.RoomInvite.BuildRoomPageLink(null) == null,
+            "room page link requires a room id");
     }
 
     private static void UiTests()
@@ -318,7 +346,7 @@ internal static partial class Program
             window.Close();
             loaded++;
         }
-        Check(loaded == 21, "all 21 XAML windows parsed and rendered");
+        Check(loaded == 22, "all 22 XAML windows parsed and rendered");
         application.Shutdown();
     }
 

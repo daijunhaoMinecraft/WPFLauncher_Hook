@@ -27,6 +27,7 @@
         <Compile Include="..\..\Mcl.Core\Utils\RegistryHelper.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Config\*.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Entities\FriendStatus.cs"/>
+        <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Entities\RoomInvite.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Models\Entities\NetGame.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\*.cs"/>
         <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Crypto\AESHelper.cs"/>

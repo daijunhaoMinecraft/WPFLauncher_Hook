@@ -1,0 +1,349 @@
+<Window x:Class="Mcl.Core.Dotnetdetour.UI.Windows.RoomManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="房间管理" Height="760" Width="920" MinHeight="600" MinWidth="780"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBackgroundBrush}" FontFamily="{DynamicResource UiFont}"
+        Foreground="{DynamicResource TextBrush}"
+        UseLayoutRounding="True">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Mcl.Core;component/Dotnetdetour/UI/Themes/Fluent.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="24,20,24,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <TextBlock Text="房间管理" Style="{StaticResource PageTitle}" Margin="0"/>
+                <TextBlock x:Name="RoomSubtitleText" Text="正在读取房间信息…" Style="{StaticResource SecondaryText}" Margin="0,4,0,0"/>
+            </StackPanel>
+            <Button x:Name="RefreshButton" Grid.Column="1" Content="刷新房间信息" VerticalAlignment="Center" Click="OnRefreshClick"/>
+        </Grid>
+
+        <ScrollViewer x:Name="PageScrollViewer" Grid.Row="1" Margin="24,16,24,0"
+                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <Border.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="复制房间状态" Click="OnCopyRoomStatusClick"/>
+                            <MenuItem Header="复制房间信息(含密码)" Click="OnCopyRoomTextClick"/>
+                        </ContextMenu>
+                    </Border.ContextMenu>
+                    <StackPanel>
+                        <TextBlock Text="房间状态" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="房间号" Foreground="{DynamicResource SecondaryTextBrush}" Margin="0,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="RoomNameText" Grid.Column="1" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="房间号"/>
+                            <TextBlock Text="房间ID" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Column="2" Margin="24,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="RoomIdText" Grid.Column="3" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="房间ID"/>
+
+                            <TextBlock Text="房主" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="1" Margin="0,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OwnerText" Grid.Row="1" Grid.Column="1" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="房主"/>
+                            <TextBlock Text="当前人数" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="1" Grid.Column="2" Margin="24,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="PlayerCountText" Grid.Row="1" Grid.Column="3" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="当前人数"/>
+
+                            <TextBlock Text="最大人数" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="2" Margin="0,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="MaxCountText" Grid.Row="2" Grid.Column="1" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="最大人数"/>
+                            <TextBlock Text="可见性" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="2" Grid.Column="2" Margin="24,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="VisibilityText" Grid.Row="2" Grid.Column="3" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="可见性"/>
+
+                            <TextBlock Text="允许存档" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="3" Margin="0,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="AllowSaveText" Grid.Row="3" Grid.Column="1" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="允许存档"/>
+                            <TextBlock Text="密码保护" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="3" Grid.Column="2" Margin="24,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="PasswordStateText" Grid.Row="3" Grid.Column="3" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="密码保护"/>
+
+                            <TextBlock Text="游戏状态" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="4" Margin="0,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="GameStatusText" Grid.Row="4" Grid.Column="1" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="游戏状态"/>
+                            <TextBlock Text="版本号" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="4" Grid.Column="2" Margin="24,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="VersionText" Grid.Row="4" Grid.Column="3" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="版本号"/>
+
+                            <TextBlock Text="资源ID" Foreground="{DynamicResource SecondaryTextBrush}" Grid.Row="5" Margin="0,4,12,4" VerticalAlignment="Center"/>
+                            <TextBox x:Name="ResIdText" Grid.Row="5" Grid.Column="1" Margin="0,2,0,2" MinHeight="0" Padding="0"
+                                     IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent"
+                                     FontWeight="SemiBold" AutomationProperties.Name="资源ID"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="房间操作" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <WrapPanel>
+                            <Button x:Name="GameOperateButton" Content="开始游戏" MinWidth="120" Margin="0,0,12,8"
+                                    Style="{StaticResource PrimaryButton}" Click="OnGameOperateClick"/>
+                            <Button x:Name="InviteButton" Content="邀请好友" MinWidth="100" Margin="0,0,12,8" Click="OnInviteClick"/>
+                            <Button x:Name="BackupSaveButton" Content="备份存档" MinWidth="100" Margin="0,0,12,8" Click="OnBackupSaveClick"/>
+                            <Button x:Name="ResetSaveButton" Content="重置存档" MinWidth="100" Margin="0,0,12,8" Click="OnResetSaveClick"/>
+                            <Button x:Name="ReportRoomButton" Content="举报房间" MinWidth="100" Margin="0,0,12,8" Click="OnReportRoomClick"/>
+                            <Button x:Name="LeaveRoomButton" Content="退出房间" MinWidth="100" Margin="0,0,12,8"
+                                    Style="{StaticResource DangerButton}" Click="OnLeaveRoomClick"/>
+                        </WrapPanel>
+                        <TextBlock x:Name="OperationStatusText" Style="{StaticResource SecondaryText}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="房间分享" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock Style="{StaticResource SecondaryText}" Margin="0,0,0,12"
+                                   Text="复制房间信息为可直接粘贴的中文介绍：房间号 / 房间ID / 房主 / 当前人数 / 密码 / 是否允许保存 / 可见性 / 游戏状态 / 浏览器查看链接。"/>
+                        <WrapPanel>
+                            <Button x:Name="OpenRoomPageButton" Content="在浏览器查看房间" MinWidth="140" Margin="0,0,12,8"
+                                    Click="OnOpenRoomPageClick"/>
+                            <Button x:Name="CopyRoomLinkButton" Content="复制房间链接" MinWidth="110" Margin="0,0,12,8"
+                                    Click="OnCopyRoomLinkClick"/>
+                            <Button x:Name="CopyRoomTextButton" Content="复制房间信息(含密码)" MinWidth="160" Margin="0,0,12,8"
+                                    Click="OnCopyRoomTextClick"/>
+                        </WrapPanel>
+                        <TextBlock x:Name="ShareStatusText" Style="{StaticResource SecondaryText}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="房间密码" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock Style="{StaticResource SecondaryText}" Margin="0,0,0,12"
+                                   Text="密码会写入联机大厅的房间更新请求，只影响之后进入房间的玩家；已在房间内的玩家不会掉线。"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <PasswordBox x:Name="PasswordInput" MinHeight="36" MaxLength="32"
+                                             AutomationProperties.Name="新房间密码"/>
+                                <TextBox x:Name="PasswordInputVisible" MinHeight="36" MaxLength="32" Visibility="Collapsed"
+                                         AutomationProperties.Name="新房间密码(明文)"/>
+                            </Grid>
+                            <CheckBox x:Name="ShowPasswordCheck" Grid.Column="1" Content="显示密码" Margin="12,0,0,0"
+                                      VerticalAlignment="Center" Checked="OnShowPasswordChanged" Unchecked="OnShowPasswordChanged"/>
+                        </Grid>
+                        <TextBlock Style="{StaticResource SecondaryText}" Margin="0,8,0,0"
+                                   Text="长度 1-32 个字符；留空不会修改密码，需要取消密码保护请使用右侧按钮。"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button x:Name="SavePasswordButton" Content="保存密码" Width="110"
+                                    Style="{StaticResource PrimaryButton}" Click="OnSavePasswordClick"/>
+                            <Button x:Name="ClearPasswordButton" Content="取消密码保护" Width="120" Margin="12,0,0,0"
+                                    Style="{StaticResource DangerButton}" Click="OnClearPasswordClick"/>
+                            <TextBlock x:Name="PasswordStatusText" Style="{StaticResource SecondaryText}"
+                                       VerticalAlignment="Center" Margin="16,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="房间设置" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="可见性" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                            <ComboBox x:Name="VisibilityCombo" Grid.Column="1" MinHeight="34"
+                                      AutomationProperties.Name="房间可见性"/>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="24,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="允许保存存档" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <CheckBox x:Name="AllowSaveToggle" Style="{StaticResource ToggleSwitch}"
+                                          VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                            <Button x:Name="ApplySettingsButton" Content="应用房间设置" Width="130"
+                                    Style="{StaticResource PrimaryButton}" Click="OnApplySettingsClick"/>
+                            <TextBlock x:Name="SettingsStatusText" Style="{StaticResource SecondaryText}"
+                                       VerticalAlignment="Center" Margin="16,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="玩家管理" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <Button x:Name="RefreshPlayersButton" Grid.Column="1" Content="刷新玩家列表" Click="OnRefreshPlayersClick"/>
+                        </Grid>
+                        <TextBlock x:Name="PlayersHintText" Style="{StaticResource SecondaryText}" Margin="0,8,0,8"
+                                   Text="只有房主才能踢出玩家、转移房主或维护黑名单。"/>
+                        <ListView x:Name="PlayerListView" Height="220" BorderThickness="1"
+                                  BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource SurfaceBrush}">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="玩家" Width="240">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Image Width="28" Height="28" Margin="0,0,8,0" Stretch="UniformToFill"
+                                                           Source="{Binding AvatarUrl}"/>
+                                                    <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="UID" Width="150" DisplayMemberBinding="{Binding UserId}"/>
+                                    <GridViewColumn Header="身份" Width="90" DisplayMemberBinding="{Binding Role}"/>
+                                    <GridViewColumn Header="操作" Width="420">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button Content="踢出" MinHeight="26" Padding="10,2" IsEnabled="{Binding CanManage}"
+                                                            Tag="{Binding UserId}" Click="OnKickPlayerClick"/>
+                                                    <Button Content="设为房主" MinHeight="26" Padding="10,2" Margin="8,0,0,0" IsEnabled="{Binding CanManage}"
+                                                            Tag="{Binding UserId}" Click="OnTransferHostClick"/>
+                                                    <Button Content="黑名单" MinHeight="26" Padding="10,2" Margin="8,0,0,0" IsEnabled="{Binding CanManage}"
+                                                            Tag="{Binding UserId}" Click="OnToggleBlacklistClick"/>
+                                                    <Button Content="加好友" MinHeight="26" Padding="10,2" Margin="8,0,0,0" IsEnabled="{Binding CanInteract}"
+                                                            Tag="{Binding UserId}" Click="OnAddFriendClick"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="房间黑名单" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                        <TextBlock x:Name="BlacklistHintText" Style="{StaticResource SecondaryText}" Margin="0,0,0,12"/>
+
+                        <TextBlock Text="UserID 黑名单（加入后立即踢出该玩家）" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="BlacklistInput" MinHeight="32" AutomationProperties.Name="UserID 黑名单输入"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0">
+                                <Button x:Name="AddBlacklistButton" Content="加入并踢出" MinWidth="110"
+                                        Style="{StaticResource PrimaryButton}" Click="OnAddBlacklistClick"/>
+                                <Button x:Name="RemoveBlacklistButton" Content="移除选中" MinWidth="100" Margin="8,0,0,0"
+                                        Click="OnRemoveBlacklistClick"/>
+                            </StackPanel>
+                        </Grid>
+                        <ListBox x:Name="BlacklistList" Height="110" Margin="0,8,0,16"
+                                 Background="{DynamicResource SubtleSurfaceBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                                        <Button Grid.Column="1" Content="删除" MinHeight="24" Padding="10,2"
+                                                Tag="{Binding}" Click="OnRemoveBlacklistEntryClick"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <TextBlock Text="正则表达式黑名单（匹配玩家名称，加入后踢出当前匹配玩家）" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="RegexInput" MinHeight="32" AutomationProperties.Name="正则表达式输入"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0">
+                                <Button x:Name="AddRegexButton" Content="加入并踢出匹配玩家" MinWidth="150"
+                                        Style="{StaticResource PrimaryButton}" Click="OnAddRegexClick"/>
+                                <Button x:Name="RemoveRegexButton" Content="移除选中" MinWidth="100" Margin="8,0,0,0"
+                                        Click="OnRemoveRegexClick"/>
+                            </StackPanel>
+                        </Grid>
+                        <ListBox x:Name="RegexList" Height="110" Margin="0,8,0,0"
+                                 Background="{DynamicResource SubtleSurfaceBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                                        <Button Grid.Column="1" Content="删除" MinHeight="24" Padding="10,2"
+                                                Tag="{Binding}" Click="OnRemoveRegexEntryClick"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBlock x:Name="BlacklistStatusText" Style="{StaticResource SecondaryText}" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource Card}" Margin="0,16,0,0">
+                    <StackPanel>
+                        <TextBlock Text="房间动态" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                        <ListBox x:Name="ActivityList" Height="150" Background="{DynamicResource SubtleSurfaceBrush}"
+                                 BorderBrush="{DynamicResource BorderBrush}"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" Background="{DynamicResource WindowBackgroundBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="24,12">
+            <TextBlock x:Name="StatusText" Style="{StaticResource SecondaryText}" VerticalAlignment="Center"
+                       Text="关闭本窗口等同于退出房间；修改密码后会自动同步到联机大厅房间。"/>
+        </Border>
+    </Grid>
+</Window>
