@@ -160,7 +160,7 @@ internal class RoomManager : IMethodHook
     [HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "a", "CreateRoomOriginalRequest_Original")]
     public static void CreateRoomOriginalRequest(string RoomName, string ResID, uint Visivility, uint MaxCount, string SaveID, string Password, Action<EntityResponse<LobbyGameRoomEntity>> RequestAction)
     {
-        PluginLog.Debug("Network", $"[RoomManage] 正在创建房间, ResID:{ResID}, 密码:{Password}");
+        PluginLog.Debug("Network", $"[RoomManage] 正在创建房间, ResID:{ResID}");
         WpfConfig.Password = Password;
         CreateRoomOriginalRequest_Original(RoomName, ResID, Visivility, MaxCount, SaveID, Password, RequestAction);
     }
@@ -594,7 +594,6 @@ Port: {config.CppGameCfg.room_info.port}
         var result = SendJoinRoomRequest(roomId, password, statusVisibility);
         
         string statusText = result.code == 0 ? "成功进入" : "进入失败";
-        string passText = string.IsNullOrEmpty(password) ? "无密码" : password;
         
         string reqDetails = $@"
 -----------------[进入房间请求]-----------------
@@ -602,7 +601,6 @@ Port: {config.CppGameCfg.room_info.port}
 返回代码: {result.code}
 系统消息: {result.message}
 房间ID: {roomId}
-房间密码: {passText}
 隐藏状态: {(statusVisibility ? "是" : "否")}
 ----------------------------------------------";
 
