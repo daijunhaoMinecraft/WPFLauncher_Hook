@@ -27,7 +27,8 @@ public class BypassUpdate : IMethodHook
     {
         if (Interlocked.Exchange(ref _blockedLogged, 1) == 0)
         {
-            PluginLog.Info("Core", "已阻止宿主自带更新（更新由插件接管；可在更新设置中禁用插件更新）");
+            bool updateCheckResult = WpfLauncherUpdate();
+            PluginLog.Info("Core", $"已阻止启动器自带更新（更新由插件接管；可在更新设置中禁用插件更新）, 启动器是否更新返回: {updateCheckResult}");
         }
 
         return false;
