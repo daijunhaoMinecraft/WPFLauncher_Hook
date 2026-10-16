@@ -189,11 +189,9 @@ E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Con
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\ChangeIPWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\InputDialogWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\LoadingDialogWindow.baml
-E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\DownloadProgressWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveBackupWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveManagerWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\UpdateConfigWindow.baml
-E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\UpdatePromptWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Controls\ClientSelectPortWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Controls\ForwarderControlPanel.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Controls\NetworkMonitorWindow.g.cs
@@ -204,11 +202,9 @@ E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Con
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\ChangeIPWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\InputDialogWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dialogs\LoadingDialogWindow.g.cs
-E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\DownloadProgressWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveBackupWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\SaveManagerWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\UpdateConfigWindow.g.cs
-E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\UpdatePromptWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core_MarkupCompile.cache
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.g.resources
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Mcl.Core.GeneratedMSBuildEditorConfig.editorconfig
@@ -233,3 +229,8 @@ E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Dia
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\WPFLauncher.dump.exe
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\RoomManagementWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\RoomManagementWindow.g.cs
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\bin\x86\Debug\net48\Mono.Cecil.dll
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\LauncherUpdateWindow.baml
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\LauncherUpdateWindow.g.cs
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\HookUpdateWindow.baml
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\HookUpdateWindow.g.cs

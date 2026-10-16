@@ -249,3 +249,37 @@
 - 修复：`RoomManager.ReJoinRoom` 只负责置位与派发，重连循环移到 `Task.Run` 后台；重试固定 1 秒、最多 90 次，12022 只按第 1 次与每 10 次记录日志；仅在重连最终失败时回到 UI 线程调用宿主原处理器 `SendErrToWpf`（提示被踢 + 关闭房间窗口）；用 `Interlocked` 去重，重复踢出包不会启动第二条循环。`ChatConnectionPacket` 删除重复的重连循环，只保留日志与 WebSocket 通知。
 - 验证：`Verify-Source.ps1` PASS（202 源文件、22 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 269 项通过。
 - 未验证：真实被踢场景的重连成功率、宿主看门狗不再触发、以及重连失败时宿主提示与房间窗口关闭的表现（需实机复测）。
+
+## 2026-10-16：移植 MCLauncherUpdater 的启动器更新逻辑
+
+- 需求：以 dnSpy 反编译的 `Updater/Manager/UpdateManager`（MCLauncherUpdater.exe）为参照，在插件内实现官方启动器更新；渠道改用 `Channel.ChannelGet()` 自动识别；解压时不得覆盖钩子自己的 `Mcl.Core.dll`；必须处理宿主运行中的文件占用。
+- 新增 `Services/Updates/LauncherUpdateModels.cs`：`LauncherPatchInfo`、`LauncherChannelProfile`（netease→`/pl/x19_java_patchlist`、4399pc→`PC4399_`、a50_sdk_cn→`A50SdkCn_`，产品名沿用官方 GetChannelPrefix 规则）、`LauncherPatchList.Parse`（官方响应缺外花括号且带尾随逗号）、`LauncherUpdatePlan`（对齐 GetLastMajorMinorPatch：最新 Major.Minor 系列首版为整包步骤 + 列表末项为补丁步骤，只执行高于本机版本的步骤）。
+- 新增 `Services/Updates/LauncherPatchDownloader.cs`：`FileDownload`/`DownloadManager` 的移植（清空目标、16KB 分块、Accept-Ranges 断点续传重试两次、磁盘空间检查、MD5 校验、失败清理与官方错误码文案）。
+- 新增 `Services/Updates/SevenZipExtractor.cs`：等价于 `SevenZipHelper.UnZipSync`，调用安装目录 `ext\7z\7z.exe`（`x "包" -y -aoa -o"目标"`），额外支持 `-xr!` 排除项（跳过 `Mcl.Core.dll`、`Mcl.Core.pdb`，已验证 7z 排除不区分大小写且作用于任意层级）、30 分钟超时与取消时终止进程。
+- 新增 `Services/Updates/DeferredPatchApplier.cs`：钩子运行在启动器进程内，无法照搬官方“先杀进程再覆盖”，因此生成 `apply-update.cmd`：等待宿主 PID 退出 → 备份钩子 DLL → 运行大版本安装器（`/silent /verisilent /norestart /nocancel`，官方参数）或 robocopy 小版本补丁（`/XF Mcl.Core.dll Mcl.Core.pdb`，不复刻官方“全量删除”语义）→ 恢复钩子 DLL → 重启原宿主可执行文件；日志写入会话目录 `apply-update.log`。脚本用系统 ANSI 编码写出，兼容中文用户目录；用 `ping` 代替 `timeout` 避免无控制台时失败。
+- 重写 `Services/Updates/UpdateManager.cs`：保留管理员检查/提权、`MclUpdateConfig.json`（`DisableUpdate` 生效；`IsBuildChannel` 仅保留旧 JSON 键）、`DisableUpdater` 文件与 `Mcl.Core.dll.old` 清理；检查流程为 官方 patchlist → 本地 `WPFLauncher.exe` 文件版本（回退宿主 MainModule 版本）→ 计划 → GB2312 更新说明（2 秒超时）→ 更新窗口 → 下载/解压到 `%LocalAppData%\Netease\MCLauncherUpdater\patch\<时间戳-版本>` → 启动应用脚本并退出宿主；启动时清理 3 天前的旧会话。原 GitHub DLL 自更新（UpdatePromptWindow/DownloadProgressWindow/MarkdownWpfParser）被本次官方更新流程取代并删除。
+- UI：新增 `UI/Windows/LauncherUpdateWindow.xaml(.cs)`（WinUI 3 风格自绘标题栏 + 版本对比卡片 + 更新说明 + 下载进度/阶段指示 + 完成/失败状态；支持取消），`UpdateConfigWindow` 去掉手工渠道下拉，改为显示自动识别的渠道；`SettingsPanel` 更新分区去掉“开发版更新”。XAML 窗口数 22 → 21，已同步 `Verify-Source.ps1` 与烟雾测试计数。
+- 验证：`Verify-Source.ps1` PASS（21 个 XAML 窗口、45 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试离线 307 项通过，设置 `MCL_LIVE_UPDATE_CHECK=1` 后 314 项通过（真实 patchlist 解析、真实下载 + MD5、真实 7z 解压并确认不含 Mcl.Core.dll）；已渲染 update-prompt/working/ready/error 四种状态供复核。
+- 顺带修复 HEAD 中已存在的测试不一致：`BedrockTests` 期望的 packcache 默认目录（`MinecraftPC_Netease` → 与源码/帮助文本一致的 `MinecraftPE_Netease`）与版本号（`7.0.0-DLL-Public-Fix` → 当前 `7.0.1-DLL-Public-Beta1`）；两者都只改测试期望，不改变运行行为。
+- 未验证：真实宿主内的完整更新（下载→退出→覆盖→重启）未在真实账号/启动器会话执行；“稍后”与取消的文件清理、4399/a50 渠道的真实 patchlist、非管理员环境下提权交互、杀毒软件拦截覆盖时的日志表现，需要实机回归。
+
+### 2026-10-16（第二轮）：接管宿主更新入口
+
+- `Features/AntiCheatBypass/BypassUpdate.cs`：钩子由“弹窗询问是否更新”改为**无条件 `return false`**，彻底阻止宿主（网易启动器）自带更新，避免官方更新用原版 `Mcl.Core.dll` 覆盖钩子；删除 `uz.q` 询问框、更新日志抓取与 `xw` 调用（这些职责已由插件更新窗口承担），保留 `[OriginalMethod]` 占位方法与 `WPFLauncher.Update.xw/h` Hook 契约不变；首次阻止时输出一条 Info 日志。
+- `Initialize.cs`：新增“启动器更新”段落 —— 先 `MethodHook.InstallTypes(new[] { typeof(BypassUpdate) })`（早于 `InitMpay` 的完整 `Install()`，保证宿主启动早期的更新检查也被阻止），再调用 `UpdateManager.InitializeAsync()` 由插件接管更新；注释明确三种禁用方式（设置页“禁用自动更新检查”、`MclUpdateConfig.json` 的 `DisableUpdate=true`、`DisableUpdater` 文件），禁用后宿主自带更新同样保持阻止。
+- `SettingsPanel` 更新分区说明改为“禁用后宿主自带更新也会被阻止”，与上述语义一致。
+- 验证：`Verify-Source.ps1` PASS（204 源文件、21 窗口、45 配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 311 项通过（新增 4 项：宿主更新默认阻止、重复调用稳定返回 false、Hook 目标契约 `WPFLauncher.Update.xw/h`、原方法占位不再启用更新）。
+- 未验证：真实宿主中 `xw.h` 的调用时机/频率与阻止后的界面表现（启动器自带的“检查更新”菜单、定时更新提示），以及“禁用更新”与官方 `Updater/MCLauncherUpdater.exe` 手动执行并存的场景，需要实机回归。
+
+### 2026-10-16（第三轮）：Mcl.Core.dll 自更新与启动器更新分离
+
+- 需求：恢复插件自身（Mcl.Core.dll，GitHub）更新，并与启动器（官方 patchlist）更新完全解耦，可分别开关。
+- 新增 `Services/Updates/HookUpdateManager.cs`：GitHub 自更新轨道 —— Build 渠道（contents API sha 对比本地 git blob SHA1，提交信息作更新说明）与 Release 渠道（最新发行版 `Mcl.Core.dll` 资产 + `sha256:` digest 校验）；节点选择沿用旧逻辑（自动=gh-proxy→ghproxy.net→直连、直连、gh-proxy、ghproxy.net）；下载到 `Mcl.Core.dll.update-download` → 哈希校验 → 重命名替换（旧文件留 `.old` 待下次启动清理，失败自动回滚）→ 宿主退出后重启。镜像/哈希/响应解析/校验/替换等纯逻辑均离线可测。
+- 新增 `Services/Updates/UpdateWindowRunner.cs`：STA 窗口调度器，从 `UpdateManager` 提取，两条更新轨道共用。
+- 恢复 `Services/Updates/MarkdownWpfParser.cs`（上一轮随旧窗口删除），继续渲染 Release markdown 更新说明（含 GitHub 图片代理）。
+- 新增 `UI/Windows/HookUpdateWindow.xaml(.cs)`：WinUI 3 风格自更新窗口（版本/说明/下载节点 → 下载进度 → 校验替换 → 就绪/失败），与 `LauncherUpdateWindow` 视觉一致。
+- `UpdateManager`：配置拆分为 `DisableUpdate`（Mcl.Core.dll 自更新，旧键保留原语义）、`IsBuildChannel`（自更新渠道，恢复 Build/Release 原语义）、新键 `DisableLauncherUpdate`（启动器更新，默认开启）；`InitializeAsync` 在同一互斥锁下先执行自更新轨道、再执行启动器轨道，任一条完成即退出/重启；`DisableUpdater` 文件改为同时禁用两条轨道。
+- UI：`UpdateConfigWindow` 与设置面板“更新”分区改为两条轨道各自的开关 + 插件更新渠道下拉；启动器渠道仍由 `ChannelGet()` 自动识别。
+- 计数：XAML 窗口 21 → 22；`Verify-Source.ps1` 与烟雾测试同步；测试工程补 `System.Net.Http` 引用与 `HookUpdateWindow` 源链接。
+- 验证：主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试离线 332 项、`MCL_LIVE_UPDATE_CHECK=1` 时 342 项通过（新增：git blob SHA1 黄金向量 `177e962b…`/`ce013625…`、SHA256 向量、Build/Release 响应解析与“已是最新”判定、镜像顺序、旧 JSON 键兼容、真实读取最新 Release 并下载 `Mcl.Core.dll` 校验 digest）；已渲染 hook-update 四态与新版配置窗口供复核。
+- 未验证：真实宿主中的自更新替换与重启（会实际替换 Mcl.Core.dll）、GitHub API 限流/无 digest 的降级路径，以及自更新与启动器更新在同一个启动周期内的先后触发，需要实机回归。

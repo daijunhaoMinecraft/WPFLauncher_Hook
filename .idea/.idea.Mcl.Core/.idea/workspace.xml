@@ -11,30 +11,43 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/Mcl.Core/DLLs/Mono.Cecil.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core.sln.DotSettings.user" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/GeneralHooks/InitHook.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/ChatConnectionPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/ChatConnectionPacket.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/WpfConfig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Entities/SaveEntityModels.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Entities/SaveEntityModels.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/AGENTS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/RoomInfoWindow.cs" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/SaveManagerWindow.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/SaveManagerWindow.xaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Properties/AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Properties/AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/AGENTS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/AntiCheatBypass/BypassUpdate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/AntiCheatBypass/BypassUpdate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/RebuildX19Crypto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/Authentication/Core/RebuildX19Crypto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Initialize.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Services/Updates/MarkdownWpfParser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Services/Updates/MarkdownWpfParser.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Services/Updates/UpdateManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Services/Updates/UpdateManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/SettingsPanel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/SettingsPanel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/DownloadProgressWindow.xaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/DownloadProgressWindow.xaml.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdatePromptWindow.xaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdatePromptWindow.xaml.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Mcl.Core.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Tools/Cryptography/Channel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Tools/Cryptography/Channel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/SaveManagerWindow.baml" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/SaveManagerWindow.baml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/SaveManagerWindow.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/SaveManagerWindow.g.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.model.nuget.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/DownloadProgressWindow.baml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/DownloadProgressWindow.g.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/UpdateConfigWindow.baml" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/UpdateConfigWindow.baml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/UpdateConfigWindow.g.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/UpdateConfigWindow.g.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/UpdatePromptWindow.baml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Windows/UpdatePromptWindow.g.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.FileListAbsolute.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.g.resources" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.g.resources" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/REFACTOR_PLAN.md" beforeDir="false" afterPath="$PROJECT_DIR$/REFACTOR_PLAN.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/Verify-Source.ps1" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/Verify-Source.ps1" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/BedrockTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/BedrockTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/HostStubs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/HostStubs.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/Mcl.Core.SmokeTests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/Mcl.Core.SmokeTests.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/Program.cs" afterDir="false" />
     </list>
@@ -98,6 +111,7 @@
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/SaveManagerWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdateConfigWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Windows/UpdatePromptWindow.xaml.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Mcl.Core/Utils/UpdaterTool.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/WPFLauncherLib/Main.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/NetworkMonitorWindow.g.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Dotnetdetour/UI/Controls/ProcessLogWindow.g.cs" root0="SKIP_HIGHLIGHTING" />
@@ -156,7 +170,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.mcpserver.settings&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;,
     &quot;zielu.gittoolbox.prj.config.selected.tab.id&quot;: &quot;zielu.gittoolbox.config.prj.diagnostic&quot;
@@ -715,7 +729,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="更新功能: PCL 内存优化, 在每次启动游戏(基岩版和Java版)执行一次内存优化, 若不想要则可在配置中关闭 &quot;游戏启动前进行内存优化&quot; 功能即可" />
     <MESSAGE value="发布正式版, 并修复了一个错误" />
     <MESSAGE value="update Image" />
     <MESSAGE value="Add Image" />
@@ -740,7 +753,8 @@
     <MESSAGE value="修复问题: #71" />
     <MESSAGE value="修复了默认配置会打开 校验文件完整性 问题, 给一些设置项添加了文件夹的选择方式同时也做了详细指导, 新增 基岩版 PackCache 相关功能 (例如 mcp 注入/packcache 内指定文件的清理) 默认关闭, 优化了 4399 登录流程, 修复了登出到账号管理器再登录游戏有概率启动器退出问题" />
     <MESSAGE value="Add Release Image" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add Release Image" />
+    <MESSAGE value="更新重点: 完整重写联机大厅房间管理功能(支持更多复杂功能比如密码设置/加入黑名单等功能), 此功能将会默认开启, 若需要关闭可到设置中去关闭" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新重点: 完整重写联机大厅房间管理功能(支持更多复杂功能比如密码设置/加入黑名单等功能), 此功能将会默认开启, 若需要关闭可到设置中去关闭" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

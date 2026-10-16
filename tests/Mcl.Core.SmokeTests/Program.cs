@@ -60,6 +60,7 @@ internal static partial class Program
             ModInjectionDirectoryTests();
             ConsoleTests();
             HookInstallationTests();
+            UpdaterTests();
             LoggingTests();
             BufferTests();
             ResourceTests();
@@ -324,21 +325,14 @@ internal static partial class Program
         logWindow.Close();
         logWindow.AppendLog("ignored after close");
 
-        var presentation = XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-        var xaml = XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml");
-        var eventNames = new HashSet<string> { "Click", "Loaded", "Closed", "Closing", "KeyDown", "KeyUp", "MouseLeftButtonDown", "MouseDoubleClick",
-            "SelectionChanged", "TextChanged", "Checked", "Unchecked", "ScrollChanged", "PreviewMouseLeftButtonDown", "PreviewKeyDown", "MouseDown", "SizeChanged", "PreviewTextInput" };
         var windows = Directory.GetFiles(Path.Combine(_root, "Mcl.Core", "Dotnetdetour"), "*.xaml", SearchOption.AllDirectories);
         var loaded = 0;
         foreach (var path in windows)
         {
-            var document = XDocument.Load(path);
-            if (document.Root.Name != presentation + "Window") continue;
-            document.Root.Attribute(xaml + "Class")?.Remove();
-            foreach (var attribute in document.Descendants().Attributes().Where(attribute => eventNames.Contains(attribute.Name.LocalName)).ToList()) attribute.Remove();
+            var window = ParseWindowWithoutCodeBehind(path);
+            if (window == null) continue;
             // Load markup without code-behind: never run login, network, updater or host callbacks.
             Console.WriteLine("Render: " + Path.GetFileName(path));
-            var window = (Window)XamlReader.Parse(document.ToString());
             window.ApplyTemplate();
             Check(window.FindResource("PrimaryButton") is Style, "theme lookup " + Path.GetFileName(path));
             var content = window.Content as FrameworkElement;
@@ -348,6 +342,25 @@ internal static partial class Program
         }
         Check(loaded == 22, "all 22 XAML windows parsed and rendered");
         application.Shutdown();
+    }
+
+    private static readonly HashSet<string> WindowEventNames = new HashSet<string> { "Click", "Loaded", "Closed", "Closing", "KeyDown", "KeyUp",
+        "MouseLeftButtonDown", "MouseDoubleClick", "SelectionChanged", "TextChanged", "Checked", "Unchecked", "ScrollChanged",
+        "PreviewMouseLeftButtonDown", "PreviewKeyDown", "MouseDown", "SizeChanged", "PreviewTextInput" };
+
+    /// <summary>加载窗口 XAML 但剥离 x:Class 与事件处理器，避免触发宿主/网络/更新回调。</summary>
+    private static Window ParseWindowWithoutCodeBehind(string path)
+    {
+        var document = XDocument.Load(path);
+        if (document.Root.Name != XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml/presentation") + "Window") return null;
+        document.Root.Attribute(XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml") + "Class")?.Remove();
+        foreach (var attribute in document.Descendants().Attributes()
+                     .Where(attribute => WindowEventNames.Contains(attribute.Name.LocalName)).ToList())
+        {
+            attribute.Remove();
+        }
+
+        return (Window)XamlReader.Parse(document.ToString());
     }
 
     private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject
