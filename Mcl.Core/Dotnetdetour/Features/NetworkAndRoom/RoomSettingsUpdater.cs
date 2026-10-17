@@ -129,7 +129,7 @@ internal sealed class RoomSettingsUpdater : IMethodHook
             ticket?.MarkHandled();
             PluginLog.Debug("Network", ticket == null
                 ? "Room update request sent with the current room password."
-                : $"Room update request sent with a new room password: {password}");
+                : "Room update request sent with a new room password.");
         }
         catch (Exception exception)
         {
@@ -216,7 +216,7 @@ internal sealed class RoomSettingsUpdater : IMethodHook
             if (WpfConfig.RoomInfo?.entity != null) WpfConfig.RoomInfo.entity.password = ticket.Password.Length > 0;
             PluginLog.Info("Network", ticket.Password.Length == 0
                 ? "Room password protection disabled."
-                : $"Room password updated: {ticket.Password}");
+                : "Room password updated.");
         }
 
         completed?.Invoke(new RoomUpdateResult

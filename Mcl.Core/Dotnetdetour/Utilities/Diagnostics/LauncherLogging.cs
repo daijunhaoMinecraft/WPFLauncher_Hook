@@ -55,11 +55,11 @@ public static class LauncherLogging
             configuration.LoggingRules.Add(new LoggingRule("*", minimum, console));
             if (writeToFile)
             {
-                var file = new FileTarget("mcl-file")
+                var file = new RedactingFileTarget
                 {
+                    Name = "mcl-file",
                     FileName = Path.Combine(rootDirectory, "logs", SessionName + ".log"),
-                    Layout = layout,
-                    KeepFileOpen = false
+                    Layout = layout
                 };
                 configuration.AddTarget(file);
                 configuration.LoggingRules.Add(new LoggingRule("*", minimum, file));

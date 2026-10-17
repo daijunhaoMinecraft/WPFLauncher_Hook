@@ -283,3 +283,11 @@
 - 计数：XAML 窗口 21 → 22；`Verify-Source.ps1` 与烟雾测试同步；测试工程补 `System.Net.Http` 引用与 `HookUpdateWindow` 源链接。
 - 验证：主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试离线 332 项、`MCL_LIVE_UPDATE_CHECK=1` 时 342 项通过（新增：git blob SHA1 黄金向量 `177e962b…`/`ce013625…`、SHA256 向量、Build/Release 响应解析与“已是最新”判定、镜像顺序、旧 JSON 键兼容、真实读取最新 Release 并下载 `Mcl.Core.dll` 校验 digest）；已渲染 hook-update 四态与新版配置窗口供复核。
 - 未验证：真实宿主中的自更新替换与重启（会实际替换 Mcl.Core.dll）、GitHub API 限流/无 digest 的降级路径，以及自更新与启动器更新在同一个启动周期内的先后触发，需要实机回归。
+
+## 2026-10-17：文件日志敏感信息过滤
+
+- NLog 文件目标改为 `RedactingFileTarget`：控制台目标保持原样，写入 `logs\*.log` 的内容统一经过 `LogSanitizer.RedactSensitiveAuthValues`。目标按行追加后立即关闭文件句柄，保留原先可被其他进程读取的 `KeepFileOpen=false` 行为。
+- 文件日志只替换 `sauth_json`、`unisdk_login_json`、`sead`、`sdkuid` 的值，覆盖顶层 `SauthJson`、`HttpEncrypt` 的 `/authentication-otp` 请求体及普通 JSON 键值；`sa_data`、设备环境、`otp_token`、账号、UserId、EncryptKey 等保留用于日志分析。该策略按反馈收窄，避免把有用的环境信息整段删除。
+- 游戏进程日志窗口导出同样只过滤上述四个字段；房间创建、加入、设置更新日志不再输出密码明文；敏感账号诊断设置说明同步注明这四个字段会被过滤。
+- 顺带将烟雾测试中陈旧的 `Beta1` 版本断言对齐当前 `AssemblyInfo` 的 `7.0.1-DLL-Public-Beta2`。
+- 验证：`scripts\Validate-Refactor.ps1` PASS（209 个源文件、22 个窗口、45 项注册配置，主项目/测试项目 0 错误，337 项烟雾测试通过）；同步源码链接项后 `Mcl.Core.DetourProbe` 构建 0 错误/0 警告，自测输出 `Result=14`。首次运行曾在既有的延迟更新脚本 `apply-update.log` 文件占用检查处偶发失败，原样重跑通过。未启动真实宿主验证实际日志内容。

@@ -35,6 +35,15 @@ namespace Mcl.Core.Dotnetdetour.Features.NetworkAndRoom;
 //去除网易存档加密功能
 internal class RoomManager : IMethodHook
 {
+    private static string DescribePasswordState(object password)
+    {
+        var value = password?.ToString();
+        return string.IsNullOrEmpty(value) || value == "0" ||
+               string.Equals(value, bool.FalseString, StringComparison.OrdinalIgnoreCase)
+            ? "无"
+            : "已设置";
+    }
+
     #region RemoveSaveCloudNameLimits
 
     // 去除联机大厅保存存档时的长度限制
@@ -83,7 +92,7 @@ internal class RoomManager : IMethodHook
             string roomDetails = $@"
 -------------------[建房成功]-------------------
 房间号: {result.entity.room_name}
-密码: {(string.IsNullOrEmpty(result.entity.password.ToString()) ? "无" : result.entity.password)}
+密码: {DescribePasswordState(result.entity.password)}
 资源ID: {result.entity.res_id}
 房间ID: {result.entity.entity_id}
 最大人数: {result.entity.max_count}
@@ -160,7 +169,7 @@ internal class RoomManager : IMethodHook
     [HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "a", "CreateRoomOriginalRequest_Original")]
     public static void CreateRoomOriginalRequest(string RoomName, string ResID, uint Visivility, uint MaxCount, string SaveID, string Password, Action<EntityResponse<LobbyGameRoomEntity>> RequestAction)
     {
-        PluginLog.Debug("Network", $"[RoomManage] 正在创建房间, ResID:{ResID}, 密码:{Password}");
+        PluginLog.Debug("Network", $"[RoomManage] 正在创建房间, ResID:{ResID}, 密码:{DescribePasswordState(Password)}");
         WpfConfig.Password = Password;
         CreateRoomOriginalRequest_Original(RoomName, ResID, Visivility, MaxCount, SaveID, Password, RequestAction);
     }
@@ -209,7 +218,7 @@ internal class RoomManager : IMethodHook
             string joinDetails = $@"
 -------------------[加入房间]-------------------
 房间号: {Get_Room_Info.entity.room_name}
-密码: {Get_Room_Info.entity.password}
+密码: {DescribePasswordState(Get_Room_Info.entity.password)}
 资源ID: {Get_Room_Info.entity.res_id}
 房间ID: {Get_Room_Info.entity.entity_id}
 最大人数: {Get_Room_Info.entity.max_count}
@@ -594,7 +603,7 @@ Port: {config.CppGameCfg.room_info.port}
         var result = SendJoinRoomRequest(roomId, password, statusVisibility);
         
         string statusText = result.code == 0 ? "成功进入" : "进入失败";
-        string passText = string.IsNullOrEmpty(password) ? "无密码" : password;
+        string passText = DescribePasswordState(password);
         
         string reqDetails = $@"
 -----------------[进入房间请求]-----------------

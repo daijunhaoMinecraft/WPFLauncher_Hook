@@ -202,6 +202,31 @@ internal static partial class Program
             logger.Info("visible-info");
             logger.Warn("visible-warning");
             logger.Error("visible-error");
+            var sauthSecret = "FileSecretSauth_" + Guid.NewGuid().ToString("N");
+            var sauthObjectSecret = "FileSecretSauthObject_" + Guid.NewGuid().ToString("N");
+            var unisdkSecret = "FileSecretUnisdk_" + Guid.NewGuid().ToString("N");
+            var seadSecret = "FileSecretSead_" + Guid.NewGuid().ToString("N");
+            var sdkuidSecret = "FileSecretSdkuid_" + Guid.NewGuid().ToString("N");
+            var visibleSaData = "FileVisibleSaData_" + Guid.NewGuid().ToString("N");
+            var visibleToken = "FileVisibleToken_" + Guid.NewGuid().ToString("N");
+            var visibleAccount = "file-visible-" + Guid.NewGuid().ToString("N") + "@example.com";
+            var visibleKey = "FileVisibleKey_" + Guid.NewGuid().ToString("N");
+            const string visibleUserId = "600015788";
+            logger.Info("password=visible-password; token=" + visibleToken);
+            logger.Info("\"sauth_json\":\"" + sauthSecret + "\"");
+            logger.Info("HttpEncrypt: Path: /authentication-otp Body: " +
+                        "{\"sa_data\":{\"os_name\":\"windows\",\"mac_addr\":\"" + visibleSaData +
+                        "\"},\"sauth_json\":\"" + sauthSecret + "\",\"otp_token\":\"" + visibleToken +
+                        "\",\"account\":\"" + visibleAccount + "\",\"userId\":\"" + visibleUserId +
+                        "\",\"unisdk_login_json\":\"{\\\"token\\\":\\\"" + unisdkSecret +
+                        "\\\"}\",\"sdkuid\":\"" + sdkuidSecret + "\"}, EncryptBytesCount: 1793, EncryptKey: " +
+                        visibleKey);
+            logger.Info("SauthJson: {\"sauth_json\":\"" + sauthObjectSecret + "\",\"sa_data\":\"" +
+                        visibleSaData + "\"}");
+            logger.Info("Login succeeded: userId=" + visibleUserId);
+            logger.Info("ParseResponseLogin: DecryptBody: " +
+                        "{\"account\":\"" + visibleAccount + "\",\"token\":\"" + visibleToken +
+                        "\",\"sead\":\"" + seadSecret + "\"}, EncryptKey: " + visibleKey);
             LogManager.Flush();
             var consoleText = writer.ToString();
             var fileText = string.Concat(Directory.GetFiles(Path.Combine(WpfConfig.LauncherRootDirectory, "logs"), "*.log").Select(File.ReadAllText));
@@ -209,6 +234,38 @@ internal static partial class Program
             Check(!consoleText.Contains("hidden-") && !fileText.Contains("hidden-"), "quiet console and file");
             Check(fileText.Contains("visible-info") && fileText.Contains("visible-warning") && fileText.Contains("visible-error"), "essential file levels preserved");
             Check(consoleText.Contains("visible-info") && consoleText.Contains("visible-warning") && consoleText.Contains("visible-error"), "essential console levels preserved");
+            Check(!fileText.Contains(sauthSecret) && !fileText.Contains(sauthObjectSecret) &&
+                  !fileText.Contains(unisdkSecret) && !fileText.Contains(seadSecret) &&
+                  !fileText.Contains(sdkuidSecret), "file target redacts authentication fields");
+            Check(fileText.Contains(visibleSaData) && fileText.Contains(visibleToken) &&
+                  fileText.Contains(visibleAccount) && fileText.Contains(visibleKey) &&
+                  fileText.Contains(visibleUserId) && fileText.Contains("password=visible-password"),
+                "file target preserves environment and diagnostic fields");
+            Check(fileText.Contains("<redacted>"), "file target records redaction markers");
+            Check(consoleText.Contains(sauthSecret) && consoleText.Contains(sauthObjectSecret) &&
+                  consoleText.Contains(unisdkSecret) && consoleText.Contains(seadSecret) &&
+                  consoleText.Contains(sdkuidSecret),
+                "console target remains diagnostic");
+            var sanitized = LogSanitizer.RedactSensitiveAuthValues(
+                "password=visible-password; token=visible-token; userId=" + visibleUserId + "\r\n" +
+                "SauthJson: {\"sauth_json\":\"discard-this-sauth\",\"sa_data\":\"visible-sa-data\"}\r\n" +
+                "HttpEncrypt: Path: /authentication-otp Body: " +
+                "{\"sa_data\":\"visible-sa-data-2\",\"sauth_json\":\"drop-payload-sauth\"," +
+                "\"unisdk_login_json\":\"drop-unisdk\",\"sdkuid\":\"drop-sdkuid\"," +
+                "\"otp_token\":\"visible-otp-token\"}, EncryptBytesCount: 10, EncryptKey: visible-key\r\n" +
+                "ParseResponseLogin: DecryptBody: {\"account\":\"visible-account\",\"sead\":\"drop-sead\"}, " +
+                "EncryptKey: visible-key-2\r\n" +
+                "SauthJson: {\"sauth_json\":\"{\\\"platform\\\":\\\"pc\\\",\\\"sessionid\\\":\\\"nested-secret\\\"}\"," +
+                "\"sa_data\":\"visible-sa-data-3\"}");
+            Check(!sanitized.Contains("discard-this-sauth") && !sanitized.Contains("drop-payload-sauth") &&
+                  !sanitized.Contains("drop-unisdk") && !sanitized.Contains("drop-sdkuid") &&
+                  !sanitized.Contains("drop-sead") && !sanitized.Contains("nested-secret") &&
+                  sanitized.Contains("visible-sa-data") && sanitized.Contains("visible-sa-data-2") &&
+                  sanitized.Contains("visible-sa-data-3") &&
+                  sanitized.Contains("visible-otp-token") && sanitized.Contains("visible-key") &&
+                  sanitized.Contains("visible-password") && sanitized.Contains("visible-token") &&
+                  sanitized.Contains(visibleUserId),
+                "shared sanitizer targets only listed authentication fields");
             LauncherLogging.Configure(true, true, WpfConfig.LauncherRootDirectory);
             logger.Debug("enabled-debug");
             LauncherLogging.Debug(() => "enabled-lazy");

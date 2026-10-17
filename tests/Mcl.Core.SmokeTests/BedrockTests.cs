@@ -35,7 +35,7 @@ internal static partial class Program
             Check(typeof(WpfConfig).GetField("Version") == null, "no mutable global version");
             // 版本号固定校验：修改 Mcl.Core/Properties/AssemblyInfo.cs 后需同步更新这里。
             Check(WpfConfig.GetVersion() == typeof(WpfConfig).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion &&
-                WpfConfig.GetVersion() == "7.0.1-DLL-Public-Beta1", "version comes from linked assembly metadata");
+                WpfConfig.GetVersion() == "7.0.1-DLL-Public-Beta2", "version comes from linked assembly metadata");
             Check(typeof(WpfConfig).GetProperty("BedrockPath") == null && typeof(WpfConfig).GetProperty("IsDebug") == null, "legacy source aliases removed");
             foreach (var path in new[] { "Minecraft.Windows.exe", @"C:\Games\Minecraft.Windows.exe", @"""C:\Games\MINECRAFT.WINDOWS.EXE""" })
                 Check(BedrockCacheService.IsBedrockExecutable(path), "exact Bedrock executable " + path);

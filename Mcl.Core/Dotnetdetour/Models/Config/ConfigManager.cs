@@ -89,7 +89,7 @@ public static class ConfigManager
         new ConfigEntry("IsLogOutputFolder", nameof(WpfConfig.WriteLauncherLogsToFile), "启动器日志输出到文件夹", "日志与诊断",
             helpText: "将启动器日志写入 logs 目录，与控制台使用相同的详细级别。"),
         new ConfigEntry("ShowAccountInfo", nameof(WpfConfig.LogSensitiveAccountDetails), "记录账号敏感诊断", "日志与诊断",
-            helpText: "需要同时开启详细日志，可能将身份凭据写入控制台和日志文件。仅在本机排障时临时开启，分享日志前务必检查。"),
+            helpText: "需要同时开启详细日志。控制台可能输出身份凭据；写入文件的日志会过滤 sauth_json、unisdk_login_json、sead、sdkuid。仅在本机排障时临时开启，分享任何日志前仍需人工检查。"),
         new ConfigEntry("ShowStartupLogo", nameof(WpfConfig.ShowStartupLogo), "显示启动 Logo", "日志与诊断",
             helpText: "默认开启；关闭后仅隐藏启动 Logo，不影响版本、状态和错误日志。"),
     });

@@ -10,7 +10,20 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomSettingsUpdater.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Features/NetworkAndRoom/RoomSettingsUpdater.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Models/Config/ConfigManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ProcessLogWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/UI/Controls/ProcessLogWindow.xaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Diagnostics/LauncherLogging.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Diagnostics/LauncherLogging.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Diagnostics/LogSanitizer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Dotnetdetour/Utilities/Diagnostics/LogSanitizer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.csproj.AssemblyReference.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/REFACTOR_PLAN.md" beforeDir="false" afterPath="$PROJECT_DIR$/REFACTOR_PLAN.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Mcl.Core.DetourProbe/Mcl.Core.DetourProbe.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Mcl.Core.DetourProbe/Mcl.Core.DetourProbe.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/BedrockTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/BedrockTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/Mcl.Core.SmokeTests/Program.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -136,7 +149,7 @@
     &quot;zielu.gittoolbox.prj.config.selected.tab.id&quot;: &quot;zielu.gittoolbox.config.prj.diagnostic&quot;
   }
 }</component>
-  <component name="RunManager" selected=".NET 可执行文件.WPFLauncher Debug">
+  <component name="RunManager" selected="Shell Script.WPFLauncherHook">
     <configuration name="WPFLauncherHook" type="ShConfigurationType">
       <option name="SCRIPT_TEXT" value="$installPath = (Get-ItemProperty -Path &quot;HKCU:\SOFTWARE\Netease\MCLauncher&quot; -Name &quot;InstallLocation&quot; -ErrorAction Stop).InstallLocation.TrimEnd('\'); Copy-Item -Path &quot;./Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll&quot; -Destination &quot;$installPath\Mcl.Core.dll&quot; -Force; Start-Process &quot;$installPath\WPFLauncher.exe&quot;" />
       <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
@@ -689,7 +702,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="update Image" />
     <MESSAGE value="Add Image" />
     <MESSAGE value="Update Readme" />
     <MESSAGE value="继续优化" />
@@ -714,7 +726,8 @@
     <MESSAGE value="Add Release Image" />
     <MESSAGE value="更新重点: 完整重写联机大厅房间管理功能(支持更多复杂功能比如密码设置/加入黑名单等功能), 此功能将会默认开启, 若需要关闭可到设置中去关闭" />
     <MESSAGE value="将启动器更新融入到此项目中" />
-    <option name="LAST_COMMIT_MESSAGE" value="将启动器更新融入到此项目中" />
+    <MESSAGE value="修复登录问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="修复登录问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
