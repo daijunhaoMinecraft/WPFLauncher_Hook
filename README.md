@@ -25,6 +25,9 @@
 
 如遇到软件功能类bug/提交一些建议等建议你提交[Issues](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)同时提交功能的时候请确保这个功能可以被实现(推荐提交的是PR,作者实现不了功能的会直接关闭Issue)
 
+# 讨论群聊
+[QQ Group](https://qm.qq.com/q/3EiKyU7pDi)
+
 # 功能
 
 #### 1.(重点)发烧平台绕过
