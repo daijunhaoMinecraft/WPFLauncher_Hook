@@ -234,3 +234,5 @@ E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Win
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\LauncherUpdateWindow.g.cs
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\HookUpdateWindow.baml
 E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Windows\HookUpdateWindow.g.cs
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Controls\LanCloudSavePanel.baml
+E:\Code\C#\MclCoreDLLSrc_public\Mcl.Core\obj\x86\Debug\net48\Dotnetdetour\UI\Controls\LanCloudSavePanel.g.cs

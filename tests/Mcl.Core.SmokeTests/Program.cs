@@ -56,6 +56,7 @@ internal static partial class Program
         {
             CryptoTests();
             ConfigurationTests();
+            LanCloudSaveTests();
             BedrockTests();
             ModInjectionDirectoryTests();
             ConsoleTests();
@@ -398,6 +399,16 @@ internal static partial class Program
             loaded++;
         }
         Check(loaded == 22, "all 22 XAML windows parsed and rendered");
+
+        var cloudPanelPath = Path.Combine(_root, "Mcl.Core", "Dotnetdetour", "UI", "Controls",
+            "LanCloudSavePanel.xaml");
+        var cloudPanel = ParseUserControlWithoutCodeBehind(cloudPanelPath);
+        cloudPanel.Visibility = Visibility.Visible;
+        Render(cloudPanel, 220, 150, "lan-cloud-save-panel.png");
+        Check(Descendants<Button>(cloudPanel).Count() == 3,
+            "LAN cloud-save panel renders upload, download and manager actions");
+        Check(Descendants<Button>(cloudPanel).Any(button => Equals(button.Content, "云端上传")),
+            "LAN cloud-save panel uses the cloud upload label");
         application.Shutdown();
     }
 
@@ -418,6 +429,21 @@ internal static partial class Program
         }
 
         return (Window)XamlReader.Parse(document.ToString());
+    }
+
+    private static UserControl ParseUserControlWithoutCodeBehind(string path)
+    {
+        var document = XDocument.Load(path);
+        if (document.Root.Name != XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml/presentation") + "UserControl")
+            throw new InvalidOperationException("Expected a UserControl: " + path);
+        document.Root.Attribute(XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml") + "Class")?.Remove();
+        foreach (var attribute in document.Descendants().Attributes()
+                     .Where(attribute => WindowEventNames.Contains(attribute.Name.LocalName)).ToList())
+        {
+            attribute.Remove();
+        }
+
+        return (UserControl)XamlReader.Parse(document.ToString());
     }
 
     private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject

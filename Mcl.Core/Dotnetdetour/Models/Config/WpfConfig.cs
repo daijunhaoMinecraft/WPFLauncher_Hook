@@ -88,6 +88,8 @@ public class WpfConfig
     public static bool EnableAlternativeAccountLogin = false;
     public static bool UseAccountManagerLogin = false;
     public static bool EnableAdvancedSaveManager = true;
+    // 本地联机云存档: 右侧入口、游戏退出后的上传确认与自动上传
+    public static bool EnableLanCloudSave = true;
     // 用 MCL 房间管理窗口替换启动器自带的联机大厅房间窗口(房间信息/密码/玩家/存档入口)
     public static bool UseMclRoomManagementWindow = true;
 

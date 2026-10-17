@@ -32,15 +32,18 @@ internal static partial class Program
         MethodHook.InstallTypes(new[] { typeof(SecondFixtureHook) }, create);
         Check(patches.Count == 2, "second bootstrap stage does not repatch first-stage hooks");
         MethodHook.Install(null, create);
-        Check(patches.Count == 3 && patches.Select(p => p.Item1).Distinct().Count() == 3, "full installation preserves bootstrap patches and adds only missing hooks");
+        Check(patches.Count == 4 && patches.Select(p => p.Item1).Distinct().Count() == 4, "full installation preserves bootstrap patches and adds only missing hooks");
         Check(patches.All(p => p.Item3 != null), "original placeholders are preserved during staged discovery");
         MethodHook.Install(null, create);
         MethodHook.InstallTypes(new[] { typeof(FirstFixtureHook), typeof(SecondFixtureHook) }, create);
         MethodHook.InstallAssembly(typeof(Program).Assembly, create);
-        Check(patches.Count == 3 && FirstFixtureHook.SetCount == 1, "repeated installation and assembly callbacks never overwrite installed trampolines");
+        Check(patches.Count == 4 && FirstFixtureHook.SetCount == 1, "repeated installation and assembly callbacks never overwrite installed trampolines");
         Parallel.For(0, 32, index => MethodHook.InstallTypes(new[] { typeof(FirstFixtureHook) }, create));
-        Check(patches.Count == 3, "concurrent installation requests do not duplicate native writes");
+        Check(patches.Count == 4, "concurrent installation requests do not duplicate native writes");
         Check(FixtureTarget.First(3) == 4, "recording backend never patches native fixture code");
+        MethodHook.InstallTypes(new[] { typeof(ConstructorFixtureHook) }, create);
+        Check(patches.Count == 4 && patches.Any(p => p.Item1 is ConstructorInfo && p.Item3 != null),
+            "constructor hooks resolve with an instance-aware original");
 
         var targetMethod = typeof(FixtureTarget).GetMethod(nameof(FixtureTarget.First));
         var hookMethod = typeof(FirstFixtureHook).GetMethod(nameof(FirstFixtureHook.Replacement));
@@ -90,6 +93,26 @@ internal static partial class Program
         public static int Replacement(int value) => value;
         [OriginalMethod]
         public static int Original(int value) => value;
+    }
+
+    public sealed class ConstructorFixtureTarget
+    {
+        public ConstructorFixtureTarget()
+        {
+        }
+    }
+
+    public sealed class ConstructorFixtureHook : IMethodHook
+    {
+        [HookMethod(typeof(ConstructorFixtureTarget), ".ctor")]
+        public static void Replacement(ConstructorFixtureTarget instance)
+        {
+        }
+
+        [OriginalMethod]
+        public static void Original(ConstructorFixtureTarget instance)
+        {
+        }
     }
 
     public sealed class FullInstallFixtureHook : IMethodHook

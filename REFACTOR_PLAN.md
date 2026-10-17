@@ -291,3 +291,12 @@
 - 游戏进程日志窗口导出同样只过滤上述四个字段；房间创建、加入、设置更新日志不再输出密码明文；敏感账号诊断设置说明同步注明这四个字段会被过滤。
 - 顺带将烟雾测试中陈旧的 `Beta1` 版本断言对齐当前 `AssemblyInfo` 的 `7.0.1-DLL-Public-Beta2`。
 - 验证：`scripts\Validate-Refactor.ps1` PASS（209 个源文件、22 个窗口、45 项注册配置，主项目/测试项目 0 错误，337 项烟雾测试通过）；同步源码链接项后 `Mcl.Core.DetourProbe` 构建 0 错误/0 警告，自测输出 `Result=14`。首次运行曾在既有的延迟更新脚本 `apply-update.log` 文件占用检查处偶发失败，原样重跑通过。未启动真实宿主验证实际日志内容。
+
+## 2026-10-17：本地联机云存档与退出上传确认
+
+- 新增独立注册配置 `EnableLanCloudSave`（字段 `WpfConfig.EnableLanCloudSave`，分类「本地联机」，默认开启）。本地联机云存档入口、退出上传确认和自动上传只受该开关控制，不再复用联机大厅的 `EnableAdvancedSaveManager`；注册配置由 45 项增至 46 项。
+- `LanGameCloudSaveIntegration` 在宿主 `CreateLanGameInfoUserControl` 初始化后接入 `LanCloudSavePanel`。面板监听所选 `GameM` 的 `Status`、`IsSaveExist`、`CloudStatus`、`IsLaunched` 变化以及插件云存档状态事件，游戏启动/退出后立即重新计算按钮状态，不再保留创建世界前的禁用状态。
+- `LanGameCloudSaveExitHook` 直接 Hook Java/C++ 本地联机的具体退出方法 `WPFLauncher.Model.ait.cv` 与 `WPFLauncher.Model.Game.CppGame.CppLanGame.alz.cv`，在宿主完成房间清理后延迟 300ms 打开原生 `CloudConfirmUploadView`。C++ 仅接受退出码 0；Java 在进入过世界后即提示，因为宿主正常收房时可能以非标准退出码结束 `javaw.exe`。
+- 退出确认复用宿主的「以后自动上传」和「不再询问」选项；选择自动上传后后续正常退出直接上传，选择不再询问后跳过提示。上传仍走同一套 LAN 云存档 `aid` 桥接和 `LanCloudSaves.json` 映射。
+- 验证：`scripts\Validate-Refactor.ps1` PASS（215 个源文件、22 个窗口、46 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 355 项通过，新增 LAN 云存档映射、退出码策略、构造器 Hook、侧栏面板渲染和「云端上传」文案检查。
+- 未验证：真实账号下的本地联机退出弹窗、自动上传、重启后映射恢复及真实云端分片上传/下载仍需实机回归；未启动真实游戏或联网房间验证。
