@@ -10,14 +10,7 @@
     <configurations />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Mcl.Core/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/Properties/AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/Properties/AssemblyInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/Mcl.Core/obj/x86/Debug/net48/Mcl.Core.sourcelink.json" afterDir="false" />
-    </list>
+    <list default="true" id="f18c425f-0b2e-45c7-95d8-67a7a7c9bcc5" name="更改" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -139,7 +132,7 @@
     &quot;zielu.gittoolbox.prj.config.selected.tab.id&quot;: &quot;zielu.gittoolbox.config.prj.diagnostic&quot;
   }
 }</component>
-  <component name="RunManager" selected=".NET 可执行文件.WPFLauncher Debug">
+  <component name="RunManager" selected="Shell Script.WPFLauncherHook">
     <configuration name="WPFLauncherHook" type="ShConfigurationType">
       <option name="SCRIPT_TEXT" value="$installPath = (Get-ItemProperty -Path &quot;HKCU:\SOFTWARE\Netease\MCLauncher&quot; -Name &quot;InstallLocation&quot; -ErrorAction Stop).InstallLocation.TrimEnd('\'); Copy-Item -Path &quot;./Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll&quot; -Destination &quot;$installPath\Mcl.Core.dll&quot; -Force; Start-Process &quot;$installPath\WPFLauncher.exe&quot;" />
       <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
@@ -701,7 +694,6 @@
     <MESSAGE value="修复网易的启动器更新定时触发导致游戏过程中经常弹窗更新问题" />
     <MESSAGE value="补齐信息" />
     <MESSAGE value="添加: 启动器抓包功能, 此功能需要开启 Http 端口访问并使用浏览器访问 http://127.0.0.1:&lt;Port&gt;/network-capture" />
-    <MESSAGE value="发布正式版" />
     <MESSAGE value="Release Image" />
     <MESSAGE value="Add Capture Image" />
     <MESSAGE value="修复基岩版本地联机无法进入问题以及 sa-muitl-log 跨域相关问题" />
@@ -717,7 +709,8 @@
     <MESSAGE value="修复登录问题" />
     <MESSAGE value="对保存的日志进行脱敏处理(包括但不限于 sauth_json 等账号信息)" />
     <MESSAGE value="本地联机存档上传功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="本地联机存档上传功能" />
+    <MESSAGE value="发布正式版" />
+    <option name="LAST_COMMIT_MESSAGE" value="发布正式版" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
