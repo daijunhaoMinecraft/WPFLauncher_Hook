@@ -12,3 +12,14 @@ Do not edit or build this file locally. The workflow:
 - updates only `build/Mcl.Core.dll` in the public repository.
 
 The proprietary launcher and dependency binaries are never committed here.
+
+## Workflow Setup
+
+- Private dependency repository:
+  `daijunhaoMinecraft/WPFLauncher_Hook_Build`.
+- Repository secret: `WPFLAUNCHER_HOOK_BUILD_DEPLOY_KEY`.
+- The secret is a read-only SSH deploy key scoped to the private repository.
+- The workflow runs on `main` pushes that change production source, tests,
+  scripts, or the workflow itself. It can also be started manually.
+- The workflow does not upload GitHub Actions artifacts. Only
+  `build/Mcl.Core.dll` is committed to this public repository.
