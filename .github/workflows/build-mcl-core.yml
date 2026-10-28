@@ -9,7 +9,6 @@ on:
       - "tests/Mcl.Core.SmokeTests/**"
       - "scripts/**"
       - ".github/workflows/build-mcl-core.yml"
-      - "build/README.md"
   workflow_dispatch:
 
 permissions:

@@ -29,7 +29,7 @@
 .\scripts\Validate-Refactor.ps1 -LauncherDirectory 'D:\Games\MCLauncher' -LauncherAssemblyPath 'D:\Dependencies\WPFLauncher.dump-cleaned.exe'
 ```
 
-- `WPFLauncher`、`WPFControls`、CefSharp、NLog、Newtonsoft.Json 等编译依赖统一由私有仓库 `WPFLauncher_Hook_Build` 提供；宿主 EXE/DLL 和编译引用程序集不得复制进本仓库、Release 或 Actions artifact。经明确批准的独立运行时 DLL 只能放入 `build/`。
+- `WPFLauncher`、`WPFControls`、CefSharp、NLog、Newtonsoft.Json 等编译依赖统一由私有仓库 `WPFLauncher_Hook_Build` 提供；宿主 EXE/DLL 和编译引用程序集不得复制进本仓库、Release 或 Actions artifact。经明确批准的独立运行时 DLL 只能放入 `build-artifacts` 分支的 `build/`。
 - 验证脚本输出到 `.artifacts/validation`，不会主动覆盖已有 `Mcl.Core/bin/obj`。
 - 无宿主程序集时可用 `-SkipMainBuild` 跑源码链接测试，但仍需 NLog/Newtonsoft.Json；这不等于主项目构建成功。
 - 测试仅替换宿主/更新器副作用，直接编译生产配置、工具、日志和共享 UI 源码。
@@ -38,7 +38,7 @@
 ## 私有依赖与 C# 引用
 
 - 新增托管 DLL/EXE 引用时，先把文件放入 `WPFLauncher_Hook_Build/launcher`，再在私有仓库运行 `scripts/Update-Dependencies.ps1`。该脚本负责校验文件类型、重建 `SHA256SUMS.txt`、提交并推送；不要手工维护哈希或只上传二进制。
-- 为编译引用添加文件时，主项目只提交引用配置，不提交二进制；经批准的公开运行时文件除外，且只能放入 `build/`。使用 `$(LauncherDirectory)`，不要写本机绝对路径：
+- 为编译引用添加文件时，主项目只提交引用配置，不提交二进制；经批准的公开运行时文件除外，且只能放入 `build-artifacts` 分支的 `build/`。使用 `$(LauncherDirectory)`，不要写本机绝对路径：
 
 ```xml
 <Reference Include="Example">
@@ -66,7 +66,8 @@ gh workflow run build-mcl-core.yml --repo daijunhaoMinecraft/WPFLauncher_Hook --
 - `HookUpdateManager.BuildRef` 必须为 `build-artifacts`，`BuildFilePath` 必须为 `build/Mcl.Core.dll`；下载地址应固定到具体产物提交，避免 Raw/CDN 缓存旧文件。
 - Actions 产物提交继承触发构建的源码提交消息，并附带 `MCL-SOURCE-COMMIT: <sha>`；更新窗口应显示源码提交内容并链接到源码提交。
 - 连续提交时，`concurrency` 应取消旧运行；发布前必须再次确认 `GITHUB_SHA` 仍是当前 `origin/main`，旧运行不得覆盖新产物。
-- `build/` 在 `main` 仅保留 README 和经批准的 native 运行时 DLL；不要把生成 DLL、私有依赖或兼容副本加回主分支。
+- `main` 不再保留 `build/` 目录；生成 DLL 和经批准的可选附件只放在 `build-artifacts` 分支的 `build/`。
+- `build-artifacts/build/wintun.dll` 用于组网模式；`ocr.dll`、`OcrProxy.dll`、`WmCode.dll` 用于验证码自动识别，后三个必须同时提供。
 
 ## 改码原则
 

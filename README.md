@@ -19,7 +19,16 @@
 | [下载站 / Installer](https://openlist.theconsole.top/openlist/share/WPFLauncher_Hook/Installer) | 完整安装器 | 适合需要一键替换启动器文件的用户 |
 | [安装教程](#安装) | 手动安装步骤 | 适合自行安装或排查问题时查看 |
 
-> `Build` 使用 `main` 分支的最新构建，版本可能高于 `Release`。使用前请备份原有的 `Mcl.Core.dll`。
+> `Build` 使用 `build-artifacts` 分支的最新构建，版本可能高于 `Release`。使用前请备份原有的 `Mcl.Core.dll`。
+
+# 可选附件
+
+以下文件位于 `build-artifacts` 分支的 `build` 目录，可按需下载并放入启动器目录。不安装附件不影响基础启动和更新功能。
+
+| 可选附件 | 功能 |
+| :--- | :--- |
+| [wintun.dll](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/build-artifacts/build/wintun.dll) | 用于实现组网模式功能 |
+| [ocr.dll](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/build-artifacts/build/ocr.dll)、[OcrProxy.dll](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/build-artifacts/build/OcrProxy.dll)、[WmCode.dll](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/build-artifacts/build/WmCode.dll) | 用于验证码自动识别；三个文件必须同时安装，缺少任意一个都可能导致识别功能异常 |
 
 # 免责声明
 
