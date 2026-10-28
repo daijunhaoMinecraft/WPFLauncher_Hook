@@ -119,9 +119,19 @@ jobs:
 
           $destination = Join-Path $env:GITHUB_WORKSPACE "build"
           New-Item -ItemType Directory -Path $destination -Force | Out-Null
-          Copy-Item -LiteralPath $dll -Destination (Join-Path $destination "Mcl.Core.dll") -Force
+          $publicArtifact = Join-Path $destination "Mcl.Core.dll"
+          Copy-Item -LiteralPath $dll -Destination $publicArtifact -Force
 
           $hash = (Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash
+          $compatibilityDirectory = Join-Path $env:GITHUB_WORKSPACE "Mcl.Core\bin\x86\Debug\net48"
+          New-Item -ItemType Directory -Path $compatibilityDirectory -Force | Out-Null
+          $compatibilityArtifact = Join-Path $compatibilityDirectory "Mcl.Core.dll"
+          Copy-Item -LiteralPath $dll -Destination $compatibilityArtifact -Force
+          if ((Get-FileHash -LiteralPath $publicArtifact -Algorithm SHA256).Hash -ne
+              (Get-FileHash -LiteralPath $compatibilityArtifact -Algorithm SHA256).Hash) {
+              throw "Copied build artifacts do not match."
+          }
+
           $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($dll)
           Write-Host "Mcl.Core SHA256: $hash"
           Write-Host "Product version: $($version.ProductVersion)"
@@ -131,6 +141,8 @@ jobs:
               "- SHA256: ``$hash``"
               "- File version: ``$($version.FileVersion)``"
               "- Product version: ``$($version.ProductVersion)``"
+              "- Public: ``build/Mcl.Core.dll``"
+              "- Compatibility: ``Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll``"
           ) | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
       - name: Commit build artifact
@@ -140,6 +152,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -- build/Mcl.Core.dll
+          git add -f -- Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll
           if (git diff --cached --quiet) {
               Write-Host "Mcl.Core.dll is unchanged."
               exit 0
