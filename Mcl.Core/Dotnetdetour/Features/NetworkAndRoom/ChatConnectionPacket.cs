@@ -5,13 +5,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
-using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.Models.Entities;
+using Mcl.Core.Dotnetdetour.UI.Windows;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.NeteaseProtocol;
 using Mcl.Core.Tools;
@@ -89,36 +88,12 @@ internal class ChatConnectionPacket : IMethodHook
 
                     if (commandId == 3 && WpfConfig.RoomInfo != null)
                     {
+                        // 自动重新加入房间由 RoomManager.ReJoinRoom(宿主被踢处理器) 在后台线程统一处理,
+                        // 这里只做日志与 WebSocket 通知, 避免两条循环同时请求导致 12022 限流。
                         PluginLog.Warn("Network", "你已被房主踢出房间");
                         if (WpfConfig.EnableWebServer)
                             await Task.Run(() => WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
                                 { type = "ChatConnectionPacket", status = "kick", data = message })));
-                        PluginLog.Debug("Network", "正在重新加入房间...");
-                        while (true)
-                        {
-                            var joinRoomResponse = JObject.Parse(X19Http.Post("/online-lobby-room-enter",
-                                JsonConvert.SerializeObject(new
-                                {
-                                    room_id = WpfConfig.RoomInfo.entity.entity_id, password = WpfConfig.Password,
-                                    check_visibilily = true
-                                })));
-                            if (joinRoomResponse["code"].ToObject<int>() == 0)
-                            {
-                                PluginLog.Debug("Network", "成功加入房间!");
-                                break;
-                            }
-
-                            if (joinRoomResponse["code"].ToObject<int>() == 12022)
-                            {
-                                PluginLog.Error("Network", $"加入房间失败:{joinRoomResponse["message"]},等待0.8秒后再次加入房间");
-                                Thread.Sleep(200);
-                            }
-                            else
-                            {
-                                PluginLog.Error("Network", $"加入房间失败:{joinRoomResponse["message"]}");
-                                break;
-                            }
-                        }
                     }
 
                     if (commandId == 4) processingTasks.Add(Task.Run(() => HandleRoomInfoChange(jsonMessage)));
@@ -353,12 +328,8 @@ internal class ChatConnectionPacket : IMethodHook
 
             PluginLog.Debug("Network", $"{statusMessage}");
 
-            // 更新RoomInfoWindow
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                var roomInfoWindow = GetRoomInfoWindow();
-                if (roomInfoWindow != null) roomInfoWindow.UpdateRoomInfoFromJson(jsonData);
-            });
+            // 同步 MCL 房间管理窗口的开始/进入游戏按钮
+            RoomManagementWindow.NotifyRoomStateChanged();
 
             if (WpfConfig.EnableWebServer)
                 WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new
@@ -405,6 +376,9 @@ internal class ChatConnectionPacket : IMethodHook
                 //WpfConfig.RoomPlayerList.Remove(JsonConvert.DeserializeObject<acl.UserProfileEntity>(playerInfo["entity"].ToString()));
                 HandlePlayerLeave(userId, playerInfo["entity"]["name"].ToString());
             }
+
+            // 同步 MCL 房间管理窗口的玩家列表
+            RoomManagementWindow.NotifyRoomPlayersChanged();
         }
         catch (Exception ex)
         {
@@ -424,21 +398,6 @@ internal class ChatConnectionPacket : IMethodHook
 
             WpfConfig.RoomInfo.entity.fids.Add(userId);
             WpfConfig.RoomInfo.entity.cur_num = (uint)WpfConfig.RoomInfo.entity.fids.Count;
-
-            // 更新RoomInfoWindow
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                // 更新RoomInfoWindow
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    var roomInfoWindow = GetRoomInfoWindow();
-                    if (roomInfoWindow != null)
-                    {
-                        roomInfoWindow.HandlePlayerJoin(userId);
-                        roomInfoWindow.UpdatePlayersList(WpfConfig.RoomInfo.entity.fids);
-                    }
-                });
-            });
 
             if (WpfConfig.EnableRoomBlacklist && WpfConfig.RoomInfo.entity.owner_id == azf<arg>.Instance.User.Id)
             {
@@ -479,17 +438,6 @@ internal class ChatConnectionPacket : IMethodHook
 
             WpfConfig.RoomInfo.entity.fids.Remove(userId);
             WpfConfig.RoomInfo.entity.cur_num = (uint)WpfConfig.RoomInfo.entity.fids.Count;
-
-            // 更新RoomInfoWindow
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                var roomInfoWindow = GetRoomInfoWindow();
-                if (roomInfoWindow != null)
-                {
-                    roomInfoWindow.HandlePlayerLeave(userId);
-                    roomInfoWindow.UpdatePlayersList(WpfConfig.RoomInfo.entity.fids);
-                }
-            });
 
             PluginLog.Warn("Network", $"玩家 {playerName} UID: {userId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(userId))))} 退出了房间");
 
@@ -747,21 +695,25 @@ internal class ChatConnectionPacket : IMethodHook
                 return;
             }
 
-            PluginLog.Warn("Network", "房间信息已更改:");
-            PluginLog.Warn("Network", "-----------------------------------------------------------");
-
-            // 更新RoomInfoWindow
-            Application.Current.Dispatcher.Invoke(() =>
+            // 先与旧信息对比, 再把新值写入本地实体。
+            var changes = DescribeRoomInfoChanges(newRoomInfo);
+            if (changes.Count > 0)
             {
-                var roomInfoWindow = GetRoomInfoWindow();
-                if (roomInfoWindow != null) roomInfoWindow.UpdateRoomInfoFromJson(newRoomInfo);
-            });
-
-            // 检查并记录所有变化
-            LogRoomInfoChanges(newRoomInfo);
+                // 标题带上变化字段名, 避免同文本被 PluginLog 的重复抑制吃掉。
+                var labels = string.Join("、", changes.Select(change => change.Split(':')[0].Trim()));
+                PluginLog.Warn("Network", $"房间信息已更改: {labels}");
+                foreach (var change in changes) PluginLog.Warn("Network", $"  {change}");
+            }
+            else
+            {
+                PluginLog.Debug("Network", "房间信息推送未包含可比较的变化");
+            }
 
             // 更新房间信息
             UpdateRoomInfo(newRoomInfo);
+
+            // 同步 MCL 房间管理窗口的控件与变化列表
+            RoomManagementWindow.NotifyRoomInfoChanged(changes);
 
             // 发送WebSocket通知
             if (WpfConfig.EnableWebServer)
@@ -774,7 +726,6 @@ internal class ChatConnectionPacket : IMethodHook
                     playerCount = WpfConfig.RoomInfo.entity.cur_num
                 }));
 
-            PluginLog.Warn("Network", "-----------------------------------------------------------");
         }
         catch (Exception ex)
         {
@@ -782,68 +733,87 @@ internal class ChatConnectionPacket : IMethodHook
         }
     }
 
-    private static void LogRoomInfoChanges(JObject newRoomInfo)
+    /// <summary>把房间推送与当前本地房间信息逐项对比, 返回“旧值 -> 新值”的变化列表。</summary>
+    private static List<string> DescribeRoomInfoChanges(JObject newRoomInfo)
     {
-        var entity = WpfConfig.RoomInfo.entity;
+        var changes = new List<string>();
+        var entity = WpfConfig.RoomInfo?.entity;
+        if (entity == null) return changes;
 
-        if (entity.entity_id != newRoomInfo["entity_id"].ToObject<string>())
-            PluginLog.Debug("Network", $"房间ID更改为: {newRoomInfo["entity_id"].ToObject<string>()}");
+        var newRoomId = newRoomInfo["entity_id"]?.ToObject<string>();
+        if (!string.IsNullOrEmpty(newRoomId) && entity.entity_id != newRoomId)
+            changes.Add($"房间ID: {entity.entity_id} -> {newRoomId}");
 
-        if (entity.owner_id != newRoomInfo["owner_id"].ToObject<string>())
-            LogOwnerChange(entity.owner_id, newRoomInfo["owner_id"].ToObject<string>());
+        var newOwnerId = newRoomInfo["owner_id"]?.ToObject<string>();
+        if (!string.IsNullOrEmpty(newOwnerId) && entity.owner_id != newOwnerId)
+            changes.Add($"房主: {DescribePlayer(entity.owner_id)} -> {DescribePlayer(newOwnerId)}");
 
-        if (entity.room_name != newRoomInfo["room_name"].ToObject<string>())
-            PluginLog.Debug("Network", $"房间名称更改为: {newRoomInfo["room_name"].ToObject<string>()}");
+        var newRoomName = newRoomInfo["room_name"]?.ToObject<string>();
+        if (!string.IsNullOrEmpty(newRoomName) && entity.room_name != newRoomName)
+            changes.Add($"房间号: {entity.room_name} -> {newRoomName}");
 
-        if (entity.save_size != newRoomInfo["save_size"].ToObject<uint>())
-            PluginLog.Debug("Network", $"保存大小更改为: {newRoomInfo["save_size"].ToObject<uint>()}");
+        if (newRoomInfo["save_size"] != null)
+        {
+            var newSaveSize = newRoomInfo["save_size"].ToObject<ulong>();
+            if (entity.save_size != newSaveSize)
+                changes.Add($"存档大小: {entity.save_size} -> {newSaveSize} bytes");
+        }
 
-        var newPasswordStatus = newRoomInfo["password"].ToObject<int>() != 0;
-        if (entity.password != newPasswordStatus)
-            PluginLog.Debug("Network", $"密码保护更改为: {(newPasswordStatus ? "是" : "否")}");
+        if (newRoomInfo["password"] != null)
+        {
+            var newPasswordStatus = newRoomInfo["password"].ToObject<int>() != 0;
+            if (entity.password != newPasswordStatus)
+                changes.Add($"密码保护: {YesNo(entity.password)} -> {YesNo(newPasswordStatus)}");
+        }
 
-        var newAllowSave = newRoomInfo["allow_save"].ToObject<int>() != 0;
-        if (entity.allow_save != newAllowSave) PluginLog.Debug("Network", $"允许保存更改为: {(newAllowSave ? "是" : "否")}");
+        if (newRoomInfo["allow_save"] != null)
+        {
+            var newAllowSave = newRoomInfo["allow_save"].ToObject<int>() != 0;
+            if (entity.allow_save != newAllowSave)
+                changes.Add($"允许保存: {YesNo(entity.allow_save)} -> {YesNo(newAllowSave)}");
+        }
 
-        var newVisibility = newRoomInfo["visibility"].ToObject<RoomVisibleStatus>();
-        if (entity.visibility != newVisibility) LogVisibilityChange(newVisibility);
+        if (newRoomInfo["visibility"] != null)
+        {
+            var newVisibility = newRoomInfo["visibility"].ToObject<RoomVisibleStatus>();
+            if (entity.visibility != newVisibility)
+                changes.Add($"可见性: {DescribeVisibilityValue(entity.visibility)} -> {DescribeVisibilityValue(newVisibility)}");
+        }
+
+        return changes;
     }
 
-    private static void LogOwnerChange(string oldOwnerId, string newOwnerId)
+    private static string YesNo(bool value) => value ? "是" : "否";
+
+    private static string DescribePlayer(string userId)
     {
+        if (string.IsNullOrEmpty(userId)) return "未知";
         try
         {
-            var oldOwnerInfo = X19Http.GetPlayerInfo(oldOwnerId);
-            var newOwnerInfo = X19Http.GetPlayerInfo(newOwnerId);
-
-            PluginLog.Warn("Network", "当前房间内房主更改");
-            PluginLog.Warn("Network", $"原房主的UID: {oldOwnerId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(oldOwnerId))))}");
-            PluginLog.Warn("Network", $"新房主的UID: {newOwnerId} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(newOwnerId))))}");
-            PluginLog.Warn("Network", $"原房主的名称: {oldOwnerInfo["entity"]["name"]}");
-            PluginLog.Warn("Network", $"新房主的名称: {newOwnerInfo["entity"]["name"]}");
+            var name = X19Http.GetPlayerInfo(userId)?["entity"]?["name"]?.ToString();
+            return string.IsNullOrEmpty(name) ? userId : $"{name}({userId})";
         }
         catch (Exception ex)
         {
-            PluginLog.Error("Network", $"记录房主变更信息时发生错误: {ex.Message}");
+            PluginLog.Debug("Network", $"读取玩家名称失败: {ex.Message}");
+            return userId;
         }
     }
 
-    private static void LogVisibilityChange(RoomVisibleStatus newVisibility)
+    private static string DescribeVisibilityValue(RoomVisibleStatus visibility)
     {
         try
         {
-            var visibilityDescription = newVisibility.GetType()
-                .GetField(newVisibility.ToString())
-                .GetCustomAttributes(typeof(DescriptionAttribute), false)
+            return visibility.GetType()
+                .GetField(visibility.ToString())
+                ?.GetCustomAttributes(typeof(DescriptionAttribute), false)
                 .FirstOrDefault() is DescriptionAttribute descriptionAttribute
                 ? descriptionAttribute.Description
-                : newVisibility.ToString();
-
-            PluginLog.Debug("Network", $"可见性更改为: {visibilityDescription}");
+                : visibility.ToString();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            PluginLog.Error("Network", $"记录可见性变更信息时发生错误: {ex.Message}");
+            return visibility.ToString();
         }
     }
 
@@ -857,15 +827,6 @@ internal class ChatConnectionPacket : IMethodHook
         entity.password = newRoomInfo["password"].ToObject<int>() != 0;
         entity.allow_save = newRoomInfo["allow_save"].ToObject<int>() != 0;
         entity.visibility = newRoomInfo["visibility"].ToObject<RoomVisibleStatus>();
-    }
-
-    private static RoomInfoWindow GetRoomInfoWindow()
-    {
-        foreach (System.Windows.Window window in Application.Current.Windows)
-            if (window is RoomInfoWindow roomInfoWindow)
-                return roomInfoWindow;
-
-        return null;
     }
 
     //发生消息拦截

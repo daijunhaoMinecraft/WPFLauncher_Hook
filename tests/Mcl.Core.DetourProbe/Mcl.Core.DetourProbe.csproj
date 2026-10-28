@@ -16,6 +16,8 @@
     <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\ConsoleEnvironment.cs" />
     <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\ConsoleOutput.cs" />
     <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\LauncherLogging.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\LogSanitizer.cs" />
+    <Compile Include="..\..\Mcl.Core\Dotnetdetour\Utilities\Diagnostics\RedactingFileTarget.cs" />
     <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\DetourWays\NativeDetourFor32Bit.cs" />
     <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\Base\LDasm.cs" />
     <Compile Include="..\..\Mcl.Core\Dotnetdetour\CoreEngine\Base\NativeAPI.cs" />

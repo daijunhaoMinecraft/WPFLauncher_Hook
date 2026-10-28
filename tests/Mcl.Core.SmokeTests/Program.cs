@@ -73,6 +73,7 @@ internal static partial class Program
             ModInjectionDirectoryTests();
             ConsoleTests();
             HookInstallationTests();
+            UpdaterTests();
             LoggingTests();
             BufferTests();
             ResourceTests();
@@ -190,6 +191,10 @@ internal static partial class Program
         Check(WpfConfig.RoomBlacklist.SequenceEqual(new[] { "example" }), "blacklist directory created on write");
         WpfConfig.ReadRegexBlacklist();
         Check(WpfConfig.RegexBlacklist.Count == 0, "regex blacklist first run");
+        ConfigManager.UpdateFromJson("{\"UseMclRoomManagementWindow\":false}");
+        Check(!WpfConfig.UseMclRoomManagementWindow, "room window replacement can be disabled");
+        ConfigManager.UpdateFromJson("{\"UseMclRoomManagementWindow\":true}");
+        Check(WpfConfig.UseMclRoomManagementWindow, "room window replacement default restored");
     }
 
     private static void LoggingTests()
@@ -210,6 +215,31 @@ internal static partial class Program
             logger.Info("visible-info");
             logger.Warn("visible-warning");
             logger.Error("visible-error");
+            var sauthSecret = "FileSecretSauth_" + Guid.NewGuid().ToString("N");
+            var sauthObjectSecret = "FileSecretSauthObject_" + Guid.NewGuid().ToString("N");
+            var unisdkSecret = "FileSecretUnisdk_" + Guid.NewGuid().ToString("N");
+            var seadSecret = "FileSecretSead_" + Guid.NewGuid().ToString("N");
+            var sdkuidSecret = "FileSecretSdkuid_" + Guid.NewGuid().ToString("N");
+            var visibleSaData = "FileVisibleSaData_" + Guid.NewGuid().ToString("N");
+            var visibleToken = "FileVisibleToken_" + Guid.NewGuid().ToString("N");
+            var visibleAccount = "file-visible-" + Guid.NewGuid().ToString("N") + "@example.com";
+            var visibleKey = "FileVisibleKey_" + Guid.NewGuid().ToString("N");
+            const string visibleUserId = "600015788";
+            logger.Info("password=visible-password; token=" + visibleToken);
+            logger.Info("\"sauth_json\":\"" + sauthSecret + "\"");
+            logger.Info("HttpEncrypt: Path: /authentication-otp Body: " +
+                        "{\"sa_data\":{\"os_name\":\"windows\",\"mac_addr\":\"" + visibleSaData +
+                        "\"},\"sauth_json\":\"" + sauthSecret + "\",\"otp_token\":\"" + visibleToken +
+                        "\",\"account\":\"" + visibleAccount + "\",\"userId\":\"" + visibleUserId +
+                        "\",\"unisdk_login_json\":\"{\\\"token\\\":\\\"" + unisdkSecret +
+                        "\\\"}\",\"sdkuid\":\"" + sdkuidSecret + "\"}, EncryptBytesCount: 1793, EncryptKey: " +
+                        visibleKey);
+            logger.Info("SauthJson: {\"sauth_json\":\"" + sauthObjectSecret + "\",\"sa_data\":\"" +
+                        visibleSaData + "\"}");
+            logger.Info("Login succeeded: userId=" + visibleUserId);
+            logger.Info("ParseResponseLogin: DecryptBody: " +
+                        "{\"account\":\"" + visibleAccount + "\",\"token\":\"" + visibleToken +
+                        "\",\"sead\":\"" + seadSecret + "\"}, EncryptKey: " + visibleKey);
             LogManager.Flush();
             var consoleText = writer.ToString();
             var fileText = string.Concat(Directory.GetFiles(Path.Combine(WpfConfig.LauncherRootDirectory, "logs"), "*.log").Select(File.ReadAllText));
@@ -217,6 +247,38 @@ internal static partial class Program
             Check(!consoleText.Contains("hidden-") && !fileText.Contains("hidden-"), "quiet console and file");
             Check(fileText.Contains("visible-info") && fileText.Contains("visible-warning") && fileText.Contains("visible-error"), "essential file levels preserved");
             Check(consoleText.Contains("visible-info") && consoleText.Contains("visible-warning") && consoleText.Contains("visible-error"), "essential console levels preserved");
+            Check(!fileText.Contains(sauthSecret) && !fileText.Contains(sauthObjectSecret) &&
+                  !fileText.Contains(unisdkSecret) && !fileText.Contains(seadSecret) &&
+                  !fileText.Contains(sdkuidSecret), "file target redacts authentication fields");
+            Check(fileText.Contains(visibleSaData) && fileText.Contains(visibleToken) &&
+                  fileText.Contains(visibleAccount) && fileText.Contains(visibleKey) &&
+                  fileText.Contains(visibleUserId) && fileText.Contains("password=visible-password"),
+                "file target preserves environment and diagnostic fields");
+            Check(fileText.Contains("<redacted>"), "file target records redaction markers");
+            Check(consoleText.Contains(sauthSecret) && consoleText.Contains(sauthObjectSecret) &&
+                  consoleText.Contains(unisdkSecret) && consoleText.Contains(seadSecret) &&
+                  consoleText.Contains(sdkuidSecret),
+                "console target remains diagnostic");
+            var sanitized = LogSanitizer.RedactSensitiveAuthValues(
+                "password=visible-password; token=visible-token; userId=" + visibleUserId + "\r\n" +
+                "SauthJson: {\"sauth_json\":\"discard-this-sauth\",\"sa_data\":\"visible-sa-data\"}\r\n" +
+                "HttpEncrypt: Path: /authentication-otp Body: " +
+                "{\"sa_data\":\"visible-sa-data-2\",\"sauth_json\":\"drop-payload-sauth\"," +
+                "\"unisdk_login_json\":\"drop-unisdk\",\"sdkuid\":\"drop-sdkuid\"," +
+                "\"otp_token\":\"visible-otp-token\"}, EncryptBytesCount: 10, EncryptKey: visible-key\r\n" +
+                "ParseResponseLogin: DecryptBody: {\"account\":\"visible-account\",\"sead\":\"drop-sead\"}, " +
+                "EncryptKey: visible-key-2\r\n" +
+                "SauthJson: {\"sauth_json\":\"{\\\"platform\\\":\\\"pc\\\",\\\"sessionid\\\":\\\"nested-secret\\\"}\"," +
+                "\"sa_data\":\"visible-sa-data-3\"}");
+            Check(!sanitized.Contains("discard-this-sauth") && !sanitized.Contains("drop-payload-sauth") &&
+                  !sanitized.Contains("drop-unisdk") && !sanitized.Contains("drop-sdkuid") &&
+                  !sanitized.Contains("drop-sead") && !sanitized.Contains("nested-secret") &&
+                  sanitized.Contains("visible-sa-data") && sanitized.Contains("visible-sa-data-2") &&
+                  sanitized.Contains("visible-sa-data-3") &&
+                  sanitized.Contains("visible-otp-token") && sanitized.Contains("visible-key") &&
+                  sanitized.Contains("visible-password") && sanitized.Contains("visible-token") &&
+                  sanitized.Contains(visibleUserId),
+                "shared sanitizer targets only listed authentication fields");
             LauncherLogging.Configure(true, true, WpfConfig.LauncherRootDirectory);
             logger.Debug("enabled-debug");
             LauncherLogging.Debug(() => "enabled-lazy");
@@ -257,6 +319,30 @@ internal static partial class Program
         Check(settings.Contains("/config/save") && !settings.Contains("cdn.tailwindcss.com"), "offline settings resource");
         File.WriteAllText(Path.Combine(_output, "settings-preview.html"), settings);
         File.WriteAllText(Path.Combine(_output, "room-preview.html"), room);
+
+        // 房间信息分享文本 (中文, 含密码)
+        var invite = new Mcl.Core.Dotnetdetour.Models.Entities.RoomInvite
+        {
+            RoomId = "4691130188361767049",
+            RoomName = "48518",
+            Password = "123456",
+            OwnerId = "600015788",
+            OwnerName = "dev_console",
+            Players = 1,
+            MaxPlayers = 10,
+            AllowSave = false,
+            VisibilityText = "公开",
+            GameStatus = 1
+        };
+        var shareText = invite.ToHumanReadableText();
+        Check(shareText.Contains("房间号: 48518") && shareText.Contains("房间ID: 4691130188361767049") &&
+              shareText.Contains("密码: 123456") &&
+              shareText.Contains("允许保存: 否") && shareText.Contains("可见性: 公开") &&
+              shareText.Contains("在浏览器查看: https://neteasehelper.theconsole.top/rooms/4691130188361767049?edition=pc"),
+            "room share text lists the room settings and page link");
+        Check(!shareText.Contains("MCL-ROOM-INVITE"), "room share text has no machine-readable marker");
+        Check(Mcl.Core.Dotnetdetour.Models.Entities.RoomInvite.BuildRoomPageLink(null) == null,
+            "room page link requires a room id");
     }
 
     private static void UiTests()
@@ -309,21 +395,14 @@ internal static partial class Program
         logWindow.Close();
         logWindow.AppendLog("ignored after close");
 
-        var presentation = XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-        var xaml = XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml");
-        var eventNames = new HashSet<string> { "Click", "Loaded", "Closed", "Closing", "KeyDown", "KeyUp", "MouseLeftButtonDown", "MouseDoubleClick",
-            "SelectionChanged", "TextChanged", "Checked", "Unchecked", "ScrollChanged", "PreviewMouseLeftButtonDown", "PreviewKeyDown", "MouseDown", "SizeChanged", "PreviewTextInput" };
         var windows = Directory.GetFiles(Path.Combine(_root, "Mcl.Core", "Dotnetdetour"), "*.xaml", SearchOption.AllDirectories);
         var loaded = 0;
         foreach (var path in windows)
         {
-            var document = XDocument.Load(path);
-            if (document.Root.Name != presentation + "Window") continue;
-            document.Root.Attribute(xaml + "Class")?.Remove();
-            foreach (var attribute in document.Descendants().Attributes().Where(attribute => eventNames.Contains(attribute.Name.LocalName)).ToList()) attribute.Remove();
+            var window = ParseWindowWithoutCodeBehind(path);
+            if (window == null) continue;
             // Load markup without code-behind: never run login, network, updater or host callbacks.
             Console.WriteLine("Render: " + Path.GetFileName(path));
-            var window = (Window)XamlReader.Parse(document.ToString());
             window.ApplyTemplate();
             Check(window.FindResource("PrimaryButton") is Style, "theme lookup " + Path.GetFileName(path));
             var content = window.Content as FrameworkElement;
@@ -331,8 +410,52 @@ internal static partial class Program
             window.Close();
             loaded++;
         }
-        Check(loaded == 21, "all 21 XAML windows parsed and rendered");
+        Check(loaded == 22, "all 22 XAML windows parsed and rendered");
+
+        var cloudPanelPath = Path.Combine(_root, "Mcl.Core", "Dotnetdetour", "UI", "Controls",
+            "LanCloudSavePanel.xaml");
+        var cloudPanel = ParseUserControlWithoutCodeBehind(cloudPanelPath);
+        cloudPanel.Visibility = Visibility.Visible;
+        Render(cloudPanel, 220, 150, "lan-cloud-save-panel.png");
+        Check(Descendants<Button>(cloudPanel).Count() == 3,
+            "LAN cloud-save panel renders upload, download and manager actions");
+        Check(Descendants<Button>(cloudPanel).Any(button => Equals(button.Content, "云端上传")),
+            "LAN cloud-save panel uses the cloud upload label");
         application.Shutdown();
+    }
+
+    private static readonly HashSet<string> WindowEventNames = new HashSet<string> { "Click", "Loaded", "Closed", "Closing", "KeyDown", "KeyUp",
+        "MouseLeftButtonDown", "MouseDoubleClick", "SelectionChanged", "TextChanged", "Checked", "Unchecked", "ScrollChanged",
+        "PreviewMouseLeftButtonDown", "PreviewKeyDown", "MouseDown", "SizeChanged", "PreviewTextInput" };
+
+    /// <summary>加载窗口 XAML 但剥离 x:Class 与事件处理器，避免触发宿主/网络/更新回调。</summary>
+    private static Window ParseWindowWithoutCodeBehind(string path)
+    {
+        var document = XDocument.Load(path);
+        if (document.Root.Name != XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml/presentation") + "Window") return null;
+        document.Root.Attribute(XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml") + "Class")?.Remove();
+        foreach (var attribute in document.Descendants().Attributes()
+                     .Where(attribute => WindowEventNames.Contains(attribute.Name.LocalName)).ToList())
+        {
+            attribute.Remove();
+        }
+
+        return (Window)XamlReader.Parse(document.ToString());
+    }
+
+    private static UserControl ParseUserControlWithoutCodeBehind(string path)
+    {
+        var document = XDocument.Load(path);
+        if (document.Root.Name != XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml/presentation") + "UserControl")
+            throw new InvalidOperationException("Expected a UserControl: " + path);
+        document.Root.Attribute(XNamespace.Get("http://schemas.microsoft.com/winfx/2006/xaml") + "Class")?.Remove();
+        foreach (var attribute in document.Descendants().Attributes()
+                     .Where(attribute => WindowEventNames.Contains(attribute.Name.LocalName)).ToList())
+        {
+            attribute.Remove();
+        }
+
+        return (UserControl)XamlReader.Parse(document.ToString());
     }
 
     private static IEnumerable<T> Descendants<T>(DependencyObject root) where T : DependencyObject

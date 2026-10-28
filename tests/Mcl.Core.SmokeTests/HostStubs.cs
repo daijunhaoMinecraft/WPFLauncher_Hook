@@ -24,6 +24,7 @@ namespace Mcl.Core.Updater
     {
         public bool DisableUpdate { get; set; }
         public bool IsBuildChannel { get; set; }
+        public bool DisableLauncherUpdate { get; set; }
     }
     public static class UpdateManager
     {

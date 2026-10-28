@@ -90,7 +90,8 @@ public partial class ProcessLogWindow : Window
         if (dialog.ShowDialog(this) != true) return;
         try
         {
-            File.WriteAllText(dialog.FileName, _buffer.Snapshot());
+            var exportText = LogSanitizer.RedactSensitiveAuthValues(_buffer.Snapshot());
+            File.WriteAllText(dialog.FileName, exportText);
         }
         catch (Exception exception)
         {

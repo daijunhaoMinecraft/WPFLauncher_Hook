@@ -5,14 +5,13 @@ using System.Text.RegularExpressions;
 
 namespace Mcl.Core.Dotnetdetour.Utilities.Diagnostics;
 
-/// <summary>Normalizes plugin diagnostics so console encoding and log injection cannot corrupt output.</summary>
+/// <summary>Shared diagnostic formatting and authentication-field redaction for persisted logs.</summary>
 public static class LogSanitizer
 {
     private const string RedactedValue = "<redacted>";
-    private static readonly Regex SensitiveAssignment = new Regex(
-        @"(?ix)(?<key>password|passwd|cookie|sauth|token|authorization|secret|access_token|refresh_token)\s*[:=]\s*(?:""(?<value>[^""]*)""|'(?<value>[^']*)'|(?<value>[^,;\s]+))",
+    private static readonly Regex SensitiveAuthValue = new Regex(
+        @"(?ix)(?<key>[""']?(?:sauth_json|unisdk_login_json|sead|sdkuid)[""']?\s*[:=]\s*)(?:""(?:\\.|[^""\\])*""|'(?:\\.|[^'\\])*'|[^,}\s]+)",
         RegexOptions.Compiled);
-    private static readonly Regex BearerToken = new Regex(@"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+", RegexOptions.Compiled);
     private static readonly Regex LegacyPrefix = new Regex(@"^\s*(?:\[[^\]]+\]\s*)+", RegexOptions.Compiled);
     private static readonly KeyValuePair<string, string>[] LegacyTranslations =
     {
@@ -73,7 +72,7 @@ public static class LogSanitizer
     public static string Sanitize(string message, int maxLength = 512, bool allowUnicode = false)
     {
         if (string.IsNullOrEmpty(message)) return string.Empty;
-        var redacted = RedactSensitiveValues(message);
+        var redacted = RedactSensitiveAuthValues(message);
         var builder = new StringBuilder(Math.Min(redacted.Length, maxLength));
         for (var index = 0; index < redacted.Length && builder.Length < maxLength; index++)
         {
@@ -137,10 +136,11 @@ public static class LogSanitizer
         return $"type={safeType} length={raw.Length} preview={preview} sha256={digest.Substring(0, 12)}...";
     }
 
-    private static string RedactSensitiveValues(string message)
+    public static string RedactSensitiveAuthValues(string message)
     {
-        var redacted = SensitiveAssignment.Replace(message, match => match.Groups["key"].Value + "=" + RedactedValue);
-        return BearerToken.Replace(redacted, "Bearer " + RedactedValue);
+        if (string.IsNullOrEmpty(message)) return message;
+        return SensitiveAuthValue.Replace(message,
+            match => match.Groups["key"].Value + "\"" + RedactedValue + "\"");
     }
 
     private static string ComputeSha256(string value)

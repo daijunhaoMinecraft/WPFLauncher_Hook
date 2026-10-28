@@ -6,13 +6,16 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
+// ChangeIPWindow 仍保留历史 Features.GeneralHooks 命名空间。
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
 using Mcl.Core.Dotnetdetour.UI.Core;
+using Mcl.Core.Dotnetdetour.UI.Windows;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.NeteaseProtocol;
 using Mcl.Core.Tools;
@@ -32,6 +35,15 @@ namespace Mcl.Core.Dotnetdetour.Features.NetworkAndRoom;
 //去除网易存档加密功能
 internal class RoomManager : IMethodHook
 {
+    private static string DescribePasswordState(object password)
+    {
+        var value = password?.ToString();
+        return string.IsNullOrEmpty(value) || value == "0" ||
+               string.Equals(value, bool.FalseString, StringComparison.OrdinalIgnoreCase)
+            ? "无"
+            : "已设置";
+    }
+
     #region RemoveSaveCloudNameLimits
 
     // 去除联机大厅保存存档时的长度限制
@@ -65,24 +77,7 @@ internal class RoomManager : IMethodHook
             var ownerId = result.entity.owner_id;
             if (!result.entity.fids.Contains(ownerId)) result.entity.fids.Add(ownerId);
 
-            // 显示房间信息窗口
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                foreach (System.Windows.Window w in Application.Current.Windows)
-                {
-                    if (w is RoomInfoWindow existingWindow && existingWindow.roomInfoResponse.entity.entity_id == result.entity.entity_id)
-                    {
-                        existingWindow.Close();
-                        break;
-                    }
-                }
-
-                if (WpfConfig.ShowRoomDetailsWindow)
-                {
-                    var window = new RoomInfoWindow(result);
-                    window.Show();
-                }
-            });
+            // 房间界面统一由 RoomManagementWindow(替换启动器房间窗口) 承担。
 
             // 获取房主名称及可见性
             var ownerInfo = X19Http.GetPlayerInfo(result.entity.owner_id);
@@ -97,7 +92,7 @@ internal class RoomManager : IMethodHook
             string roomDetails = $@"
 -------------------[建房成功]-------------------
 房间号: {result.entity.room_name}
-密码: {(string.IsNullOrEmpty(result.entity.password.ToString()) ? "无" : result.entity.password)}
+密码: {DescribePasswordState(result.entity.password)}
 资源ID: {result.entity.res_id}
 房间ID: {result.entity.entity_id}
 最大人数: {result.entity.max_count}
@@ -174,7 +169,7 @@ internal class RoomManager : IMethodHook
     [HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "a", "CreateRoomOriginalRequest_Original")]
     public static void CreateRoomOriginalRequest(string RoomName, string ResID, uint Visivility, uint MaxCount, string SaveID, string Password, Action<EntityResponse<LobbyGameRoomEntity>> RequestAction)
     {
-        PluginLog.Debug("Network", $"[RoomManage] 正在创建房间, ResID:{ResID}, 密码:{Password}");
+        PluginLog.Debug("Network", $"[RoomManage] 正在创建房间, ResID:{ResID}, 密码:{DescribePasswordState(Password)}");
         WpfConfig.Password = Password;
         CreateRoomOriginalRequest_Original(RoomName, ResID, Visivility, MaxCount, SaveID, Password, RequestAction);
     }
@@ -198,26 +193,17 @@ internal class RoomManager : IMethodHook
             return new EntityResponse<LobbyGameRoomEntity> { code = 1, message = "找不到房间" };
         }
 
+        // age.c 同时被“加入房间”(aum.f) 和“房间状态轮询”(jp.z, 重置存档后每 30 秒) 使用,
+        // 只有真正加入房间时才允许改写本地房间状态, 否则旧房间的迟滞轮询会清空/覆盖当前房间。
+        var isJoinFlow = IsJoinFlow(roomId);
         var Get_Room_Info = JoinRoom_Original(roomId);
-        if (Get_Room_Info.code == 0)
+        if (Get_Room_Info?.code == 0 && Get_Room_Info.entity != null)
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            if (!isJoinFlow)
             {
-                foreach (System.Windows.Window w in Application.Current.Windows)
-                {
-                    if (w is RoomInfoWindow existingWindow && existingWindow.roomInfoResponse.entity.entity_id == Get_Room_Info.entity.entity_id)
-                    {
-                        existingWindow.Close();
-                        break;
-                    }
-                }
-
-                if (WpfConfig.ShowRoomDetailsWindow)
-                {
-                    var window = new RoomInfoWindow(Get_Room_Info);
-                    window.Show();
-                }
-            });
+                ApplyRoomInfoRefresh(Get_Room_Info);
+                return Get_Room_Info;
+            }
 
             var Get_Owner_Info = X19Http.GetPlayerInfo(Get_Room_Info.entity.owner_id);
             string ownerName = Get_Owner_Info?["entity"]?["name"]?.ToString() ?? "未知";
@@ -232,7 +218,7 @@ internal class RoomManager : IMethodHook
             string joinDetails = $@"
 -------------------[加入房间]-------------------
 房间号: {Get_Room_Info.entity.room_name}
-密码: {Get_Room_Info.entity.password}
+密码: {DescribePasswordState(Get_Room_Info.entity.password)}
 资源ID: {Get_Room_Info.entity.res_id}
 房间ID: {Get_Room_Info.entity.entity_id}
 最大人数: {Get_Room_Info.entity.max_count}
@@ -253,7 +239,9 @@ internal class RoomManager : IMethodHook
             Console.ResetColor();
 
             WpfConfig.RoomInfo = Get_Room_Info;
-            WpfConfig.RoomInfo.entity.fids.Add(azf<arg>.Instance.User.Id);
+            if (WpfConfig.RoomInfo.entity.fids == null) WpfConfig.RoomInfo.entity.fids = new List<string>();
+            if (!WpfConfig.RoomInfo.entity.fids.Contains(azf<arg>.Instance.User.Id))
+                WpfConfig.RoomInfo.entity.fids.Add(azf<arg>.Instance.User.Id);
             WpfConfig.JoinOrCreateTime = X19Tools.TimestampHelper.GetCurrentTimestampMilliseconds();
             
             if (WpfConfig.EnableWebServer)
@@ -263,20 +251,62 @@ internal class RoomManager : IMethodHook
         }
         else
         {
-            string errMsg = $"[RoomInfo] 获取房间信息失败: {Get_Room_Info.message}";
-            PluginLog.Error("Network", errMsg);
-            Console.ForegroundColor = ConsoleColor.Red;
-            PluginLog.Debug("Network", errMsg);
-            Console.ResetColor();
-            WpfConfig.RoomInfo = null;
+            var currentRoomId = WpfConfig.RoomInfo?.entity?.entity_id;
+            if (!string.IsNullOrEmpty(currentRoomId) && string.Equals(currentRoomId, roomId, StringComparison.Ordinal))
+            {
+                // 当前所在房间查询失败: 视为房间已失效。
+                PluginLog.Error("Network", $"[RoomInfo] 获取房间信息失败: {Get_Room_Info?.message}");
+                WpfConfig.RoomInfo = null;
+            }
+            else
+            {
+                // 旧房间的迟滞轮询/其他房间查询, 保留本地房间状态。
+                PluginLog.Debug("Network",
+                    $"[RoomInfo] 非当前房间查询失败, 保留本地房间状态, roomId={roomId}, message={Get_Room_Info?.message}");
+            }
         }
 
         return Get_Room_Info;
     }
 
+    /// <summary>判断本次 age.c 调用是“加入房间”还是“房间信息刷新/迟滞轮询”。</summary>
+    private static bool IsJoinFlow(string roomId)
+    {
+        var currentRoomId = WpfConfig.RoomInfo?.entity?.entity_id;
+        if (string.IsNullOrEmpty(currentRoomId)) return true;
+        if (string.Equals(currentRoomId, roomId, StringComparison.Ordinal)) return false;
+
+        // 本地还记录着其他房间且宿主房间窗口仍存在时, 视为旧房间的迟滞轮询。
+        return RoomWindowReplacement.GetHostRoomView() == null;
+    }
+
+    /// <summary>刷新当前房间信息: 只同步服务器返回的房间属性, 不重复执行加入房间流程。</summary>
+    private static void ApplyRoomInfoRefresh(EntityResponse<LobbyGameRoomEntity> roomInfo)
+    {
+        var current = WpfConfig.RoomInfo?.entity;
+        var entity = roomInfo.entity;
+        if (current == null ||
+            !string.Equals(current.entity_id, entity.entity_id, StringComparison.Ordinal))
+        {
+            PluginLog.Debug("Network", $"[RoomInfo] 忽略非当前房间的信息刷新, roomId={entity.entity_id}");
+            return;
+        }
+
+        // age.c 的响应不带成员列表, 保留本地房间成员。
+        if (entity.fids == null || entity.fids.Count == 0) entity.fids = current.fids ?? new List<string>();
+        if (entity.cur_num == 0) entity.cur_num = (uint)entity.fids.Count;
+
+        WpfConfig.RoomInfo = roomInfo;
+        RoomManagementWindow.NotifyRoomInfoChanged(null);
+    }
+
     #endregion
 
     #region KickEvent
+
+    private const int RejoinRetryDelayMs = 1000;
+    private const int RejoinMaxAttempts = 90;
+    private static int rejoinRunning;
 
     [OriginalMethod]
     private new void SendErrToWpf(abx packet)
@@ -287,54 +317,101 @@ internal class RoomManager : IMethodHook
     [HookMethod("WPFLauncher.Network.ChatService.ahl", "c", "SendErrToWpf")]
     private new void ReJoinRoom(abx packet)
     {
-        string warnMsg = "[RoomInfo] 你已被房主踢出房间, 正在重新加入房间...";
-        PluginLog.Warn("Network", warnMsg);
-        
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        PluginLog.Debug("Network", warnMsg);
-        Console.ResetColor();
-
-        while (true)
+        // 宿主在 UI 线程调用被踢处理器, 这里只负责发起后台重连, 绝不能阻塞 Dispatcher
+        // (否则会触发宿主看门狗 "CheckMCLBlock!" 并卡住启动器界面)。
+        if (Interlocked.Exchange(ref rejoinRunning, 1) == 1)
         {
-            var Get_RoomEnter_Info = JObject.Parse(X19Http.Post("/online-lobby-room-enter",
+            PluginLog.Debug("Network", "Auto rejoin already running; duplicate kick packet ignored.");
+            return;
+        }
+
+        PluginLog.Warn("Network", "你已被房主踢出房间, 正在后台重新加入房间...");
+        Task.Run(() => ReJoinRoomInBackground(packet));
+    }
+
+    private void ReJoinRoomInBackground(abx packet)
+    {
+        try
+        {
+            for (var attempt = 1; attempt <= RejoinMaxAttempts; attempt++)
+            {
+                var entity = WpfConfig.RoomInfo?.entity;
+                if (entity == null || string.IsNullOrEmpty(entity.entity_id))
+                {
+                    PluginLog.Warn("Network", "Room info is unavailable; auto rejoin aborted.");
+                    break;
+                }
+
+                var response = TryEnterRoom(entity.entity_id, WpfConfig.Password);
+                if (response == null)
+                {
+                    Thread.Sleep(RejoinRetryDelayMs);
+                    continue;
+                }
+
+                var code = response["code"]?.ToObject<int>() ?? -1;
+                if (code == 0)
+                {
+                    PluginLog.Info("Network", $"Auto rejoin succeeded (attempt {attempt}).");
+                    return;
+                }
+
+                if (code == 12022)
+                {
+                    if (attempt == 1 || attempt % 10 == 0)
+                    {
+                        PluginLog.Debug("Network",
+                            $"Auto rejoin rate limited ({response["message"]}), retry {attempt}/{RejoinMaxAttempts} in {RejoinRetryDelayMs}ms.");
+                    }
+
+                    Thread.Sleep(RejoinRetryDelayMs);
+                    continue;
+                }
+
+                PluginLog.Error("Network", $"Auto rejoin failed: {response["message"]}");
+                break;
+            }
+
+            // 重连失败: 交回宿主原处理器(提示被踢并关闭房间窗口), 必须在 UI 线程调用。
+            RunOnUiThread(() => SendErrToWpf(packet));
+        }
+        catch (Exception exception)
+        {
+            PluginLog.Error("Network", exception, "Auto rejoin failed with an exception.");
+            RunOnUiThread(() => SendErrToWpf(packet));
+        }
+        finally
+        {
+            Interlocked.Exchange(ref rejoinRunning, 0);
+        }
+    }
+
+    private static JObject TryEnterRoom(string roomId, string password)
+    {
+        try
+        {
+            return JObject.Parse(X19Http.Post("/online-lobby-room-enter",
                 JsonConvert.SerializeObject(new
                 {
-                    room_id = WpfConfig.RoomInfo.entity.entity_id, 
-                    password = WpfConfig.Password,
+                    room_id = roomId,
+                    password = password ?? string.Empty,
                     check_visibilily = true
                 })));
-
-            int code = Get_RoomEnter_Info["code"]?.ToObject<int>() ?? -1;
-
-            if (code == 0)
-            {
-                PluginLog.Debug("Network", "[RoomInfo] 成功重新加入房间!");
-                Console.ForegroundColor = ConsoleColor.Green;
-                PluginLog.Debug("Network", "[RoomInfo] 成功重新加入房间!");
-                Console.ResetColor();
-                break;
-            }
-
-            if (code == 12022)
-            {
-                string retryMsg = $"[RoomERROR] 加入失败: {Get_RoomEnter_Info["message"]}, 等待0.8秒后重试...";
-                PluginLog.Error("Network", retryMsg);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                PluginLog.Debug("Network", retryMsg);
-                Console.ResetColor();
-                Thread.Sleep(800); // 修复了原代码里注释写0.8秒实际休眠200ms的逻辑（或者可保持200）
-            }
-            else
-            {
-                string errMsg = $"[RoomERROR] 最终加入房间失败: {Get_RoomEnter_Info["message"]}";
-                PluginLog.Error("Network", errMsg);
-                Console.ForegroundColor = ConsoleColor.Red;
-                PluginLog.Debug("Network", errMsg);
-                Console.ResetColor();
-                SendErrToWpf(packet);
-                break;
-            }
         }
+        catch (Exception exception)
+        {
+            PluginLog.Debug("Network", $"Rejoin request failed: {exception.Message}");
+            return null;
+        }
+    }
+
+    private static void RunOnUiThread(Action action)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher == null || dispatcher.CheckAccess())
+            action();
+        else
+            dispatcher.Invoke(action);
     }
 
     #endregion
@@ -468,12 +545,7 @@ Port: {config.CppGameCfg.room_info.port}
             WpfConfig.RoomPlayerList.Add(JObject.Parse(PlayerInfo.ToString()));
         }
 
-        // 更新窗口
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            var roomInfoWindow = GetRoomInfoWindow();
-            if (roomInfoWindow != null) roomInfoWindow.UpdatePlayersList(newPlayerList);
-        });
+        RoomManagementWindow.NotifyRoomPlayersChanged();
 
         // WebSocket 通知
         if (WpfConfig.EnableWebServer)
@@ -514,13 +586,6 @@ Port: {config.CppGameCfg.room_info.port}
         GetMemberInfoOriginal(result);
     }
 
-    private static RoomInfoWindow GetRoomInfoWindow()
-    {
-        foreach (System.Windows.Window window in Application.Current.Windows)
-            if (window is RoomInfoWindow roomInfoWindow) return roomInfoWindow;
-        return null;
-    }
-
     #endregion
 
     #region GetUserInputPassword
@@ -538,7 +603,7 @@ Port: {config.CppGameCfg.room_info.port}
         var result = SendJoinRoomRequest(roomId, password, statusVisibility);
         
         string statusText = result.code == 0 ? "成功进入" : "进入失败";
-        string passText = string.IsNullOrEmpty(password) ? "无密码" : password;
+        string passText = DescribePasswordState(password);
         
         string reqDetails = $@"
 -----------------[进入房间请求]-----------------
@@ -595,17 +660,10 @@ Port: {config.CppGameCfg.room_info.port}
     [HookMethod("WPFLauncher.Network.Protocol.LobbyGame.age", "Left", "LeftOriginal")]
     public static void Left(string roomId)
     {
-        // 关闭RoomInfoWindow窗口
+        // 离开房间时关闭 MCL 房间管理窗口
         Application.Current.Dispatcher.Invoke(() =>
         {
-            foreach (System.Windows.Window w in Application.Current.Windows)
-            {
-                if (w is RoomInfoWindow existingWindow && existingWindow.roomInfoResponse.entity.entity_id == roomId)
-                {
-                    existingWindow.Close();
-                    break;
-                }
-            }
+            RoomManagementWindow.CloseAll();
         });
 
         if (WpfConfig.EnableWebServer)
@@ -613,12 +671,7 @@ Port: {config.CppGameCfg.room_info.port}
             WebSocketHelper.SendToClient(JsonConvert.SerializeObject(new { type = "RoomManage", status = "Leave", data = new { roomId } }));
         }
 
-        string leaveMsg = $"[RoomManage] 你已离开房间, 房间ID: {roomId}";
-        PluginLog.Debug("Network", leaveMsg);
-        
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        PluginLog.Debug("Network", leaveMsg);
-        Console.ResetColor();
+        PluginLog.Debug("Network", $"Room left by the local user, roomId={roomId}");
 
         WpfConfig.RoomInfo = null;
         WpfConfig.Password = "";

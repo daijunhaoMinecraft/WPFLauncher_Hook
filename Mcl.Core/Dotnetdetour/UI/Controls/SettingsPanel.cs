@@ -26,8 +26,9 @@ public sealed class SettingsPanel : UserControl
     private readonly TextBox _search;
     private readonly ListBox _navigation;
     private readonly TextBlock _status;
-    private readonly CheckBox _disableUpdates;
-    private readonly CheckBox _developmentUpdates;
+    private readonly CheckBox _disableLauncherUpdates;
+    private readonly CheckBox _disableHookUpdates;
+    private readonly ComboBox _hookUpdateChannel;
     private readonly Action _onSaved;
     private readonly Func<ConfigEntry, string, string> _selectFolder;
     private readonly Action<ProcessStartInfo> _startFolderProcess;
@@ -110,18 +111,33 @@ public sealed class SettingsPanel : UserControl
         var updates = CreateSection("更新", out var updateContent);
         _sections["更新"] = updates;
         stack.Children.Add(updates);
-        _disableUpdates = new CheckBox
+        _disableLauncherUpdates = new CheckBox
         {
-            Content = "禁用自动更新检查", IsChecked = UpdateManager.CurrentConfig.DisableUpdate,
+            Content = "禁用启动器更新检查（官方 patchlist）",
+            IsChecked = UpdateManager.CurrentConfig.DisableLauncherUpdate,
             Margin = new Thickness(0, 8, 0, 8)
         };
-        _developmentUpdates = new CheckBox
+        _disableHookUpdates = new CheckBox
         {
-            Content = "接收开发版更新（未勾选时使用稳定版）",
-            IsChecked = UpdateManager.CurrentConfig.IsBuildChannel, Margin = new Thickness(0, 8, 0, 8)
+            Content = "禁用 Mcl.Core.dll 自更新检查（GitHub）",
+            IsChecked = UpdateManager.CurrentConfig.DisableUpdate,
+            Margin = new Thickness(0, 0, 0, 4)
         };
-        updateContent.Children.Add(_disableUpdates);
-        updateContent.Children.Add(_developmentUpdates);
+        _hookUpdateChannel = new ComboBox
+        {
+            Items = { "Build 版（开发构建）", "Release 版（稳定发行）" },
+            SelectedIndex = UpdateManager.CurrentConfig.IsBuildChannel ? 0 : 1,
+            Width = 240, Margin = new Thickness(28, 0, 0, 8)
+        };
+        updateContent.Children.Add(_disableLauncherUpdates);
+        updateContent.Children.Add(_disableHookUpdates);
+        updateContent.Children.Add(_hookUpdateChannel);
+        updateContent.Children.Add(new TextBlock
+        {
+            Text = "两条更新相互独立：启动器渠道由当前启动器自动识别（网易/4399/A50），插件更新走 GitHub。" +
+                   "禁用后宿主自带更新同样会被阻止，以保护钩子文件。",
+            TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 8)
+        });
 
         var footer = new Grid { Margin = new Thickness(0, 20, 0, 0) };
         footer.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
@@ -441,8 +457,9 @@ public sealed class SettingsPanel : UserControl
                     : ((TextBox)pair.Value).Text);
             ConfigManager.Update(values);
             configurationSaved = true;
-            UpdateManager.CurrentConfig.DisableUpdate = _disableUpdates.IsChecked == true;
-            UpdateManager.CurrentConfig.IsBuildChannel = _developmentUpdates.IsChecked == true;
+            UpdateManager.CurrentConfig.DisableLauncherUpdate = _disableLauncherUpdates.IsChecked == true;
+            UpdateManager.CurrentConfig.DisableUpdate = _disableHookUpdates.IsChecked == true;
+            UpdateManager.CurrentConfig.IsBuildChannel = _hookUpdateChannel.SelectedIndex == 0;
             UpdateManager.SaveConfig();
             _status.SetResourceReference(TextBlock.ForegroundProperty, "SuccessBrush");
             _status.Text = "配置已保存。";

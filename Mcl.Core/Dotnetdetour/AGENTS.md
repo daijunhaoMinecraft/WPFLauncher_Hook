@@ -6,7 +6,7 @@
 - `Features`：按功能组织宿主适配；不要在这里添加新的窗口实现。
 - `Models/Config`：配置注册、转换、校验、迁移和持久化。
 - `Models/Entities`：协议与界面数据；历史 `Models.Entity` 命名空间暂时保留。
-- `Services/Updates`：更新服务与 Markdown 渲染；历史 `Mcl.Core.Updater` 命名空间保留。
+- `Services/Updates`：两条相互独立的更新轨道 —— 启动器更新（`UpdateManager`：官方 patchlist、断点下载、ext\7z 解压、宿主退出后延迟应用）与 Mcl.Core.dll 自更新（`HookUpdateManager`：GitHub Build/Release、哈希校验、替换后重启）；历史 `Mcl.Core.Updater` 命名空间保留。
 - `UI`：所有 MCL 自有窗口、宿主设置页集成和嵌入 Web 页面。
 - `Utilities/Diagnostics`：启动器日志策略、线程安全的游戏日志缓冲。
 - `Utilities/Crypto` 中的旧 AES API 是 Tools 的兼容转发层，不得复制算法回来。

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks; // 引入 Task
 using Mcl.Core.Dotnetdetour.CoreEngine.Base;
+using Mcl.Core.Dotnetdetour.Features.AntiCheatBypass;
 using Mcl.Core.Dotnetdetour.Features.GameTweaks;
 using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
@@ -13,8 +14,8 @@ using Mcl.Core.Dotnetdetour.UI.Injector;
 using Mcl.Core.NeteaseProtocol;
 using Mcl.Core.Tools;
 using Mcl.Core.Updater;
+using Mcl.Core.Utils;
 using Microsoft.Win32;
-using Net.Nekocurit.Cipher;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -143,7 +144,17 @@ namespace System.Runtime.CompilerServices
             var dummyFont = System.Drawing.SystemFonts.DefaultFont;
             Microsoft.Win32.SystemEvents.UserPreferenceChanged += DummyHandler;
             Microsoft.Win32.SystemEvents.UserPreferenceChanged -= DummyHandler;
+
+            // ===== 启动器更新 =====
+            // 1. 宿主自带更新会下载并覆盖 Mcl.Core.dll（钩子文件），先安装 BypassUpdate 直接阻止。
+            // 2. 更新改由插件接管：UpdateManager 读取官方 patchlist，下载后用 ext\7z\7z.exe 解压，
+            //    解压与拷贝全程跳过 Mcl.Core.dll，宿主退出后由脚本应用补丁并重新启动启动器。
+            // 3. 禁用启动器更新：设置界面勾选“禁用自动更新检查”、MclUpdateConfig.json 中设置
+            //    "DisableLauncherUpdate": true（插件自更新为 "DisableUpdate"），或放置 DisableUpdater 文件
+            //    一次性禁用两条更新轨道；禁用后宿主自带更新同样保持阻止。
+            MethodHook.InstallTypes(new[] { typeof(BypassUpdate) });
             Mcl.Core.Updater.UpdateManager.InitializeAsync();
+
             SettingsInjector.Start();
             MethodHook.InstallTypes(new[] { typeof(MinecraftPath) });
             MethodHook.InstallTypes(new[] { typeof(InitHook) });

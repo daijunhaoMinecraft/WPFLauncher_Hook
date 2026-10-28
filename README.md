@@ -25,6 +25,9 @@
 
 如遇到软件功能类bug/提交一些建议等建议你提交[Issues](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/issues)同时提交功能的时候请确保这个功能可以被实现(推荐提交的是PR,作者实现不了功能的会直接关闭Issue)
 
+# 讨论群聊
+[QQ Group](https://qm.qq.com/q/3EiKyU7pDi)
+
 # 功能
 
 #### 1.(重点)发烧平台绕过
@@ -104,6 +107,10 @@
   - 退出房间前提醒存档保存(可在配置文件中设置禁用)
   - 支持更改启动时的IP端口(需前往配置文件中设置)
   - 联机大厅密码(加入房间/创建房间)支持任意字符(包括但不限于中文/字母等可以被识别的符号)而非单纯的数字
+  - 用 MCL 房间管理窗口(类 WinUI3/Fluent 风格)替换启动器自带房间窗口(可在设置中关闭): 包含开始/进入游戏、邀请好友、备份/重置存档、举报房间、退出房间、加好友、踢出玩家、转移房主、房间黑名单，并支持设置/修改/取消房间密码、可见性、允许存档；玩家列表显示头像，关闭窗口等同于退出房间
+  - 房间分享: 一键在浏览器查看房间信息、复制房间链接、复制含密码的中文房间信息（房间名/房间ID/房主/人数/密码/是否允许保存/可见性/游戏状态/查看链接）；房间状态可直接选中复制，也支持右键「复制房间状态」
+  - 房间黑名单: 房间管理窗口内可查看 UserID 黑名单与正则表达式（匹配玩家名称）名单，支持手动添加/删除；拉黑玩家时立即将其踢出房间
+  - 云存档槽位显示每个存档的大小 (KB/MB/GB)
 - 开启Web端时候
 - - Web端房间管理界面
   - 支持UserID拉黑玩家/玩家名称正则表达式拉黑玩家
@@ -195,7 +202,7 @@
 - (and more)...
 
 ## 安装
-**2026/09/27: 你可以下载 [Release 7.0.0-DLL-Public](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/releases/tag/7.0.0-DLL-Public) 中的 [MCLauncher_1.15.28.11160_WithWPFHook.exe](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/releases/download/7.0.0-DLL-Public/MCLauncher_1.15.28.11160_WithWPFHook.exe) 以跳过复杂的安装方法, 这是一个网易我的世界 1.15.28.11160 的安装器其中自带全部 WPFLauncher_Hook 所需文件以及本体**
+**2026/09/27: 你可以从 [Github Release](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/releases) 或 [下载站/Installer](https://openlist.theconsole.top/openlist/share/WPFLauncher_Hook/Installer) 中找到带有 MCLauncher 名称的 exe 以跳过复杂的安装方法, 这是一个网易我的世界(通常是最新版)的安装器其中自带全部 WPFLauncher_Hook 所需文件以及本体**
 ### 1. 前置条件
 在开始之前，请确保您的系统是支持.NET Framework 4.8.1支持库
 ### 2. 快速开始 (Quick Start)
