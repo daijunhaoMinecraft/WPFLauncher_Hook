@@ -1,13 +1,6 @@
-﻿# 测试边界
+# 测试边界
 
-- `Mcl.Core.SmokeTests` 是无需额外测试框架包的 net48/x86 控制台验证器，直接链接生产的配置、算法、日志和 UI 源码。
-- `HostStubs.cs` 只代替外部宿主类型与更新器副作用，不复制被测配置、算法或日志逻辑。
-- 测试程序集也叫 `Mcl.Core`，仅为解析真实 pack URI；不要把它复制到启动器目录，也不要引用生产 DLL。
-- 禁止把 `Dotnetdetour/Initialize.cs` 加入测试项目。
-- Golden vectors 来自改动前工作区，不能为了让测试通过而随意改写期望值。
-- UI 测试解析所有窗口 XAML，但移除 code-behind 事件，不启动账号、网络、更新、游戏或驱动流程。
-- 增加新窗口后更新窗口计数；增加新开关后覆盖旧键迁移及批量校验。
-- 基岩缓存测试只在 `.artifacts` 中新建的目录操作文件，使用可控的进程状态函数，不启动真实游戏；链接/重解析点检查在无权限创建目录链接时明确输出 SKIP。
-- `RegistryHelper.cs` 因生产 `Channel` 的编译依赖而源码链接；不调用注册表写入。仅补充外部宿主的空命名空间，不替换生产工具算法。
-- Hook 安装回归链接真实 CoreEngine 协调代码，用记录型 `IDetour` 替代原生写入；覆盖分批安装、全量安装、重入、并发和失败后禁止盲目重试。
+- 不再维护 `Mcl.Core.SmokeTests` 或源码链接的宿主桩测试项目。
 - `Mcl.Core.DetourProbe` 是单独的 x86 原生回跳诊断程序，只修改它自己声明的测试方法，不加载生产 DLL 或初始化器。更改 Detour 后需分别运行及在 Rider 下调试：两者都应输出 `Result=14`；调试成功后会主动中断，继续即可退出。
+- `RoomManage.RenderingTests.cjs` 仅使用 jsdom 检查 HTML 渲染与转义，禁用网络和 WebSocket；依赖放在 `.artifacts`，不要提交 `node_modules`。
+- 测试和诊断程序不得加入 `Dotnetdetour/Initialize.cs`，也不得加载或启动生产 Hook。

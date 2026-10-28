@@ -31,8 +31,7 @@
 
 - `WPFLauncher`、`WPFControls`、CefSharp、NLog、Newtonsoft.Json 等编译依赖统一由私有仓库 `WPFLauncher_Hook_Build` 提供；宿主 EXE/DLL 和编译引用程序集不得复制进本仓库、Release 或 Actions artifact。经明确批准的独立运行时 DLL 只能放入 `build-artifacts` 分支的 `build/`。
 - 验证脚本输出到 `.artifacts/validation`，不会主动覆盖已有 `Mcl.Core/bin/obj`。
-- 无宿主程序集时可用 `-SkipMainBuild` 跑源码链接测试，但仍需 NLog/Newtonsoft.Json；这不等于主项目构建成功。
-- 测试仅替换宿主/更新器副作用，直接编译生产配置、工具、日志和共享 UI 源码。
+- 无宿主程序集时可用 `-SkipMainBuild` 只跑源码审计；这不等于主项目构建成功。
 - 不运行真实登录、游戏、驱动或联网房间操作来验证外观；需要这些验证时先向用户说明。
 
 ## 私有依赖与 C# 引用
@@ -50,7 +49,7 @@
 - 主宿主使用现有 `$(LauncherAssemblyPath)`；其他托管 EXE 可像 DLL 一样通过 `$(LauncherDirectory)` 引用。`Reference Include` 应使用程序集简单名称。
 - 宿主已经提供的程序集可设 `<Private>false</Private>`。需要随插件分发时再设 `true`，并显式增加公开产物复制步骤、确认授权；仅设置 `Private=true` 不会让 Actions 自动发布它。
 - 原生 DLL/EXE 不是 C# 程序集引用；应通过 P/Invoke 使用，并按运行时资源单独处理。
-- 测试项目若也直接使用该程序集，应同步修改 `Mcl.Core.SmokeTests.csproj`，并继续通过 `LauncherDirectory` 解析依赖。
+- `Mcl.Core.DetourProbe` 等独立诊断项目仍应通过 `LauncherDirectory` 解析其依赖；不要把它们加入生产项目或启动器分发目录。
 - 只更新私有仓库二进制不会触发公开仓库的 `Build Mcl.Core`。添加引用或修改主项目后推送 `main`，或手动运行：
 
 ```powershell

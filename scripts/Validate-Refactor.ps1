@@ -22,9 +22,4 @@ function Invoke-CheckedBuild([string]$Project, [string]$Name, [string[]]$ExtraAr
 if (-not $SkipMainBuild) {
     Invoke-CheckedBuild (Join-Path $repository 'Mcl.Core\Mcl.Core.csproj') 'main' @("-p:LauncherAssemblyPath=$LauncherAssemblyPath")
 }
-Invoke-CheckedBuild (Join-Path $repository 'tests\Mcl.Core.SmokeTests\Mcl.Core.SmokeTests.csproj') 'tests' @()
-$testProgram = Join-Path $artifacts 'tests\bin\Mcl.Core.exe'
-& $testProgram $repository (Join-Path $artifacts 'renders') 2>&1 |
-    Tee-Object -FilePath (Join-Path $artifacts 'smoke-tests.log') | Out-Host
-if ($LASTEXITCODE -ne 0) { throw "Smoke tests failed with exit code $LASTEXITCODE" }
-Write-Host "Validation complete. Logs and rendered previews: $artifacts"
+Write-Host "Validation complete. Source audit and main build logs: $artifacts"

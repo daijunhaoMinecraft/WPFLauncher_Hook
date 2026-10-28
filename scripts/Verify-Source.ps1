@@ -36,7 +36,7 @@ if ($windowCount -ne 22) { $problems.Add("Expected 22 XAML windows; found $windo
 $configDirectory = Join-Path $sourceRoot 'Dotnetdetour\Models\Config'
 $registry = [IO.File]::ReadAllText((Join-Path $configDirectory 'ConfigManager.cs'))
 if ([regex]::Matches($registry, 'new ConfigEntry\(').Count -ne 46) {
-    $problems.Add('Expected 46 registered settings. Update the audit and smoke tests when adding a setting.')
+    $problems.Add('Expected 46 registered settings. Update the audit and documentation when adding a setting.')
 }
 if (Test-Path -LiteralPath (Join-Path $configDirectory 'WpfConfig.Legacy.cs')) {
     $problems.Add('Removed legacy C# aliases must not be reintroduced; preserve JSON keys in the registry instead.')

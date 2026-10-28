@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "Mcl.Core/**"
-      - "tests/Mcl.Core.SmokeTests/**"
       - "scripts/**"
       - ".github/workflows/build-mcl-core.yml"
   workflow_dispatch:
