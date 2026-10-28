@@ -124,6 +124,8 @@ internal static partial class Program
     {
         Check(HookUpdateManager.BuildFilePath == "build/Mcl.Core.dll",
             "build channel uses public build directory");
+        Check(HookUpdateManager.BuildRef == "build-artifacts",
+            "build channel uses artifact branch");
         var auto = HookUpdateManager.BuildMirrorUrls("https://github.com/x/y.dll", 0);
         Check(auto.Length == 3 && auto[0] == "https://gh-proxy.com/https://github.com/x/y.dll" &&
               auto[1] == "https://ghproxy.net/https://github.com/x/y.dll" &&
@@ -161,13 +163,17 @@ internal static partial class Program
               buildInfo.ExpectedHash == localSha && buildInfo.Notes.Contains("fix: update flow") &&
               buildInfo.PageUrl.EndsWith("/commit/1"), "build channel update info parsed");
         const string sourceSha = "0123456789abcdef0123456789abcdef01234567";
+        const string artifactSha = "abcdef0123456789abcdef0123456789abcdef01";
         var sourceCommitPayload = JArray.Parse(
-            "[{\"commit\":{\"message\":\"feat: source change\\n\\nMCL-SOURCE-COMMIT: " + sourceSha +
+            "[{\"sha\":\"" + artifactSha + "\",\"commit\":{\"message\":\"feat: source change\\n\\nMCL-SOURCE-COMMIT: " + sourceSha +
             "\"},\"html_url\":\"https://github.com/x/y/commit/artifact\"}]");
         var sourceBuildInfo = HookUpdateManager.ParseBuildPayload(
             buildPayload, sourceCommitPayload, Path.Combine(area, "missing.dll"));
         Check(sourceBuildInfo != null &&
               sourceBuildInfo.Notes == "feat: source change" &&
+              sourceBuildInfo.DownloadUrl ==
+              "https://raw.githubusercontent.com/daijunhaoMinecraft/WPFLauncher_Hook/" +
+              artifactSha + "/build/Mcl.Core.dll" &&
               sourceBuildInfo.PageUrl ==
               "https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/commit/" + sourceSha,
             "build channel resolves original source commit");

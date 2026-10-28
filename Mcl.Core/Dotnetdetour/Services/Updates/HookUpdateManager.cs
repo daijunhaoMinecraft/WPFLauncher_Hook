@@ -51,6 +51,7 @@ namespace Mcl.Core.Updater
         private const string SourceCommitMarker = "MCL-SOURCE-COMMIT:";
         public const string RepoOwner = "daijunhaoMinecraft";
         public const string RepoName = "WPFLauncher_Hook";
+        public const string BuildRef = "build-artifacts";
         public const string BuildFilePath = "build/Mcl.Core.dll";
         public const string HookFileName = "Mcl.Core.dll";
 
@@ -123,10 +124,10 @@ namespace Mcl.Core.Updater
         private static async Task<HookUpdateInfo> GetBuildUpdateAsync(string hookPath)
         {
             var fileText = await GetGitHubJsonTextAsync(
-                $"https://api.github.com/repos/{RepoOwner}/{RepoName}/contents/{BuildFilePath}?ref=main");
+                $"https://api.github.com/repos/{RepoOwner}/{RepoName}/contents/{BuildFilePath}?ref={BuildRef}");
 
             var commitsText = await GetGitHubJsonTextAsync(
-                $"https://api.github.com/repos/{RepoOwner}/{RepoName}/commits?path={BuildFilePath}&per_page=1");
+                $"https://api.github.com/repos/{RepoOwner}/{RepoName}/commits?path={BuildFilePath}&sha={BuildRef}&per_page=1");
 
             return ParseBuildPayload(JObject.Parse(fileText), JArray.Parse(commitsText), hookPath);
         }
@@ -157,6 +158,7 @@ namespace Mcl.Core.Updater
             }
 
             var firstCommit = commits?.FirstOrDefault();
+            var artifactCommitSha = firstCommit?["sha"]?.ToString();
             // Artifact commits carry the original source message and commit SHA.
             var commitMessage = firstCommit?["commit"]?["message"]?.ToString() ?? string.Empty;
             var notes = commitMessage;
@@ -174,6 +176,12 @@ namespace Mcl.Core.Updater
                     notes = commitMessage.Substring(0, markerIndex).TrimEnd();
                     pageUrl = $"https://github.com/{RepoOwner}/{RepoName}/commit/{sourceSha}";
                 }
+            }
+
+            if (IsGitCommitSha(artifactCommitSha))
+            {
+                downloadUrl =
+                    $"https://raw.githubusercontent.com/{RepoOwner}/{RepoName}/{artifactCommitSha}/{BuildFilePath}";
             }
 
             return new HookUpdateInfo

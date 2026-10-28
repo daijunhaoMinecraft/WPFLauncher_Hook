@@ -61,16 +61,12 @@ gh workflow run build-mcl-core.yml --repo daijunhaoMinecraft/WPFLauncher_Hook --
 
 ## 构建产物与更新
 
-- 公开更新产物以 `build/Mcl.Core.dll` 为准；`Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll` 仅为旧本地工具兼容副本。
-- `HookUpdateManager.BuildFilePath` 必须读取 `build/Mcl.Core.dll`。Actions 同时更新两个路径，但不得手工编辑 DLL。
+- `main` 不跟踪生成的 `Mcl.Core.dll` 或 `Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll`；本地构建副本由 `.gitignore` 忽略。
+- Actions 将唯一公开更新产物 `build/Mcl.Core.dll` 发布到 orphan 分支 `build-artifacts`，不得提交回 `main`。
+- `HookUpdateManager.BuildRef` 必须为 `build-artifacts`，`BuildFilePath` 必须为 `build/Mcl.Core.dll`；下载地址应固定到具体产物提交，避免 Raw/CDN 缓存旧文件。
 - Actions 产物提交继承触发构建的源码提交消息，并附带 `MCL-SOURCE-COMMIT: <sha>`；更新窗口应显示源码提交内容并链接到源码提交。
-- 本地普通构建会改写兼容 DLL。首次使用仓库后运行：
-
-```powershell
-.\scripts\Protect-BuildArtifacts.ps1
-```
-
-- `git ls-files -v` 中兼容 DLL 应显示为 `S`（`skip-worktree`）。不要暂存它的本地变化；需要主动处理 Actions 产物时才用 `.\scripts\Protect-BuildArtifacts.ps1 -Disable`。
+- 连续提交时，`concurrency` 应取消旧运行；发布前必须再次确认 `GITHUB_SHA` 仍是当前 `origin/main`，旧运行不得覆盖新产物。
+- `build/` 在 `main` 仅保留 README 和经批准的 native 运行时 DLL；不要把生成 DLL、私有依赖或兼容副本加回主分支。
 
 ## 改码原则
 

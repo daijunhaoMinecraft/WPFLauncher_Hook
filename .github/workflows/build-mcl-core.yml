@@ -117,22 +117,10 @@ jobs:
               throw "Build output is missing Mcl.Core.dll"
           }
 
-          $destination = Join-Path $env:GITHUB_WORKSPACE "build"
-          New-Item -ItemType Directory -Path $destination -Force | Out-Null
-          $publicArtifact = Join-Path $destination "Mcl.Core.dll"
-          Copy-Item -LiteralPath $dll -Destination $publicArtifact -Force
-
           $hash = (Get-FileHash -LiteralPath $dll -Algorithm SHA256).Hash
-          $compatibilityDirectory = Join-Path $env:GITHUB_WORKSPACE "Mcl.Core\bin\x86\Debug\net48"
-          New-Item -ItemType Directory -Path $compatibilityDirectory -Force | Out-Null
-          $compatibilityArtifact = Join-Path $compatibilityDirectory "Mcl.Core.dll"
-          Copy-Item -LiteralPath $dll -Destination $compatibilityArtifact -Force
-          if ((Get-FileHash -LiteralPath $publicArtifact -Algorithm SHA256).Hash -ne
-              (Get-FileHash -LiteralPath $compatibilityArtifact -Algorithm SHA256).Hash) {
-              throw "Copied build artifacts do not match."
-          }
-
           $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($dll)
+          "MCL_CORE_BUILD_DLL=$dll" | Add-Content -LiteralPath $env:GITHUB_ENV
+          "MCL_CORE_BUILD_SHA256=$hash" | Add-Content -LiteralPath $env:GITHUB_ENV
           Write-Host "Mcl.Core SHA256: $hash"
           Write-Host "Product version: $($version.ProductVersion)"
           @(
@@ -141,54 +129,95 @@ jobs:
               "- SHA256: ``$hash``"
               "- File version: ``$($version.FileVersion)``"
               "- Product version: ``$($version.ProductVersion)``"
-              "- Public: ``build/Mcl.Core.dll``"
-              "- Compatibility: ``Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll``"
+              "- Branch: ``build-artifacts``"
+              "- Artifact: ``build/Mcl.Core.dll``"
           ) | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
 
-      - name: Commit build artifact
+      - name: Publish build artifact branch
         shell: pwsh
+        env:
+          ARTIFACT_BRANCH: build-artifacts
         run: |
           $ErrorActionPreference = "Stop"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- build/Mcl.Core.dll
-          git add -f -- Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll
-          if (git diff --cached --quiet) {
-              Write-Host "Mcl.Core.dll is unchanged."
+
+          function Test-MainIsCurrent {
+              $line = (git ls-remote origin refs/heads/main | Out-String).Trim()
+              if ([string]::IsNullOrWhiteSpace($line)) {
+                  return $false
+              }
+              return (($line -split "\s+")[0] -eq $env:GITHUB_SHA)
+          }
+
+          if (-not (Test-MainIsCurrent)) {
+              Write-Host "A newer commit is on main; skipping stale artifact publish."
               exit 0
           }
 
-          # Keep the artifact commit searchable as the original source change.
-          $sourceSha = (git rev-parse HEAD | Out-String).Trim()
+          $sourceSha = $env:GITHUB_SHA
           $sourceMessage = (git show -s --format=%B $sourceSha | Out-String).Trim()
-          $markerPattern = "(?m)^MCL-SOURCE-COMMIT:\s*([0-9a-f]{40})\s*$"
-          $existingMarker = [regex]::Match($sourceMessage, $markerPattern)
-          if ($existingMarker.Success) {
-              $sourceSha = $existingMarker.Groups[1].Value
-              $sourceMessage = $sourceMessage.Substring(0, $existingMarker.Index).TrimEnd()
-          }
-          else {
-              $candidate = $sourceSha
-              for ($index = 0; $index -lt 20; $index++) {
-                  $candidateMessage = (git show -s --format=%B $candidate | Out-String).Trim()
-                  if ($candidateMessage -notmatch "^chore: update Mcl\.Core\.dll(?: \[skip ci\])?$") {
-                      $sourceSha = $candidate
-                      $sourceMessage = $candidateMessage
-                      break
-                  }
-                  $parent = (git rev-parse "$candidate^" 2>$null | Out-String).Trim()
-                  if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($parent)) {
-                      break
-                  }
-                  $candidate = $parent
-              }
-          }
           if ([string]::IsNullOrWhiteSpace($sourceMessage)) {
               $sourceMessage = "Update Mcl.Core.dll"
           }
           $commitMessage = $sourceMessage.TrimEnd() +
               "`n`nMCL-SOURCE-COMMIT: $sourceSha"
-          git commit -m $commitMessage
-          git fetch origin main
-          git rebase origin/main
-          git push origin HEAD:main
+
+          $artifactWorktree = Join-Path $env:RUNNER_TEMP "mcl-build-artifacts-$env:GITHUB_RUN_ID"
+          $refSpec = "refs/heads/$($env:ARTIFACT_BRANCH):refs/remotes/origin/$($env:ARTIFACT_BRANCH)"
+          git fetch origin $refSpec
+          if ($LASTEXITCODE -ne 0) {
+              throw "Unable to fetch $($env:ARTIFACT_BRANCH)."
+          }
+          git worktree add -B $env:ARTIFACT_BRANCH $artifactWorktree "origin/$($env:ARTIFACT_BRANCH)"
+          if ($LASTEXITCODE -ne 0) {
+              throw "Unable to create artifact worktree."
+          }
+
+          Push-Location $artifactWorktree
+          try {
+              $destination = Join-Path $artifactWorktree "build"
+              New-Item -ItemType Directory -Path $destination -Force | Out-Null
+              $artifact = Join-Path $destination "Mcl.Core.dll"
+              Copy-Item -LiteralPath $env:MCL_CORE_BUILD_DLL -Destination $artifact -Force
+              if ((Get-FileHash -LiteralPath $artifact -Algorithm SHA256).Hash -ne
+                  $env:MCL_CORE_BUILD_SHA256) {
+                  throw "Copied artifact hash does not match the build output."
+              }
+
+              git config user.name "github-actions[bot]"
+              git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+              git add -- build/Mcl.Core.dll
+              git diff --cached --quiet
+              if ($LASTEXITCODE -eq 0) {
+                  Write-Host "Mcl.Core.dll is unchanged on $($env:ARTIFACT_BRANCH)."
+                  exit 0
+              }
+              if ($LASTEXITCODE -ne 1) {
+                  throw "Unable to inspect staged artifact changes."
+              }
+
+              git commit -m $commitMessage
+              if ($LASTEXITCODE -ne 0) {
+                  throw "Artifact commit failed."
+              }
+
+              if (-not (Test-MainIsCurrent)) {
+                  Write-Host "Main advanced during the build; discarded stale artifact commit."
+                  exit 0
+              }
+
+              git push origin "HEAD:refs/heads/$($env:ARTIFACT_BRANCH)"
+              if ($LASTEXITCODE -ne 0) {
+                  throw "Artifact branch push failed."
+              }
+
+              $artifactSha = (git rev-parse HEAD | Out-String).Trim()
+              Write-Host "Published $artifactSha to $($env:ARTIFACT_BRANCH)."
+              @(
+                  ""
+                  "- Artifact commit: ``$artifactSha``"
+                  "- Source commit: ``$sourceSha``"
+              ) | Add-Content -LiteralPath $env:GITHUB_STEP_SUMMARY
+          }
+          finally {
+              Pop-Location
+          }

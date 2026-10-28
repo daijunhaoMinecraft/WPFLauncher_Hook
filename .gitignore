@@ -3,6 +3,7 @@
 **/obj/
 **/TestResults/
 **/.artifacts/
+/build/Mcl.Core.dll
 packages/
 *.pdb
 *.cache

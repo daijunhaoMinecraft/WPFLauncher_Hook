@@ -15,7 +15,7 @@
 | 下载方式 | 获取内容 | 说明 |
 | :--- | :--- | :--- |
 | [稳定版 Release](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/releases/latest) | `Mcl.Core.dll` 正式版本 | 推荐日常使用，版本相对稳定 |
-| [最新构建 Build](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/main/build/Mcl.Core.dll) | `Mcl.Core.dll` 最新构建 | 由 GitHub Actions 自动更新，可能不稳定 |
+| [最新构建 Build](https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/raw/build-artifacts/build/Mcl.Core.dll) | `Mcl.Core.dll` 最新构建 | 由 GitHub Actions 自动更新，可能不稳定 |
 | [下载站 / Installer](https://openlist.theconsole.top/openlist/share/WPFLauncher_Hook/Installer) | 完整安装器 | 适合需要一键替换启动器文件的用户 |
 | [安装教程](#安装) | 手动安装步骤 | 适合自行安装或排查问题时查看 |
 
