@@ -1,22 +1,40 @@
-﻿/Mcl.Core/bin/x86/Debug/net48/WPFLauncher.dump.exe
-/Mcl.Core/bin/x86/Debug/net48/WPFLauncher.dump-cleaned.exe
-/Mcl.Core/bin/x86/Debug/net48/Mcl.Core.pdb
-/Mcl.Core/bin/x86/Debug/net48/Newtonsoft.Json.dll
-/Mcl.Core/bin/x86/Debug/net48/NLog.dll
-/Mcl.Core/bin/x86/Debug/net48/System.CodeDom.dll
-/Mcl.Core/bin/x86/Debug/net48/websocket-sharp.dll
-/Mcl.Core/bin/x86/Debug/net48/WPFControls.dll
+# Reproducible build and test output. Existing copies stay local but are not uploaded.
+**/bin/
+**/obj/
+**/TestResults/
+**/.artifacts/
+packages/
 *.pdb
-*.json
+*.cache
+*.up2date
 *.info
-*.xml
+*.nupkg
+*.snupkg
+
+# IDE and machine-specific settings.
+.idea/
+.vs/
+_ReSharper*/
+*.suo
+*.user
+
+# Local coding-agent and graph state.
+.claude/
+.codegraph/
+.omo/
+
+# Local runtime, account, and validation data.
+/MCLauncherDebug/
+/config.json
+**/MclUpdateConfig.json
+**/RoomConfig/
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
 *.7z
 
-# Local validation outputs; existing tracked build files are deliberately not deleted.
-/.artifacts/
-/tests/**/bin/
-/tests/**/obj/
-
-# Share only IDE launch definitions, never the local host or account/configuration data.
+# Share only Rider launch definitions, never the local host or account data.
+/.run/*
 !/.run/*.run.xml
-/MCLauncherDebug/

@@ -300,3 +300,12 @@
 - 退出确认复用宿主的「以后自动上传」和「不再询问」选项；选择自动上传后后续正常退出直接上传，选择不再询问后跳过提示。上传仍走同一套 LAN 云存档 `aid` 桥接和 `LanCloudSaves.json` 映射。
 - 验证：`scripts\Validate-Refactor.ps1` PASS（215 个源文件、22 个窗口、46 项注册配置）；主项目 0 错误/24 警告；测试项目 0 错误/3 警告；烟雾测试 355 项通过，新增 LAN 云存档映射、退出码策略、构造器 Hook、侧栏面板渲染和「云端上传」文案检查。
 - 未验证：真实账号下的本地联机退出弹窗、自动上传、重启后映射恢复及真实云端分片上传/下载仍需实机回归；未启动真实游戏或联网房间验证。
+
+## 2026-10-28：GitHub 跟踪内容清理
+
+- 目的：停止把 IDE 状态、NuGet/MSBuild 中间文件和构建产物上传到 GitHub，同时保留本地现有文件。
+- `.gitignore` 统一忽略 `bin/`、`obj/`、测试/验证产物、IDE 用户设置、本地工具状态和运行时配置；保留 `.run/*.run.xml` 共享启动定义。
+- 使用 `git rm --cached` 取消跟踪 112 个文件：`.idea/` 15 个、`Mcl.Core/bin/` 10 个、`Mcl.Core/obj/` 86 个、`Mcl.Core.sln.DotSettings.user` 1 个；跟踪文件总数由 543 降至 431。
+- 保留 README 使用的 `assets/`、`step/`、发布截图、赞助码、`loginByPhone.exe`、`Mcl.Core/DLLs/Mono.Cecil.dll` 和 `.run/` 调试定义。`image/Release/` 暂未删除，因为旧 GitHub Release 说明可能继续外链其中截图。
+- 验证：`git diff --cached --diff-filter=D` 只包含上述 112 个预期路径，意外删除 0 个；逐项检查本地文件存在，缺失 0 个；取消跟踪后没有新增未忽略文件。
+- 未执行构建和业务测试：本轮仅修改 `.gitignore`、Git 索引和维护记录，没有改动源码、项目引用或运行行为。
