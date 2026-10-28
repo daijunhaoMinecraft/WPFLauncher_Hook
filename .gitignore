@@ -23,6 +23,9 @@ _ReSharper*/
 .codegraph/
 .omo/
 
+# Local-only refactor notes are not part of the repository.
+/REFACTOR_PLAN.md
+
 # Local runtime, account, and validation data.
 /MCLauncherDebug/
 /.private-build/

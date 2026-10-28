@@ -2,7 +2,7 @@
 
 ## 开始前
 
-- 阅读 `REFACTOR_PLAN.md`、目标目录内更具体的 `AGENTS.md`。
+- 阅读目标目录内更具体的 `AGENTS.md`；本地 `REFACTOR_PLAN.md` 仅供个人参考，不纳入仓库。
 - 先检查 Git 状态，保留用户已有修改；禁止使用 reset/clean 或批量还原消除工作区差异。
 - 本项目是 **.NET Framework 4.8、x86、WPF 类库**，不是普通独立 WPF 应用。
 - `Dotnetdetour/Initialize.cs` 含模块初始化器，加载生产 DLL 即可能安装 Hook、创建控制台和启动后台服务。不要为单元测试反射加载它。
