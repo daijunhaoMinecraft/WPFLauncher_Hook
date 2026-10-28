@@ -16,6 +16,45 @@ using Newtonsoft.Json.Linq;
 
 internal static partial class Program
 {
+    private static void PackcacheClearTests()
+    {
+        var area = Path.Combine(_output, "packcache-clear-" + Guid.NewGuid().ToString("N"));
+        var root = Path.Combine(area, "packcache");
+        var looseFile = Path.Combine(root, "loose.dat");
+        var removableDirectory = Path.Combine(root, "removable");
+        var lockedDirectory = Path.Combine(root, "locked");
+        var lockedFile = Path.Combine(lockedDirectory, "nested", "held.dat");
+        var errors = new List<Exception>();
+        Directory.CreateDirectory(removableDirectory);
+        Directory.CreateDirectory(Path.GetDirectoryName(lockedFile));
+        try
+        {
+            File.WriteAllText(looseFile, "remove");
+            File.WriteAllText(Path.Combine(removableDirectory, "child.dat"), "remove");
+            using (var held = new FileStream(lockedFile, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            {
+                Check(BedrockCacheWorker.ClearContents(root, errors.Add) == 2,
+                    "clear counts only successfully deleted top-level entries");
+                Check(Directory.Exists(root) && Directory.Exists(lockedDirectory) && File.Exists(lockedFile),
+                    "clear preserves root and directory with a locked descendant");
+                Check(!File.Exists(looseFile) && !Directory.Exists(removableDirectory),
+                    "clear continues deleting sibling entries after a failure");
+                Check(errors.Count > 0 && errors.All(BedrockCacheWorker.IsFileError),
+                    "clear reports locked-file failures");
+            }
+
+            errors.Clear();
+            Check(BedrockCacheWorker.ClearContents(root, errors.Add) == 1,
+                "clear counts remaining directory after lock release");
+            Check(Directory.Exists(root) && !Directory.EnumerateFileSystemEntries(root).Any() && errors.Count == 0,
+                "clear empties contents while preserving root");
+        }
+        finally
+        {
+            Directory.Delete(area, true);
+        }
+    }
+
     private static void BedrockTests()
     {
         var original = ConfigManager.GetCurrentConfigValues();

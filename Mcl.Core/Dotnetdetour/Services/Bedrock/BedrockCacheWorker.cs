@@ -177,8 +177,7 @@ internal sealed class BedrockCacheWorker
             try
             {
                 EnsureSafePath(root, child);
-                DeleteTree(root, child, report);
-                removed++;
+                if (DeleteTree(root, child, report)) removed++;
             }
             catch (Exception exception) when (IsFileError(exception))
             {
@@ -189,7 +188,7 @@ internal sealed class BedrockCacheWorker
         return removed;
     }
 
-    private static void DeleteTree(string root, string directory, Action<Exception> report)
+    private static bool DeleteTree(string root, string directory, Action<Exception> report)
     {
         foreach (var file in Directory.EnumerateFiles(directory))
         {
@@ -220,10 +219,12 @@ internal sealed class BedrockCacheWorker
         try
         {
             Directory.Delete(directory, false); // Never follow junctions through an unchecked recursive delete.
+            return true;
         }
         catch (Exception exception) when (IsFileError(exception))
         {
             report(exception);
+            return false;
         }
     }
 
