@@ -51,7 +51,7 @@ namespace Mcl.Core.Updater
         private const string SourceCommitMarker = "MCL-SOURCE-COMMIT:";
         public const string RepoOwner = "daijunhaoMinecraft";
         public const string RepoName = "WPFLauncher_Hook";
-        public const string BuildFilePath = "Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll";
+        public const string BuildFilePath = "build/Mcl.Core.dll";
         public const string HookFileName = "Mcl.Core.dll";
 
         private static readonly HttpClient SharedHttpClient = CreateHttpClient();

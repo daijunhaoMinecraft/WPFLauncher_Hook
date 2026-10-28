@@ -4,8 +4,8 @@
 `Build Mcl.Core` GitHub Actions workflow and committed automatically.
 
 Do not edit or build this file locally. The same DLL is also copied to the
-legacy `Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll` path because
-`HookUpdateManager.BuildFilePath` still reads that location.
+legacy `Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll` path for older local tooling.
+`HookUpdateManager.BuildFilePath` reads the public `build/Mcl.Core.dll` copy.
 
 The workflow:
 

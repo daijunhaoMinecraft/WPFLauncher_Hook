@@ -122,6 +122,8 @@ internal static partial class Program
     /// <summary>Mcl.Core.dll 自更新与启动器更新分离：节点、哈希、解析与替换逻辑独立验证。</summary>
     private static void HookUpdateManagerTests()
     {
+        Check(HookUpdateManager.BuildFilePath == "build/Mcl.Core.dll",
+            "build channel uses public build directory");
         var auto = HookUpdateManager.BuildMirrorUrls("https://github.com/x/y.dll", 0);
         Check(auto.Length == 3 && auto[0] == "https://gh-proxy.com/https://github.com/x/y.dll" &&
               auto[1] == "https://ghproxy.net/https://github.com/x/y.dll" &&
