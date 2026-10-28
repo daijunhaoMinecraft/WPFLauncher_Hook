@@ -89,7 +89,7 @@ jobs:
         run: |
           $ErrorActionPreference = "Stop"
           $launcherDirectory = Join-Path $env:GITHUB_WORKSPACE ".private-build\launcher"
-          $launcherAssembly = Join-Path $launcherDirectory "WPFLauncher.dump-cleaned.exe"
+          $launcherAssembly = Join-Path $launcherDirectory "WPFLauncher.dump.exe"
           if (-not (Test-Path -LiteralPath $launcherAssembly -PathType Leaf)) {
               throw "Missing launcher assembly: $launcherAssembly"
           }
