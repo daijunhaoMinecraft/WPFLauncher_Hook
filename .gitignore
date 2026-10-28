@@ -25,6 +25,7 @@ _ReSharper*/
 
 # Local runtime, account, and validation data.
 /MCLauncherDebug/
+/.private-build/
 /config.json
 **/MclUpdateConfig.json
 **/RoomConfig/
@@ -34,6 +35,12 @@ _ReSharper*/
 *.orig
 *.rej
 *.7z
+
+# Proprietary launcher binaries belong only in WPFLauncher_Hook_Build.
+**/WPFLauncher*.exe
+**/WPFLauncher*.dll
+**/WPFControls.dll
+**/CefSharp*.dll
 
 # Share only Rider launch definitions, never the local host or account data.
 /.run/*
