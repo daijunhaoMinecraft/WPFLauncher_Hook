@@ -158,7 +158,37 @@ jobs:
               exit 0
           }
 
-          git commit -m "chore: update Mcl.Core.dll [skip ci]"
+          # Keep the artifact commit searchable as the original source change.
+          $sourceSha = (git rev-parse HEAD | Out-String).Trim()
+          $sourceMessage = (git show -s --format=%B $sourceSha | Out-String).Trim()
+          $markerPattern = "(?m)^MCL-SOURCE-COMMIT:\s*([0-9a-f]{40})\s*$"
+          $existingMarker = [regex]::Match($sourceMessage, $markerPattern)
+          if ($existingMarker.Success) {
+              $sourceSha = $existingMarker.Groups[1].Value
+              $sourceMessage = $sourceMessage.Substring(0, $existingMarker.Index).TrimEnd()
+          }
+          else {
+              $candidate = $sourceSha
+              for ($index = 0; $index -lt 20; $index++) {
+                  $candidateMessage = (git show -s --format=%B $candidate | Out-String).Trim()
+                  if ($candidateMessage -notmatch "^chore: update Mcl\.Core\.dll(?: \[skip ci\])?$") {
+                      $sourceSha = $candidate
+                      $sourceMessage = $candidateMessage
+                      break
+                  }
+                  $parent = (git rev-parse "$candidate^" 2>$null | Out-String).Trim()
+                  if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($parent)) {
+                      break
+                  }
+                  $candidate = $parent
+              }
+          }
+          if ([string]::IsNullOrWhiteSpace($sourceMessage)) {
+              $sourceMessage = "Update Mcl.Core.dll"
+          }
+          $commitMessage = $sourceMessage.TrimEnd() +
+              "`n`nMCL-SOURCE-COMMIT: $sourceSha"
+          git commit -m $commitMessage
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main

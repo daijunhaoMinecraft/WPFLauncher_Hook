@@ -48,6 +48,7 @@ namespace Mcl.Core.Updater
     public static class HookUpdateManager
     {
         private const string Module = "Update";
+        private const string SourceCommitMarker = "MCL-SOURCE-COMMIT:";
         public const string RepoOwner = "daijunhaoMinecraft";
         public const string RepoName = "WPFLauncher_Hook";
         public const string BuildFilePath = "Mcl.Core/bin/x86/Debug/net48/Mcl.Core.dll";
@@ -156,17 +157,45 @@ namespace Mcl.Core.Updater
             }
 
             var firstCommit = commits?.FirstOrDefault();
+            // Artifact commits carry the original source message and commit SHA.
+            var commitMessage = firstCommit?["commit"]?["message"]?.ToString() ?? string.Empty;
+            var notes = commitMessage;
+            var pageUrl = firstCommit?["html_url"]?.ToString() ??
+                          $"https://github.com/{RepoOwner}/{RepoName}";
+            var markerIndex = commitMessage.IndexOf(SourceCommitMarker, StringComparison.OrdinalIgnoreCase);
+            if (markerIndex >= 0)
+            {
+                var markerValue = commitMessage.Substring(markerIndex + SourceCommitMarker.Length).Trim();
+                var sourceSha = markerValue
+                    .Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                    .FirstOrDefault();
+                if (IsGitCommitSha(sourceSha))
+                {
+                    notes = commitMessage.Substring(0, markerIndex).TrimEnd();
+                    pageUrl = $"https://github.com/{RepoOwner}/{RepoName}/commit/{sourceSha}";
+                }
+            }
+
             return new HookUpdateInfo
             {
                 Version = "Latest Build",
-                Notes = firstCommit?["commit"]?["message"]?.ToString() ?? string.Empty,
-                PageUrl = firstCommit?["html_url"]?.ToString() ??
-                          $"https://github.com/{RepoOwner}/{RepoName}",
+                Notes = notes,
+                PageUrl = pageUrl,
                 DownloadUrl = downloadUrl,
                 Size = fileInfo["size"]?.ToObject<long>() ?? 0,
                 ExpectedHash = remoteSha,
                 HashType = HookUpdateHashKind.GitBlobSha1
             };
+        }
+
+        private static bool IsGitCommitSha(string value)
+        {
+            return !string.IsNullOrEmpty(value) &&
+                   value.Length == 40 &&
+                   value.All(character =>
+                       (character >= '0' && character <= '9') ||
+                       (character >= 'a' && character <= 'f') ||
+                       (character >= 'A' && character <= 'F'));
         }
 
         /// <summary>解析 Release 渠道响应；返回 null 表示已是最新、缺少资产或响应无效。</summary>

@@ -30,3 +30,21 @@ Native runtime dependencies `ocr.dll`, `OcrProxy.dll`, `wintun.dll`, and
   scripts, or the workflow itself. It can also be started manually.
 - The workflow does not upload GitHub Actions artifacts. It commits only the
   public DLL and its legacy compatibility copy.
+- Artifact commits reuse the triggering source commit message and append an
+  `MCL-SOURCE-COMMIT` marker so the updater can show useful release notes.
+
+## Local Editor Protection
+
+Normal local builds rewrite the compatibility DLL under `Mcl.Core/bin`. Run this
+once after cloning to stop IDEs from including that generated change in commits:
+
+```powershell
+.\scripts\Protect-BuildArtifacts.ps1
+```
+
+Use `-Disable` only when intentionally inspecting or merging the compatibility
+artifact update:
+
+```powershell
+.\scripts\Protect-BuildArtifacts.ps1 -Disable
+```

@@ -158,6 +158,17 @@ internal static partial class Program
               buildInfo.HashType == HookUpdateHashKind.GitBlobSha1 &&
               buildInfo.ExpectedHash == localSha && buildInfo.Notes.Contains("fix: update flow") &&
               buildInfo.PageUrl.EndsWith("/commit/1"), "build channel update info parsed");
+        const string sourceSha = "0123456789abcdef0123456789abcdef01234567";
+        var sourceCommitPayload = JArray.Parse(
+            "[{\"commit\":{\"message\":\"feat: source change\\n\\nMCL-SOURCE-COMMIT: " + sourceSha +
+            "\"},\"html_url\":\"https://github.com/x/y/commit/artifact\"}]");
+        var sourceBuildInfo = HookUpdateManager.ParseBuildPayload(
+            buildPayload, sourceCommitPayload, Path.Combine(area, "missing.dll"));
+        Check(sourceBuildInfo != null &&
+              sourceBuildInfo.Notes == "feat: source change" &&
+              sourceBuildInfo.PageUrl ==
+              "https://github.com/daijunhaoMinecraft/WPFLauncher_Hook/commit/" + sourceSha,
+            "build channel resolves original source commit");
         Check(HookUpdateManager.ParseBuildPayload(new JObject(), commits, text) == null,
             "build channel invalid payload is ignored");
 
