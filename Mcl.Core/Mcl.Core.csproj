@@ -18,9 +18,9 @@
         <EnableDefaultItems>False</EnableDefaultItems>
     </PropertyGroup>
     <PropertyGroup>
-        <LauncherDirectory Condition="'$(LauncherDirectory)' == ''">D:\Games\MCLauncher</LauncherDirectory>
-        <!-- Preserve the previous effective reference; debug preparation overrides this explicitly. -->
-        <LauncherAssemblyPath Condition="'$(LauncherAssemblyPath)' == ''">H:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump.exe</LauncherAssemblyPath>
+        <LauncherDirectory Condition="'$(LauncherDirectory)' == ''">$(MSBuildProjectDirectory)\..\MCLauncherDebug</LauncherDirectory>
+        <!-- Use the actual unpacked host; dump assemblies are diagnostics only. -->
+        <LauncherAssemblyPath Condition="'$(LauncherAssemblyPath)' == ''">$(LauncherDirectory)\WPFLauncher.exe</LauncherAssemblyPath>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <Prefer32bit>true</Prefer32bit>

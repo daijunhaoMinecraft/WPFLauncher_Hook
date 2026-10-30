@@ -1,10 +1,18 @@
 ﻿param(
-    [string]$LauncherDirectory = 'D:\Games\MCLauncher',
-    [string]$LauncherAssemblyPath = 'H:\Code\C#\C#杂项\WPFTool\WPFLauncher.dump-cleaned.exe',
+    [string]$LauncherDirectory,
+    [string]$LauncherAssemblyPath,
     [switch]$SkipMainBuild
 )
 $ErrorActionPreference = 'Stop'
 $repository = Split-Path -Parent $PSScriptRoot
+if ([string]::IsNullOrWhiteSpace($LauncherDirectory)) {
+    $LauncherDirectory = Join-Path $repository 'MCLauncherDebug'
+}
+$LauncherDirectory = [IO.Path]::GetFullPath($LauncherDirectory)
+if ([string]::IsNullOrWhiteSpace($LauncherAssemblyPath)) {
+    $LauncherAssemblyPath = Join-Path $LauncherDirectory 'WPFLauncher.exe'
+}
+$LauncherAssemblyPath = [IO.Path]::GetFullPath($LauncherAssemblyPath)
 $artifacts = Join-Path $repository '.artifacts\validation'
 [IO.Directory]::CreateDirectory($artifacts) | Out-Null
 

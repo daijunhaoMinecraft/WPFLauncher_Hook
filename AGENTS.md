@@ -26,10 +26,11 @@
 其他机器传入本机依赖：
 [README.md](Mcl.Core/Dotnetdetour/Models/Config/README.md)
 ```powershell
-.\scripts\Validate-Refactor.ps1 -LauncherDirectory 'D:\Games\MCLauncher' -LauncherAssemblyPath 'D:\Dependencies\WPFLauncher.dump-cleaned.exe'
+.\scripts\Validate-Refactor.ps1 -LauncherDirectory 'D:\Games\MCLauncher'
 ```
 
 - `WPFLauncher`、`WPFControls`、CefSharp、NLog、Newtonsoft.Json 等编译依赖统一由私有仓库 `WPFLauncher_Hook_Build` 提供；宿主 EXE/DLL 和编译引用程序集不得复制进本仓库、Release 或 Actions artifact。经明确批准的独立运行时 DLL 只能放入 `build-artifacts` 分支的 `build/`。
+- 本地和 CI 必须统一使用实际宿主 `WPFLauncher.exe`：本地为 `MCLauncherDebug/WPFLauncher.exe`，CI 为私有仓库 `launcher/WPFLauncher.exe`。`WPFLauncher.dump*.exe` 仅供手动诊断，不作为默认构建引用。
 - 验证脚本输出到 `.artifacts/validation`，不会主动覆盖已有 `Mcl.Core/bin/obj`。
 - 无宿主程序集时可用 `-SkipMainBuild` 只跑源码审计；这不等于主项目构建成功。
 - 不运行真实登录、游戏、驱动或联网房间操作来验证外观；需要这些验证时先向用户说明。
