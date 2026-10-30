@@ -8,8 +8,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
+using Mcl.Core.Dotnetdetour.Features.GeneralHooks;
 using Mcl.Core.Dotnetdetour.Models.Config;
-using Mcl.Core.Dotnetdetour.Models.Entities;
 using Mcl.Core.Dotnetdetour.UI.Windows;
 using Mcl.Core.Dotnetdetour.Utilities.Network;
 using Mcl.Core.NeteaseProtocol;
@@ -277,20 +277,7 @@ internal class ChatConnectionPacket : IMethodHook
         var playerInfo = X19Http.GetPlayerInfo(uid);
         var playerName = playerInfo["entity"]["name"].ToObject<string>();
         PluginLog.Debug("Network", $"玩家状态: {statusString} UID:{uid} xuid: {WpfConfig.SharedUidCipher.IntToHex(WpfConfig.SharedUidCipher.Encrypt(UidHelper.ToMobileUid(uint.Parse(uid))))} 玩家名: {playerName} 提示: {hint}");
-        var friendStatus = WpfConfig.FriendStatuses.FirstOrDefault(x => x.UserId.ToString() == uid);
-        if (friendStatus == null)
-        {
-            WpfConfig.FriendStatuses.Add(new FriendStatus
-            {
-                Status = status,
-                UserId = uid
-            });
-        }
-        else
-        {
-            friendStatus.Status = status;
-            friendStatus.UserId = uid;
-        }
+        FriendStatusStore.SetPresence(uid, status != 0);
 
         azf<arg>.Instance.ClusterList.h();
     }

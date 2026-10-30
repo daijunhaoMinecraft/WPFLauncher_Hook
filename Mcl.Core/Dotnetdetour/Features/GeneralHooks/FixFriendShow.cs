@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using Mcl.Core.Dotnetdetour.CoreEngine.Attributes;
 using Mcl.Core.Dotnetdetour.CoreEngine.Interfaces;
-using Mcl.Core.Dotnetdetour.Models.Config;
 using WPFLauncher.Model;
 
 namespace Mcl.Core.Dotnetdetour.Features.GeneralHooks;
@@ -22,13 +20,8 @@ public class FixLanGameFriendShow : IMethodHook
         var friendList = OriginalFriendList();
         foreach (var friend in friendList)
         {
-            var searchedFriend =
-                WpfConfig.FriendStatuses.FirstOrDefault(x => x.UserId.ToString() == friend.UserID.ToString());
-            if (searchedFriend != null)
-            {
-                var isOnline = searchedFriend.Status == 1;
+            if (FriendStatusStore.TryGetOnline(friend.UserID, out var isOnline))
                 friend.Status = isOnline ? OnLineState.ONLINE : OnLineState.OFFLINE;
-            }
         }
 
         return friendList;
