@@ -22,17 +22,18 @@ $xamlNamespace = 'http://schemas.microsoft.com/winfx/2006/xaml/presentation'
 $windowCount = 0
 foreach ($file in Get-ChildItem -LiteralPath (Join-Path $sourceRoot 'Dotnetdetour') -Recurse -File -Filter '*.xaml') {
     [xml]$document = [IO.File]::ReadAllText($file.FullName)
-    if ($document.DocumentElement.LocalName -ne 'Window') { continue }
+    $windowType = $document.DocumentElement.LocalName
+    if ($windowType -notin @('Window', 'BaseWindow')) { continue }
     $windowCount++
     $namespaces = [System.Xml.XmlNamespaceManager]::new($document.NameTable)
     $namespaces.AddNamespace('p', $xamlNamespace)
     $theme = $document.SelectSingleNode('//p:ResourceDictionary[@Source="/Mcl.Core;component/Dotnetdetour/UI/Themes/Fluent.xaml"]', $namespaces)
     if ($null -eq $theme) { $problems.Add("Missing scoped Fluent theme: $($file.FullName)") }
-    if ($document.SelectNodes('/p:Window/p:Window.Resources/p:Style', $namespaces).Count -gt 0) {
+    if ($document.DocumentElement.SelectNodes("*[local-name()='$windowType.Resources']/*[local-name()='Style']").Count -gt 0) {
         $problems.Add("Duplicated window-level styles: $($file.FullName)")
     }
 }
-if ($windowCount -ne 22) { $problems.Add("Expected 22 XAML windows; found $windowCount. Update the audit when adding a view.") }
+if ($windowCount -ne 23) { $problems.Add("Expected 23 XAML windows; found $windowCount. Update the audit when adding a view.") }
 $configDirectory = Join-Path $sourceRoot 'Dotnetdetour\Models\Config'
 $registry = [IO.File]::ReadAllText((Join-Path $configDirectory 'ConfigManager.cs'))
 if ([regex]::Matches($registry, 'new ConfigEntry\(').Count -ne 46) {

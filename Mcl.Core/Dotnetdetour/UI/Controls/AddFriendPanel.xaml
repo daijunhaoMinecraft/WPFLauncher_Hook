@@ -1,0 +1,373 @@
+﻿<UserControl x:Class="Mcl.Core.Dotnetdetour.UI.Controls.AddFriendPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:host="clr-namespace:WPFLauncher.View.Chat.ChatPanelUC;assembly=WPFLauncher"
+             xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+             Background="Transparent">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Mcl.Core;component/Dotnetdetour/UI/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="FriendSearchResultTemplate">
+                <Grid Margin="2,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <host:HeadImageUC Width="36"
+                                      Height="36"
+                                      HeadIconWidth="26"
+                                      FrameIconWidth="36"
+                                      HeadImgResource="{Binding AvatarUrl}"
+                                      VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1"
+                                Margin="10,0,0,0"
+                                VerticalAlignment="Center">
+                        <DockPanel>
+                            <TextBlock Text="{Binding UserIdText, StringFormat=UserID {0}}"
+                                       DockPanel.Dock="Right"
+                                       Foreground="{DynamicResource AccentBrush}"
+                                       FontFamily="Consolas"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="8,0,0,0" />
+                            <TextBlock Text="{Binding Nickname}"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis" />
+                        </DockPanel>
+                        <TextBlock Text="{Binding Signature}"
+                                   ToolTip="{Binding Signature}"
+                                   Style="{StaticResource SecondaryText}"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="0,3,0,0" />
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+            <Style x:Key="SearchResultListStyle"
+                   TargetType="ListBox"
+                   BasedOn="{StaticResource {x:Type ListBox}}">
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="SelectionMode" Value="Single" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource WindowBackgroundBrush}" Padding="24">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,12">
+                <TextBlock Text="查找玩家" FontSize="22" FontWeight="SemiBold" />
+                <TextBlock Text="通过玩家昵称或 UserID 搜索，确认身份后发送好友申请。"
+                           Style="{StaticResource SecondaryText}"
+                           Margin="0,4,0,0" />
+            </StackPanel>
+
+            <Border Grid.Row="1"
+                    Style="{StaticResource Card}"
+                    Padding="14"
+                    Margin="0,0,0,12">
+                <StackPanel>
+                    <TextBlock Text="搜索玩家" FontWeight="SemiBold" Margin="0,0,0,8" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="SearchBox"
+                                 Height="36"
+                                 MaxLength="64"
+                                 VerticalContentAlignment="Center"
+                                 Text="{Binding SearchName, UpdateSourceTrigger=PropertyChanged}"
+                                 KeyDown="SearchBox_KeyDown"
+                                 automation:AutomationProperties.Name="好友昵称或玩家编号" />
+                        <Button x:Name="SearchButton"
+                                Grid.Column="1"
+                                Content="搜索"
+                                Width="88"
+                                Margin="8,0,0,0"
+                                Style="{StaticResource PrimaryButton}"
+                                Click="SearchButton_Click"
+                                automation:AutomationProperties.Name="搜索好友" />
+                    </Grid>
+                    <ProgressBar x:Name="SearchProgress"
+                                 Height="2"
+                                 Margin="0,10,0,0"
+                                 IsIndeterminate="True"
+                                 Visibility="Collapsed" />
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="2" Margin="0,0,0,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.08*" />
+                    <ColumnDefinition Width="0.92*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        Style="{StaticResource Card}"
+                        Padding="14"
+                        Margin="0,0,6,0">
+                    <Grid>
+                        <Grid x:Name="ResultsSectionsPanel" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <DockPanel Margin="0,0,0,8">
+                                <TextBlock x:Name="ResultSummaryText"
+                                           DockPanel.Dock="Right"
+                                           Text="等待搜索"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           FontSize="12"
+                                           VerticalAlignment="Center" />
+                                <TextBlock Text="搜索结果" FontWeight="SemiBold" VerticalAlignment="Center" />
+                            </DockPanel>
+
+                            <StackPanel x:Name="UidResultsSection"
+                                        Grid.Row="1"
+                                        Visibility="Collapsed"
+                                        Margin="0,0,0,10">
+                                <DockPanel Margin="0,0,0,4">
+                                    <TextBlock x:Name="UidResultCountText"
+                                               DockPanel.Dock="Right"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               FontSize="12"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="UserID 搜索结果"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource AccentBrush}" />
+                                </DockPanel>
+                                <Grid>
+                                    <ListBox x:Name="UidResultsList"
+                                             MaxHeight="175"
+                                             Style="{StaticResource SearchResultListStyle}"
+                                             ItemTemplate="{StaticResource FriendSearchResultTemplate}"
+                                             ItemContainerStyle="{StaticResource NavigationItem}"
+                                             SelectionChanged="ResultList_SelectionChanged"
+                                             automation:AutomationProperties.Name="UserID 搜索结果" />
+                                    <TextBlock x:Name="UidResultsEmptyText"
+                                               Text="未找到对应 UserID"
+                                               Style="{StaticResource SecondaryText}"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,10"
+                                               Visibility="Collapsed" />
+                                </Grid>
+                                <Border Height="1"
+                                        Background="{DynamicResource BorderBrush}"
+                                        Margin="0,10,0,0" />
+                            </StackPanel>
+
+                            <Grid x:Name="NameResultsSection" Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <DockPanel Margin="0,0,0,4">
+                                    <TextBlock x:Name="NameResultCountText"
+                                               DockPanel.Dock="Right"
+                                               Foreground="{DynamicResource SecondaryTextBrush}"
+                                               FontSize="12"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="玩家名称搜索结果" FontWeight="SemiBold" />
+                                </DockPanel>
+                                <Grid Grid.Row="1">
+                                    <ListBox x:Name="NameResultsList"
+                                             Style="{StaticResource SearchResultListStyle}"
+                                             ItemTemplate="{StaticResource FriendSearchResultTemplate}"
+                                             ItemContainerStyle="{StaticResource NavigationItem}"
+                                             SelectionChanged="ResultList_SelectionChanged"
+                                             automation:AutomationProperties.Name="玩家名称搜索结果" />
+                                    <TextBlock x:Name="NameResultsEmptyText"
+                                               Text="未找到匹配玩家名称"
+                                               Style="{StaticResource SecondaryText}"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="Collapsed" />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        <StackPanel x:Name="EmptyStatePanel"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False">
+                            <Border Width="52"
+                                    Height="52"
+                                    CornerRadius="26"
+                                    Background="{DynamicResource ControlHoverBrush}"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="ID"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock x:Name="EmptyStateTitle"
+                                       Text="搜索好友"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,10,0,0" />
+                            <TextBlock x:Name="EmptyStateDetail"
+                                       Text="输入昵称或 UserID 开始搜索"
+                                       Style="{StaticResource SecondaryText}"
+                                       TextAlignment="Center"
+                                       MaxWidth="280"
+                                       Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1"
+                        Style="{StaticResource Card}"
+                        Padding="16"
+                        Margin="6,0,0,0">
+                    <Grid>
+                        <Grid x:Name="FriendInfoPanel" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="好友信息" FontWeight="SemiBold" Margin="0,0,0,12" />
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <host:HeadImageUC x:Name="SelectedAvatar"
+                                                  Width="68"
+                                                  Height="68"
+                                                  HeadIconWidth="48"
+                                                  FrameIconWidth="68"
+                                                  VerticalAlignment="Top" />
+                                <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                    <TextBlock x:Name="SelectedNicknameText"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                        <TextBlock Text="UserID"
+                                                   Style="{StaticResource SecondaryText}" />
+                                        <TextBlock x:Name="SelectedUserIdText"
+                                                   Foreground="{DynamicResource AccentBrush}"
+                                                   FontFamily="Consolas"
+                                                   FontWeight="SemiBold"
+                                                   Margin="6,0,0,0" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Margin="0,12,0,0">
+                                <TextBlock Text="玩家签名"
+                                           FontWeight="SemiBold"
+                                           FontSize="12"
+                                           Margin="0,0,0,4" />
+                                <TextBlock x:Name="SelectedSignatureText"
+                                           Style="{StaticResource SecondaryText}"
+                                           TextWrapping="Wrap"
+                                           TextTrimming="CharacterEllipsis"
+                                           MaxHeight="56"
+                                           ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="3" Margin="0,16,0,0">
+                                <Border Height="1"
+                                        Background="{DynamicResource BorderBrush}"
+                                        Margin="0,0,0,14" />
+                                <TextBlock Text="好友附言（可选，120 字以内）"
+                                           FontWeight="SemiBold"
+                                           Margin="0,0,0,8" />
+                                <TextBox x:Name="CommentBox"
+                                         Height="82"
+                                         MaxLength="120"
+                                         Padding="10,8"
+                                         AcceptsReturn="True"
+                                         TextWrapping="Wrap"
+                                         VerticalContentAlignment="Top"
+                                         Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"
+                                         automation:AutomationProperties.Name="好友申请附言" />
+                            </StackPanel>
+                        </Grid>
+
+                        <StackPanel x:Name="FriendInfoEmptyPanel"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsHitTestVisible="False">
+                            <Border Width="58"
+                                    Height="58"
+                                    CornerRadius="29"
+                                    Background="{DynamicResource ControlHoverBrush}"
+                                    HorizontalAlignment="Center">
+                                <TextBlock Text="友"
+                                           Foreground="{DynamicResource SecondaryTextBrush}"
+                                           FontSize="18"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="选择一位玩家"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       Margin="0,10,0,0" />
+                            <TextBlock Text="选中搜索结果后，这里会显示好友资料与附言输入框。"
+                                       Style="{StaticResource SecondaryText}"
+                                       TextAlignment="Center"
+                                       MaxWidth="250"
+                                       Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="玩家编号即好友资料中的 UserID。"
+                           Style="{StaticResource SecondaryText}"
+                           VerticalAlignment="Center"
+                           TextWrapping="NoWrap"
+                           TextTrimming="CharacterEllipsis"
+                           Margin="0,0,12,0" />
+                <Button Grid.Column="1"
+                        Content="取消"
+                        Width="84"
+                        MinHeight="34"
+                        Margin="0,0,8,0"
+                        Command="{Binding CloseCommand}" />
+                <Button x:Name="AddFriendButton"
+                        Grid.Column="2"
+                        Content="发送好友申请"
+                        MinWidth="132"
+                        MinHeight="34"
+                        Command="{Binding ConfirmCommand}"
+                        automation:AutomationProperties.Name="发送好友申请">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedUser}" Value="{x:Null}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

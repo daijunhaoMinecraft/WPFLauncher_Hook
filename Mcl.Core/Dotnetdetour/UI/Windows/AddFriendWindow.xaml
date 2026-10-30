@@ -1,0 +1,93 @@
+﻿<base:BaseWindow x:Class="Mcl.Core.Dotnetdetour.UI.Windows.AddFriendWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:base="clr-namespace:WPFLauncher.Common;assembly=WPFLauncher"
+                 xmlns:controls="clr-namespace:Mcl.Core.Dotnetdetour.UI.Controls"
+                 xmlns:automation="clr-namespace:System.Windows.Automation;assembly=PresentationCore"
+                 Title="添加好友"
+                 Width="760"
+                 Height="700"
+                 MinWidth="640"
+                 MinHeight="560"
+                 WindowStartupLocation="CenterOwner"
+                 WindowStyle="None"
+                 ResizeMode="CanResize"
+                 AllowsTransparency="True"
+                 Background="Transparent"
+                 ShowInTaskbar="False"
+                 UseLayoutRounding="True"
+                 SnapsToDevicePixels="True"
+                 PreviewKeyDown="Window_PreviewKeyDown">
+    <base:BaseWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Mcl.Core;component/Dotnetdetour/UI/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="TitleBarButton"
+                   TargetType="Button"
+                   BasedOn="{StaticResource {x:Type Button}}">
+                <Setter Property="Width" Value="38" />
+                <Setter Property="Height" Value="30" />
+                <Setter Property="MinHeight" Value="0" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="FontSize" Value="15" />
+            </Style>
+            <Style x:Key="TitleBarCloseButton"
+                   TargetType="Button"
+                   BasedOn="{StaticResource TitleBarButton}">
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource DangerBackgroundBrush}" />
+                        <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </base:BaseWindow.Resources>
+
+    <Border Background="{DynamicResource WindowBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="44" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0"
+                  Background="{DynamicResource SubtleSurfaceBrush}"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <TextBlock Text="添加好友"
+                           FontSize="14"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Margin="16,0,0,0"
+                           IsHitTestVisible="False" />
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0,0,6,0">
+                    <Button Content="—"
+                            Style="{StaticResource TitleBarButton}"
+                            Click="MinimizeButton_Click"
+                            automation:AutomationProperties.Name="最小化" />
+                    <Button Content="×"
+                            Style="{StaticResource TitleBarCloseButton}"
+                            Click="CloseButton_Click"
+                            automation:AutomationProperties.Name="关闭" />
+                </StackPanel>
+            </Grid>
+
+            <controls:AddFriendPanel x:Name="FriendPanel" Grid.Row="1" />
+            <ResizeGrip Grid.Row="1"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Width="16"
+                        Height="16"
+                        Margin="0,0,4,4"
+                        Panel.ZIndex="10" />
+        </Grid>
+    </Border>
+</base:BaseWindow>
