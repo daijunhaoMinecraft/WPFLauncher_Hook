@@ -81,13 +81,20 @@ public class RebuildX19Crypto : IMethodHook
         return result;
     }
 
-    // [OriginalMethod]
-    // public static int UnzipModJsonOriginal(string path) => 0;
-    
-    [HookMethod(ClassName, "k")]
+    [OriginalMethod]
+    public static int UnzipModJsonOriginal(string path) => 0;
+
+    [OriginalMethod]
     public static void GetItemInfo(string itemId, bool unk)
     {
+        
+    }
+    
+    [HookMethod(ClassName, "k")]
+    public static void GetItemInfoHook(string itemId, bool unk)
+    {
         PluginLog.Info("Unzip", $"GetItemInfo, itemId: {itemId}, unkBool: {unk}");
+        GetItemInfo(itemId, unk);
     }
     
     [HookMethod(ClassName, "l")]
@@ -95,55 +102,55 @@ public class RebuildX19Crypto : IMethodHook
     {
         PluginLog.Info("Unzip", $"UnzipMod: {path}");
     
-        try
-        {
-            if (!string.IsNullOrEmpty(path))
-            {
-                string[] suffixes = { ".mczip", ".mergedmcs" };
-                string newPath = null;
-    
-                foreach (var suffix in suffixes)
-                {
-                    if (path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
-                    {
-                        newPath = path.Substring(0, path.Length - suffix.Length);
-                        break;
-                    }
-                }
-    
-                if (newPath != null && !string.Equals(path, newPath, StringComparison.OrdinalIgnoreCase))
-                {
-                    if (!File.Exists(path))
-                    {
-                        PluginLog.Info("Unzip", $"文件不存在，跳过重命名: {path}");
-                    }
-                    else
-                    {
-                        string dir = Path.GetDirectoryName(newPath);
-                        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                        {
-                            Directory.CreateDirectory(dir);
-                        }
-    
-                        if (File.Exists(newPath))
-                        {
-                            PluginLog.Info("Unzip", $"目标已存在，删除源文件: {path} -> {newPath}");
-                            File.Delete(path);
-                        }
-                        else
-                        {
-                            File.Move(path, newPath);
-                            PluginLog.Info("Unzip", $"重命名: {path} -> {newPath}");
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Info("Unzip", $"去除后缀/重命名失败: {path}, {ex}");
-        }
-        return 0;
-        // return UnzipModJsonOriginal(path);
+        // try
+        // {
+        //     if (!string.IsNullOrEmpty(path))
+        //     {
+        //         string[] suffixes = { ".mczip", ".mergedmcs" };
+        //         string newPath = null;
+        //
+        //         foreach (var suffix in suffixes)
+        //         {
+        //             if (path.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+        //             {
+        //                 newPath = path.Substring(0, path.Length - suffix.Length);
+        //                 break;
+        //             }
+        //         }
+        //
+        //         if (newPath != null && !string.Equals(path, newPath, StringComparison.OrdinalIgnoreCase))
+        //         {
+        //             if (!File.Exists(path))
+        //             {
+        //                 PluginLog.Info("Unzip", $"文件不存在，跳过重命名: {path}");
+        //             }
+        //             else
+        //             {
+        //                 string dir = Path.GetDirectoryName(newPath);
+        //                 if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+        //                 {
+        //                     Directory.CreateDirectory(dir);
+        //                 }
+        //
+        //                 if (File.Exists(newPath))
+        //                 {
+        //                     PluginLog.Info("Unzip", $"目标已存在，删除源文件: {path} -> {newPath}");
+        //                     File.Delete(path);
+        //                 }
+        //                 else
+        //                 {
+        //                     File.Move(path, newPath);
+        //                     PluginLog.Info("Unzip", $"重命名: {path} -> {newPath}");
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+        // catch (Exception ex)
+        // {
+        //     PluginLog.Info("Unzip", $"去除后缀/重命名失败: {path}, {ex}");
+        // }
+        // return 0;
+        return UnzipModJsonOriginal(path);
     }
 }
